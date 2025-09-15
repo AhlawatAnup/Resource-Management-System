@@ -1,9 +1,11 @@
-const roleSelect = document.getElementById("role");
-const studentFields = document.getElementById("studentFields");
-const teacherFields = document.getElementById("teacherFields");
-const assignedTeacherSelect = document.getElementById("assignedTeacher");
+// Get URL parameters
+function getQueryParam(name) {
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get(name);
+}
 
 // Fetch teachers from server
+const assignedTeacherSelect = document.getElementById("assignedTeacher");
 async function loadTeachers() {
   try {
     const res = await fetch("/auth/get-teachers");
@@ -22,62 +24,57 @@ async function loadTeachers() {
     console.error("Failed to load teachers", err);
   }
 }
+
 loadTeachers();
 
-// Toggle visible fields and required attributes
-function toggleFields(role) {
-  if (role === "student") {
-    studentFields.style.display = "block";
-    teacherFields.style.display = "none";
+// Get the role from query parameters
+const role = getQueryParam("role");
+const studentFields = document.getElementById("studentFields");
+const teacherSelect = document.getElementById("assignedTeacher");
+const rollNumberInput = document.getElementById("rollNumber");
 
-    // Student required
-    document.getElementById("studentName").required = true;
-    document.getElementById("rollNo").required = true;
-    document.getElementById("department").required = true;
-    document.getElementById("assignedTeacher").required = true;
-
-    // Teacher not required
-    document.getElementById("teacherEmail").required = false;
-  } else if (role === "teacher") {
-    studentFields.style.display = "none";
-    teacherFields.style.display = "block";
-
-    // Teacher required
-    document.getElementById("teacherEmail").required = true;
-
-    // Student not required
-    document.getElementById("studentName").required = false;
-    document.getElementById("rollNo").required = false;
-    document.getElementById("department").required = false;
-    document.getElementById("assignedTeacher").required = false;
-  }
+// Configure form based on role
+if (role === "student") {
+  studentFields.style.display = "block";
+  teacherSelect.required = true;
+  rollNumberInput.required = true;
+} else if (role === "teacher") {
+  studentFields.style.display = "none";
+} else {
+  studentFields.style.display = "none";
 }
-
-// Initial toggle based on default selection
-toggleFields(roleSelect.value);
-
-// Listen for role changes
-roleSelect.addEventListener("change", () => toggleFields(roleSelect.value));
 
 // Handle form submission
 document
   .getElementById("registrationForm")
-  .addEventListener("submit", async (e) => {
+  .addEventListener("submit", async function (e) {
     e.preventDefault();
 
-    const role = roleSelect.value;
-    let payload = { role };
+    const formData = new FormData(this);
+    const data = {};
 
+    for (let [key, value] of formData.entries()) {
+      if (value.trim() !== "") {
+        data[key] = value;
+      }
+    }
+
+    data.role = role || "general";
+
+    console.log("Registration data:", data);
+    // return;
+    let payload = {};
     if (role === "student") {
       payload = {
         ...payload,
-        name: document.getElementById("studentName").value,
-        rollNo: document.getElementById("rollNo").value,
-        department: document.getElementById("department").value,
+        name: document.getElementById("name").value,
+        rollNo: document.getElementById("rollNumber").value,
         teacher_id: document.getElementById("assignedTeacher").value,
+        branch: document.getElementById("branch").value,
       };
     } else if (role === "teacher") {
-      payload.email = document.getElementById("teacherEmail").value;
+      payload.name = document.getElementById("name").value;
+      payload.branch = document.getElementById("branch").value;
     }
 
     try {
@@ -89,7 +86,7 @@ document
 
       const data = await res.json();
       if (res.ok) {
-        alert("✅ Registration successful!");
+        alert("✅ Registration successful! Login Again");
         window.location.href = "/dashboard"; // redirect to home or login
       } else {
         alert(data.error || "Registration failed");

@@ -3,57 +3,75 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Registration</title>
+    <title>NOVAÉ - Create Account</title>
     <link rel="stylesheet" href="./style/registartion.css" />
   </head>
   <body>
-    <header>
-      <h1>Registration Page</h1>
-      <p>Please register according to your role.</p>
-    </header>
+    <div class="container">
+      <div class="form-section">
+        <div class="logo">U.I.E.T</div>
 
-    <main>
-      <form id="registrationForm">
-        <label for="role">I am a:</label>
-        <select id="role" required>
-          <option value="student">Student</option>
-          <option value="teacher">Teacher</option>
-        </select>
+        <div class="form-title">Register Yourself</div>
+        <div class="form-subtitle">Access the High Computing Machine</div>
 
-        <!-- Student Fields -->
-        <div id="studentFields" class="form-section">
-          <input
-            type="text"
-            id="studentName"
-            placeholder="Full Name"
-            required
-          />
-          <input type="text" id="rollNo" placeholder="Roll Number" required />
-          <input
-            type="text"
-            id="department"
-            placeholder="Department"
-            required
-          />
-          <select id="assignedTeacher" required>
-            <option value="">Select a Teacher</option>
-          </select>
+        <form id="registrationForm">
+          <div class="form-group">
+            <label for="name">Name</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              placeholder="Your Name"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="branch">Branch</label>
+            <select id="branch" name="branch" required>
+              <option value="">Select Branch</option>
+              <option value="cse">Computer Science</option>
+              <option value="eee">Electrical and Electronics</option>
+              <option value="mech">Mechanical</option>
+              <option value="ece">Electronics and Communication</option>
+              <option value="IT">Information Technology</option>
+              <option value="biotech">Biotechnology</option>
+            </select>
+          </div>
+
+          <!-- Student-specific fields -->
+          <div id="studentFields" style="display: none">
+            <div class="form-group">
+              <label for="teacher">Teacher</label>
+              <select id="assignedTeacher" name="teacher">
+                <option value="">Select Teacher</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="rollNumber">Roll Number</label>
+              <input
+                type="text"
+                id="rollNumber"
+                name="rollNumber"
+                placeholder="Enter Roll Number"
+              />
+            </div>
+          </div>
+
+          <button type="submit" class="submit-btn">Sign Up</button>
+        </form>
+      </div>
+
+      <div class="hero-section">
+        <div class="hero-content">
+          <div class="illustration">🎓</div>
+          <div class="hero-title">High Speed Servers</div>
+          <div class="hero-main"></div>
+          <div class="hero-subtitle">U.I.E.T Panjab University</div>
         </div>
-
-        <!-- Teacher Fields -->
-        <div id="teacherFields" class="form-section" style="display: none">
-          <input
-            type="email"
-            id="teacherEmail"
-            placeholder="Official Email"
-            required
-          />
-        </div>
-
-        <button type="submit">Register</button>
-      </form>
-    </main>
-
+      </div>
+    </div>
     <script src="./js/registration.js"></script>
   </body>
 </html>

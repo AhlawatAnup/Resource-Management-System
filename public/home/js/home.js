@@ -1,34 +1,133 @@
-// Modal handling
-const modal = document.getElementById("authModal");
-const getStartedBtn = document.getElementById("getStartedBtn");
-const closeBtn = document.getElementById("closeModal");
-const sendOtpBtn = document.getElementById("sendOtpBtn");
-const verifyOtpBtn = document.getElementById("verifyOtpBtn");
+let is_request_otp = true;
+// Role selector functionality
+document.querySelectorAll(".role-option").forEach((option) => {
+  option.addEventListener("click", function () {
+    document
+      .querySelectorAll(".role-option")
+      .forEach((opt) => opt.classList.remove("active"));
+    this.classList.add("active");
 
-// Open modal
-getStartedBtn.addEventListener("click", () => {
-  modal.style.display = "block";
+    const role = this.dataset.role;
+    console.log("Selected role:", role);
+    updateFormForRole(role);
+  });
 });
 
-// Close modal
-closeBtn.addEventListener("click", () => {
-  modal.style.display = "none";
+function updateFormForRole(role) {
+  const emailInput = document.getElementById("email");
+  const placeholders = {
+    student: "student@example.com",
+    teacher: "teacher@example.com",
+    admin: "admin@example.com",
+  };
+
+  emailInput.placeholder = placeholders[role] || "your-email@example.com";
+}
+
+// OTP Input functionality
+const otpInputs = document.querySelectorAll(".otp-input");
+
+otpInputs.forEach((input, index) => {
+  input.addEventListener("input", function (e) {
+    const value = e.target.value;
+
+    // Only allow numbers
+    if (!/^\d*$/.test(value)) {
+      e.target.value = "";
+      return;
+    }
+
+    if (value) {
+      this.classList.add("filled");
+      // Move to next input
+      if (index < otpInputs.length - 1) {
+        otpInputs[index + 1].focus();
+      }
+    } else {
+      this.classList.remove("filled");
+    }
+
+    checkOTPComplete();
+  });
+
+  input.addEventListener("keydown", function (e) {
+    // Handle backspace
+    if (e.key === "Backspace" && !this.value && index > 0) {
+      otpInputs[index - 1].focus();
+    }
+
+    // Handle arrow keys
+    if (e.key === "ArrowLeft" && index > 0) {
+      otpInputs[index - 1].focus();
+    }
+    if (e.key === "ArrowRight" && index < otpInputs.length - 1) {
+      otpInputs[index + 1].focus();
+    }
+  });
+
+  input.addEventListener("paste", function (e) {
+    e.preventDefault();
+    const paste = (e.clipboardData || window.clipboardData).getData("text");
+    const digits = paste.replace(/\D/g, "").slice(0, 6);
+
+    digits.split("").forEach((digit, i) => {
+      if (otpInputs[i]) {
+        otpInputs[i].value = digit;
+        otpInputs[i].classList.add("filled");
+      }
+    });
+
+    checkOTPComplete();
+  });
 });
 
-// Close modal if clicked outside
-window.addEventListener("click", (event) => {
-  if (event.target === modal) {
-    modal.style.display = "none";
+function checkOTPComplete() {
+  const otp = Array.from(otpInputs)
+    .map((input) => input.value)
+    .join("");
+  if (otp.length === 6) {
+    console.log("OTP Complete:", otp);
   }
+}
+
+// Form submission
+document.querySelector(".login-form").addEventListener("submit", function (e) {
+  e.preventDefault();
+
+  //   const selectedRole = document.querySelector(".role-option.active").dataset
+  //     .role;
+  //   const email = document.getElementById("email").value;
+  //   const otp = Array.from(otpInputs)
+  //     .map((input) => input.value)
+  //     .join("");
+
+  //   if (otp.length !== 6) {
+  //     alert("Please enter complete OTP");
+  //     return;
+  //   }
+
+  //   console.log("Login attempt:", {
+  //     role: selectedRole,
+  //     email: email,
+  //     otp: otp,
+  //   });
+
+  //   alert(
+  //     `Login attempt as ${selectedRole} with email: ${email} and OTP: ${otp}`
+  //   );
 });
 
-// OTP Flow
+// Initialize
+updateFormForRole("student");
+
+// SEND OTP
 async function sendOtp() {
-  const role = document.getElementById("role").value;
+  const activeDiv = document.querySelector(".role-option.active");
+  const role = activeDiv.getAttribute("data-role");
+  console.log(role);
   const email = document.getElementById("email").value;
 
   if (!email) {
-    // alert("Please enter email");
     return;
   }
 
@@ -41,9 +140,10 @@ async function sendOtp() {
 
     const data = await res.json();
     if (res.ok) {
-      //   alert("OTP sent to your email!");
-      document.getElementById("emailStep").style.display = "none";
-      document.getElementById("otpStep").style.display = "block";
+      document.getElementById("otp-field").style.display = "unset";
+      document.getElementById("email-wrapper").style.display = "none";
+      document.getElementById("sendOtpBtn").innerHTML = "Verify OTP";
+      is_request_otp = false;
     } else {
       alert(data.error || "Failed to send OTP");
     }
@@ -55,10 +155,12 @@ async function sendOtp() {
 
 async function verifyOtp() {
   const email = document.getElementById("email").value;
-  const otp = document.getElementById("otp").value;
+  const otp = Array.from(otpInputs)
+    .map((input) => input.value)
+    .join("");
 
   if (!otp) {
-    // alert("Enter OTP");
+    alert("Enter OTP");
     return;
   }
 
@@ -82,6 +184,12 @@ async function verifyOtp() {
   }
 }
 
-// Attach listeners
-sendOtpBtn.addEventListener("click", sendOtp);
-verifyOtpBtn.addEventListener("click", verifyOtp);
+const sendOtpBtn = document.getElementById("sendOtpBtn");
+
+sendOtpBtn.addEventListener("click", () => {
+  if (is_request_otp) {
+    sendOtp();
+  } else {
+    verifyOtp();
+  }
+});

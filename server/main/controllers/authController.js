@@ -55,6 +55,8 @@ exports.verifyOtp = async (req, res) => {
       delete otpStore[email];
 
       req.session.email = email;
+      req.session.role = record.role;
+
       return res.json({
         message: "User not found, redirecting to registration",
         redirect: "/registration?role=" + record.role,
@@ -76,19 +78,19 @@ exports.verifyOtp = async (req, res) => {
 };
 
 exports.register = async (req, res) => {
-  const { role } = req.body;
+  const role = req.session.role;
 
   try {
     if (role === "student") {
-      const { name, rollNo, department, teacher_id } = req.body;
-      if (!name || !rollNo || !department || !teacher_id) {
+      const { name, rollNo, branch, teacher_id } = req.body;
+      if (!name || !rollNo || !branch || !teacher_id) {
         return res.status(400).json({ error: "All student fields required" });
       }
       const student = new Student({
         email: req.session.email,
         name,
         rollNo,
-        department,
+        branch,
         teacher: teacher_id,
       });
 
@@ -103,10 +105,10 @@ exports.register = async (req, res) => {
     }
 
     if (role === "teacher") {
-      const { email } = req.body;
-      if (!email)
-        return res.status(400).json({ error: "Teacher email required" });
-      const teacher = new Teacher({ email });
+      const { name, branch } = req.body;
+      if (!name || !branch)
+        return res.status(400).json({ error: "Invalid Data" });
+      const teacher = new Teacher({ email: req.session.email, name, branch });
       await teacher.save();
       return res.json({ message: "Teacher registered successfully" });
     }

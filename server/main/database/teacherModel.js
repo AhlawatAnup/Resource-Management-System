@@ -3,8 +3,8 @@ const mongoose = require("mongoose");
 const teacherSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   name: { type: String },
-  department: { type: String },
-  subjects: [String], // e.g., ["Physics", "Mathematics"]
+  // department: { type: String },
+  branch: { type: String }, // e.g., ["Physics", "Mathematics"]
   createdAt: { type: Date, default: Date.now },
   students: [
     {

@@ -3,63 +3,90 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>College Resource Sharing</title>
+    <title>U.I.E.T Resource Sharing Center</title>
     <link rel="stylesheet" href="home/style/home.css" />
   </head>
   <body>
-    <header>
-      <h1>📚 College Resource Sharing</h1>
-      <p>
-        Welcome to the centralized platform for sharing notes, assignments, and
-        resources.
-      </p>
-      <button id="getStartedBtn">Get Started</button>
-    </header>
+    <div class="container">
+      <div class="left-section">
+        <div class="logo">U.I.E.T Resource Sharing Center</div>
 
-    <main>
-      <section class="intro">
-        <h2>What you can do</h2>
-        <ul>
-          <li>📖 Browse study materials</li>
-          <li>⬆️ Upload your resources</li>
-          <li>🔍 Search by subject or department</li>
-        </ul>
-      </section>
-    </main>
-
-    <footer>
-      <p>Made with ❤️ using Node.js, Express, and MongoDB</p>
-    </footer>
-
-    <!-- Login/Signup Modal -->
-    <div id="authModal" class="modal">
-      <div class="modal-content">
-        <span id="closeModal" class="close">&times;</span>
-        <h2>Login with OTP</h2>
-
-        <label for="role">I am a:</label>
-        <select id="role">
-          <option value="student">Student</option>
-          <option value="teacher">Teacher</option>
-          <option value="admin">Admin</option>
-        </select>
-
-        <!-- Step 1: Enter email -->
-        <div id="emailStep">
-          <input
-            type="email"
-            id="email"
-            placeholder="Enter your email"
-            required
-          />
-          <button id="sendOtpBtn">Send OTP</button>
+        <div class="hero-text">
+          <h1>
+            Empowering Innovation, Connecting the
+            <span class="highlight">Cloud.</span>
+          </h1>
         </div>
 
-        <!-- Step 2: Enter OTP -->
-        <div id="otpStep" style="display: none">
-          <input type="text" id="otp" placeholder="Enter OTP" required />
-          <button id="verifyOtpBtn">Verify OTP</button>
+        <div class="cloud-icon">
+          <div class="cloud-storage"></div>
         </div>
+      </div>
+
+      <div class="right-section">
+        <form class="login-form">
+          <div class="form-header">
+            <h2>Welcome</h2>
+            <p>Lets get Started</p>
+          </div>
+
+          <div class="role-selector">
+            <div class="role-option active" data-role="student">Student</div>
+            <div class="role-option" data-role="teacher">Teacher</div>
+            <div class="role-option" data-role="admin">Admin</div>
+          </div>
+
+          <div class="form-group" id="email-wrapper">
+            <label for="email">Your Email</label>
+            <input type="email" id="email" name="email" required />
+          </div>
+
+          <div class="form-group" style="display: none" id="otp-field">
+            <label for="otp">Enter Your OTP</label>
+            <div class="otp-container">
+              <input
+                type="text"
+                maxlength="1"
+                class="otp-input"
+                data-index="0"
+              />
+              <input
+                type="text"
+                maxlength="1"
+                class="otp-input"
+                data-index="1"
+              />
+              <input
+                type="text"
+                maxlength="1"
+                class="otp-input"
+                data-index="2"
+              />
+              <input
+                type="text"
+                maxlength="1"
+                class="otp-input"
+                data-index="3"
+              />
+              <input
+                type="text"
+                maxlength="1"
+                class="otp-input"
+                data-index="4"
+              />
+              <input
+                type="text"
+                maxlength="1"
+                class="otp-input"
+                data-index="5"
+              />
+            </div>
+          </div>
+
+          <button type="submit" class="login-button" id="sendOtpBtn">
+            Send OTP
+          </button>
+        </form>
       </div>
     </div>
 
