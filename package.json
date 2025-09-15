@@ -1,0 +1,28 @@
+{
+  "name": "uiet-cluster-resource-sharing",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AhlawatAnup/uiet-cluster-resource-sharing.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/AhlawatAnup/uiet-cluster-resource-sharing/issues"
+  },
+  "homepage": "https://github.com/AhlawatAnup/uiet-cluster-resource-sharing#readme",
+  "dependencies": {
+    "body-parser": "^2.2.0",
+    "express": "^5.1.0",
+    "express-session": "^1.18.2",
+    "mongoose": "^8.18.1",
+    "nodemailer": "^7.0.6"
+  }
+}

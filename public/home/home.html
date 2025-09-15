@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>College Resource Sharing</title>
+    <link rel="stylesheet" href="home/style/home.css" />
+  </head>
+  <body>
+    <header>
+      <h1>📚 College Resource Sharing</h1>
+      <p>
+        Welcome to the centralized platform for sharing notes, assignments, and
+        resources.
+      </p>
+      <button id="getStartedBtn">Get Started</button>
+    </header>
+
+    <main>
+      <section class="intro">
+        <h2>What you can do</h2>
+        <ul>
+          <li>📖 Browse study materials</li>
+          <li>⬆️ Upload your resources</li>
+          <li>🔍 Search by subject or department</li>
+        </ul>
+      </section>
+    </main>
+
+    <footer>
+      <p>Made with ❤️ using Node.js, Express, and MongoDB</p>
+    </footer>
+
+    <!-- Login/Signup Modal -->
+    <div id="authModal" class="modal">
+      <div class="modal-content">
+        <span id="closeModal" class="close">&times;</span>
+        <h2>Login with OTP</h2>
+
+        <label for="role">I am a:</label>
+        <select id="role">
+          <option value="student">Student</option>
+          <option value="teacher">Teacher</option>
+          <option value="admin">Admin</option>
+        </select>
+
+        <!-- Step 1: Enter email -->
+        <div id="emailStep">
+          <input
+            type="email"
+            id="email"
+            placeholder="Enter your email"
+            required
+          />
+          <button id="sendOtpBtn">Send OTP</button>
+        </div>
+
+        <!-- Step 2: Enter OTP -->
+        <div id="otpStep" style="display: none">
+          <input type="text" id="otp" placeholder="Enter OTP" required />
+          <button id="verifyOtpBtn">Verify OTP</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="home/js/home.js"></script>
+  </body>
+</html>
