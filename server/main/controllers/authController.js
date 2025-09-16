@@ -67,7 +67,9 @@ exports.verifyOtp = async (req, res) => {
     req.session.user = {
       email: user.email,
       role: record.role,
+      id: user._id,
     };
+
     delete otpStore[email];
 
     return res.json({ message: "Login successful", redirect: "/dashboard" });
@@ -101,6 +103,13 @@ exports.register = async (req, res) => {
       teacher.students.push(savedStudent._id);
       await teacher.save();
 
+      // Attach session
+      req.session.user = {
+        email: req.session.email,
+        role: req.session.role,
+        id: savedStudent._id,
+      };
+
       return res.json({ message: "Student registered successfully" });
     }
 
@@ -109,7 +118,14 @@ exports.register = async (req, res) => {
       if (!name || !branch)
         return res.status(400).json({ error: "Invalid Data" });
       const teacher = new Teacher({ email: req.session.email, name, branch });
-      await teacher.save();
+      const teacher_id = await teacher.save();
+      // Attach session
+      req.session.user = {
+        email: req.session.email,
+        role: req.session.role,
+        id: teacher_id._id,
+      };
+
       return res.json({ message: "Teacher registered successfully" });
     }
 

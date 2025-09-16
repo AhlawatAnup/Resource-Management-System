@@ -39,8 +39,8 @@ app.get("/dashboard", (req, res) => {
   if (!req.session.user) {
     return res.redirect("/");
   }
-  res.send(`<h1>Welcome ${req.session.user.email} (${req.session.user.role}) 🎉</h1>
-            <a href="/logout">Logout</a>`);
+
+  res.sendFile(path.join(publicPath, "dashboard", "common.dashboard.html"));
 });
 
 // Logout route
@@ -60,6 +60,10 @@ app.get("/registration", (req, res) => {
 // Routes
 const authRoutes = require("./routes/authRoutes");
 app.use("/auth", authRoutes);
+
+// DASHBOARD ROUTES
+const dashboardRoutes = require("./routes/dashboard.route.js");
+app.use("/dashboard", dashboardRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
