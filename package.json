@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon server/main/main.server.js"
   },
   "repository": {
     "type": "git",
@@ -24,5 +24,8 @@
     "express-session": "^1.18.2",
     "mongoose": "^8.18.1",
     "nodemailer": "^7.0.6"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
   }
 }

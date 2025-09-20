@@ -35,14 +35,6 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(publicPath, "home", "home.html"));
 });
 
-app.get("/dashboard", (req, res) => {
-  if (!req.session.user) {
-    return res.redirect("/");
-  }
-
-  res.sendFile(path.join(publicPath, "dashboard", "common.dashboard.html"));
-});
-
 // Logout route
 app.get("/logout", (req, res) => {
   req.session.destroy(() => {

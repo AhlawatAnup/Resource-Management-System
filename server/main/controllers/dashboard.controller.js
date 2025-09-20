@@ -1,6 +1,29 @@
 const Student = require("../database/studentModel");
 const Teacher = require("../database/teacherModel");
 const Admin = require("../database/adminModel");
+const path = require("path");
+const publicPath = path.join(__dirname, "../../../public");
+
+exports.roleBasedDashboard = (req, res) => {
+  if (!req.session.user) {
+    return res.redirect("/"); // redirect if not logged in
+  }
+
+  const role = req.session.user?.role;
+  if (!role) {
+    return res.redirect("/"); // fallback if role missing
+  }
+
+  // You can customize which HTML to send based on role
+  switch (role.toLowerCase()) {
+    case "student":
+      return res.sendFile(path.join(publicPath, "dashboard", "student.dashboard.html"));
+    case "teacher":
+      return res.sendFile(path.join(publicPath, "dashboard/teacher", "teacher.dashboard.html"));
+    case "admin":
+      return res.sendFile(path.join(publicPath, "dashboard", "admin.dashboard.html"));
+  }
+};
 
 exports.dashboard_data = async (req, res) => {
   const role = req.session.user.role;
