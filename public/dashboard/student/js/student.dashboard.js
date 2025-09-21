@@ -83,59 +83,26 @@ function displayStudentDetails(student) {
                         <span style="display: inline-block; padding: 6px 12px; border-radius: 20px; font-size: 0.9em; font-weight: bold; ${student.is_verified ? 'background: #d4edda; color: #155724;' : 'background: #fff3cd; color: #856404;'}">${student.is_verified ? '✓ Verified' : '⏳ Pending Verification'}</span>
                     </div>
                 </div>
-                <div class="profile-details" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px;">
-                    <div class="detail-group">
-                        <h3 style="margin: 0 0 15px 0; color: #333; font-size: 1.3em; border-bottom: 2px solid #007bff; padding-bottom: 8px;">Contact Information</h3>
-                        <div class="detail-row" style="margin-bottom: 12px;">
-                            <span class="label" style="font-weight: 600; color: #555; display: inline-block; width: 100px;">Email:</span>
-                            <span class="value" style="color: #333;">${student.email}</span>
-                        </div>
+                <div class="profile-details" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 600px;">
+                    <div class="detail-row" style="margin-bottom: 15px;">
+                        <span class="label" style="font-weight: 600; color: #555; display: block;">Email:</span>
+                        <span class="value" style="color: #333; font-size: 1.1em;">${student.email}</span>
                     </div>
-                    <div class="detail-group">
-                        <h3 style="margin: 0 0 15px 0; color: #333; font-size: 1.3em; border-bottom: 2px solid #28a745; padding-bottom: 8px;">Academic Details</h3>
-                        <div class="detail-row" style="margin-bottom: 12px;">
-                            <span class="label" style="font-weight: 600; color: #555; display: inline-block; width: 100px;">Branch:</span>
-                            <span class="value" style="color: #333;">${student.branch}</span>
-                        </div>
-                        <div class="detail-row" style="margin-bottom: 12px;">
-                            <span class="label" style="font-weight: 600; color: #555; display: inline-block; width: 100px;">Teacher:</span>
-                            <span class="value" style="color: #333;">${student.teacher?.name || 'Not assigned'}</span>
-                        </div>
+                    <div class="detail-row" style="margin-bottom: 15px;">
+                        <span class="label" style="font-weight: 600; color: #555; display: block;">Branch:</span>
+                        <span class="value" style="color: #333; font-size: 1.1em;">${student.branch}</span>
                     </div>
-                    <div class="detail-group">
-                        <h3 style="margin: 0 0 15px 0; color: #333; font-size: 1.3em; border-bottom: 2px solid #ffc107; padding-bottom: 8px;">Account Information</h3>
-                        <div class="detail-row" style="margin-bottom: 12px;">
-                            <span class="label" style="font-weight: 600; color: #555; display: inline-block; width: 100px;">Created:</span>
-                            <span class="value" style="color: #333;">${formatDate(student.createdAt)}</span>
-                        </div>
+                    <div class="detail-row" style="margin-bottom: 15px;">
+                        <span class="label" style="font-weight: 600; color: #555; display: block;">Teacher:</span>
+                        <span class="value" style="color: #333; font-size: 1.1em;">${student.teacher?.name || 'Not assigned'}</span>
+                    </div>
+                    <div class="detail-row" style="margin-bottom: 15px;">
+                        <span class="label" style="font-weight: 600; color: #555; display: block;">Created:</span>
+                        <span class="value" style="color: #333; font-size: 1.1em;">${formatDate(student.createdAt)}</span>
                     </div>
                 </div>
             </div>
         `;
-    }
-
-    // Update quick info sections
-    updateQuickInfo(student);
-}
-
-function updateQuickInfo(student) {
-    // Update verification status
-    const verificationStatus = document.getElementById('verification-status');
-    if (verificationStatus) {
-        verificationStatus.textContent = student.is_verified ? 'Verified ✓' : 'Pending Verification';
-        verificationStatus.style.color = student.is_verified ? '#28a745' : '#ffc107';
-    }
-
-    // Update academic info
-    const academicInfo = document.getElementById('academic-info');
-    if (academicInfo) {
-        academicInfo.textContent = `${student.branch} - Roll: ${student.rollNo}`;
-    }
-
-    // Update teacher info
-    const teacherInfo = document.getElementById('teacher-info');
-    if (teacherInfo) {
-        teacherInfo.textContent = student.teacher.name || 'Not assigned';
     }
 }
 
