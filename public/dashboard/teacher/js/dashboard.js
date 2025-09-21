@@ -1,7 +1,7 @@
 const student_data = [];
-async function getDashboardData() {
+async function getTeacherDashboardData() {
   try {
-    const response = await fetch("/dashboard/data", {
+    const response = await fetch("/dashboard/teacher/data", {
       method: "GET", // change to 'POST' if needed
       headers: {
         "Content-Type": "application/json",
@@ -14,8 +14,8 @@ async function getDashboardData() {
 
     const data = await response.json();
     console.log("Dashboard Data:", data);
-    document.getElementById("hello-user").innerHTML =
-      "Hello, " + data.name + " | " + data.role;
+
+    renderDashboardHeader(data);
 
     //   GET STUDENT DATA
     if (!data.students.length) {
@@ -35,11 +35,11 @@ async function getDashboardData() {
 }
 
 // call the function
-getDashboardData();
+getTeacherDashboardData();
 
 async function getStudentData(stu_id) {
   try {
-    const response = await fetch("/dashboard/student_data/" + stu_id, {
+    const response = await fetch("/dashboard/teacher/student_data/" + stu_id, {
       method: "GET", // change to 'POST' if needed
       headers: {
         "Content-Type": "application/json",

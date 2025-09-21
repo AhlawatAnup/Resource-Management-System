@@ -25,40 +25,20 @@ exports.roleBasedDashboard = (req, res) => {
   }
 };
 
-exports.dashboard_data = async (req, res) => {
+exports.teacher_dashboard_data = async (req, res) => {
   const role = req.session.user.role;
   const uid = req.session.user.id;
   console.log("requested Dashboard data", role, uid);
 
   if (role === "student") {
-    const { name, rollNo, branch, teacher_id } = req.body;
-    if (!name || !rollNo || !branch || !teacher_id) {
-      return res.status(400).json({ error: "All student fields required" });
-    }
-    const student = new Student({
-      email: req.session.email,
-      name,
-      rollNo,
-      branch,
-      teacher: teacher_id,
-    });
-
-    const savedStudent = await student.save();
-
-    //   ADD THIS STUDENT TO THE TEACHER DB AS WELL
-    const teacher = await Teacher.findById(teacher_id);
-    teacher.students.push(savedStudent._id);
-    await teacher.save();
-
-    // Attach session
-    req.session.user = {
-      email: req.session.email,
-      role: req.session.role,
-      id: savedStudent._id,
-    };
-
-    return res.json({ message: "Student registered successfully" });
+  try {
+    const student = await Student.findOne({ _id: uid });
+    return res.json({ ...student._doc, role: "Student" });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Failed to fetch student" });
   }
+}
 
   if (role === "teacher") {
     try {
