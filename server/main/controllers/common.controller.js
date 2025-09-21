@@ -49,3 +49,34 @@ exports.student_data = async (req, res) => {
     return res.status(500).json({ error: "Failed to fetch student" });
   }
 };
+
+exports.updateStudentVerification = async (req, res) => {
+  const { stu_id } = req.params;
+  const { is_verified } = req.body;
+  
+  console.log("Updating student verification", stu_id, "to", is_verified);
+
+  try {
+    const student = await Student.findByIdAndUpdate(
+      stu_id, 
+      { 
+        is_verified: is_verified,
+        verification_completed: true // Mark as completed when teacher takes action
+      },
+      { new: true } // Return the updated document
+    );
+    
+    if (!student) {
+      return res.status(404).json({ error: "Student not found" });
+    }
+    
+    console.log("Student verification updated:", student);
+    return res.json({ 
+      message: "Student verification status updated successfully",
+      student: { ...student._doc }
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Failed to update student verification" });
+  }
+};

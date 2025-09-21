@@ -142,3 +142,57 @@ body {
     justify-content: center;
   }
 }
+
+/* Action buttons for student verification */
+.approve-btn {
+  background-color: #28a745 !important;
+  color: white !important;
+  border: none !important;
+  margin-right: 8px;
+}
+
+.approve-btn:hover {
+  background-color: #218838 !important;
+  transform: scale(1.05);
+}
+
+.decline-btn {
+  background-color: #dc3545 !important;
+  color: white !important;
+  border: none !important;
+}
+
+.decline-btn:hover {
+  background-color: #c82333 !important;
+  transform: scale(1.05);
+}
+
+.icon-btn {
+  transition: all 0.2s ease;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Notification animations */
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
