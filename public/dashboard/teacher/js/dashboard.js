@@ -1,3 +1,6 @@
+// Import only the functions we need from commons.js
+import { renderDashboardHeader, getInitials, getRandomNamedColor } from '../../Common/js/commons.js';
+
 const student_data = [];
 async function getTeacherDashboardData() {
   try {
@@ -123,27 +126,6 @@ function render_students_table(student) {
             `;
 
   tbody.appendChild(tr);
-}
-
-function getBadgeClass(leadSource) {
-  const source = leadSource.toLowerCase().replace(/\s+/g, "-");
-  return `badge ${source}`;
-}
-
-function getInitials(fullName) {
-  if (!fullName) return "";
-
-  return fullName
-    .split(" ") // split into words
-    .filter((word) => word) // remove extra spaces
-    .map((word) => word[0].toUpperCase()) // take first letter & uppercase
-    .join(""); // join together
-}
-
-function getRandomNamedColor() {
-  const colors = ["blue", "green", "orange", "purple", "pink "];
-  const randomIndex = Math.floor(Math.random() * colors.length);
-  return colors[randomIndex];
 }
 
 // Event listeners
