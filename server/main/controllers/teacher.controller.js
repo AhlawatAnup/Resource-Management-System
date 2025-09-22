@@ -7,16 +7,6 @@ exports.teacher_dashboard_data = async (req, res) => {
   const uid = req.session.user.id;
   console.log("requested Dashboard data", role, uid);
 
-  if (role === "student") {
-  try {
-    const student = await Student.findOne({ _id: uid });
-    return res.json({ ...student._doc, role: "Student" });
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: "Failed to fetch student" });
-  }
-}
-
   if (role === "teacher") {
     try {
       const teacher = await Teacher.findOne({ _id: uid });

@@ -16,7 +16,7 @@ async function loadStudentDetails() {
         }
         
         // Fetch student details from API with student ID
-        const response = await fetch(`/dashboard/teacher/student_data/${studentId}`, {
+        const response = await fetch(`/dashboard/student/student_data/${studentId}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
