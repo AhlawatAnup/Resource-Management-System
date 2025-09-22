@@ -1,6 +1,7 @@
 const Student = require("../database/studentModel");
 const Teacher = require("../database/teacherModel");
 const Admin = require("../database/adminModel");
+const bcrypt = require("bcrypt");
 
 const otpStore = {};
 
@@ -79,6 +80,45 @@ exports.verifyOtp = async (req, res) => {
   }
 };
 
+exports.adminLogin = async (req, res) => {
+  const { username, password } = req.body;
+  
+  if (!username || !password) {
+    return res.status(400).json({ error: "Username and password required" });
+  }
+
+  try {
+    // Find admin by username
+    const admin = await Admin.findOne({ username });
+    
+    if (!admin) {
+      return res.status(401).json({ error: "Invalid username or password" });
+    }
+
+    // Compare password with hashed password
+    const isPasswordValid = await bcrypt.compare(password, admin.password);
+    
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: "Invalid username or password" });
+    }
+
+    // Create session for admin
+    req.session.user = {
+      username: admin.username,
+      role: "admin",
+      id: admin._id,
+    };
+
+    return res.json({ 
+      message: "Admin login successful", 
+      redirect: "/dashboard" 
+    });
+  } catch (err) {
+    console.error("Admin login error:", err);
+    res.status(500).json({ error: "Login failed" });
+  }
+};
+
 exports.register = async (req, res) => {
   const role = req.session.role;
 
@@ -130,7 +170,11 @@ exports.register = async (req, res) => {
       return res.json({ message: "Teacher registered successfully" });
     }
 
-    return res.status(400).json({ error: "Admin registration not allowed" });
+    if (role === "admin") {
+      return res.status(403).json({ error: "Admin registration not allowed" });
+    }
+
+    return res.status(400).json({ error: "Invalid role" });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Registration failed" });

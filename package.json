@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/AhlawatAnup/uiet-cluster-resource-sharing#readme",
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "body-parser": "^2.2.0",
     "connect-mongo": "^5.1.0",
     "express": "^5.1.0",

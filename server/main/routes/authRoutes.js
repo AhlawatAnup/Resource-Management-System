@@ -3,6 +3,7 @@ const {
   sendOtp,
   verifyOtp,
   register,
+  adminLogin,
 } = require("../controllers/authController");
 const { logRequest } = require("../middleware/authMiddleware.js");
 
@@ -14,6 +15,7 @@ router.use(logRequest);
 // Routes
 router.post("/send-otp", sendOtp);
 router.post("/verify-otp", verifyOtp);
+router.post("/admin-login", adminLogin);
 
 router.get("/get-teachers", async (req, res) => {
   const Teacher = require("../database/teacherModel");
