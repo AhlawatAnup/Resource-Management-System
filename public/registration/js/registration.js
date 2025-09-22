@@ -71,10 +71,12 @@ document
         rollNo: document.getElementById("rollNumber").value,
         teacher_id: document.getElementById("assignedTeacher").value,
         branch: document.getElementById("branch").value,
+        phone: document.getElementById("phone").value,
       };
     } else if (role === "teacher") {
       payload.name = document.getElementById("name").value;
       payload.branch = document.getElementById("branch").value;
+      payload.phone = document.getElementById("phone").value;
     }
 
     try {

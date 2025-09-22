@@ -84,8 +84,8 @@ exports.register = async (req, res) => {
 
   try {
     if (role === "student") {
-      const { name, rollNo, branch, teacher_id } = req.body;
-      if (!name || !rollNo || !branch || !teacher_id) {
+      const { name, rollNo, branch, teacher_id, phone } = req.body;
+      if (!name || !rollNo || !branch || !teacher_id || !phone) {
         return res.status(400).json({ error: "All student fields required" });
       }
       const student = new Student({
@@ -94,6 +94,7 @@ exports.register = async (req, res) => {
         rollNo,
         branch,
         teacher: teacher_id,
+        phone,
       });
 
       const savedStudent = await student.save();
@@ -114,10 +115,10 @@ exports.register = async (req, res) => {
     }
 
     if (role === "teacher") {
-      const { name, branch } = req.body;
-      if (!name || !branch)
+      const { name, branch, phone } = req.body;
+      if (!name || !branch || !phone)
         return res.status(400).json({ error: "Invalid Data" });
-      const teacher = new Teacher({ email: req.session.email, name, branch });
+      const teacher = new Teacher({ email: req.session.email, name, branch, phone });
       const teacher_id = await teacher.save();
       // Attach session
       req.session.user = {
