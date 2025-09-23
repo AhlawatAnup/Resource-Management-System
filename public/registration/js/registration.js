@@ -14,14 +14,36 @@ async function loadTeachers() {
     console.log(data);
     assignedTeacherSelect.innerHTML =
       '<option value="">Select a Teacher</option>';
-    data.teachers.forEach((t) => {
+    
+    if (data.teachers && data.teachers.length > 0) {
+      data.teachers.forEach((t) => {
+        const option = document.createElement("option");
+        option.value = t._id;
+        option.textContent = t.name || t.email;
+        assignedTeacherSelect.appendChild(option);
+      });
+    } else {
+      // No verified teachers available
       const option = document.createElement("option");
-      option.value = t._id;
-      option.textContent = t.name || t.email;
+      option.value = "";
+      option.textContent = "No verified teachers available";
+      option.disabled = true;
       assignedTeacherSelect.appendChild(option);
-    });
+      
+      // Show a message to the user
+      const teacherFormGroup = assignedTeacherSelect.closest('.form-group');
+      if (teacherFormGroup && !teacherFormGroup.querySelector('.no-teachers-message')) {
+        const message = document.createElement('div');
+        message.className = 'no-teachers-message';
+        message.style.cssText = 'color: #dc2626; font-size: 12px; margin-top: 5px; font-style: italic;';
+        message.textContent = 'No verified teachers are currently available. Please contact the administration.';
+        teacherFormGroup.appendChild(message);
+      }
+    }
   } catch (err) {
     console.error("Failed to load teachers", err);
+    // Show error in the dropdown
+    assignedTeacherSelect.innerHTML = '<option value="">Error loading teachers</option>';
   }
 }
 
@@ -65,11 +87,19 @@ document
     // return;
     let payload = {};
     if (role === "student") {
+      const selectedTeacher = document.getElementById("assignedTeacher").value;
+      
+      // Check if a teacher is selected
+      if (!selectedTeacher) {
+        alert("Please select a teacher to proceed with registration.");
+        return;
+      }
+      
       payload = {
         ...payload,
         name: document.getElementById("name").value,
         rollNo: document.getElementById("rollNumber").value,
-        teacher_id: document.getElementById("assignedTeacher").value,
+        teacher_id: selectedTeacher,
         branch: document.getElementById("branch").value,
         phone: document.getElementById("phone").value,
       };

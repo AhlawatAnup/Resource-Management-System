@@ -19,6 +19,7 @@ async function getTeacherDashboardData() {
     console.log("Dashboard Data:", data);
 
     renderDashboardHeader(data);
+    renderTeacherProfile(data);
 
     //   GET STUDENT DATA
     if (!data.students.length) {
@@ -39,6 +40,114 @@ async function getTeacherDashboardData() {
 
 // call the function
 getTeacherDashboardData();
+
+// Function to render teacher profile information
+function renderTeacherProfile(teacherData) {
+  const profileSection = document.getElementById('teacher-profile-section');
+  if (!profileSection) return;
+
+  // Debug logging to understand teacher verification status
+  console.log('Teacher verification data:', {
+    is_verified: teacherData.is_verified,
+    verification_completed: teacherData.verification_completed,
+    name: teacherData.name
+  });
+
+  const verificationStatus = getVerificationStatus(teacherData);
+  const statusClass = getStatusClass(teacherData);
+  
+  // Check if verification is pending to show informational note
+  const isPending = !teacherData.is_verified && !teacherData.verification_completed;
+  
+  profileSection.innerHTML = `
+    <div class="teacher-profile-card">
+      <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+        <div class="teacher-avatar">
+          ${getInitials(teacherData.name || 'Teacher')}
+        </div>
+        <div style="flex: 1; min-width: 300px;">
+          <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 8px; flex-wrap: wrap;">
+            <h2 style="margin: 0; color: #333; font-size: 1.5em;">${teacherData.name || 'Teacher'}</h2>
+            <span class="verification-badge ${statusClass}">
+              ${verificationStatus}
+            </span>
+          </div>
+          ${isPending ? `
+            <div class="pending-verification-note" style="
+              background: #fff3cd; 
+              border: 1px solid #ffeaa7; 
+              border-radius: 8px; 
+              padding: 15px; 
+              margin: 15px 0; 
+              color: #856404;
+              font-size: 0.95em;
+              line-height: 1.5;
+            ">
+              <div style="font-weight: 600; margin-bottom: 8px; color: #b7770a;">
+                📋 Verification Status
+              </div>
+              <div style="margin-bottom: 6px;">
+                Your request is pending admin verification.
+              </div>
+              <div style="margin-bottom: 6px;">
+                After approval, your name will appear in the student registration teacher list.
+              </div>
+              <div>
+                Students will then be able to select you as their teacher.
+              </div>
+            </div>
+          ` : ''}
+          <div class="teacher-info-grid">
+            <div><strong>Email:</strong> ${teacherData.email || 'N/A'}</div>
+            <div><strong>Branch:</strong> ${teacherData.branch || 'N/A'}</div>
+            <div><strong>Phone:</strong> ${teacherData.phone || 'N/A'}</div>
+            <div><strong>Students:</strong> ${teacherData.students ? teacherData.students.length : 0}</div>
+            <div><strong>Member Since:</strong> ${formatDate(teacherData.createdAt)}</div>
+            <div><strong>Teacher ID:</strong> ${teacherData._id ? teacherData._id.slice(-8) : 'N/A'}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// Function to get verification status text
+function getVerificationStatus(teacher) {
+  if (teacher.is_verified) {
+    return '✓ Verified';
+  } else if (teacher.verification_completed && !teacher.is_verified) {
+    return '✗ Rejected';
+  } else {
+    return '⏳ Pending Verification';
+  }
+}
+
+// Function to get status CSS class
+function getStatusClass(teacher) {
+  if (teacher.is_verified) {
+    return 'verified';
+  } else if (teacher.verification_completed && !teacher.is_verified) {
+    return 'rejected';
+  } else {
+    return 'pending';
+  }
+}
+
+// Function to get status color (deprecated - using CSS classes now)
+function getStatusColor(isVerified) {
+  return isVerified ? '#28a745' : '#ffc107';
+}
+
+// Function to format date
+function formatDate(dateString) {
+  if (!dateString) return 'N/A';
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  });
+}
 
 async function getStudentData(stu_id) {
   try {

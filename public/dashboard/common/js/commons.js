@@ -2,7 +2,11 @@
 export function renderDashboardHeader(data) {
   const header = document.getElementById("hello-user");
   if (!header) return;
-  header.innerHTML = `Hello, ${data.name} | ${data.role}`;
+  
+  const welcomeText = `Hello, ${data.name || 'User'}`;
+  const roleText = data.role ? ` | ${data.role}` : '';
+  
+  header.innerHTML = `${welcomeText}${roleText}`;
 }
 
 // Export other utility functions as needed

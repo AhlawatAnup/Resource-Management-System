@@ -178,3 +178,14 @@ exports.register = async (req, res) => {
     res.status(500).json({ error: "Registration failed" });
   }
 };
+
+exports.getVerifiedTeachers = async (req, res) => {
+  try {
+    // Only return verified teachers for student registration
+    const teachers = await Teacher.find({ is_verified: true });
+    res.json({ teachers });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch teachers" });
+  }
+};
