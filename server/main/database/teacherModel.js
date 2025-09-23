@@ -14,6 +14,7 @@ const teacherSchema = new mongoose.Schema({
     },
   ],
   is_verified: { type: Boolean, default: false },
+  verification_completed: { type: Boolean, default: false }, 
 });
 
 module.exports = mongoose.model("Teacher", teacherSchema);

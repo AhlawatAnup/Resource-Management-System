@@ -48,9 +48,7 @@ exports.verifyOtp = async (req, res) => {
       user = await Student.findOne({ email });
     } else if (record.role === "teacher") {
       user = await Teacher.findOne({ email });
-    } else if (record.role === "admin") {
-      user = await Admin.findOne({ email });
-    }
+    } 
 
     if (!user) {
       delete otpStore[email];

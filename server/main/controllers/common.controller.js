@@ -80,3 +80,20 @@ exports.updateStudentVerification = async (req, res) => {
     return res.status(500).json({ error: "Failed to update student verification" });
   }
 };
+
+exports.teacher_data = async (req, res) => {
+  const { teacher_id } = req.params;
+  console.log("requested Teacher data", teacher_id);
+
+  try {
+    const teacher = await Teacher.findOne({ _id: teacher_id });
+    if (!teacher) {
+      return res.status(404).json({ error: "Teacher not found" });
+    }
+    console.log(teacher);
+    return res.json({ ...teacher._doc });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Failed to fetch teacher" });
+  }
+};
