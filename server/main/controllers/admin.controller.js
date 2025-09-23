@@ -11,7 +11,11 @@ exports.admin_dashboard_data = async (req, res) => {
     
     const totalStudents = await Student.countDocuments();
     const verifiedStudents = await Student.countDocuments({ is_verified: true });
-    const pendingStudents = await Student.countDocuments({ verification_completed: false });
+    const pendingStudents = await Student.countDocuments({ 
+      teacher_verified: true, 
+      teacher_action: true,
+      admin_action: false 
+    });
 
     return res.json({
       teachers: {
@@ -79,5 +83,31 @@ exports.updateTeacherVerification = async (req, res) => {
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "Failed to update teacher verification" });
+  }
+};
+
+exports.getPendingStudents = async (req, res) => {
+  try {
+    // Get students that have been approved by teacher but not yet reviewed by admin
+    const pendingStudents = await Student.find({ 
+      teacher_verified: true, 
+      teacher_action: true,
+      admin_action: false 
+    }).populate('teacher', 'name');
+    
+    return res.json({ students: pendingStudents });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Failed to fetch pending students" });
+  }
+};
+
+exports.getAllStudents = async (req, res) => {
+  try {
+    const students = await Student.find().populate('teacher', 'name');
+    return res.json({ students });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Failed to fetch students" });
   }
 };

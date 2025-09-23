@@ -64,8 +64,14 @@ async function loadCurrentView() {
         endpoint = '/dashboard/admin/teachers';
       }
     } else {
-      // Student endpoints would go here
-      endpoint = '/dashboard/student/data'; // placeholder
+      // Student endpoints
+      if (currentStatus === 'unverified') {
+        endpoint = '/dashboard/admin/students/pending';
+      } else if (currentStatus === 'verified') {
+        endpoint = '/dashboard/admin/students';
+      } else if (currentStatus === 'all') {
+        endpoint = '/dashboard/admin/students';
+      }
     }
     
     const response = await fetch(endpoint);
@@ -83,7 +89,15 @@ async function loadCurrentView() {
           currentData = data.teachers || [];
         }
       } else {
-        currentData = data.students || [];
+        if (currentStatus === 'unverified') {
+          currentData = data.students || [];
+        } else if (currentStatus === 'verified') {
+          // Filter only verified students
+          currentData = (data.students || []).filter(s => s.is_verified);
+        } else if (currentStatus === 'all') {
+          // Show all students regardless of verification status
+          currentData = data.students || [];
+        }
       }
       
       renderCurrentData();
@@ -137,7 +151,13 @@ function updateTableHeaders() {
       headers = ['Name', 'Email', 'Status', 'Students', 'Join Date', 'Actions'];
     }
   } else {
-    headers = ['Name', 'Email', 'Roll No', 'Teacher', 'Status', 'Actions'];
+    if (currentStatus === 'unverified') {
+      headers = ['Name', 'Email', 'Roll No', 'Teacher', 'Branch', 'Actions'];
+    } else if (currentStatus === 'verified') {
+      headers = ['Name', 'Email', 'Roll No', 'Teacher', 'Status', 'Actions'];
+    } else if (currentStatus === 'all') {
+      headers = ['Name', 'Email', 'Roll No', 'Teacher', 'Status', 'Actions'];
+    }
   }
   
   headersContainer.innerHTML = headers.map(header => `<th>${header}</th>`).join('');
@@ -176,7 +196,11 @@ function renderCurrentData() {
         tr.innerHTML = renderAllTeacherRow(item);
       }
     } else {
-      tr.innerHTML = renderStudentRow(item);
+      if (currentStatus === 'unverified') {
+        tr.innerHTML = renderUnverifiedStudentRow(item);
+      } else if (currentStatus === 'verified' || currentStatus === 'all') {
+        tr.innerHTML = renderAllStudentRow(item);
+      }
     }
     
     tbody.appendChild(tr);
@@ -256,11 +280,89 @@ function renderAllTeacherRow(teacher) {
   `;
 }
 
-// Render student row (placeholder)
-function renderStudentRow(student) {
+// Render unverified student row (students pending admin approval)
+function renderUnverifiedStudentRow(student) {
   return `
-    <td colspan="6" class="loading">Student management coming soon...</td>
+    <td>
+      <div class="contact-info">
+        <div class="avatar ${getRandomNamedColor()}">${getInitials(student.name || 'Student')}</div>
+        <div class="contact-details">
+          <h4>${student.name || 'Unknown'}</h4>
+        </div>
+      </div>
+    </td>
+    <td>${student.email || 'N/A'}</td>
+    <td>${student.rollNo || 'N/A'}</td>
+    <td>${student.teacher?.name || 'N/A'}</td>
+    <td>${student.branch || 'N/A'}</td>
+    <td>
+      <div class="admin-actions">
+        <button class="btn-approve" onclick="verifyStudent('${student._id}', true)" title="Approve">
+          <i class="fas fa-check"></i> Approve
+        </button>
+        <button class="btn-reject" onclick="verifyStudent('${student._id}', false)" title="Reject">
+          <i class="fas fa-times"></i> Reject
+        </button>
+      </div>
+    </td>
   `;
+}
+
+// Render all student row (for verified and all views)
+function renderAllStudentRow(student) {
+  const getStudentStatus = () => {
+    if (!student.teacher_action) return { text: 'Pending Teacher', class: 'pending' };
+    if (!student.teacher_verified) return { text: 'Rejected by Teacher', class: 'rejected' };
+    if (!student.admin_action) return { text: 'Pending Admin', class: 'pending' };
+    if (!student.admin_verified) return { text: 'Rejected by Admin', class: 'rejected' };
+    return { text: 'Verified', class: 'verified' };
+  };
+
+  const status = getStudentStatus();
+  
+  // Show approval/rejection buttons only for students pending admin approval in "all" view
+  let actionButtons = '';
+  if (currentStatus === 'all' && student.teacher_verified && student.teacher_action && !student.admin_action) {
+    actionButtons = `
+      <button class="btn-approve" onclick="verifyStudent('${student._id}', true)" title="Approve">
+        <i class="fas fa-check"></i> Approve
+      </button>
+      <button class="btn-reject" onclick="verifyStudent('${student._id}', false)" title="Reject">
+        <i class="fas fa-times"></i> Reject
+      </button>
+    `;
+  } else {
+    actionButtons = `
+      <button class="icon-btn view-btn" onclick="viewStudentDetails('${student._id}')" title="View Details">
+        <i class="fas fa-eye"></i>
+      </button>
+    `;
+  }
+  
+  return `
+    <td>
+      <div class="contact-info">
+        <div class="avatar ${getRandomNamedColor()}">${getInitials(student.name || 'Student')}</div>
+        <div class="contact-details">
+          <h4>${student.name || 'Unknown'}</h4>
+        </div>
+      </div>
+    </td>
+    <td>${student.email || 'N/A'}</td>
+    <td>${student.rollNo || 'N/A'}</td>
+    <td>${student.teacher?.name || 'N/A'}</td>
+    <td><span class="badge ${status.class}">${status.text}</span></td>
+    <td>
+      <div class="admin-actions">
+        ${actionButtons}
+      </div>
+    </td>
+  `;
+}
+
+// Render student row (placeholder - replaced above)
+function renderStudentRow(student) {
+  return renderAllStudentRow(student);
 }
 
 // Show empty state message
@@ -295,7 +397,39 @@ async function verifyTeacher(teacherId, isVerified) {
   }
 }
 
-// View teacher details (placeholder)
+// Verify student function
+async function verifyStudent(studentId, isVerified) {
+  try {
+    const response = await fetch(`/dashboard/admin/verify_student/${studentId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ is_verified: isVerified })
+    });
+    
+    if (response.ok) {
+      // Reload current view
+      await loadCurrentView();
+      
+      // Show success message
+      alert(`Student ${isVerified ? 'approved' : 'rejected'} successfully!`);
+    } else {
+      const errorData = await response.json();
+      alert(errorData.error || 'Failed to update student verification status');
+    }
+  } catch (error) {
+    console.error('Error verifying student:', error);
+    alert('Error updating student verification status');
+  }
+}
+
+// View student details (placeholder)
+function viewStudentDetails(studentId) {
+  alert(`Viewing student details for ID: ${studentId}`);
+}
+
+// View teacher details (placeholder) 
 function viewTeacherDetails(teacherId) {
   alert(`Viewing teacher details for ID: ${teacherId}`);
 }
@@ -305,11 +439,21 @@ document.getElementById('searchInput').addEventListener('input', (e) => {
   const searchTerm = e.target.value.toLowerCase();
   
   if (currentData.length > 0) {
-    const filteredData = currentData.filter(item => 
-      item.name?.toLowerCase().includes(searchTerm) ||
-      item.email?.toLowerCase().includes(searchTerm) ||
-      (currentType === 'teacher' && item.branch?.toLowerCase().includes(searchTerm))
-    );
+    let filteredData;
+    if (currentType === 'teacher') {
+      filteredData = currentData.filter(item => 
+        item.name?.toLowerCase().includes(searchTerm) ||
+        item.email?.toLowerCase().includes(searchTerm) ||
+        item.branch?.toLowerCase().includes(searchTerm)
+      );
+    } else {
+      filteredData = currentData.filter(item => 
+        item.name?.toLowerCase().includes(searchTerm) ||
+        item.email?.toLowerCase().includes(searchTerm) ||
+        item.rollNo?.toLowerCase().includes(searchTerm) ||
+        item.teacher?.name?.toLowerCase().includes(searchTerm)
+      );
+    }
     
     // Temporarily update current data for rendering
     const originalData = [...currentData];
@@ -322,6 +466,8 @@ document.getElementById('searchInput').addEventListener('input', (e) => {
 // Make functions globally available
 window.verifyTeacher = verifyTeacher;
 window.viewTeacherDetails = viewTeacherDetails;
+window.verifyStudent = verifyStudent;
+window.viewStudentDetails = viewStudentDetails;
 
 // Initialize dashboard when page loads
 document.addEventListener('DOMContentLoaded', function() {
@@ -331,5 +477,6 @@ document.addEventListener('DOMContentLoaded', function() {
 // Export functions for potential future use
 window.adminDashboard = {
   loadCurrentView,
-  verifyTeacher
+  verifyTeacher,
+  verifyStudent
 };

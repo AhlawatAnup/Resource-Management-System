@@ -51,29 +51,58 @@ exports.student_data = async (req, res) => {
 };
 
 exports.updateStudentVerification = async (req, res) => {
-  const { stu_id } = req.params;
+  const { stu_id, student_id } = req.params; // Support both parameter names
   const { is_verified } = req.body;
+  const userRole = req.session.user?.role;
   
-  console.log("Updating student verification", stu_id, "to", is_verified);
+  const studentId = stu_id || student_id; // Use whichever parameter is provided
+  
+  console.log(`${userRole} updating student verification`, studentId, "to", is_verified);
 
   try {
-    const student = await Student.findByIdAndUpdate(
-      stu_id, 
-      { 
-        is_verified: is_verified,
-        verification_completed: true // Mark as completed when teacher takes action
-      },
-      { new: true } // Return the updated document
-    );
-    
+    const student = await Student.findById(studentId);
     if (!student) {
       return res.status(404).json({ error: "Student not found" });
     }
+
+    let updateData = {};
     
-    console.log("Student verification updated:", student);
+    if (userRole === "teacher") {
+      // Teacher verification logic
+      updateData = {
+        teacher_verified: is_verified,
+        teacher_action: true
+      };
+    } else if (userRole === "admin") {
+      // Admin verification logic
+      // Check if teacher has approved first
+      if (!student.teacher_verified || !student.teacher_action) {
+        return res.status(400).json({ error: "Student must be approved by teacher first" });
+      }
+      
+      updateData = {
+        admin_verified: is_verified,
+        admin_action: true
+      };
+      
+      // If admin approves and teacher already approved, mark as fully verified
+      if (is_verified && student.teacher_verified) {
+        updateData.is_verified = true;
+      }
+    } else {
+      return res.status(403).json({ error: "Unauthorized to update student verification" });
+    }
+
+    const updatedStudent = await Student.findByIdAndUpdate(
+      studentId, 
+      updateData,
+      { new: true }
+    );
+    
+    console.log(`Student verification updated by ${userRole}:`, updatedStudent);
     return res.json({ 
       message: "Student verification status updated successfully",
-      student: { ...student._doc }
+      student: { ...updatedStudent._doc }
     });
   } catch (err) {
     console.error(err);

@@ -102,8 +102,10 @@ function render_students_table(student) {
                         </div>
                     </td>
                     <td>
-                        <span class="badge ${student.is_verified}">${
-    student.is_verified ? "Approved" : "Pending"
+                        <span class="badge ${student.teacher_verified}">${
+    student.teacher_action 
+      ? (student.teacher_verified ? "Approved" : "Declined") 
+      : "Pending"
   }</span>
                     </td>
                     <td>
@@ -113,7 +115,7 @@ function render_students_table(student) {
                     </td>
                     <td>
                         <div class="owner-info">
-                           ${student.verification_completed ? 
+                           ${student.teacher_action ? 
                              '<span style="color: #666; font-style: italic;">Action Completed</span>' :
                              `<button class="icon-btn approve-btn" title="Approve Student" data-student-id="${student._id}" data-action="approve">
                                 <i class="fa-solid fa-check"></i>
@@ -201,8 +203,8 @@ async function updateStudentVerification(studentId, isVerified) {
     // Update the student data in the local array
     const studentIndex = student_data.findIndex(s => s._id === studentId);
     if (studentIndex !== -1) {
-      student_data[studentIndex].is_verified = isVerified;
-      student_data[studentIndex].verification_completed = true; // Mark as completed
+      student_data[studentIndex].teacher_verified = isVerified;
+      student_data[studentIndex].teacher_action = true; // Mark as completed
     }
 
     // Replace buttons with "Action Completed" text

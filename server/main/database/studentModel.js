@@ -12,8 +12,11 @@ const studentSchema = new mongoose.Schema({
     ref: "Teacher",
     required: true,
   },
-  is_verified: { type: Boolean, default: false },
-  verification_completed: { type: Boolean, default: false }, // Track if teacher has taken action
+  teacher_verified: { type: Boolean, default: false },
+  admin_verified: { type: Boolean, default: false },
+  teacher_action: { type: Boolean, default: false },
+  admin_action: { type: Boolean, default: false },
+  is_verified: { type: Boolean, default: false }
 });
 
 module.exports = mongoose.model("Student", studentSchema);
