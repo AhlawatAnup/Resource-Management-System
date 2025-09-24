@@ -265,3 +265,54 @@ body {
     opacity: 0;
   }
 }
+
+/* Student Verification Status Badges in Teacher Portal */
+.badge.verified {
+  background: #d4edda !important;
+  color: #155724 !important;
+  border: 1px solid #c3e6cb;
+  font-weight: 600;
+}
+
+.badge.pending-teacher {
+  background: #fff3cd !important;
+  color: #856404 !important;
+  border: 1px solid #ffeaa7;
+  font-weight: 600;
+}
+
+.badge.pending-admin {
+  background: #cce7ff !important;
+  color: #0056b3 !important;
+  border: 1px solid #99d6ff;
+  font-weight: 600;
+}
+
+.badge.declined {
+  background: #f8d7da !important;
+  color: #721c24 !important;
+  border: 1px solid #f1aeb5;
+  font-weight: 600;
+}
+
+.badge.pending {
+  background: #e2e3e5 !important;
+  color: #6c757d !important;
+  border: 1px solid #ced4da;
+  font-weight: 600;
+}
+
+/* Ensure badges have consistent styling */
+.badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.85em;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+}
+
+.badge:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}

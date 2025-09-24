@@ -149,6 +149,82 @@ function formatDate(dateString) {
   });
 }
 
+// Function to determine student verification status from teacher's perspective
+function getStudentVerificationStatusForTeacher(student) {
+  console.log('Student verification fields from teacher view:', {
+    teacher_verified: student.teacher_verified,
+    admin_verified: student.admin_verified,
+    teacher_action: student.teacher_action,
+    admin_action: student.admin_action,
+    name: student.name
+  });
+
+  // If both teacher and admin have verified
+  if (student.teacher_verified && student.admin_verified) {
+    return "Verified";
+  }
+  
+  // If teacher has taken action (approved/rejected) but admin hasn't
+  if (student.teacher_action && !student.admin_action) {
+    if (student.teacher_verified) {
+      return "Pending on Admin";
+    } else {
+      return "Declined by Teacher";
+    }
+  }
+  
+  // If teacher hasn't taken action yet
+  if (!student.teacher_action) {
+    return "Pending on Teacher";
+  }
+  
+  // If admin has taken action
+  if (student.admin_action) {
+    if (student.admin_verified) {
+      return "Verified";
+    } else {
+      return "Declined by Admin";
+    }
+  }
+  
+  // Default fallback
+  return "Pending";
+}
+
+// Function to get CSS class for student verification status from teacher's perspective
+function getStudentStatusClassForTeacher(student) {
+  // If both teacher and admin have verified
+  if (student.teacher_verified && student.admin_verified) {
+    return "verified";
+  }
+  
+  // If teacher has taken action but admin hasn't
+  if (student.teacher_action && !student.admin_action) {
+    if (student.teacher_verified) {
+      return "pending-admin";
+    } else {
+      return "declined";
+    }
+  }
+  
+  // If teacher hasn't taken action yet
+  if (!student.teacher_action) {
+    return "pending-teacher";
+  }
+  
+  // If admin has taken action
+  if (student.admin_action) {
+    if (student.admin_verified) {
+      return "verified";
+    } else {
+      return "declined";
+    }
+  }
+  
+  // Default fallback
+  return "pending";
+}
+
 async function getStudentData(stu_id) {
   try {
     const response = await fetch("/dashboard/teacher/student_data/" + stu_id, {
@@ -188,6 +264,11 @@ async function getStudentData(stu_id) {
 function render_students_table(student) {
   const tbody = document.getElementById("contactTableBody");
   const tr = document.createElement("tr");
+  
+  // Get proper verification status for two-step process
+  const verificationStatus = getStudentVerificationStatusForTeacher(student);
+  const statusClass = getStudentStatusClassForTeacher(student);
+  
   tr.innerHTML = `
                 
                     <td>
@@ -211,11 +292,7 @@ function render_students_table(student) {
                         </div>
                     </td>
                     <td>
-                        <span class="badge ${student.teacher_verified}">${
-    student.teacher_action 
-      ? (student.teacher_verified ? "Approved" : "Declined") 
-      : "Pending"
-  }</span>
+                        <span class="badge ${statusClass}">${verificationStatus}</span>
                     </td>
                     <td>
                         <div class="company-info">

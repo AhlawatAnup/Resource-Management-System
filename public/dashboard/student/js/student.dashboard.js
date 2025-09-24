@@ -61,6 +61,10 @@ async function getLoggedInStudentId() {
 function displayStudentDetails(student) {
     console.log('Displaying student details:', student); // Debug log
     
+    // Determine verification status based on new schema
+    const verificationStatus = getStudentVerificationStatus(student);
+    const statusClass = getStudentStatusClass(student);
+    
     // Update student name in header/welcome section
     const welcomeElement = document.getElementById('student-welcome');
     if (welcomeElement) {
@@ -80,7 +84,7 @@ function displayStudentDetails(student) {
                         <h2 style="margin: 0 0 8px 0; color: #333; font-size: 2em;">${student.name}</h2>
                         <p style="margin: 5px 0; color: #666; font-size: 1.1em;">Student ID: ${student._id}</p>
                         <p style="margin: 5px 0; color: #666; font-size: 1.1em;">Roll No: ${student.rollNo}</p>
-                        <span style="display: inline-block; padding: 6px 12px; border-radius: 20px; font-size: 0.9em; font-weight: bold; ${student.is_verified ? 'background: #d4edda; color: #155724;' : 'background: #fff3cd; color: #856404;'}">${student.is_verified ? '✓ Verified' : '⏳ Pending Verification'}</span>
+                        <span class="verification-badge ${statusClass}" style="display: inline-block; padding: 8px 16px; border-radius: 20px; font-size: 0.9em; font-weight: bold;">${verificationStatus}</span>
                     </div>
                 </div>
                 <div class="profile-details" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 600px;">
@@ -152,4 +156,80 @@ function formatDate(dateString) {
         month: 'long',
         day: 'numeric'
     });
+}
+
+// Function to determine student verification status based on new schema
+function getStudentVerificationStatus(student) {
+    console.log('Student verification fields:', {
+        teacher_verified: student.teacher_verified,
+        admin_verified: student.admin_verified,
+        teacher_action: student.teacher_action,
+        admin_action: student.admin_action,
+        is_verified: student.is_verified
+    });
+
+    // If both teacher and admin have verified
+    if (student.teacher_verified && student.admin_verified) {
+        return "✓ Verified";
+    }
+    
+    // If teacher has taken action (approved/rejected) but admin hasn't
+    if (student.teacher_action && !student.admin_action) {
+        if (student.teacher_verified) {
+            return "⏳ Pending on Admin";
+        } else {
+            return "❌ Rejected by Teacher";
+        }
+    }
+    
+    // If teacher hasn't taken action yet
+    if (!student.teacher_action) {
+        return "⏳ Pending on Teacher";
+    }
+    
+    // If admin has taken action
+    if (student.admin_action) {
+        if (student.admin_verified) {
+            return "✓ Verified";
+        } else {
+            return "❌ Rejected by Admin";
+        }
+    }
+    
+    // Default fallback
+    return "⏳ Pending Verification";
+}
+
+// Function to get CSS class for student verification status
+function getStudentStatusClass(student) {
+    // If both teacher and admin have verified
+    if (student.teacher_verified && student.admin_verified) {
+        return "status-verified";
+    }
+    
+    // If teacher has taken action but admin hasn't
+    if (student.teacher_action && !student.admin_action) {
+        if (student.teacher_verified) {
+            return "status-pending-admin";
+        } else {
+            return "status-rejected";
+        }
+    }
+    
+    // If teacher hasn't taken action yet
+    if (!student.teacher_action) {
+        return "status-pending-teacher";
+    }
+    
+    // If admin has taken action
+    if (student.admin_action) {
+        if (student.admin_verified) {
+            return "status-verified";
+        } else {
+            return "status-rejected";
+        }
+    }
+    
+    // Default fallback
+    return "status-pending";
 }
