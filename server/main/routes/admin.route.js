@@ -7,7 +7,9 @@ const {
   getAllTeachers,
   updateTeacherVerification,
   getPendingStudents,
-  getAllStudents
+  getAllStudents,
+  getRejectedTeachers,
+  getRejectedStudents
 } = require("../controllers/admin.controller.js");
 
 const {
@@ -27,12 +29,14 @@ router.get("/data", admin_dashboard_data);
 // Teacher management routes
 router.get("/teachers", getAllTeachers);
 router.get("/teachers/pending", getPendingTeachers);
+router.get("/teachers/rejected", getRejectedTeachers);
 router.get("/teacher_data/:teacher_id", teacher_data);
 router.put("/verify_teacher/:teacher_id", updateTeacherVerification);
 
 // Student management routes
 router.get("/students", getAllStudents);
 router.get("/students/pending", getPendingStudents);
+router.get("/students/rejected", getRejectedStudents);
 router.get("/student_data/:student_id", student_data);
 router.put("/verify_student/:student_id", updateStudentVerification);
 

@@ -60,6 +60,8 @@ async function loadCurrentView() {
         endpoint = '/dashboard/admin/teachers/pending';
       } else if (currentStatus === 'verified') {
         endpoint = '/dashboard/admin/teachers';
+      } else if (currentStatus === 'rejected') {
+        endpoint = '/dashboard/admin/teachers/rejected';
       } else if (currentStatus === 'all') {
         endpoint = '/dashboard/admin/teachers';
       }
@@ -69,6 +71,8 @@ async function loadCurrentView() {
         endpoint = '/dashboard/admin/students/pending';
       } else if (currentStatus === 'verified') {
         endpoint = '/dashboard/admin/students';
+      } else if (currentStatus === 'rejected') {
+        endpoint = '/dashboard/admin/students/rejected';
       } else if (currentStatus === 'all') {
         endpoint = '/dashboard/admin/students';
       }
@@ -84,6 +88,9 @@ async function loadCurrentView() {
         } else if (currentStatus === 'verified') {
           // Filter only verified teachers
           currentData = (data.teachers || []).filter(t => t.is_verified);
+        } else if (currentStatus === 'rejected') {
+          // For rejected, we'll get data from the rejected endpoint
+          currentData = data.teachers || [];
         } else if (currentStatus === 'all') {
           // Show all teachers regardless of verification status
           currentData = data.teachers || [];
@@ -94,6 +101,9 @@ async function loadCurrentView() {
         } else if (currentStatus === 'verified') {
           // Filter only verified students
           currentData = (data.students || []).filter(s => s.is_verified);
+        } else if (currentStatus === 'rejected') {
+          // For rejected, we'll get data from the rejected endpoint
+          currentData = data.students || [];
         } else if (currentStatus === 'all') {
           // Show all students regardless of verification status
           currentData = data.students || [];
@@ -127,6 +137,9 @@ function updatePageHeader() {
   } else if (currentStatus === 'unverified') {
     statusText = 'Unverified';
     subtitleText = `Manage ${currentType} verification requests`;
+  } else if (currentStatus === 'rejected') {
+    statusText = 'Rejected';
+    subtitleText = `View ${currentType}s rejected by admin or teacher`;
   } else {
     statusText = 'Verified';
     subtitleText = `Manage verified ${currentType} records`;
@@ -147,13 +160,17 @@ function updateTableHeaders() {
       headers = ['Name', 'Email', 'Phone', 'Branch', 'Join Date', 'Actions'];
     } else if (currentStatus === 'verified') {
       headers = ['Name', 'Email', 'Status', 'Students', 'Join Date', 'Actions'];
+    } else if (currentStatus === 'rejected') {
+      headers = ['Name', 'Email', 'Status', 'Rejected By', 'Join Date', 'Actions'];
     } else if (currentStatus === 'all') {
       headers = ['Name', 'Email', 'Status', 'Students', 'Join Date', 'Actions'];
     }
   } else {
     if (currentStatus === 'unverified') {
-      headers = ['Name', 'Email', 'Roll No', 'Teacher', 'Branch', 'Actions'];
+      headers = ['Name', 'Email', 'Roll No', 'Teacher', 'Status', 'Actions'];
     } else if (currentStatus === 'verified') {
+      headers = ['Name', 'Email', 'Roll No', 'Teacher', 'Status', 'Actions'];
+    } else if (currentStatus === 'rejected') {
       headers = ['Name', 'Email', 'Roll No', 'Teacher', 'Status', 'Actions'];
     } else if (currentStatus === 'all') {
       headers = ['Name', 'Email', 'Roll No', 'Teacher', 'Status', 'Actions'];
@@ -177,6 +194,8 @@ function renderCurrentData() {
       message = `No ${currentType}s found`;
     } else if (currentStatus === 'unverified') {
       message = `No pending ${currentType} verifications`;
+    } else if (currentStatus === 'rejected') {
+      message = `No rejected ${currentType}s found`;
     } else {
       message = `No verified ${currentType}s found`;
     }
@@ -192,12 +211,16 @@ function renderCurrentData() {
     if (currentType === 'teacher') {
       if (currentStatus === 'unverified') {
         tr.innerHTML = renderUnverifiedTeacherRow(item);
+      } else if (currentStatus === 'rejected') {
+        tr.innerHTML = renderRejectedTeacherRow(item);
       } else if (currentStatus === 'verified' || currentStatus === 'all') {
         tr.innerHTML = renderAllTeacherRow(item);
       }
     } else {
       if (currentStatus === 'unverified') {
         tr.innerHTML = renderUnverifiedStudentRow(item);
+      } else if (currentStatus === 'rejected') {
+        tr.innerHTML = renderRejectedStudentRow(item);
       } else if (currentStatus === 'verified' || currentStatus === 'all') {
         tr.innerHTML = renderAllStudentRow(item);
       }
@@ -282,6 +305,17 @@ function renderAllTeacherRow(teacher) {
 
 // Render unverified student row (students pending admin approval)
 function renderUnverifiedStudentRow(student) {
+  // Get student status like in the All Students view
+  const getStudentStatus = () => {
+    if (!student.teacher_action) return { text: 'Pending on Teacher', class: 'pending' };
+    if (!student.teacher_verified) return { text: 'Rejected by Teacher', class: 'rejected' };
+    if (!student.admin_action) return { text: 'Pending on Admin', class: 'pending' };
+    if (!student.admin_verified) return { text: 'Rejected by Admin', class: 'rejected' };
+    return { text: 'Verified', class: 'verified' };
+  };
+
+  const status = getStudentStatus();
+
   return `
     <td>
       <div class="contact-info">
@@ -294,7 +328,7 @@ function renderUnverifiedStudentRow(student) {
     <td>${student.email || 'N/A'}</td>
     <td>${student.rollNo || 'N/A'}</td>
     <td>${student.teacher?.name || 'N/A'}</td>
-    <td>${student.branch || 'N/A'}</td>
+    <td><span class="badge ${status.class}">${status.text}</span></td>
     <td>
       <div class="admin-actions">
         <button class="btn-approve" onclick="verifyStudent('${student._id}', true)" title="Approve">
@@ -363,6 +397,70 @@ function renderAllStudentRow(student) {
 // Render student row (placeholder - replaced above)
 function renderStudentRow(student) {
   return renderAllStudentRow(student);
+}
+
+// Render rejected teacher row
+function renderRejectedTeacherRow(teacher) {
+  const statusText = teacher.is_verified ? 'Verified' : (teacher.verification_completed ? 'Rejected by Admin' : 'Pending');
+  const rejectedBy = teacher.verification_completed && !teacher.is_verified ? 'Admin' : 'Unknown';
+  
+  return `
+    <td>
+      <div class="contact-info">
+        <div class="avatar ${getRandomNamedColor()}">${getInitials(teacher.name || 'Teacher')}</div>
+        <div class="contact-details">
+          <h4>${teacher.name || 'Unknown'}</h4>
+        </div>
+      </div>
+    </td>
+    <td>${teacher.email || 'N/A'}</td>
+    <td><span class="badge rejected">${statusText}</span></td>
+    <td>${rejectedBy}</td>
+    <td>${new Date(teacher.createdAt).toLocaleDateString()}</td>
+    <td>
+      <div class="admin-actions">
+        <button class="icon-btn view-btn" onclick="viewTeacherDetails('${teacher._id}')" title="View Details">
+          <i class="fas fa-eye"></i>
+        </button>
+      </div>
+    </td>
+  `;
+}
+
+// Render rejected student row
+function renderRejectedStudentRow(student) {
+  // Get student status like in the All Students view
+  const getStudentStatus = () => {
+    if (!student.teacher_action) return { text: 'Pending on Teacher', class: 'pending' };
+    if (!student.teacher_verified) return { text: 'Rejected by Teacher', class: 'rejected' };
+    if (!student.admin_action) return { text: 'Pending on Admin', class: 'pending' };
+    if (!student.admin_verified) return { text: 'Rejected by Admin', class: 'rejected' };
+    return { text: 'Verified', class: 'verified' };
+  };
+
+  const status = getStudentStatus();
+
+  return `
+    <td>
+      <div class="contact-info">
+        <div class="avatar ${getRandomNamedColor()}">${getInitials(student.name || 'Student')}</div>
+        <div class="contact-details">
+          <h4>${student.name || 'Unknown'}</h4>
+        </div>
+      </div>
+    </td>
+    <td>${student.email || 'N/A'}</td>
+    <td>${student.rollNo || 'N/A'}</td>
+    <td>${student.teacher?.name || 'N/A'}</td>
+    <td><span class="badge ${status.class}">${status.text}</span></td>
+    <td>
+      <div class="admin-actions">
+        <button class="icon-btn view-btn" onclick="viewStudentDetails('${student._id}')" title="View Details">
+          <i class="fas fa-eye"></i>
+        </button>
+      </div>
+    </td>
+  `;
 }
 
 // Show empty state message

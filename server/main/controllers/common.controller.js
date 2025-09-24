@@ -29,7 +29,7 @@ exports.getCurrentUserId = (req, res) => {
   if (!req.session.user) {
     return res.status(401).json({ error: "Not authenticated" });
   }
-  
+
   return res.json({ id: req.session.user.id });
 };
 
@@ -54,9 +54,9 @@ exports.updateStudentVerification = async (req, res) => {
   const { stu_id, student_id } = req.params; // Support both parameter names
   const { is_verified } = req.body;
   const userRole = req.session.user?.role;
-  
+
   const studentId = stu_id || student_id; // Use whichever parameter is provided
-  
+
   console.log(`${userRole} updating student verification`, studentId, "to", is_verified);
 
   try {
@@ -66,7 +66,7 @@ exports.updateStudentVerification = async (req, res) => {
     }
 
     let updateData = {};
-    
+
     if (userRole === "teacher") {
       // Teacher verification logic
       updateData = {
@@ -75,32 +75,36 @@ exports.updateStudentVerification = async (req, res) => {
       };
     } else if (userRole === "admin") {
       // Admin verification logic
-      // Check if teacher has approved first
-      if (!student.teacher_verified || !student.teacher_action) {
-        return res.status(400).json({ error: "Student must be approved by teacher first" });
-      }
-      
-      updateData = {
-        admin_verified: is_verified,
-        admin_action: true
-      };
-      
-      // If admin approves and teacher already approved, mark as fully verified
-      if (is_verified && student.teacher_verified) {
-        updateData.is_verified = true;
+      if (is_verified) {
+        // Admin approves → set everything true
+        updateData = {
+          teacher_verified: true,
+          teacher_action: true,
+          admin_verified: true,
+          admin_action: true,
+          is_verified: true
+        };
+      } else {
+        // Admin rejects → only update admin side
+        updateData = {
+          admin_verified: false,
+          admin_action: true,
+          is_verified: false
+        };
       }
     } else {
       return res.status(403).json({ error: "Unauthorized to update student verification" });
     }
 
+
     const updatedStudent = await Student.findByIdAndUpdate(
-      studentId, 
+      studentId,
       updateData,
       { new: true }
     );
-    
+
     console.log(`Student verification updated by ${userRole}:`, updatedStudent);
-    return res.json({ 
+    return res.json({
       message: "Student verification status updated successfully",
       student: { ...updatedStudent._doc }
     });
