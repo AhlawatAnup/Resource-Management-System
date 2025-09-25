@@ -1,0 +1,139 @@
+const ResourceRequest = require("../database/resourceRequestModel");
+const Student = require("../database/studentModel");
+
+// Submit a new resource request
+exports.submitResourceRequest = async (req, res) => {
+  try {
+    // Check if user is authenticated
+    if (!req.session.user) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+
+    const { title, purpose, expiryDate, cpuCores, cpuRam, gpuCount, gpuRam, studentId } = req.body;
+    
+    // Security check: ensure the student can only submit requests for themselves
+    if (req.session.user.id !== studentId) {
+      return res.status(403).json({ error: "You can only submit requests for your own account" });
+    }
+
+    // Validate required fields
+    if (!title || !purpose || !expiryDate || !cpuCores || !cpuRam || gpuCount === undefined || gpuRam === undefined || !studentId) {
+      return res.status(400).json({ 
+        error: "Missing required fields",
+        required: ["title", "purpose", "expiryDate", "cpuCores", "cpuRam", "gpuCount", "gpuRam", "studentId"]
+      });
+    }
+
+    // Validate data types and ranges
+    if (cpuCores < 1 || cpuRam < 1) {
+      return res.status(400).json({ error: "CPU cores and RAM must be at least 1" });
+    }
+
+    if (gpuCount < 0 || gpuRam < 0) {
+      return res.status(400).json({ error: "GPU values cannot be negative" });
+    }
+
+    // Validate expiry date is in the future
+    const expiry = new Date(expiryDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    if (expiry <= today) {
+      return res.status(400).json({ error: "Expiry date must be in the future" });
+    }
+
+    // Check if student exists and is verified
+    const student = await Student.findById(studentId);
+    if (!student) {
+      return res.status(404).json({ error: "Student not found" });
+    }
+
+    // Optional: Check if student is verified before allowing requests
+    if (!student.teacher_verified || !student.admin_verified) {
+      return res.status(403).json({ 
+        error: "Student must be verified by both teacher and admin before submitting resource requests" 
+      });
+    }
+
+    // Create new resource request
+    const resourceRequest = new ResourceRequest({
+      studentId,
+      title: title.trim(),
+      purpose: purpose.trim(),
+      expiryDate: expiry,
+      cpuCores: parseInt(cpuCores),
+      cpuRam: parseInt(cpuRam),
+      gpuCount: parseInt(gpuCount),
+      gpuRam: parseInt(gpuRam)
+    });
+
+    // Save to database
+    const savedRequest = await resourceRequest.save();
+    
+    console.log(`New resource request submitted by student ${studentId}:`, savedRequest._id);
+
+    return res.status(201).json({
+      message: "Resource request submitted successfully",
+      requestId: savedRequest._id,
+      request: savedRequest
+    });
+
+  } catch (error) {
+    console.error("Error submitting resource request:", error);
+    
+    // Handle validation errors
+    if (error.name === 'ValidationError') {
+      const validationErrors = Object.keys(error.errors).map(key => ({
+        field: key,
+        message: error.errors[key].message
+      }));
+      return res.status(400).json({ 
+        error: "Validation failed", 
+        details: validationErrors 
+      });
+    }
+
+    return res.status(500).json({ error: "Failed to submit resource request" });
+  }
+};
+
+// Get all resource requests for a specific student
+exports.getStudentResourceRequests = async (req, res) => {
+  try {
+    // Check if user is authenticated
+    if (!req.session.user) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+
+    const { studentId } = req.params;
+
+    // Security check: ensure the student can only access their own requests
+    if (req.session.user.id !== studentId) {
+      return res.status(403).json({ error: "You can only access your own resource requests" });
+    }
+
+    // Validate student ID
+    if (!studentId) {
+      return res.status(400).json({ error: "Student ID is required" });
+    }
+
+    // Check if student exists
+    const student = await Student.findById(studentId);
+    if (!student) {
+      return res.status(404).json({ error: "Student not found" });
+    }
+
+    // Get all resource requests for this student, sorted by creation date (newest first)
+    const resourceRequests = await ResourceRequest.find({ studentId })
+      .sort({ createdAt: -1 })
+      .limit(50); // Limit to last 50 requests to avoid performance issues
+
+    console.log(`Retrieved ${resourceRequests.length} resource requests for student ${studentId}`);
+
+    return res.json(resourceRequests);
+
+  } catch (error) {
+    console.error("Error fetching student resource requests:", error);
+    return res.status(500).json({ error: "Failed to fetch resource requests" });
+  }
+};

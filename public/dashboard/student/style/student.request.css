@@ -1,0 +1,312 @@
+/* Request Resources Page Styles */
+
+.resources-page {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.verification-notice {
+    border-radius: 12px;
+    margin-bottom: 30px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 25px;
+}
+
+.verification-notice.verified {
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+    color: white;
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
+.verification-notice.pending {
+    background: linear-gradient(135deg, #ff9800, #f57c00);
+    color: white;
+    box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
+}
+
+.verification-notice .notice-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-size: 1.3em;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.verification-notice .notice-content i {
+    font-size: 1.6em;
+}
+
+.verification-notice p {
+    margin: 0;
+    font-size: 1.1em;
+    opacity: 0.95;
+}
+
+.resource-request-section {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.resource-request-section h2 {
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 1.8em;
+    display: flex;
+    align-items: center;
+}
+
+.resource-request-section h2 i {
+    color: #4CAF50;
+    margin-right: 10px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #555;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1em;
+    transition: border-color 0.3s ease;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #4CAF50;
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+}
+
+.form-control.textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+    color: white;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.verification-info {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.verification-info h2 {
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 1.8em;
+    display: flex;
+    align-items: center;
+}
+
+.verification-info h2 i {
+    color: #ff9800;
+    margin-right: 10px;
+}
+
+.info-box {
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.info-box.warning {
+    background: #f8f9fa;
+    border-left: 4px solid #ff9800;
+}
+
+.info-box.tip {
+    background: #e3f2fd;
+    border-left: 4px solid #2196f3;
+}
+
+.info-box h3 {
+    margin-top: 0;
+    color: #333;
+}
+
+.info-box p {
+    color: #666;
+    line-height: 1.6;
+}
+
+.info-box ol {
+    color: #666;
+    line-height: 1.6;
+}
+
+.info-box .tip-content {
+    margin: 0;
+    color: #1976d2;
+}
+
+.loading-spinner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 50px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #4CAF50;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.error-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 50px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.error-message i {
+    font-size: 3em;
+    color: #f44336;
+    margin-bottom: 20px;
+}
+
+.error-message p {
+    color: #666;
+    font-size: 1.1em;
+    margin-bottom: 20px;
+}
+
+.retry-btn {
+    background: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+}
+
+.retry-btn:hover {
+    background: #45a049;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .resources-page {
+        padding: 0 10px;
+    }
+    
+    .resource-request-section,
+    .verification-info {
+        padding: 20px;
+    }
+    
+    .resource-request-section h2,
+    .verification-info h2 {
+        font-size: 1.5em;
+    }
+    
+    .verification-notice .notice-content {
+        font-size: 1.1em;
+        flex-direction: column;
+        gap: 8px;
+    }
+}
+
+/* Request status badges */
+.status-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85em;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.status-approved {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.status-rejected {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f1aeb5;
+}
+
+.status-in-progress {
+    background: #cce7ff;
+    color: #0056b3;
+    border: 1px solid #99d6ff;
+}
+
+.status-pending {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+/* Request item styles */
+.request-item {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 15px;
+    background: #fafafa;
+    transition: box-shadow 0.3s ease;
+}
+
+.request-item:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
