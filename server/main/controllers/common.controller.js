@@ -136,7 +136,7 @@ exports.teacher_data = async (req, res) => {
 
 exports.updateResourceRequestVerification = async (req, res) => {
   const { request_id } = req.params;
-  const { is_verified } = req.body;
+  const { is_verified, vmCredentials } = req.body;
   const userRole = req.session.user?.role;
   const userId = req.session.user?.id;
 
@@ -172,16 +172,41 @@ exports.updateResourceRequestVerification = async (req, res) => {
       };
 
     } else if (userRole === "admin") {
-      // Admin verification logic (similar to student verification)
+      // Admin verification logic
       if (is_verified) {
-        // Admin approves → set everything true
+        // For approvals, VM credentials are required
+        if (!vmCredentials) {
+          return res.status(400).json({ error: "VM credentials are required when approving a request" });
+        }
+
+        // Validate VM credentials
+        if (!vmCredentials.username || !vmCredentials.password) {
+          return res.status(400).json({ error: "Both username and password are required for VM credentials" });
+        }
+        
+        const username = vmCredentials.username.trim();
+        const password = vmCredentials.password.trim();
+        
+        if (username.length < 3) {
+          return res.status(400).json({ error: "Username must be at least 3 characters long" });
+        }
+        if (password.length < 6) {
+          return res.status(400).json({ error: "Password must be at least 6 characters long" });
+        }
+
+        // Admin approves → set everything true and add VM credentials
         updateData = {
           teacher_verified: true,
           teacher_action: true,
           admin_verified: true,
           admin_action: true,
-          is_verified: true
+          is_verified: true,
+          vmCredentials: {
+            username: username,
+            password: password
+          }
         };
+
       } else {
         // Admin rejects → only update admin side
         updateData = {

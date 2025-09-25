@@ -109,6 +109,59 @@
       </main>
     </div>
 
+    <!-- Verification Modal -->
+    <div id="verificationModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3><i class="fas fa-check-circle"></i> Approve Resource Request</h3>
+          <button class="close-btn" onclick="closeVerificationModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="modal-layout">
+            <!-- Left Column: Request Info -->
+            <div class="request-info-column">
+              <div class="request-info" id="modalRequestInfo">
+                <!-- Request details will be populated here -->
+              </div>
+            </div>
+            
+            <!-- Right Column: Credentials Form -->
+            <div class="credentials-column">
+              <div class="credentials-section">
+                <h4><i class="fas fa-key"></i> VM Access Credentials</h4>
+                <p class="info-text">Provide login credentials for resource access.</p>
+                
+                <form id="verificationForm">
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label for="vmUsername">Username:</label>
+                      <input type="text" id="vmUsername" name="username" class="form-control" required 
+                             placeholder="VM username (min 3 chars)" minlength="3">
+                    </div>
+                    
+                    <div class="form-group">
+                      <label for="vmPassword">Password:</label>
+                      <input type="text" id="vmPassword" name="password" class="form-control" required 
+                             placeholder="VM password (min 6 chars)" minlength="6">
+                    </div>
+                  </div>
+                  
+                  <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeVerificationModal()">
+                      <i class="fas fa-times"></i> Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                      <i class="fas fa-check"></i> Approve
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script type="module" src="/dashboard/admin/js/admin-view-requests.js"></script>
   </body>
 </html>

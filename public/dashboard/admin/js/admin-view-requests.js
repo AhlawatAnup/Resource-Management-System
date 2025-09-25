@@ -168,22 +168,101 @@ function isExpiringSoon(dateString) {
 
 // Update resource request verification status
 async function updateRequestVerification(requestId, isVerified) {
-  try {
-    const action = isVerified ? 'approve' : 'decline';
-    if (!confirm(`Are you sure you want to ${action} this resource request?`)) {
+  // For decline, show immediate confirmation
+  if (!isVerified) {
+    if (!confirm(`Are you sure you want to decline this resource request?`)) {
       return;
     }
+    await submitVerification(requestId, isVerified);
+    return;
+  }
+
+  // For approve, show the modal with credentials form
+  showVerificationModal(requestId);
+}
+
+// Show verification modal for approval
+function showVerificationModal(requestId) {
+  const modal = document.getElementById('verificationModal');
+  const request = resourceRequests.find(r => r._id === requestId);
+  
+  if (!request || !modal) {
+    console.error('Request or modal not found');
+    return;
+  }
+
+  // Populate request info in modal with more compact layout
+  const requestInfo = document.getElementById('modalRequestInfo');
+  requestInfo.innerHTML = `
+    <div class="request-summary">
+      <h5>${request.title}</h5>
+      <div class="request-details">
+        <p><strong>Student:</strong> ${request.studentInfo.name}</p>
+        <p><strong>Roll No:</strong> ${request.studentInfo.rollNo}</p>
+        <p><strong>Teacher:</strong> ${request.teacherInfo.name}</p>
+        <p><strong>CPU:</strong> ${request.cpuCores} cores, ${request.cpuRam}GB RAM</p>
+        <p><strong>GPU:</strong> ${request.gpuCount} × ${request.gpuRam}GB</p>
+        <p><strong>Purpose:</strong> ${request.purpose.length > 80 ? request.purpose.substring(0, 80) + '...' : request.purpose}</p>
+      </div>
+    </div>
+  `;
+
+  // Store request ID for form submission
+  modal.setAttribute('data-request-id', requestId);
+
+  // Clear form fields
+  document.getElementById('vmUsername').value = '';
+  document.getElementById('vmPassword').value = '';
+
+  // Show modal
+  modal.style.display = 'block';
+}
+
+// Close verification modal
+function closeVerificationModal() {
+  const modal = document.getElementById('verificationModal');
+  modal.style.display = 'none';
+}
+
+// Submit verification with credentials
+async function submitVerification(requestId, isVerified, credentials = null) {
+  try {
+    console.log('Submitting verification:', {
+      requestId,
+      isVerified,
+      credentials
+    });
+
+    const requestBody = { 
+      is_verified: isVerified,
+      vmCredentials: credentials
+    };
+    
+    console.log('Request body:', JSON.stringify(requestBody, null, 2));
 
     const response = await fetch(`/dashboard/admin/verify_request/${requestId}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ is_verified: isVerified })
+      body: JSON.stringify(requestBody)
     });
 
     if (!response.ok) {
-      throw new Error('Failed to update request verification');
+      // Get the error details from response
+      const errorText = await response.text();
+      console.error('Server response:', response.status, errorText);
+      
+      let errorMessage = 'Failed to update request verification';
+      try {
+        const errorData = JSON.parse(errorText);
+        errorMessage = errorData.error || errorMessage;
+      } catch (e) {
+        // If response is not JSON, use the text as error message
+        errorMessage = errorText || errorMessage;
+      }
+      
+      throw new Error(errorMessage);
     }
 
     const result = await response.json();
@@ -196,6 +275,9 @@ async function updateRequestVerification(requestId, isVerified) {
       resourceRequests[requestIndex].admin_action = true;
       if (isVerified) {
         resourceRequests[requestIndex].is_verified = true;
+        if (credentials) {
+          resourceRequests[requestIndex].vmCredentials = credentials;
+        }
       }
     }
 
@@ -208,6 +290,7 @@ async function updateRequestVerification(requestId, isVerified) {
   } catch (error) {
     console.error('Error updating request verification:', error);
     showNotification('Failed to update request verification. Please try again.', 'error');
+    throw error;
   }
 }
 
@@ -287,6 +370,64 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 
+  // Verification form submission handler
+  const verificationForm = document.getElementById('verificationForm');
+  if (verificationForm) {
+    verificationForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const modal = document.getElementById('verificationModal');
+      const requestId = modal.getAttribute('data-request-id');
+      
+      if (!requestId) {
+        showNotification('Error: Request ID not found', 'error');
+        return;
+      }
+      
+      const username = document.getElementById('vmUsername').value.trim();
+      const password = document.getElementById('vmPassword').value.trim();
+      
+      // Frontend validation
+      if (!username || !password) {
+        showNotification('Please fill in both username and password', 'error');
+        return;
+      }
+      
+      if (username.length < 3) {
+        showNotification('Username must be at least 3 characters long', 'error');
+        return;
+      }
+      
+      if (password.length < 6) {
+        showNotification('Password must be at least 6 characters long', 'error');
+        return;
+      }
+      
+      const credentials = {
+        username: username,
+        password: password
+      };
+      
+      console.log('Form submission - credentials:', credentials);
+      
+      try {
+        await submitVerification(requestId, true, credentials);
+        closeVerificationModal();
+      } catch (error) {
+        // Error already handled in submitVerification
+        console.error('Form submission error:', error);
+      }
+    });
+  }
+
+  // Close modal when clicking outside
+  window.addEventListener('click', (e) => {
+    const modal = document.getElementById('verificationModal');
+    if (e.target === modal) {
+      closeVerificationModal();
+    }
+  });
+
   // Navigation functionality
   const dashboardNav = document.getElementById('dashboard-nav');
   const viewRequestsNav = document.getElementById('view-requests-nav');
@@ -305,3 +446,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 });
+
+// Make functions globally available for HTML onclick handlers
+window.closeVerificationModal = closeVerificationModal;

@@ -35,12 +35,19 @@ const resourceRequestSchema = new mongoose.Schema({
     required: true 
   },
 
+
   // Status tracking
   teacher_action: { type: Boolean, default: false },
   teacher_verified: { type: Boolean, default: false },
   admin_action: { type: Boolean, default: false },
   admin_verified: { type: Boolean, default: false },
   is_verified: { type: Boolean, default: false },
+
+    // VM access credentials (provided when admin finally verifies)
+  vmCredentials: {
+    username: { type: String },
+    password: { type: String }
+  },
 
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
