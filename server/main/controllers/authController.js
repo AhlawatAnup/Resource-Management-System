@@ -1,6 +1,7 @@
 const Student = require("../database/studentModel");
 const Teacher = require("../database/teacherModel");
 const Admin = require("../database/adminModel");
+const { sendStudentRegistrationSuccessEmail, sendTeacherRegistrationSuccessEmail, sendOTPEmail } = require("../utils/emailService");
 const bcrypt = require("bcrypt");
 
 const otpStore = {};
@@ -9,18 +10,49 @@ function generateOtp() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-exports.sendOtp = (req, res) => {
+exports.sendOtp = async (req, res) => {
   const { email, role } = req.body;
   if (!email || !role)
     return res.status(400).json({ error: "Email and role required" });
 
-  const otp = generateOtp();
-  const expires = Date.now() + 5 * 60 * 1000;
+  try {    
+    const otp = generateOtp();
+    const expires = Date.now() + 5 * 60 * 1000;
 
-  otpStore[email] = { otp, expires, role };
-  console.log(`📧 OTP for ${email} (${role}): ${otp}`);
+    otpStore[email] = { otp, expires, role };
 
-  res.json({ message: "OTP generated and logged in console" });
+    // Send OTP via email
+    const emailResult = await sendOTPEmail(email, otp, role);
+    
+    if (emailResult.success) {
+      console.log(`📧 OTP email sent successfully to ${email} for ${role} registration`);
+      res.json({ 
+        message: "OTP sent to your email address",
+        messageId: emailResult.messageId 
+      });
+    } else {
+      console.error(`❌ Failed to send OTP email to ${email}:`, emailResult.error);
+      // Fallback: still allow OTP generation but notify about email failure
+      console.log(`📧 Fallback - OTP for ${email} (${role}): ${otp}`);
+      res.json({ 
+        message: "OTP generated successfully (email service temporarily unavailable)",
+        fallback: true 
+      });
+    }
+  } catch (error) {
+    console.error('Error in sendOtp:', error);
+    
+    // Emergency fallback: still generate OTP and show in console
+    const otp = generateOtp();
+    const expires = Date.now() + 5 * 60 * 1000;
+    otpStore[email] = { otp, expires, role };
+    console.log(`📧 Emergency fallback (Failed to send OTP on email) - OTP for ${email} (${role}): ${otp}`);
+    
+    res.json({ 
+      message: "OTP generated (email service error, check console for testing)",
+      fallback: true 
+    });
+  }
 };
 
 exports.verifyOtp = async (req, res) => {
@@ -149,6 +181,15 @@ exports.register = async (req, res) => {
         id: savedStudent._id,
       };
 
+      // Send registration success email to student
+      try {
+        await sendStudentRegistrationSuccessEmail(req.session.email, name);
+        console.log('Student registration success email sent to:', req.session.email);
+      } catch (emailError) {
+        console.error('Error sending student registration email:', emailError);
+        // Don't fail the registration if email fails
+      }
+
       return res.json({ message: "Student registered successfully" });
     }
 
@@ -164,6 +205,15 @@ exports.register = async (req, res) => {
         role: req.session.role,
         id: teacher_id._id,
       };
+
+      // Send registration success email to teacher
+      try {
+        await sendTeacherRegistrationSuccessEmail(req.session.email, name);
+        console.log('Teacher registration success email sent to:', req.session.email);
+      } catch (emailError) {
+        console.error('Error sending teacher registration email:', emailError);
+        // Don't fail the registration if email fails
+      }
 
       return res.json({ message: "Teacher registered successfully" });
     }
