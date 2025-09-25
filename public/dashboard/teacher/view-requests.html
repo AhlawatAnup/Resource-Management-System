@@ -51,13 +51,47 @@
       </header>
 
       <div class="container">
-        <div class="content-area">
-          <p>This page will display student requests for review and approval.</p>
-          <!-- Content will be added here in future updates -->
+        <div class="header">
+          <div class="search-container">
+            <svg class="search-icon" viewBox="0 0 20 20" fill="currentColor">
+              <path
+                fill-rule="evenodd"
+                d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <input
+              type="text"
+              class="search-input"
+              placeholder="Search Requests"
+              id="searchInput"
+            />
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th class="sortable" data-sort="student">Student</th>
+                <th class="sortable" data-sort="title">Request Title</th>
+                <th class="sortable" data-sort="purpose">Purpose</th>
+                <th class="sortable" data-sort="resources">Resources</th>
+                <th class="sortable" data-sort="expiry">Expiry Date</th>
+                <th class="sortable" data-sort="status">Status</th>
+                <th class="sortable">Action</th>
+              </tr>
+            </thead>
+            <tbody id="requestsTableBody">
+              <tr>
+                <td colspan="7" class="loading">Loading resource requests...</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </main>
 
-    <!-- Add any necessary scripts here -->
+    <script type="module" src="/dashboard/teacher/js/view-requests.js"></script>
   </body>
 </html>

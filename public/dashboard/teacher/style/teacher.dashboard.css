@@ -316,3 +316,77 @@ body {
   transform: translateY(-1px);
   box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
+
+/* Resource Requests Specific Styles */
+.request-title h4 {
+  font-size: 1.1em;
+  color: #2d3748;
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
+.request-date {
+  font-size: 0.85em;
+  color: #718096;
+}
+
+.purpose-text {
+  font-size: 0.9em;
+  color: #4a5568;
+  line-height: 1.4;
+  max-width: 200px;
+}
+
+.resource-specs {
+  font-size: 0.85em;
+  line-height: 1.5;
+}
+
+.resource-specs div {
+  margin-bottom: 4px;
+  color: #4a5568;
+}
+
+.resource-specs strong {
+  color: #2d3748;
+  font-weight: 600;
+}
+
+.expiry-date {
+  font-size: 0.9em;
+  color: #4a5568;
+}
+
+.expiring-soon {
+  display: block;
+  font-size: 0.8em;
+  color: #e53e3e;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+/* Status badge colors for resource requests */
+.badge.pending-teacher {
+  background-color: #fbb034;
+  color: white;
+}
+
+.badge.pending-admin {
+  background-color: #3182ce;
+  color: white;
+}
+
+.badge.verified {
+  background-color: #38a169;
+  color: white;
+}
+
+.badge.declined {
+  background-color: #e53e3e;
+  color: white;
+}
+
+.badge.pending {
+  background-color: #a0aec0;
+  color: white;
+}

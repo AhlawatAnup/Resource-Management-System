@@ -1,6 +1,7 @@
 const Student = require("../database/studentModel");
 const Teacher = require("../database/teacherModel");
 const Admin = require("../database/adminModel");
+const ResourceRequest = require("../database/resourceRequestModel");
 const path = require("path");
 const publicPath = path.join(__dirname, "../../../public");
 
@@ -130,5 +131,84 @@ exports.teacher_data = async (req, res) => {
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "Failed to fetch teacher" });
+  }
+};
+
+exports.updateResourceRequestVerification = async (req, res) => {
+  const { request_id } = req.params;
+  const { is_verified } = req.body;
+  const userRole = req.session.user?.role;
+  const userId = req.session.user?.id;
+
+  console.log(`${userRole} ${userId} updating resource request verification`, request_id, "to", is_verified);
+
+  // Validate request ID format
+  if (!request_id || !request_id.match(/^[0-9a-fA-F]{24}$/)) {
+    console.log("Invalid request ID format:", request_id);
+    return res.status(400).json({ error: "Invalid request ID format" });
+  }
+
+  try {
+    const resourceRequest = await ResourceRequest.findById(request_id);
+    
+    if (!resourceRequest) {
+      return res.status(404).json({ error: "Resource request not found" });
+    }
+
+    // Role-based authorization and verification logic
+    let updateData = {};
+
+    if (userRole === "teacher") {
+      // Verify that this resource request belongs to a student under this teacher
+      const student = await Student.findById(resourceRequest.studentId);
+      if (!student || student.teacher.toString() !== userId) {
+        return res.status(403).json({ error: "Access denied. This request does not belong to your students." });
+      }
+
+      // Teacher verification logic
+      updateData = {
+        teacher_verified: is_verified,
+        teacher_action: true
+      };
+
+    } else if (userRole === "admin") {
+      // Admin verification logic (similar to student verification)
+      if (is_verified) {
+        // Admin approves → set everything true
+        updateData = {
+          teacher_verified: true,
+          teacher_action: true,
+          admin_verified: true,
+          admin_action: true,
+          is_verified: true
+        };
+      } else {
+        // Admin rejects → only update admin side
+        updateData = {
+          admin_verified: false,
+          admin_action: true,
+          is_verified: false
+        };
+      }
+
+    } else {
+      return res.status(403).json({ error: "Unauthorized to update resource request verification" });
+    }
+
+    const updatedRequest = await ResourceRequest.findByIdAndUpdate(
+      request_id,
+      updateData,
+      { new: true }
+    );
+
+    console.log(`Resource request verification updated by ${userRole}:`, updatedRequest);
+    
+    return res.json({
+      message: "Resource request verification status updated successfully",
+      request: updatedRequest
+    });
+  } catch (err) {
+    console.error("Error updating resource request verification:", err);
+    return res.status(500).json({ error: "Failed to update resource request verification" });
   }
 };
