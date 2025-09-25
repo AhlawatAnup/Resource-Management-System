@@ -1,5 +1,6 @@
 const ResourceRequest = require("../database/resourceRequestModel");
 const Student = require("../database/studentModel");
+const { addResourceRequestToStudent } = require("../utils/studentResourceUtils");
 
 // Submit a new resource request
 exports.submitResourceRequest = async (req, res) => {
@@ -69,6 +70,9 @@ exports.submitResourceRequest = async (req, res) => {
 
     // Save to database
     const savedRequest = await resourceRequest.save();
+    
+    // Add the resource request ID to the student's resourceRequests array
+    await addResourceRequestToStudent(studentId, savedRequest._id);
     
     console.log(`New resource request submitted by student ${studentId}:`, savedRequest._id);
 

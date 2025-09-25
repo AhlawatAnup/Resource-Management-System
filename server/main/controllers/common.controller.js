@@ -38,7 +38,9 @@ exports.student_data = async (req, res) => {
   console.log("requested Student data", stu_id);
 
   try {
-    const student = await Student.findOne({ _id: stu_id }).populate('teacher', 'name');
+    const student = await Student.findOne({ _id: stu_id })
+      .populate('teacher', 'name')
+      .populate('resourceRequests');
     if (!student) {
       return res.status(404).json({ error: "Student not found" });
     }

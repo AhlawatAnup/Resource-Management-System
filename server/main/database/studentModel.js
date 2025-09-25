@@ -12,6 +12,10 @@ const studentSchema = new mongoose.Schema({
     ref: "Teacher",
     required: true,
   },
+  resourceRequests: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "ResourceRequest"
+  }],
   teacher_verified: { type: Boolean, default: false },
   teacher_action: { type: Boolean, default: false },
   admin_verified: { type: Boolean, default: false },
