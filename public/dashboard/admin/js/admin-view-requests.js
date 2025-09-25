@@ -71,7 +71,7 @@ function renderResourceRequests(requests) {
       <td>
         <div class="request-title">
           <h4>${request.title}</h4>
-          <div class="request-date">Created: ${formatDate(request.createdAt)}</div>
+          <div class="request-date"><span class="field-label">Created:</span> ${formatDate(request.createdAt)}</div>
         </div>
       </td>
       <td>
@@ -81,8 +81,8 @@ function renderResourceRequests(requests) {
       </td>
       <td>
         <div class="resource-specs">
-          <div><strong>CPU:</strong> ${request.cpuCores} cores, ${request.cpuRam}GB RAM</div>
-          <div><strong>GPU:</strong> ${request.gpuCount} × ${request.gpuRam}GB</div>
+          <div><span class="field-label">CPU:</span> ${request.cpuCores} cores, ${request.cpuRam}GB RAM</div>
+          <div><span class="field-label">GPU:</span> ${request.gpuCount} × ${request.gpuRam}GB</div>
         </div>
       </td>
       <td>
@@ -95,7 +95,7 @@ function renderResourceRequests(requests) {
         <span class="badge ${statusInfo.class}">${statusInfo.text}</span>
       </td>
       <td>
-        <div class="owner-info">
+        <div class="admin-actions">
           ${getActionButtons(request)}
         </div>
       </td>

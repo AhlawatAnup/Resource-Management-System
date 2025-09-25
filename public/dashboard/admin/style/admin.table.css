@@ -59,6 +59,7 @@ tbody tr:last-child {
 tbody td {
   padding: 16px 20px;
   vertical-align: middle;
+  font-size: 13px;
 }
 
 /* Contact Info Styles */
@@ -89,22 +90,22 @@ tbody td {
 
 .contact-details h4 {
   margin: 0 0 2px 0;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
   color: #111827;
 }
 
 .contact-time {
   color: #6b7280;
-  font-size: 12px;
+  font-size: 11px;
 }
 
 /* Badge Styles */
 .badge {
   display: inline-block;
-  padding: 4px 12px;
-  border-radius: 16px;
-  font-size: 12px;
+  padding: 3px 10px;
+  border-radius: 14px;
+  font-size: 11px;
   font-weight: 500;
 }
 
@@ -128,6 +129,24 @@ tbody td {
   color: #991b1b;
 }
 
+/* Specific status badge styles for admin view */
+.badge.verified {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.badge.declined {
+  background: #fed7d7;
+  color: #c53030;
+}
+
+.badge.pending-admin,
+.badge.pending-teacher,
+.badge.pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
 /* Loading State */
 .loading {
   text-align: center;
@@ -139,30 +158,55 @@ tbody td {
 /* Date Info */
 .date-info {
   color: #4b5563;
-  font-size: 13px;
+  font-size: 12px;
 }
 
 /* Action Buttons */
 .admin-actions {
   display: flex;
-  gap: 8px;
+  flex-direction: row !important;
+  gap: 6px;
   align-items: center;
+  justify-content: flex-start;
+  flex-wrap: nowrap;
 }
 
 .admin-actions .icon-btn {
-  min-width: 36px;
-  height: 36px;
-  border-radius: 6px;
+  min-width: 28px;
+  height: 28px;
+  border-radius: 5px;
   border: none;
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .admin-actions .icon-btn i {
-  font-size: 14px;
+  font-size: 13px;
+}
+
+/* Approve/Decline button styles */
+.icon-btn.approve-btn {
+  background-color: #10b981;
+  color: white;
+}
+
+.icon-btn.approve-btn:hover {
+  background-color: #059669;
+  transform: translateY(-1px);
+}
+
+.icon-btn.decline-btn {
+  background-color: #ef4444;
+  color: white;
+}
+
+.icon-btn.decline-btn:hover {
+  background-color: #dc2626;
+  transform: translateY(-1px);
 }
 
 /* Responsive Table */
@@ -194,9 +238,9 @@ tbody td {
 /* Status Badge Styles */
 .status-badge {
   display: inline-block;
-  padding: 4px 12px;
-  border-radius: 16px;
-  font-size: 12px;
+  padding: 3px 10px;
+  border-radius: 14px;
+  font-size: 11px;
   font-weight: 500;
   text-transform: capitalize;
 }
@@ -224,10 +268,10 @@ tbody td {
 }
 
 .btn {
-  padding: 6px 12px;
+  padding: 5px 10px;
   border: none;
-  border-radius: 6px;
-  font-size: 12px;
+  border-radius: 5px;
+  font-size: 11px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -293,4 +337,70 @@ thead th.sort-desc::after {
 /* Text center utility */
 .text-center {
   text-align: center;
+}
+
+/* Field Labels and Info Styles */
+.teacher-info h4 {
+  margin: 0 0 2px 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.teacher-subtitle {
+  color: #6b7280;
+  font-size: 11px;
+  font-style: italic;
+}
+
+.request-title h4 {
+  margin: 0 0 2px 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.request-date {
+  color: #6b7280;
+  font-size: 11px;
+}
+
+.purpose-text {
+  font-size: 13px;
+  color: #374151;
+  line-height: 1.4;
+  max-width: 150px; /* Limit the maximum width */
+  white-space: nowrap; /* Prevent text wrapping */
+  overflow: hidden; /* Hide overflowing text */
+  text-overflow: ellipsis; /* Show ... for truncated text */
+  display: block; /* Ensure block-level behavior for truncation */
+}
+
+.resource-specs {
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.resource-specs .field-label {
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.expiry-date {
+  font-size: 12px;
+  color: #374151;
+}
+
+.expiring-soon {
+  display: block;
+  color: #f59e0b;
+  font-size: 10px;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.field-label {
+  color: #6b7280;
+  font-size: 11px;
+  font-weight: 500;
 }
