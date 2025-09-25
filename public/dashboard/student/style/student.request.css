@@ -310,3 +310,184 @@
 .request-item:hover {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
+
+/* Enhanced styles for detailed request view page */
+.requests-page {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.section-header {
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.filter-controls select {
+    padding: 8px 12px;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    background: white;
+    font-size: 0.9em;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+}
+
+.filter-controls select:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.request-item.detailed {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    background: white;
+    transition: border-color 0.2s ease;
+}
+
+.request-item.detailed:hover {
+    border-color: #667eea;
+}
+
+.request-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.request-title h3 {
+    margin: 0;
+    color: #333;
+    font-size: 1.1em;
+    font-weight: 600;
+}
+
+.request-dates {
+    font-size: 0.85em;
+    color: #666;
+}
+
+.request-body {
+    margin-top: 12px;
+}
+
+.request-purpose {
+    margin-bottom: 12px;
+}
+
+.request-purpose h4,
+.request-specs h4 {
+    color: #555;
+    margin: 0 0 6px 0;
+    font-size: 0.95em;
+    font-weight: 600;
+}
+
+.request-purpose p {
+    color: #666;
+    line-height: 1.4;
+    margin: 0;
+    padding: 8px;
+    background: #f8f9fa;
+    border-radius: 4px;
+    font-size: 0.9em;
+}
+
+.specs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.spec-item {
+    background: #f5f5f5;
+    padding: 8px;
+    border-radius: 4px;
+    font-size: 0.85em;
+}
+
+.spec-label {
+    font-weight: 600;
+    color: #555;
+    font-size: 0.8em;
+    margin-bottom: 2px;
+}
+
+.spec-value {
+    color: #333;
+    font-size: 0.85em;
+}
+
+.no-requests {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+}
+
+.empty-state {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.empty-state h3 {
+    font-size: 1.5em;
+    margin-bottom: 15px;
+}
+
+.empty-state p {
+    font-size: 1.1em;
+    line-height: 1.6;
+}
+
+.error-message {
+    background: #f8d7da;
+    color: #721c24;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    border: 1px solid #f1aeb5;
+}
+
+/* Enhanced status badges for detailed view */
+.request-item.detailed .status-badge {
+    font-size: 0.8em;
+    padding: 4px 10px;
+    font-weight: 600;
+}
+
+/* Responsive adjustments for detailed view */
+@media (max-width: 768px) {
+    .request-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .request-dates {
+        text-align: left;
+        width: 100%;
+    }
+    
+    .specs-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    
+    .filter-controls {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 10px;
+    }
+    
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 15px;
+    }
+}

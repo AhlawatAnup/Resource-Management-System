@@ -135,17 +135,6 @@ function displayResourcesPage(student) {
                             </button>
                         </form>
                     </div>
-                    
-                    <!-- Recent Requests Section -->
-                    <div id="recent-requests" class="resource-request-section" style="margin-top: 30px;">
-                        <h2>
-                            <i class="fas fa-history"></i>
-                            Your Recent Requests
-                        </h2>
-                        <div id="requests-list">
-                            <!-- Recent requests will be loaded here -->
-                        </div>
-                    </div>
                 </div>
             `;
             
@@ -167,9 +156,6 @@ function displayResourcesPage(student) {
                     expiryDateInput.min = minDate.toISOString().split('T')[0];
                 }
             }
-            
-            // Load recent requests
-            loadRecentRequests(student._id);
             
         } else {
             // Show verification status for non-verified students
@@ -329,9 +315,6 @@ async function handleResourceRequest(event) {
         // Reset form
         document.getElementById('resource-request-form').reset();
         
-        // Reload recent requests
-        loadRecentRequests(studentId);
-        
     } catch (error) {
         console.error('Error submitting resource request:', error);
         showErrorMessage('Failed to submit request: ' + error.message);
@@ -343,127 +326,6 @@ async function handleResourceRequest(event) {
             submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Resource Request';
         }
     }
-}
-
-async function loadRecentRequests(studentId) {
-    try {
-        const response = await fetch(`/dashboard/student/resource-requests/${studentId}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        
-        if (response.ok) {
-            const requests = await response.json();
-            displayRecentRequests(requests);
-        } else {
-            console.warn('Failed to load recent requests');
-            document.getElementById('requests-list').innerHTML = '<p>No recent requests found.</p>';
-        }
-    } catch (error) {
-        console.error('Error loading recent requests:', error);
-        document.getElementById('requests-list').innerHTML = '<p>Error loading recent requests.</p>';
-    }
-}
-
-function displayRecentRequests(requests) {
-    const requestsList = document.getElementById('requests-list');
-    
-    if (!requests || requests.length === 0) {
-        requestsList.innerHTML = '<p style="color: #666; text-align: center; padding: 20px;">No requests submitted yet.</p>';
-        return;
-    }
-    
-    const requestsHTML = requests.map(request => {
-        const statusClass = getRequestStatusClass(request);
-        const statusIcon = getRequestStatusIcon(request);
-        const statusText = getRequestStatusText(request);
-        
-        return `
-            <div class="request-item">
-                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
-                    <h4 style="margin: 0; color: #333;">${request.title}</h4>
-                    <span class="status-badge ${statusClass}">
-                        ${statusIcon} ${statusText}
-                    </span>
-                </div>
-                <p style="color: #666; margin: 10px 0;">${request.purpose}</p>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px; font-size: 0.9em;">
-                    <div><strong>CPU:</strong> ${request.cpuCores} cores, ${request.cpuRam} GB RAM</div>
-                    <div><strong>GPU:</strong> ${request.gpuCount} × ${request.gpuRam} GB</div>
-                    <div><strong>Expires:</strong> ${formatDate(request.expiryDate)}</div>
-                    <div><strong>Submitted:</strong> ${formatDate(request.createdAt)}</div>
-                </div>
-            </div>
-        `;
-    }).join('');
-    
-    requestsList.innerHTML = requestsHTML;
-}
-
-function getRequestStatusClass(request) {
-    // Check verification status based on database model fields
-    if (request.teacher_verified && request.admin_verified && request.is_verified) {
-        return 'status-approved';
-    }
-    
-    if (request.teacher_action && !request.teacher_verified) {
-        return 'status-rejected';
-    }
-    
-    if (request.admin_action && !request.admin_verified) {
-        return 'status-rejected';
-    }
-    
-    if (request.teacher_action && request.teacher_verified && !request.admin_action) {
-        return 'status-in-progress';
-    }
-    
-    return 'status-pending';
-}
-
-function getRequestStatusIcon(request) {
-    // Check verification status based on database model fields
-    if (request.teacher_verified && request.admin_verified && request.is_verified) {
-        return '✓';
-    }
-    
-    if ((request.teacher_action && !request.teacher_verified) || 
-        (request.admin_action && !request.admin_verified)) {
-        return '✗';
-    }
-    
-    if (request.teacher_action && request.teacher_verified && !request.admin_action) {
-        return '⏳';
-    }
-    
-    return '⏳';
-}
-
-function getRequestStatusText(request) {
-    // Check verification status based on database model fields
-    if (request.teacher_verified && request.admin_verified && request.is_verified) {
-        return 'Approved';
-    }
-    
-    if (request.teacher_action && !request.teacher_verified) {
-        return 'Rejected by Teacher';
-    }
-    
-    if (request.admin_action && !request.admin_verified) {
-        return 'Rejected by Admin';
-    }
-    
-    if (request.teacher_action && request.teacher_verified && !request.admin_action) {
-        return 'Pending Admin Approval';
-    }
-    
-    if (!request.teacher_action) {
-        return 'Pending Teacher Review';
-    }
-    
-    return 'Pending Review';
 }
 
 function showSuccessMessage(message) {
