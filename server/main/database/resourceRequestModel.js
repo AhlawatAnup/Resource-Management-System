@@ -53,4 +53,4 @@ const resourceRequestSchema = new mongoose.Schema({
   updatedAt: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model("ResourceRequest", resourceRequestSchema);
+module.exports = mongoose.model("ResourceRequest", resourceRequestSchema, "resourceRequests");
