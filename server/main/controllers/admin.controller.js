@@ -1,6 +1,7 @@
 const Teacher = require("../database/teacherModel");
 const Student = require("../database/studentModel");
 const Admin = require("../database/adminModel");
+const ResourceRequest = require("../database/resourceRequestModel");
 
 exports.admin_dashboard_data = async (req, res) => {
   try {
@@ -148,5 +149,56 @@ exports.getRejectedStudents = async (req, res) => {
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "Failed to fetch rejected students" });
+  }
+};
+
+exports.getAllResourceRequests = async (req, res) => {
+  const role = req.session.user.role;
+  const uid = req.session.user.id;
+  console.log("Admin requested all resource requests", uid);
+
+  if (role !== "admin") {
+    return res.status(403).json({ error: "Access denied. Admin role required." });
+  }
+
+  try {
+    // Find all resource requests from all students
+    const resourceRequests = await ResourceRequest.find({})
+      .populate({
+        path: 'studentId',
+        select: 'name rollNo email branch teacher',
+        populate: {
+          path: 'teacher',
+          select: 'name'
+        }
+      })
+      .sort({ createdAt: -1 }); // Most recent first
+
+    console.log(`Found ${resourceRequests.length} total resource requests for admin`);
+
+    // Format the data to include teacher info in the response
+    const formattedRequests = resourceRequests.map(request => ({
+      ...request._doc,
+      studentInfo: {
+        _id: request.studentId._id,
+        name: request.studentId.name,
+        rollNo: request.studentId.rollNo,
+        email: request.studentId.email,
+        branch: request.studentId.branch
+      },
+      teacherInfo: {
+        _id: request.studentId.teacher._id,
+        name: request.studentId.teacher.name
+      }
+    }));
+
+    return res.json({
+      success: true,
+      count: formattedRequests.length,
+      requests: formattedRequests
+    });
+  } catch (err) {
+    console.error("Error fetching all resource requests:", err);
+    return res.status(500).json({ error: "Failed to fetch resource requests" });
   }
 };

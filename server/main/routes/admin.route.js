@@ -9,13 +9,15 @@ const {
   getPendingStudents,
   getAllStudents,
   getRejectedTeachers,
-  getRejectedStudents
+  getRejectedStudents,
+  getAllResourceRequests
 } = require("../controllers/admin.controller.js");
 
 const {
   teacher_data,
   student_data,
-  updateStudentVerification
+  updateStudentVerification,
+  updateResourceRequestVerification
 } = require("../controllers/common.controller.js");
 
 const router = express.Router();
@@ -39,5 +41,9 @@ router.get("/students/pending", getPendingStudents);
 router.get("/students/rejected", getRejectedStudents);
 router.get("/student_data/:student_id", student_data);
 router.put("/verify_student/:student_id", updateStudentVerification);
+
+// Resource request management routes
+router.get("/resource-requests", getAllResourceRequests);
+router.put("/verify_request/:request_id", updateResourceRequestVerification);
 
 module.exports = router;
