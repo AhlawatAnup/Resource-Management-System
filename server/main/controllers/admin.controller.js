@@ -77,6 +77,17 @@ exports.updateTeacherVerification = async (req, res) => {
       return res.status(404).json({ error: "Teacher not found" });
     }
 
+    // Email notification for teacher profile verification/rejection
+    const emailService = require("../utils/emailService.js");
+    let emailResult = null;
+    if (is_verified) {
+      emailResult = await emailService.sendTeacherProfileVerifiedByAdminEmail(teacher.email, teacher.name);
+      console.log("Email sent for teacher profile verified by admin:", emailResult);
+    } else {
+      emailResult = await emailService.sendTeacherProfileRejectedByAdminEmail(teacher.email, teacher.name);
+      console.log("Email sent for teacher profile rejected by admin:", emailResult);
+    }
+
     console.log("Teacher verification updated:", teacher);
     return res.json({
       message: "Teacher verification status updated successfully",

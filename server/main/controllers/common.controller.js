@@ -106,6 +106,27 @@ exports.updateStudentVerification = async (req, res) => {
       { new: true }
     );
 
+    // Send email notification after successful update
+    const emailService = require("../utils/emailService.js");
+    let emailResult = null;
+    if (userRole === "teacher") {
+      if (is_verified) {
+        emailResult = await emailService.sendStudentProfileVerifiedByTeacherEmail(updatedStudent.email, updatedStudent.name, req.session.user.name);
+        console.log("Email sent for student profile verified by teacher:", emailResult);
+      } else {
+        emailResult = await emailService.sendStudentProfileRejectedByTeacherEmail(updatedStudent.email, updatedStudent.name, req.session.user.name);
+        console.log("Email sent for student profile rejected by teacher:", emailResult);
+      }
+    } else if (userRole === "admin") {
+      if (is_verified) {
+        emailResult = await emailService.sendStudentProfileVerifiedByAdminEmail(updatedStudent.email, updatedStudent.name);
+        console.log("Email sent for student profile verified by admin:", emailResult);
+      } else {
+        emailResult = await emailService.sendStudentProfileRejectedByAdminEmail(updatedStudent.email, updatedStudent.name);
+        console.log("Email sent for student profile rejected by admin:", emailResult);
+      }
+    }
+
     console.log(`Student verification updated by ${userRole}:`, updatedStudent);
     return res.json({
       message: "Student verification status updated successfully",
@@ -150,7 +171,7 @@ exports.updateResourceRequestVerification = async (req, res) => {
 
   try {
     const resourceRequest = await ResourceRequest.findById(request_id);
-    
+
     if (!resourceRequest) {
       return res.status(404).json({ error: "Resource request not found" });
     }
@@ -183,10 +204,10 @@ exports.updateResourceRequestVerification = async (req, res) => {
         if (!vmCredentials.username || !vmCredentials.password) {
           return res.status(400).json({ error: "Both username and password are required for VM credentials" });
         }
-        
+
         const username = vmCredentials.username.trim();
         const password = vmCredentials.password.trim();
-        
+
         if (username.length < 3) {
           return res.status(400).json({ error: "Username must be at least 3 characters long" });
         }
@@ -227,7 +248,7 @@ exports.updateResourceRequestVerification = async (req, res) => {
     );
 
     console.log(`Resource request verification updated by ${userRole}:`, updatedRequest);
-    
+
     return res.json({
       message: "Resource request verification status updated successfully",
       request: updatedRequest
