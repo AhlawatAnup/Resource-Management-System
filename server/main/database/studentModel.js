@@ -13,8 +13,8 @@ const studentSchema = new mongoose.Schema({
     required: true,
   },
   teacher_verified: { type: Boolean, default: false },
-  admin_verified: { type: Boolean, default: false },
   teacher_action: { type: Boolean, default: false },
+  admin_verified: { type: Boolean, default: false },
   admin_action: { type: Boolean, default: false },
   is_verified: { type: Boolean, default: false }
 });
