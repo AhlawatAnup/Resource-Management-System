@@ -1,4 +1,11 @@
 let is_request_otp = true;
+
+// Function to validate teacher email format
+function validateTeacherEmail(email) {
+  const teacherEmailRegex = /^[a-zA-Z0-9._%+-]+@pu\.ac\.in$/;
+  return teacherEmailRegex.test(email);
+}
+
 // Role selector functionality
 document.querySelectorAll(".role-option").forEach((option) => {
   option.addEventListener("click", function () {
@@ -15,6 +22,12 @@ document.querySelectorAll(".role-option").forEach((option) => {
 
 function updateFormForRole(role) {
   const emailInput = document.getElementById("email");
+  const emailWrapper = document.getElementById("email-wrapper");
+  const adminLoginFields = document.getElementById("admin-login-fields");
+  const otpField = document.getElementById("otp-field");
+  const sendOtpBtn = document.getElementById("sendOtpBtn");
+  const teacherEmailNote = document.getElementById("teacher-email-note");
+  
   const placeholders = {
     student: "student@example.com",
     teacher: "teacher@example.com",
@@ -22,6 +35,30 @@ function updateFormForRole(role) {
   };
 
   emailInput.placeholder = placeholders[role] || "your-email@example.com";
+  
+  // Reset form state
+  is_request_otp = true;
+  otpField.style.display = "none";
+  
+  if (role === "admin") {
+    // Show admin login fields, hide email field
+    emailWrapper.style.display = "none";
+    adminLoginFields.style.display = "block";
+    sendOtpBtn.innerHTML = "Login";
+    teacherEmailNote.style.display = "none";
+  } else {
+    // Show email field for student/teacher, hide admin fields
+    emailWrapper.style.display = "block";
+    adminLoginFields.style.display = "none";
+    sendOtpBtn.innerHTML = "Send OTP";
+    
+    // Show teacher email note only for teacher role
+    if (role === "teacher") {
+      teacherEmailNote.style.display = "block";
+    } else {
+      teacherEmailNote.style.display = "none";
+    }
+  }
 }
 
 // OTP Input functionality
@@ -120,6 +157,35 @@ document.querySelector(".login-form").addEventListener("submit", function (e) {
 // Initialize
 updateFormForRole("student");
 
+// Admin Login functionality
+async function adminLogin() {
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+
+  if (!username || !password) {
+    alert("Please enter both username and password");
+    return;
+  }
+
+  try {
+    const res = await fetch("/auth/admin-login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password }),
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      window.location.href = data.redirect; // redirect to dashboard
+    } else {
+      alert(data.error || "Login failed");
+    }
+  } catch (err) {
+    console.error("Error:", err);
+    alert("Something went wrong");
+  }
+}
+
 // SEND OTP
 async function sendOtp() {
   const activeDiv = document.querySelector(".role-option.active");
@@ -128,6 +194,13 @@ async function sendOtp() {
   const email = document.getElementById("email").value;
 
   if (!email) {
+    alert("Please enter your email address");
+    return;
+  }
+
+  // Validate teacher email format
+  if (role === "teacher" && !validateTeacherEmail(email)) {
+    alert("Teachers must use email addresses with pu.ac.in domain (e.g., example@pu.ac.in)");
     return;
   }
 
@@ -187,7 +260,12 @@ async function verifyOtp() {
 const sendOtpBtn = document.getElementById("sendOtpBtn");
 
 sendOtpBtn.addEventListener("click", () => {
-  if (is_request_otp) {
+  const activeDiv = document.querySelector(".role-option.active");
+  const role = activeDiv.getAttribute("data-role");
+  
+  if (role === "admin") {
+    adminLogin();
+  } else if (is_request_otp) {
     sendOtp();
   } else {
     verifyOtp();

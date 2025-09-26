@@ -3,6 +3,8 @@ const {
   sendOtp,
   verifyOtp,
   register,
+  adminLogin,
+  getVerifiedTeachers,
 } = require("../controllers/authController");
 const { logRequest } = require("../middleware/authMiddleware.js");
 
@@ -14,17 +16,9 @@ router.use(logRequest);
 // Routes
 router.post("/send-otp", sendOtp);
 router.post("/verify-otp", verifyOtp);
+router.post("/admin-login", adminLogin);
 
-router.get("/get-teachers", async (req, res) => {
-  const Teacher = require("../database/teacherModel");
-  try {
-    const teachers = await Teacher.find({});
-    res.json({ teachers });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to fetch teachers" });
-  }
-});
+router.get("/get-teachers", getVerifiedTeachers);
 
 router.post("/register", register);
 
