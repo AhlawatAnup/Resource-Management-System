@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>U.I.E.T Resource Sharing - Admin</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script
+      src="https://kit.fontawesome.com/e05e3e1522.js"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <link rel="stylesheet" href="/dashboard/admin/style/admin.dashboard.css" />
+  <body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="logo">
+        <div class="logo-icon">
+          <i class="fas fa-layer-group"></i>
+        </div>
+        U.I.E.T
+      </div>
+
+      <nav class="nav-menu">
+        <a href="#" class="nav-item active">
+          <i class="fas fa-home"></i>
+          Dashboard
+        </a>
+
+      <div style="padding: 20px">
+        <a href="/logout" class="nav-item">
+          <i class="fas fa-sign-out-alt"></i>
+          Log out
+        </a>
+      </div>
+    </div>
+
+    <!-- Main Content with Top Navigation -->
+    <div class="main-wrapper">
+      <!-- Top Navigation Bar -->
+      <nav class="top-nav">
+        <div class="nav-brand">
+          <h2>User Management</h2>
+        </div>
+        
+        <div class="nav-controls">
+          <!-- Part A: User Type Selection -->
+          <div class="nav-section">
+            <div class="nav-group">
+              <button class="nav-btn active" data-type="teacher">
+                <i class="fas fa-chalkboard-teacher"></i>
+                Teacher
+              </button>
+              <button class="nav-btn" data-type="student">
+                <i class="fas fa-graduation-cap"></i>
+                Student
+              </button>
+            </div>
+          </div>
+          
+          <!-- Part B: Status Filter -->
+          <div class="nav-section">
+            <div class="nav-group">
+              <button class="status-btn" data-status="all">
+                <i class="fas fa-users"></i>
+                All
+              </button>
+              <button class="status-btn active" data-status="unverified">
+                <i class="fas fa-user-clock"></i>
+                Unverified
+              </button>
+              <button class="status-btn" data-status="verified">
+                <i class="fas fa-user-check"></i>
+                Verified
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="nav-actions">
+          <div class="admin-info">
+            <span class="admin-name">Hello, Admin</span>
+          </div>
+        </div>
+      </nav>
+
+      <main class="main-content">
+    <main class="main-content">
+      <header class="page-header">
+        <div class="header-info">
+          <h1 id="page-title">Unverified Teachers</h1>
+          <p id="page-subtitle">Manage teacher verification requests</p>
+        </div>
+        <div class="header-stats">
+          <div class="stat-item">
+            <span class="stat-number" id="current-count">0</span>
+            <span class="stat-label" id="current-label">Pending</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="content-container">
+        <div class="table-header">
+          <div class="search-container">
+            <svg class="search-icon" viewBox="0 0 20 20" fill="currentColor">
+              <path
+                fill-rule="evenodd"
+                d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <input
+              type="text"
+              class="search-input"
+              placeholder="Search users..."
+              id="searchInput"
+            />
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr id="table-headers">
+                <!-- Headers will be dynamically updated based on selection -->
+              </tr>
+            </thead>
+            <tbody id="dataTableBody">
+              <tr>
+                <td colspan="6" class="loading">Loading...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+    
+    </div> <!-- End main-wrapper -->
+
+    <script type="module" src="/dashboard/admin/js/admin.dashboard.js"></script>
+  </body>
+</html>

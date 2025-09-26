@@ -13,7 +13,7 @@
       crossorigin="anonymous"
     ></script>
   </head>
-  <link rel="stylesheet" href="./style/dashboard.css" />
+  <link rel="stylesheet" href="/dashboard/student/style/student.dashboard.css" />
   <body>
     <div class="sidebar">
       <div class="logo">
@@ -57,50 +57,20 @@
     <main class="main-content">
       <header class="header">
         <div class="welcome-section">
-          <h1 id="hello-user">Hello, S.Verma | Teacher</h1>
-          <p>Track students progress here. Approve or Deny.</p>
+          <h1 id="student-welcome">Hello, Student</h1>
+          <p>Welcome to your student dashboard. View your profile and track your progress.</p>
         </div>
       </header>
 
       <div class="container">
-        <div class="header">
-          <div class="search-container">
-            <svg class="search-icon" viewBox="0 0 20 20" fill="currentColor">
-              <path
-                fill-rule="evenodd"
-                d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                clip-rule="evenodd"
-              />
-            </svg>
-            <input
-              type="text"
-              class="search-input"
-              placeholder="Search Student"
-              id="searchInput"
-            />
-          </div>
-        </div>
-
-        <div class="table-container">
-          <table>
-            <thead>
-              <tr>
-                <th class="sortable" data-sort="name">Student Name</th>
-                <th class="sortable" data-sort="contact">Contact</th>
-                <th class="sortable" data-sort="status">Approval Status</th>
-                <th class="sortable" data-sort="branch">Branch</th>
-                <th class="sortable">Action</th>
-              </tr>
-            </thead>
-            <tbody id="contactTableBody">
-              <!-- Table rows will be populated by JavaScript -->
-            </tbody>
-          </table>
+        <!-- Student Profile Section -->
+        <div id="student-profile">
+          <!-- Profile will be loaded here by JavaScript -->
         </div>
       </div>
     </main>
 
-    <script src="./js/dashboard.js"></script>
-    <!-- <script src="./js/table.js"></script> -->
+    <script type="module" src="/dashboard/student/js/student.dashboard.js"></script>
+    <!-- <script src="/dashboard/teacher/js/table.js"></script> -->
   </body>
 </html>

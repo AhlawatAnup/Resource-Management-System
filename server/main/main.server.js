@@ -2,6 +2,7 @@ const express = require("express");
 const path = require("path");
 const bodyParser = require("body-parser");
 const session = require("express-session");
+const MongoStore = require("connect-mongo");
 const connectDB = require("./database/db");
 // ✅ Connect to DB
 connectDB();
@@ -23,6 +24,11 @@ app.use(
     secret: "super-secret-key", // change to strong key
     resave: false,
     saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: 'mongodb://localhost:27017/college_resources', // Replace with your actual MongoDB URL
+      touchAfter: 24 * 3600, // lazy session update
+      ttl: 60 * 60 * 24 // 1 days session expiry
+    }),
     cookie: { maxAge: 60 * 60 * 1000 * 24 * 30 }, // 30 days
   })
 );
@@ -33,14 +39,6 @@ app.get("/", (req, res) => {
     return res.redirect("/dashboard");
   }
   res.sendFile(path.join(publicPath, "home", "home.html"));
-});
-
-app.get("/dashboard", (req, res) => {
-  if (!req.session.user) {
-    return res.redirect("/");
-  }
-
-  res.sendFile(path.join(publicPath, "dashboard", "common.dashboard.html"));
 });
 
 // Logout route

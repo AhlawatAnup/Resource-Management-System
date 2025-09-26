@@ -1,0 +1,318 @@
+@import url("https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap");
+
+@import url("./teacher.table.css");
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Rubik", sans-serif;
+  background: #f8f9fa;
+  height: 100vh;
+  display: flex;
+}
+
+/* Sidebar Styles */
+.sidebar {
+  width: 250px;
+  display: flex;
+  flex-direction: column;
+  padding: 30px 0;
+  border-right: #d7d5d6 1px solid;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  padding: 0 20px 30px;
+  font-size: 24px;
+  font-weight: 700;
+  color: #2d3748;
+}
+
+.logo-icon {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 8px;
+  margin-right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 16px;
+}
+
+.nav-menu {
+  flex: 1;
+  padding: 0 20px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  padding: 14px 0;
+  color: #718096;
+  text-decoration: none;
+  border-radius: 8px;
+  margin-bottom: 4px;
+  transition: all 0.2s;
+  margin-left: 1rem;
+  gap: 1rem;
+}
+
+.nav-item:hover,
+.nav-item.active {
+  color: #2d3748;
+  background: #f7fafc;
+}
+
+.nav-item i {
+  width: 20px;
+  margin-right: 12px;
+}
+
+/* Main Content Styles */
+.main-content {
+  flex: 1;
+  padding: 20px 40px;
+  overflow-y: auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.welcome-section h1 {
+  font-size: 32px;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 8px;
+}
+
+.welcome-section p {
+  color: #718096;
+  font-size: 14px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 200px;
+  }
+
+  .main-content {
+    padding: 20px;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .welcome-section h1 {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sidebar {
+    width: 60px;
+  }
+
+  .logo {
+    justify-content: center;
+  }
+
+  .logo span:not(.logo-icon) {
+    display: none;
+  }
+
+  .nav-item span {
+    display: none;
+  }
+
+  .nav-item {
+    justify-content: center;
+  }
+}
+
+/* Action buttons for student verification */
+.approve-btn {
+  background-color: #28a745 !important;
+  color: white !important;
+  border: none !important;
+  margin-right: 8px;
+}
+
+.approve-btn:hover {
+  background-color: #218838 !important;
+  transform: scale(1.05);
+}
+
+.decline-btn {
+  background-color: #dc3545 !important;
+  color: white !important;
+  border: none !important;
+}
+
+.decline-btn:hover {
+  background-color: #c82333 !important;
+  transform: scale(1.05);
+}
+
+.icon-btn {
+  transition: all 0.2s ease;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Teacher Profile Styles */
+.teacher-profile-card {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  margin: 0 40px;
+}
+
+.teacher-avatar {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.8em;
+  font-weight: bold;
+}
+
+.teacher-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  color: #666;
+  margin-top: 8px;
+}
+
+.verification-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.8em;
+  font-weight: bold;
+  color: white;
+}
+
+.verification-badge.verified {
+  background: #28a745;
+}
+
+.verification-badge.pending {
+  background: #ffc107;
+}
+
+.verification-badge.rejected {
+  background: #dc3545;
+}
+
+/* Responsive Design Updates */
+@media (max-width: 768px) {
+  .teacher-profile-card {
+    margin: 0 20px;
+    padding: 20px;
+  }
+  
+  .teacher-avatar {
+    width: 60px;
+    height: 60px;
+    font-size: 1.5em;
+  }
+  
+  .teacher-info-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+}
+
+/* Notification animations */
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+/* Student Verification Status Badges in Teacher Portal */
+.badge.verified {
+  background: #d4edda !important;
+  color: #155724 !important;
+  border: 1px solid #c3e6cb;
+  font-weight: 600;
+}
+
+.badge.pending-teacher {
+  background: #fff3cd !important;
+  color: #856404 !important;
+  border: 1px solid #ffeaa7;
+  font-weight: 600;
+}
+
+.badge.pending-admin {
+  background: #cce7ff !important;
+  color: #0056b3 !important;
+  border: 1px solid #99d6ff;
+  font-weight: 600;
+}
+
+.badge.declined {
+  background: #f8d7da !important;
+  color: #721c24 !important;
+  border: 1px solid #f1aeb5;
+  font-weight: 600;
+}
+
+.badge.pending {
+  background: #e2e3e5 !important;
+  color: #6c757d !important;
+  border: 1px solid #ced4da;
+  font-weight: 600;
+}
+
+/* Ensure badges have consistent styling */
+.badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.85em;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+}
+
+.badge:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
