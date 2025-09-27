@@ -72,9 +72,18 @@ exports.submitResourceRequest = async (req, res) => {
     const savedRequest = await resourceRequest.save();
     
     // Add the resource request ID to the student's resourceRequests array
-    await addResourceRequestToStudent(studentId, savedRequest._id);
-    
-    console.log(`New resource request submitted by student ${studentId}:`, savedRequest._id);
+    if (savedRequest) {
+      await addResourceRequestToStudent(studentId, savedRequest._id);
+      console.log(`New resource request submitted by student ${studentId}:`, savedRequest._id);
+      // Send email to student after successful request
+      const { sendResourceRequestSubmittedEmail } = require('../utils/emailService');
+      try {
+        await sendResourceRequestSubmittedEmail(student.email, student.name, savedRequest.title);
+        console.log(`Resource request email sent to ${student.email}`);
+      } catch (emailErr) {
+        console.error('Error sending resource request email:', emailErr);
+      }
+    }
 
     return res.status(201).json({
       message: "Resource request submitted successfully",

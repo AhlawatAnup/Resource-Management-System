@@ -169,28 +169,32 @@ exports.register = async (req, res) => {
 
       const savedStudent = await student.save();
 
-      //   ADD THIS STUDENT TO THE TEACHER DB AS WELL
-      const teacher = await Teacher.findById(teacher_id);
-      teacher.students.push(savedStudent._id);
-      await teacher.save();
+      if (savedStudent) {
+        //   ADD THIS STUDENT TO THE TEACHER DB AS WELL
+        const teacher = await Teacher.findById(teacher_id);
+        teacher.students.push(savedStudent._id);
+        await teacher.save();
 
-      // Attach session
-      req.session.user = {
-        email: req.session.email,
-        role: req.session.role,
-        id: savedStudent._id,
-      };
+        // Attach session
+        req.session.user = {
+          email: req.session.email,
+          role: req.session.role,
+          id: savedStudent._id,
+        };
 
-      // Send registration success email to student
-      try {
-        await sendStudentRegistrationSuccessEmail(req.session.email, name);
-        console.log('Student registration success email sent to:', req.session.email);
-      } catch (emailError) {
-        console.error('Error sending student registration email:', emailError);
-        // Don't fail the registration if email fails
+        // Send registration success email to student
+        try {
+          await sendStudentRegistrationSuccessEmail(req.session.email, name);
+          console.log('Student registration success email sent to:', req.session.email);
+        } catch (emailError) {
+          console.error('Error sending student registration email:', emailError);
+          // Don't fail the registration if email fails
+        }
+
+        return res.json({ message: "Student registered successfully" });
+      } else {
+        return res.status(500).json({ error: "Failed to save student" });
       }
-
-      return res.json({ message: "Student registered successfully" });
     }
 
     if (role === "teacher") {
@@ -199,23 +203,27 @@ exports.register = async (req, res) => {
         return res.status(400).json({ error: "Invalid Data" });
       const teacher = new Teacher({ email: req.session.email, name, branch, phone });
       const teacher_id = await teacher.save();
-      // Attach session
-      req.session.user = {
-        email: req.session.email,
-        role: req.session.role,
-        id: teacher_id._id,
-      };
+      if (teacher_id) {
+        // Attach session
+        req.session.user = {
+          email: req.session.email,
+          role: req.session.role,
+          id: teacher_id._id,
+        };
 
-      // Send registration success email to teacher
-      try {
-        await sendTeacherRegistrationSuccessEmail(req.session.email, name);
-        console.log('Teacher registration success email sent to:', req.session.email);
-      } catch (emailError) {
-        console.error('Error sending teacher registration email:', emailError);
-        // Don't fail the registration if email fails
+        // Send registration success email to teacher
+        try {
+          await sendTeacherRegistrationSuccessEmail(req.session.email, name);
+          console.log('Teacher registration success email sent to:', req.session.email);
+        } catch (emailError) {
+          console.error('Error sending teacher registration email:', emailError);
+          // Don't fail the registration if email fails
+        }
+
+        return res.json({ message: "Teacher registered successfully" });
+      } else {
+        return res.status(500).json({ error: "Failed to save teacher" });
       }
-
-      return res.json({ message: "Teacher registered successfully" });
     }
 
     if (role === "admin") {
