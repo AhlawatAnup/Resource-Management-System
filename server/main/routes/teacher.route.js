@@ -11,6 +11,8 @@ const {
   updateResourceRequestVerification
 } = require("../controllers/common.controller.js");
 
+const { editResourceRequestByTeacher } = require("../controllers/teacher.controller.js");
+
 const router = express.Router();
 
 // Middleware applied to all auth routes
@@ -21,6 +23,8 @@ router.get("/data", teacher_dashboard_data);
 router.get("/student_data/:stu_id", student_data);
 
 router.put("/verify_student/:stu_id", updateStudentVerification);
+
+router.put("/edit_request/:request_id", editResourceRequestByTeacher);
 
 router.put("/verify_request/:request_id", updateResourceRequestVerification);
 

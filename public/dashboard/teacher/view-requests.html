@@ -89,6 +89,24 @@
             </tbody>
           </table>
         </div>
+        <!-- Edit Resource Request Modal -->
+        <div id="editRequestModal" class="modal" style="display:none;">
+          <div class="modal-content">
+            <span class="close" id="closeEditModal">&times;</span>
+            <h2>Edit Resource Request</h2>
+            <form id="editRequestForm">
+              <input type="hidden" id="editRequestId" />
+              <label>Title: <input type="text" id="editTitle" required /></label><br />
+              <label>Purpose: <textarea id="editPurpose" required></textarea></label><br />
+              <label>Expiry Date: <input type="date" id="editExpiryDate" required /></label><br />
+              <label>CPU Cores: <input type="number" id="editCpuCores" min="1" required /></label><br />
+              <label>CPU RAM (GB): <input type="number" id="editCpuRam" min="1" required /></label><br />
+              <label>GPU Count: <input type="number" id="editGpuCount" min="0" required /></label><br />
+              <label>GPU RAM (GB): <input type="number" id="editGpuRam" min="0" required /></label><br />
+              <button type="submit">Save Changes</button>
+            </form>
+          </div>
+        </div>
       </div>
     </main>
 

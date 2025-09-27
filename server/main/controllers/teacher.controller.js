@@ -1,6 +1,7 @@
 const Student = require("../database/studentModel");
 const Teacher = require("../database/teacherModel");
 const Admin = require("../database/adminModel");
+const ResourceRequest = require("../database/resourceRequestModel.js");
 
 exports.teacher_dashboard_data = async (req, res) => {
   const role = req.session.user.role;
@@ -58,5 +59,34 @@ exports.teacher_dashboard_data = async (req, res) => {
       console.error(err);
       return res.status(500).json({ error: "Failed to fetch teacher dashboard data" });
     }
+  }
+};
+
+// Teacher edits a resource request
+exports.editResourceRequestByTeacher = async (req, res) => {
+  const role = req.session.user.role;
+  if (role !== "teacher") {
+    return res.status(403).json({ error: "Unauthorized" });
+  }
+  const requestId = req.params.request_id;
+  const updateFields = req.body;
+  // Only allow certain fields to be updated by teacher
+  const allowedFields = ["title", "purpose", "expiryDate", "cpuCores", "cpuRam", "gpuCount", "gpuRam"];
+  const updates = {};
+  for (const key of allowedFields) {
+    if (updateFields[key] !== undefined) {
+      updates[key] = updateFields[key];
+    }
+  }
+  updates.updatedAt = new Date();
+  try {
+    const updatedRequest = await ResourceRequest.findByIdAndUpdate(requestId, updates, { new: true });
+    if (!updatedRequest) {
+      return res.status(404).json({ error: "Resource request not found" });
+    }
+    return res.json({ success: true, resourceRequest: updatedRequest });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Failed to update resource request", details: err.message });
   }
 };
