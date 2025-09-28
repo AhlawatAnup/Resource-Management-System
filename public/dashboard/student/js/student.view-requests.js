@@ -2,7 +2,7 @@
 import { formatDate } from '/dashboard/common/js/commons.js';
 import { getLoggedInStudentId, showLoadingState, showErrorMessage } from './student.utils.js';
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Load the view requests page when DOM is ready
     loadViewRequestsPage();
 });
@@ -11,20 +11,20 @@ async function loadViewRequestsPage() {
     try {
         // Show loading state
         showLoadingState('requests-content');
-        
+
         // Get the logged-in student's ID from session/storage
         const studentId = await getLoggedInStudentId();
-        
+
         if (!studentId) {
             throw new Error('Student ID not found. Please login again.');
         }
-        
+
         // Display the requests page structure
         displayRequestsPageStructure();
-        
+
         // Load all requests for this student
         loadAllRequests(studentId);
-        
+
     } catch (error) {
         console.error('Error loading view requests page:', error);
         showErrorMessage('Failed to load requests. Please try again.', 'requests-content');
@@ -33,7 +33,7 @@ async function loadViewRequestsPage() {
 
 function displayRequestsPageStructure() {
     const requestsContent = document.getElementById('requests-content');
-    
+
     requestsContent.innerHTML = `
         <div class="requests-page">
             <!-- All Requests Section -->
@@ -59,11 +59,11 @@ function displayRequestsPageStructure() {
             </div>
         </div>
     `;
-    
+
     // Add event listener for status filter
     const statusFilter = document.getElementById('status-filter');
     if (statusFilter) {
-        statusFilter.addEventListener('change', function() {
+        statusFilter.addEventListener('change', function () {
             filterRequestsByStatus(this.value);
         });
     }
@@ -77,7 +77,7 @@ async function loadAllRequests(studentId) {
                 'Content-Type': 'application/json'
             }
         });
-        
+
         if (response.ok) {
             const requests = await response.json();
             displayAllRequests(requests);
@@ -96,7 +96,7 @@ let allRequestsData = []; // Store all requests for filtering
 function displayAllRequests(requests) {
     allRequestsData = requests; // Store for filtering
     const requestsList = document.getElementById('all-requests-list');
-    
+
     if (!requests || requests.length === 0) {
         requestsList.innerHTML = `
             <div class="no-requests">
@@ -113,15 +113,15 @@ function displayAllRequests(requests) {
         `;
         return;
     }
-    
+
     // Sort requests by creation date (newest first)
     const sortedRequests = requests.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    
+
     const requestsHTML = sortedRequests.map(request => {
         const statusClass = getRequestStatusClass(request);
         const statusIcon = getRequestStatusIcon(request);
         const statusText = getRequestStatusText(request);
-        
+
         return `
             <div class="request-item detailed" data-status="${getRequestStatus(request)}">
                 <div class="request-header">
@@ -233,11 +233,11 @@ function displayAllRequests(requests) {
             </div>
         `;
     }).join('');
-    
+
     requestsList.innerHTML = requestsHTML;
     // Add event listeners for password toggle buttons
     document.querySelectorAll('.toggle-pw-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function () {
             const pwid = btn.getAttribute('data-pwid');
             const masked = document.getElementById('masked-pw-' + pwid);
             const real = document.getElementById('real-pw-' + pwid);
@@ -259,18 +259,18 @@ function getRequestStatus(request) {
     if (request.teacher_verified && request.admin_verified && request.is_verified) {
         return 'approved';
     }
-    
-    if ((request.teacher_action && !request.teacher_verified) || 
+
+    if ((request.teacher_action && !request.teacher_verified) ||
         (request.admin_action && !request.admin_verified)) {
         return 'rejected';
     }
-    
+
     return 'pending';
 }
 
 function filterRequestsByStatus(status) {
     const requestItems = document.querySelectorAll('.request-item.detailed');
-    
+
     requestItems.forEach(item => {
         if (status === 'all' || item.dataset.status === status) {
             item.style.display = 'block';
@@ -278,11 +278,11 @@ function filterRequestsByStatus(status) {
             item.style.display = 'none';
         }
     });
-    
+
     // Update the count display
     const visibleItems = document.querySelectorAll('.request-item.detailed[style="display: block"], .request-item.detailed:not([style*="display: none"])').length;
     const totalItems = requestItems.length;
-    
+
     // Add/update filter info
     let filterInfo = document.getElementById('filter-info');
     if (!filterInfo) {
@@ -291,7 +291,7 @@ function filterRequestsByStatus(status) {
         filterInfo.style.cssText = 'margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 6px; color: #666; font-size: 0.9em;';
         document.getElementById('all-requests-list').insertBefore(filterInfo, document.getElementById('all-requests-list').firstChild);
     }
-    
+
     const statusText = status === 'all' ? 'All' : status.charAt(0).toUpperCase() + status.slice(1);
     filterInfo.innerHTML = `Showing ${visibleItems} of ${totalItems} requests (${statusText})`;
 }
@@ -302,19 +302,19 @@ function getRequestStatusClass(request) {
     if (request.teacher_verified && request.admin_verified && request.is_verified) {
         return 'status-approved';
     }
-    
+
     if (request.teacher_action && !request.teacher_verified) {
         return 'status-rejected';
     }
-    
+
     if (request.admin_action && !request.admin_verified) {
         return 'status-rejected';
     }
-    
+
     if (request.teacher_action && request.teacher_verified && !request.admin_action) {
         return 'status-in-progress';
     }
-    
+
     return 'status-pending';
 }
 
@@ -323,16 +323,16 @@ function getRequestStatusIcon(request) {
     if (request.teacher_verified && request.admin_verified && request.is_verified) {
         return '✓';
     }
-    
-    if ((request.teacher_action && !request.teacher_verified) || 
+
+    if ((request.teacher_action && !request.teacher_verified) ||
         (request.admin_action && !request.admin_verified)) {
         return '✗';
     }
-    
+
     if (request.teacher_action && request.teacher_verified && !request.admin_action) {
         return '⏳';
     }
-    
+
     return '⏳';
 }
 
@@ -341,22 +341,22 @@ function getRequestStatusText(request) {
     if (request.teacher_verified && request.admin_verified && request.is_verified) {
         return 'Approved';
     }
-    
+
     if (request.teacher_action && !request.teacher_verified) {
         return 'Rejected by Teacher';
     }
-    
+
     if (request.admin_action && !request.admin_verified) {
         return 'Rejected by Admin';
     }
-    
+
     if (request.teacher_action && request.teacher_verified && !request.admin_action) {
         return 'Pending Admin Approval';
     }
-    
+
     if (!request.teacher_action) {
         return 'Pending Teacher Review';
     }
-    
+
     return 'Pending Review';
 }
