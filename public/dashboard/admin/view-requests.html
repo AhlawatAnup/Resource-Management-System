@@ -162,6 +162,61 @@
       </div>
     </div>
 
+    <!-- Edit Resource Request Modal (Admin) -->
+    <div id="editRequestModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3><i class="fas fa-pen-to-square"></i> Edit Resource Request</h3>
+          <button class="close-btn" id="closeEditModal">&times;</button>
+        </div>
+        <form id="editRequestForm">
+          <input type="hidden" id="editRequestId" />
+          <div class="modal-body">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="editTitle">Title:</label>
+                <input type="text" id="editTitle" name="title" class="form-control" required />
+              </div>
+              <div class="form-group">
+                <label for="editPurpose">Purpose:</label>
+                <input type="text" id="editPurpose" name="purpose" class="form-control" required />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="editExpiryDate">Expiry Date:</label>
+                <input type="date" id="editExpiryDate" name="expiryDate" class="form-control" required />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="editCpuCores">CPU Cores:</label>
+                <input type="number" id="editCpuCores" name="cpuCores" class="form-control" min="1" required />
+              </div>
+              <div class="form-group">
+                <label for="editCpuRam">CPU RAM (GB):</label>
+                <input type="number" id="editCpuRam" name="cpuRam" class="form-control" min="1" required />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="editGpuCount">GPU Count:</label>
+                <input type="number" id="editGpuCount" name="gpuCount" class="form-control" min="0" required />
+              </div>
+              <div class="form-group">
+                <label for="editGpuRam">GPU RAM (GB):</label>
+                <input type="number" id="editGpuRam" name="gpuRam" class="form-control" min="0" required />
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" id="closeEditModal">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <script type="module" src="/dashboard/admin/js/admin-view-requests.js"></script>
   </body>
 </html>

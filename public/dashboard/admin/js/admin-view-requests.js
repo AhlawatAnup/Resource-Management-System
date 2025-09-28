@@ -130,13 +130,16 @@ function getActionButtons(request) {
     return '<span style="color: #666; font-style: italic;">Action Completed</span>';
   }
 
-  // Admin can approve/decline
+  // Admin can approve/decline/edit
   return `
     <button class="icon-btn approve-btn" title="Approve Request" data-request-id="${request._id}" data-action="approve">
       <i class="fa-solid fa-check"></i>
     </button>
     <button class="icon-btn decline-btn" title="Decline Request" data-request-id="${request._id}" data-action="decline">
       <i class="fa-solid fa-times"></i>
+    </button>
+    <button class="icon-btn edit-btn" title="Edit Request" data-request-id="${request._id}" data-action="edit">
+      <i class="fa-solid fa-pen-to-square"></i>
     </button>
   `;
 }
@@ -357,14 +360,29 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Event delegation for approve/decline buttons
   document.getElementById("requestsTableBody").addEventListener("click", (e) => {
-    const button = e.target.closest('.approve-btn, .decline-btn');
+    const button = e.target.closest('.approve-btn, .decline-btn, .edit-btn');
     if (button) {
       const requestId = button.getAttribute('data-request-id');
       const action = button.getAttribute('data-action');
-      const isVerified = action === 'approve';
-      updateRequestVerification(requestId, isVerified);
+      if (action === 'edit') {
+        showEditModal(requestId);
+      } else {
+        const isVerified = action === 'approve';
+        updateRequestVerification(requestId, isVerified);
+      }
     }
   });
+
+  // Modal close button
+  document.getElementById('closeEditModal').onclick = function() {
+    document.getElementById('editRequestModal').style.display = 'none';
+  };
+
+  // Modal form submit
+  document.getElementById('editRequestForm').onsubmit = async function(e) {
+    e.preventDefault();
+    await submitEditRequest();
+  };
 
   // Verification form submission handler
   const verificationForm = document.getElementById('verificationForm');
@@ -442,6 +460,74 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 });
+
+// Show edit modal and populate fields
+function showEditModal(requestId) {
+  const req = resourceRequests.find(r => r._id === requestId);
+  if (!req) return;
+  document.getElementById('editRequestId').value = req._id;
+  document.getElementById('editTitle').value = req.title;
+  document.getElementById('editPurpose').value = req.purpose;
+  document.getElementById('editExpiryDate').value = req.expiryDate ? req.expiryDate.split('T')[0] : '';
+  document.getElementById('editCpuCores').value = req.cpuCores;
+  document.getElementById('editCpuRam').value = req.cpuRam;
+  document.getElementById('editGpuCount').value = req.gpuCount;
+  document.getElementById('editGpuRam').value = req.gpuRam;
+  document.getElementById('editRequestModal').style.display = 'block';
+}
+
+// Submit edit request to backend
+async function submitEditRequest() {
+  const requestId = document.getElementById('editRequestId').value;
+  const payload = {
+    title: document.getElementById('editTitle').value,
+    purpose: document.getElementById('editPurpose').value,
+    expiryDate: document.getElementById('editExpiryDate').value,
+    cpuCores: Number(document.getElementById('editCpuCores').value),
+    cpuRam: Number(document.getElementById('editCpuRam').value),
+    gpuCount: Number(document.getElementById('editGpuCount').value),
+    gpuRam: Number(document.getElementById('editGpuRam').value)
+  };
+  try {
+    // Use admin endpoint for editing
+    const response = await fetch(`/dashboard/admin/edit_request/${requestId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    console.log("Status:", response.status);
+    let result;
+    try {
+      result = await response.json();
+    } catch (jsonErr) {
+      console.error("Failed to parse JSON response:", jsonErr);
+      throw new Error('Invalid server response');
+    }
+    console.log("Response:", result);
+    if (!response.ok || !result.success) {
+      const errorMsg = result && result.error ? result.error : 'Failed to edit request';
+      throw new Error(errorMsg);
+    }
+    // Update local data
+    const idx = resourceRequests.findIndex(r => r._id === requestId);
+    if (idx !== -1) {
+      // Merge studentInfo/teacherInfo from old request if missing in updated one
+      if (!result.resourceRequest.studentInfo && resourceRequests[idx].studentInfo) {
+        result.resourceRequest.studentInfo = resourceRequests[idx].studentInfo;
+      }
+      if (!result.resourceRequest.teacherInfo && resourceRequests[idx].teacherInfo) {
+        result.resourceRequest.teacherInfo = resourceRequests[idx].teacherInfo;
+      }
+      resourceRequests[idx] = result.resourceRequest;
+    }
+    filterRequests(document.getElementById('searchInput').value);
+    document.getElementById('editRequestModal').style.display = 'none';
+    showNotification('Resource request updated successfully!', 'success');
+  } catch (err) {
+    console.error('Edit request error:', err);
+    showNotification(err.message || 'Failed to update resource request.', 'error');
+  }
+}
 
 // Make functions globally available for HTML onclick handlers
 window.closeVerificationModal = closeVerificationModal;
