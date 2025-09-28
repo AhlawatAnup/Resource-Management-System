@@ -511,6 +511,8 @@ const sendResourceRequestVerifiedByAdminEmail = async (studentEmail, studentName
           <h3 style="color: #333; margin-top: 0;">VM Access Credentials:</h3>
           <p><strong>Username:</strong> <code style="background: #e8e8e8; padding: 2px 4px;">${vmCredentials.username}</code></p>
           <p><strong>Password:</strong> <code style="background: #e8e8e8; padding: 2px 4px;">${vmCredentials.password}</code></p>
+          <p><strong>IP:</strong> <code style="background: #e8e8e8; padding: 2px 4px;">${vmCredentials.ip}</code></p>
+          <p><strong>MIG ID:</strong> <code style="background: #e8e8e8; padding: 2px 4px;">${vmCredentials.migId}</code></p>
         </div>
         
         <div style="background-color: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 5px; margin: 20px 0;">

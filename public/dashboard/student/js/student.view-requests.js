@@ -171,6 +171,60 @@ function displayAllRequests(requests) {
                                 <div class="spec-label">Duration</div>
                                 <div class="spec-value">Until ${formatDate(request.expiryDate)}</div>
                             </div>
+                            ${(request.teacher_verified && request.admin_verified && request.is_verified && request.vmCredentials && request.vmCredentials.username && request.vmCredentials.password) ? `
+    <div class="request-credentials" style="background:#e6f7e6; border-radius:12px; width:30vw; padding:16px; margin:12px 0; box-shadow:0 2px 6px rgba(0,0,0,0.1);">
+        <h4 style="margin-bottom:12px; color:#2f6627;">Login Credentials</h4>
+        <div class="credentials-grid" style="display:flex; flex-direction:column; gap:10px;">
+            
+            <!-- Username -->
+            <div class="credential-item" style="display:flex; align-items:center; gap:10px; max-width:100%;">
+                <strong style="width:80px;">Username:</strong>
+                <span style="border:1px solid #c3e6c3; border-radius:6px; padding:6px 10px; background:#f0fff0; flex:1;">${request.vmCredentials.username}</span>
+            </div>
+
+            <!-- Password -->
+<div class="credential-item" style="display:flex; align-items:flex-start; gap:10px; max-width:100%;">
+    <strong style="width:80px;">Password:</strong>
+    <div style="display:flex; align-items:center; border:1px solid #c3e6c3; border-radius:6px; padding:6px 10px; width:100%; background:#f0fff0;">
+        <!-- Masked Password -->
+        <span class="masked-password" 
+              id="masked-pw-${request._id}" 
+              style="flex:1; white-space:normal; word-break:break-word;">
+          ****************
+        </span>
+        <!-- Real Password -->
+        <span class="real-password" 
+              id="real-pw-${request._id}" 
+              style="flex:1; display:none; white-space:normal; word-break:break-word;">
+          ${request.vmCredentials.password}
+        </span>
+        <!-- Eye Button -->
+        <button type="button" 
+                class="toggle-pw-btn" 
+                data-pwid="${request._id}" 
+                style="background:none; border:none; cursor:pointer; padding:0 6px; flex-shrink:0;">
+            <i class="fas fa-eye"></i>
+        </button>
+    </div>
+</div>
+
+
+            <!-- Optional IP -->
+            ${(request.vmCredentials.ip) ? `<div class="credential-item" style="display:flex; align-items:center; gap:10px; max-width:100%;">
+                <strong style="width:80px;">IP:</strong>
+                <span style="border:1px solid #c3e6c3; border-radius:6px; padding:6px 10px; background:#f0fff0; flex:1;">${request.vmCredentials.ip}</span>
+            </div>` : ''}
+
+            <!-- Optional MIG ID -->
+            ${(request.vmCredentials.migId) ? `<div class="credential-item" style="display:flex; align-items:center; gap:10px; max-width:100%;">
+                <strong style="width:80px;">MIG ID:</strong>
+                <span style="border:1px solid #c3e6c3; border-radius:6px; padding:6px 10px; background:#f0fff0; flex:1;">${request.vmCredentials.migId}</span>
+            </div>` : ''}
+
+        </div>
+    </div>
+` : ''}
+
                             
                         </div>
                     </div>
@@ -181,6 +235,23 @@ function displayAllRequests(requests) {
     }).join('');
     
     requestsList.innerHTML = requestsHTML;
+    // Add event listeners for password toggle buttons
+    document.querySelectorAll('.toggle-pw-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const pwid = btn.getAttribute('data-pwid');
+            const masked = document.getElementById('masked-pw-' + pwid);
+            const real = document.getElementById('real-pw-' + pwid);
+            if (masked.style.display === 'none') {
+                masked.style.display = '';
+                real.style.display = 'none';
+                btn.innerHTML = '<i class="fas fa-eye"></i>';
+            } else {
+                masked.style.display = 'none';
+                real.style.display = '';
+                btn.innerHTML = '<i class="fas fa-eye-slash"></i>';
+            }
+        });
+    });
 }
 
 function getRequestStatus(request) {
