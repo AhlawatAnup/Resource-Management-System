@@ -46,7 +46,9 @@ const resourceRequestSchema = new mongoose.Schema({
     // VM access credentials (provided when admin finally verifies)
   vmCredentials: {
     username: { type: String },
-    password: { type: String }
+    password: { type: String },
+    ip: { type: String },
+    migId: { type: String }
   },
 
   createdAt: { type: Date, default: Date.now },

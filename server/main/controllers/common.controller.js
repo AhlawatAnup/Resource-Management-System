@@ -203,20 +203,27 @@ exports.updateResourceRequestVerification = async (req, res) => {
         }
 
         // Validate VM credentials
-        if (!vmCredentials.username || !vmCredentials.password) {
-          return res.status(400).json({ error: "Both username and password are required for VM credentials" });
+        if (!vmCredentials.username || !vmCredentials.password || !vmCredentials.ip || !vmCredentials.migId) {
+          return res.status(400).json({ error: "Username, password, IP, and MIG ID are required for VM credentials" });
         }
 
         const username = vmCredentials.username.trim();
         const password = vmCredentials.password.trim();
-
+        const ip = vmCredentials.ip.trim();
+        const migId = vmCredentials.migId.trim();
         if (username.length < 3) {
           return res.status(400).json({ error: "Username must be at least 3 characters long" });
         }
         if (password.length < 6) {
           return res.status(400).json({ error: "Password must be at least 6 characters long" });
         }
-
+        // Optionally add IP/MIG ID format validation here
+        if (!ip) {
+          return res.status(400).json({ error: "IP address is required" });
+        }
+        if (!migId) {
+          return res.status(400).json({ error: "MIG ID is required" });
+        }
         // Admin approves → set everything true and add VM credentials
         updateData = {
           teacher_verified: true,
@@ -225,8 +232,10 @@ exports.updateResourceRequestVerification = async (req, res) => {
           admin_action: true,
           is_verified: true,
           vmCredentials: {
-            username: username,
-            password: password
+            username,
+            password,
+            ip,
+            migId
           }
         };
 

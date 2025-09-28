@@ -571,7 +571,7 @@ body {
 
 .modal-layout {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1.2fr 0.8fr;
   gap: 20px;
   align-items: start;
 }
@@ -624,6 +624,10 @@ body {
   display: flex;
   flex-direction: row;
   gap: 15px;
+}
+/* Only vertical for credentials-section */
+.credentials-section .form-row {
+  flex-direction: column;
 }
 
 .form-group {

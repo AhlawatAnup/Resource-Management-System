@@ -129,7 +129,6 @@
             <div class="credentials-column">
               <div class="credentials-section">
                 <h4><i class="fas fa-key"></i> VM Access Credentials</h4>
-                <p class="info-text">Provide login credentials for resource access.</p>
                 
                 <form id="verificationForm">
                   <div class="form-row">
@@ -143,6 +142,16 @@
                       <label for="vmPassword">Password:</label>
                       <input type="text" id="vmPassword" name="password" class="form-control" required 
                              placeholder="VM password (min 6 chars)" minlength="6">
+                    </div>
+                    <div class="form-group">
+                      <label for="vmIp">IP Address:</label>
+                      <input type="text" id="vmIp" name="ip" class="form-control" required 
+                             placeholder="VM IP Address">
+                    </div>
+                    <div class="form-group">
+                      <label for="vmMigId">MIG ID:</label>
+                      <input type="text" id="vmMigId" name="migId" class="form-control" required 
+                             placeholder="MIG ID">
                     </div>
                   </div>
                   

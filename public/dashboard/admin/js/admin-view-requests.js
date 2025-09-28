@@ -400,10 +400,12 @@ document.addEventListener('DOMContentLoaded', function() {
       
       const username = document.getElementById('vmUsername').value.trim();
       const password = document.getElementById('vmPassword').value.trim();
-      
+      const ip = document.getElementById('vmIp').value.trim();
+      const migId = document.getElementById('vmMigId').value.trim();
+
       // Frontend validation
-      if (!username || !password) {
-        showNotification('Please fill in both username and password', 'error');
+      if (!username || !password || !ip || !migId) {
+        showNotification('Please fill in all credentials fields', 'error');
         return;
       }
       
@@ -418,8 +420,10 @@ document.addEventListener('DOMContentLoaded', function() {
       }
       
       const credentials = {
-        username: username,
-        password: password
+        username,
+        password,
+        ip,
+        migId
       };
       
       console.log('Form submission - credentials:', credentials);
