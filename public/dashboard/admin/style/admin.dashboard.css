@@ -622,12 +622,13 @@ body {
 
 .form-row {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 15px;
 }
 
 .form-group {
   margin-bottom: 0;
+  width: 400px;
 }
 
 .form-group label {
@@ -723,4 +724,9 @@ body {
   .btn {
     justify-content: center;
   }
+}
+
+.modal-footer{
+  display: flex;
+  gap: 10px;
 }
