@@ -41,7 +41,7 @@ function displayRequestsPageStructure() {
                 <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                     <h2>
                         <i class="fas fa-list-ul"></i>
-                        All Your Requests
+                        All Your Resource Requests
                     </h2>
                     <div class="filter-controls" style="display: flex; gap: 10px; align-items: center;">
                         <label for="status-filter" style="font-weight: 600; color: #666;">Filter by Status:</label>
