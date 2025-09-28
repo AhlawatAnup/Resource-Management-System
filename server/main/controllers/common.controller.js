@@ -287,3 +287,32 @@ exports.updateResourceRequestVerification = async (req, res) => {
     return res.status(500).json({ error: "Failed to update resource request verification" });
   }
 };
+
+// Common function for editing a resource request by teacher or admin
+exports.editResourceRequest = async (req, res) => {
+  const role = req.session.user.role;
+  if (role !== "teacher" && role !== "admin") {
+    return res.status(403).json({ error: "Unauthorized" });
+  }
+  const requestId = req.params.request_id;
+  const updateFields = req.body;
+  // Only allow certain fields to be updated
+  const allowedFields = ["title", "purpose", "expiryDate", "cpuCores", "cpuRam", "gpuCount", "gpuRam"];
+  const updates = {};
+  for (const key of allowedFields) {
+    if (updateFields[key] !== undefined) {
+      updates[key] = updateFields[key];
+    }
+  }
+  updates.updatedAt = new Date();
+  try {
+    const updatedRequest = await ResourceRequest.findByIdAndUpdate(requestId, updates, { new: true });
+    if (!updatedRequest) {
+      return res.status(404).json({ error: "Resource request not found" });
+    }
+    return res.json({ success: true, resourceRequest: updatedRequest });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Failed to update resource request", details: err.message });
+  }
+};

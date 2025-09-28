@@ -124,10 +124,6 @@ function getRequestStatus(request) {
 
 // Get action buttons based on request status (Admin perspective)
 function getActionButtons(request) {
-  // Admin can only act on requests that have been approved by teacher
-  if (!request.teacher_verified || !request.teacher_action) {
-    return '<span style="color: #666; font-style: italic;">Awaiting Teacher Approval</span>';
-  }
 
   // If admin has already taken action
   if (request.admin_action) {

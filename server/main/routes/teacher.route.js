@@ -8,10 +8,11 @@ const {
 const {
   student_data,
   updateStudentVerification,
-  updateResourceRequestVerification
+  updateResourceRequestVerification,
+  editResourceRequest
 } = require("../controllers/common.controller.js");
 
-const { editResourceRequestByTeacher } = require("../controllers/teacher.controller.js");
+
 
 const router = express.Router();
 
@@ -24,7 +25,7 @@ router.get("/student_data/:stu_id", student_data);
 
 router.put("/verify_student/:stu_id", updateStudentVerification);
 
-router.put("/edit_request/:request_id", editResourceRequestByTeacher);
+router.put("/edit_request/:request_id", editResourceRequest);
 
 router.put("/verify_request/:request_id", updateResourceRequestVerification);
 
