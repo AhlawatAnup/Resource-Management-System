@@ -306,13 +306,7 @@ async function handleResourceRequest(event) {
             const errorData = await response.json();
             // Show a specific notification if the error is about pending request
             if (errorData.error && errorData.error.includes('Only one pending request is allowed')) {
-                showErrorNotification('You already have a pending request. Please wait for it to be processed or delete it if no action has been taken by teacher/admin.');
-                // Re-enable submit button and exit
-                const submitBtn = event.target.querySelector('button[type="submit"]');
-                if (submitBtn) {
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Resource Request';
-                }
+                showErrorMessage('You already have a pending request. Please wait for it to be processed or delete it if no action has been taken by teacher/admin.', 'request-content');
                 return;
             }
             throw new Error(errorData.message || 'Failed to submit request');
