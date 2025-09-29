@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express = require("express");
+const cors = require("cors");
 const path = require("path");
 const bodyParser = require("body-parser");
 const session = require("express-session");
@@ -10,6 +11,20 @@ connectDB();
 
 const app = express();
 const PORT = 3000;
+
+app.use(cors({
+  origin: "http://localhost:3000", 
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE"]
+}));
+
+const allowedHost = "localhost:3000";
+app.use((req, res, next) => {
+  if (req.headers.host !== allowedHost) {
+    return res.status(403).json({ message: "Forbidden: Only localhost allowed" });
+  }
+  next();
+});
 
 // Define path to public folder (go one level up from server/main/)
 const publicPath = path.join(__dirname, "../../public");
