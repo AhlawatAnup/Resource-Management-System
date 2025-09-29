@@ -70,7 +70,7 @@ function displayResourcesPage(student) {
                         <div class="info-box tip" style="margin-bottom: 20px;">
                             <p class="tip-content" style="margin: 0;">
                                 <i class="fas fa-info-circle"></i>
-                                <strong>Note:</strong> Request the minimum resources you need for your project. You can always submit additional requests if your requirements change.
+                                <strong>Note:</strong> Only one pending request is allowed at a time. Please wait for your current request to be processed before submitting a new one or delete the request if there are no actions taken by teacher/admin.
                             </p>
                         </div>
                         
@@ -304,6 +304,17 @@ async function handleResourceRequest(event) {
         
         if (!response.ok) {
             const errorData = await response.json();
+            // Show a specific notification if the error is about pending request
+            if (errorData.error && errorData.error.includes('Only one pending request is allowed')) {
+                showErrorNotification('You already have a pending request. Please wait for it to be processed or delete it if no action has been taken by teacher/admin.');
+                // Re-enable submit button and exit
+                const submitBtn = event.target.querySelector('button[type="submit"]');
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Resource Request';
+                }
+                return;
+            }
             throw new Error(errorData.message || 'Failed to submit request');
         }
         
@@ -317,7 +328,7 @@ async function handleResourceRequest(event) {
         
     } catch (error) {
         console.error('Error submitting resource request:', error);
-        showErrorMessage('Failed to submit request: ' + error.message);
+        showErrorNotification('Failed to submit request: ' + error.message);
     } finally {
         // Re-enable submit button
         const submitBtn = event.target.querySelector('button[type="submit"]');
@@ -326,6 +337,28 @@ async function handleResourceRequest(event) {
             submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Resource Request';
         }
     }
+}
+
+// Show error notification popup (non-blocking)
+function showErrorNotification(message) {
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #ff4d4f, #ff7875);
+        color: white;
+        padding: 15px 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(255, 77, 79, 0.3);
+        z-index: 1000;
+        font-weight: 600;
+    `;
+    notification.innerHTML = `<i class="fas fa-exclamation-circle" style="margin-right: 8px;"></i>${message}`;
+    document.body.appendChild(notification);
+    setTimeout(() => {
+        notification.remove();
+    }, 5000);
 }
 
 function showSuccessMessage(message) {

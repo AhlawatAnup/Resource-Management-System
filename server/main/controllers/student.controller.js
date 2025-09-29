@@ -1,3 +1,43 @@
+// Delete a resource request by ID
+exports.deleteStudentResourceRequest = async (req, res) => {
+  try {
+    if (!req.session.user) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+
+    const { requestId } = req.params;
+    if (!requestId) {
+      return res.status(400).json({ error: "Request ID is required" });
+    }
+
+    // Find the request
+    const request = await ResourceRequest.findById(requestId);
+    if (!request) {
+      return res.status(404).json({ error: "Resource request not found" });
+    }
+
+    // Only allow the owner to delete
+    if (String(request.studentId) !== String(req.session.user.id)) {
+      return res.status(403).json({ error: "You can only delete your own requests" });
+    }
+
+    // Only allow delete if no action by admin/teacher and is_verified is false
+    if (request.teacher_action || request.admin_action || request.is_verified) {
+      return res.status(403).json({ error: "Cannot delete: action taken by admin/teacher or request is verified." });
+    }
+
+    // Remove from student's resourceRequests array
+    await Student.findByIdAndUpdate(request.studentId, { $pull: { resourceRequests: request._id } });
+
+    // Delete the request
+    await ResourceRequest.findByIdAndDelete(requestId);
+
+    return res.json({ message: "Resource request deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting resource request:", error);
+    return res.status(500).json({ error: "Failed to delete resource request" });
+  }
+};
 const ResourceRequest = require("../database/resourceRequestModel");
 const Student = require("../database/studentModel");
 const { addResourceRequestToStudent } = require("../utils/studentResourceUtils");
@@ -53,6 +93,22 @@ exports.submitResourceRequest = async (req, res) => {
     if (!student.teacher_verified || !student.admin_verified) {
       return res.status(403).json({ 
         error: "Student must be verified by both teacher and admin before submitting resource requests" 
+      });
+    }
+
+    // Check for existing pending request
+    const existingPending = await ResourceRequest.findOne({
+      studentId,
+      $or: [
+        { teacher_action: false },
+        { admin_action: false },
+        { is_verified: false }
+      ]
+    });
+
+    if (existingPending) {
+      return res.status(400).json({
+        error: "Only one pending request is allowed at a time. Please wait for your current request to be processed or delete it if there are no actions taken by teacher/admin."
       });
     }
 

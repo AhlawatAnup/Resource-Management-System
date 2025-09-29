@@ -8,7 +8,8 @@ const {
 
 const {
   submitResourceRequest,
-  getStudentResourceRequests
+  getStudentResourceRequests,
+  deleteStudentResourceRequest
 } = require("../controllers/student.controller.js");
 
 const router = express.Router();
@@ -18,7 +19,9 @@ router.use(logRequest);
 
 router.get("/student_data/:stu_id", student_data);
 
-// Resource request routes
+
+// Delete a resource request by ID
+router.delete("/requests/:requestId", deleteStudentResourceRequest);
 router.post("/submit-resource-request", submitResourceRequest);
 router.get("/resource-requests/:studentId", getStudentResourceRequests);
 
