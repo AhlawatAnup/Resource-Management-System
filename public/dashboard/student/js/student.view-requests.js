@@ -264,7 +264,7 @@ function displayAllRequests(requests) {
                 const requestId = btn.getAttribute('data-request-id');
                 if (confirm('Are you sure you want to delete this request?')) {
                     try {
-                        const response = await fetch(`/dashboard/student/requests/${requestId}`, {
+                        const response = await fetch(`/dashboard/student/del_requests/${requestId}`, {
                             method: 'DELETE',
                             headers: {
                                 'Content-Type': 'application/json'

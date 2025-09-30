@@ -21,7 +21,7 @@ router.get("/student_data/:stu_id", student_data);
 
 
 // Delete a resource request by ID
-router.delete("/requests/:requestId", deleteStudentResourceRequest);
+router.delete("/del_requests/:requestId", deleteStudentResourceRequest);
 router.post("/submit-resource-request", submitResourceRequest);
 router.get("/resource-requests/:studentId", getStudentResourceRequests);
 
