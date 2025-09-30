@@ -1,3 +1,4 @@
+
 const Student = require("../database/studentModel");
 const Teacher = require("../database/teacherModel");
 const Admin = require("../database/adminModel");
@@ -323,5 +324,22 @@ exports.editResourceRequest = async (req, res) => {
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "Failed to update resource request", details: err.message });
+  }
+};
+
+// Delete student and corresponding resource requests (for admin/teacher)
+exports.deleteStudentAndResources = async (req, res) => {
+  const { studentId } = req.params;
+  try {
+    const student = await Student.findById(studentId);
+    if (!student) {
+      return res.status(404).json({ message: "Student not found." });
+    }
+    // Cascade delete handled by studentModel pre middleware
+    const result = await Student.findOneAndDelete({ _id: studentId });
+    res.json({ message: "Student and corresponding resource requests deleted successfully.", student: result });
+  } catch (error) {
+    console.error("Error deleting student:", error);
+    res.status(500).json({ message: "Error deleting student.", error: error.message || error });
   }
 };

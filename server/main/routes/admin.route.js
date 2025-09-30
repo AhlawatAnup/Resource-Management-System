@@ -18,7 +18,8 @@ const {
   student_data,
   updateStudentVerification,
   updateResourceRequestVerification,
-  editResourceRequest
+  editResourceRequest,
+  deleteStudentAndResources
 } = require("../controllers/common.controller.js");
 
 const router = express.Router();
@@ -43,6 +44,7 @@ router.get("/students/rejected", getRejectedStudents);
 router.get("/student_data/:student_id", student_data);
 router.put("/verify_student/:student_id", updateStudentVerification);
 router.put("/edit_request/:request_id", editResourceRequest);
+router.delete("/delete_student/:studentId", deleteStudentAndResources); // Delete student and their resource requests (admin)
 
 // Resource request management routes
 router.get("/resource-requests", getAllResourceRequests);

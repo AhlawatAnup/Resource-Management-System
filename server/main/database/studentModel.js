@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const ResourceRequest = require("./resourceRequestModel");
 
 const studentSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
@@ -21,6 +22,15 @@ const studentSchema = new mongoose.Schema({
   admin_verified: { type: Boolean, default: false },
   admin_action: { type: Boolean, default: false },
   is_verified: { type: Boolean, default: false }
+});
+
+// Middleware to cascade delete ResourceRequests
+studentSchema.pre("findOneAndDelete", async function(next) {
+  const student = await this.model.findOne(this.getFilter());
+  if (student) {
+    await ResourceRequest.deleteMany({ _id: { $in: student.resourceRequests } });
+  }
+  next();
 });
 
 module.exports = mongoose.model("Student", studentSchema);

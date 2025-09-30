@@ -9,7 +9,8 @@ const {
   student_data,
   updateStudentVerification,
   updateResourceRequestVerification,
-  editResourceRequest
+  editResourceRequest,
+  deleteStudentAndResources
 } = require("../controllers/common.controller.js");
 
 
@@ -28,5 +29,7 @@ router.put("/verify_student/:stu_id", updateStudentVerification);
 router.put("/edit_request/:request_id", editResourceRequest);
 
 router.put("/verify_request/:request_id", updateResourceRequestVerification);
+
+router.delete("/delete_student/:studentId", deleteStudentAndResources);  // Delete student and their resource requests (teacher)
 
 module.exports = router;
