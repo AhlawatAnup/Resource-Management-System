@@ -1,3 +1,7 @@
+// Import utility functions
+import { formatDate } from '/dashboard/common/js/commons.js';
+import { getLoggedInStudentId, showLoadingState, showErrorMessage } from './student.utils.js';
+
 document.addEventListener('DOMContentLoaded', function() {
     // Get student details when page loads
     loadStudentDetails();
@@ -34,28 +38,6 @@ async function loadStudentDetails() {
         console.error('Error loading student details:', error);
         showErrorMessage('Failed to load student details. Please try again.');
     }
-}
-
-async function getLoggedInStudentId() {
-    try {
-        const response = await fetch('/dashboard/current-user-id', {
-            method: 'GET',
-            credentials: 'include'
-        });
-        
-        if (response.ok) {
-            const data = await response.json();
-            if (data.id) {
-                // Store for future use
-                localStorage.setItem('studentId', data.id);
-                return data.id;
-            }
-        }
-    } catch (error) {
-        console.error('Error fetching user ID from session:', error);
-    }
-    
-    return null;
 }
 
 function displayStudentDetails(student) {
@@ -123,40 +105,6 @@ function updateDashboardElements(student) {
     });
 }
 
-function showLoadingState() {
-    const profileSection = document.getElementById('student-profile');
-    if (profileSection) {
-        profileSection.innerHTML = `
-            <div class="loading-spinner">
-                <div class="spinner"></div>
-                <p>Loading student details...</p>
-            </div>
-        `;
-    }
-}
-
-function showErrorMessage(message) {
-    const profileSection = document.getElementById('student-profile');
-    if (profileSection) {
-        profileSection.innerHTML = `
-            <div class="error-message">
-                <i class="fas fa-exclamation-triangle"></i>
-                <p>${message}</p>
-                <button onclick="loadStudentDetails()" class="retry-btn">Retry</button>
-            </div>
-        `;
-    }
-}
-
-function formatDate(dateString) {
-    if (!dateString) return 'Not available';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    });
-}
 
 // Function to determine student verification status based on new schema
 function getStudentVerificationStatus(student) {

@@ -25,10 +25,15 @@
       </div>
 
       <nav class="nav-menu">
-        <a href="#" class="nav-item active">
+        <a href="#" class="nav-item active" id="dashboard-nav">
           <i class="fas fa-home"></i>
           Dashboard
         </a>
+        <a href="#" class="nav-item" id="view-requests-nav">
+          <i class="fas fa-eye"></i>
+          View Resource Requests
+        </a>
+      </nav>
 
       <div style="padding: 20px">
         <a href="/logout" class="nav-item">
@@ -75,6 +80,10 @@
               <button class="status-btn" data-status="verified">
                 <i class="fas fa-user-check"></i>
                 Verified
+              </button>
+              <button class="status-btn" data-status="rejected">
+                <i class="fas fa-user-times"></i>
+                Rejected
               </button>
             </div>
           </div>

@@ -29,3 +29,14 @@ function getBadgeClass(leadSource) {
   const source = leadSource.toLowerCase().replace(/\s+/g, "-");
   return `badge ${source}`;
 }
+
+// Common utility functions that can be used by any role
+export function formatDate(dateString) {
+    if (!dateString) return 'Not available';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+}

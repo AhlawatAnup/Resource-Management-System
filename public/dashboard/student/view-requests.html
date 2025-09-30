@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>U.I.E.T Resource Sharing</title>
+    <title>View Requests - U.I.E.T Resource Sharing</title>
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
       rel="stylesheet"
@@ -12,8 +12,10 @@
       src="https://kit.fontawesome.com/e05e3e1522.js"
       crossorigin="anonymous"
     ></script>
+    <link rel="stylesheet" href="/dashboard/student/style/student.dashboard.css" />
+    <link rel="stylesheet" href="/dashboard/student/style/student.request.css" />
+    <link rel="stylesheet" href="/dashboard/student/style/student.table.css" />
   </head>
-  <link rel="stylesheet" href="/dashboard/student/style/student.dashboard.css" />
   <body>
     <div class="sidebar">
       <div class="logo">
@@ -24,7 +26,7 @@
       </div>
 
       <nav class="nav-menu">
-        <a href="#" class="nav-item active">
+        <a href="/dashboard/student/student.dashboard.html" class="nav-item">
           <i class="fas fa-home"></i>
           Home
         </a>
@@ -32,26 +34,10 @@
           <i class="fas fa-plus-circle"></i>
           Request Resources
         </a>
-        <a href="/dashboard/student/view-requests.html" class="nav-item">
+        <a href="#" class="nav-item active">
           <i class="fas fa-list"></i>
           View Resource Requests
         </a>
-        <!-- <a href="#" class="nav-item">
-          <i class="fas fa-folder"></i>
-          Projects
-        </a>
-        <a href="#" class="nav-item">
-          <i class="fas fa-tasks"></i>
-          Tasks
-        </a>
-        <a href="#" class="nav-item">
-          <i class="fas fa-users"></i>
-          Team
-        </a>
-        <a href="#" class="nav-item">
-          <i class="fas fa-cog"></i>
-          Settings
-        </a> -->
       </nav>
 
       <div style="padding: 20px">
@@ -65,20 +51,19 @@
     <main class="main-content">
       <header class="header">
         <div class="welcome-section">
-          <h1 id="student-welcome">Hello, Student</h1>
-          <p>Welcome to your student dashboard. View your profile and track your progress.</p>
+          <h1 id="page-title">Your Requests</h1>
+          <p>View all your submitted resource requests and their current status.</p>
         </div>
       </header>
 
       <div class="container">
-        <!-- Student Profile Section -->
-        <div id="student-profile">
-          <!-- Profile will be loaded here by JavaScript -->
+        <!-- Requests Section -->
+        <div id="requests-content">
+          <!-- Content will be loaded here by JavaScript -->
         </div>
       </div>
     </main>
 
-    <script type="module" src="/dashboard/student/js/student.dashboard.js"></script>
-    <!-- <script src="/dashboard/teacher/js/table.js"></script> -->
+    <script type="module" src="/dashboard/student/js/student.view-requests.js"></script>
   </body>
 </html>

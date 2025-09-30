@@ -448,3 +448,23 @@ function showNotification(message, type) {
     }, 300);
   }, 3000);
 }
+
+// Navigation functionality for sidebar buttons
+document.addEventListener('DOMContentLoaded', function() {
+  const viewRequestsNav = document.getElementById('view-requests-nav');
+  const homeNav = document.getElementById('home-nav');
+
+  if (viewRequestsNav) {
+    viewRequestsNav.addEventListener('click', function(e) {
+      e.preventDefault();
+      window.location.href = '/dashboard/teacher/view-requests.html';
+    });
+  }
+
+  if (homeNav) {
+    homeNav.addEventListener('click', function(e) {
+      e.preventDefault();
+      window.location.href = '/dashboard/teacher/teacher.dashboard.html';
+    });
+  }
+});
