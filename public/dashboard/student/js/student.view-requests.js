@@ -182,8 +182,14 @@ function displayAllRequests(requests) {
                                 <!-- Username -->
                                 <div class="credential-item" style="display:flex; align-items:center; gap:10px; max-width:100%;">
                                     <strong style="width:80px;">Username:</strong>
-                                    <span style="border:1px solid #c3e6c3; border-radius:6px; padding:6px 10px; background:#f0fff0; flex:1;">${request.vmCredentials.username}</span>
+                                    <span id="username-${request._id}" style="border:1px solid #c3e6c3; border-radius:6px; padding:6px 10px; background:#f0fff0; flex:1;">
+                                        ${request.vmCredentials.username}
+                                    </span>
+                                    <button type="button" class="copy-btn" data-copytarget="username-${request._id}" style="background:none; border:none; cursor:pointer; padding:0 6px; flex-shrink:0;">
+                                        <span class="copy-label"><i class="fas fa-copy"></i></span>
+                                    </button>
                                 </div>
+
 
                                 <!-- Password -->
                                 <div class="credential-item" style="display:flex; align-items:flex-start; gap:10px; max-width:100%;">
@@ -212,15 +218,27 @@ function displayAllRequests(requests) {
                                 </div>
 
                                 <!-- Optional IP -->
-                                ${(request.vmCredentials.ip) ? `<div class="credential-item" style="display:flex; align-items:center; gap:10px; max-width:100%;">
+                                ${request.vmCredentials.ip ? `
+                                <div class="credential-item" style="display:flex; align-items:center; gap:10px; max-width:100%;">
                                     <strong style="width:80px;">IP:</strong>
-                                    <span style="border:1px solid #c3e6c3; border-radius:6px; padding:6px 10px; background:#f0fff0; flex:1;">${request.vmCredentials.ip}</span>
+                                    <span id="ip-${request._id}" style="border:1px solid #c3e6c3; border-radius:6px; padding:6px 10px; background:#f0fff0; flex:1;">
+                                        ${request.vmCredentials.ip}
+                                    </span>
+                                    <button type="button" class="copy-btn" data-copytarget="ip-${request._id}" style="background:none; border:none; cursor:pointer; padding:0 6px; flex-shrink:0;">
+                                        <span class="copy-label"><i class="fas fa-copy"></i></span>
+                                    </button>
                                 </div>` : ''}
 
                                 <!-- Optional MIG ID -->
-                                ${(request.vmCredentials.migId) ? `<div class="credential-item" style="display:flex; align-items:center; gap:10px; max-width:100%;">
+                                ${request.vmCredentials.migId ? `
+                                <div class="credential-item" style="display:flex; align-items:center; gap:10px; max-width:100%;">
                                     <strong style="width:80px;">MIG ID:</strong>
-                                    <span style="border:1px solid #c3e6c3; border-radius:6px; padding:6px 10px; background:#f0fff0; flex:1;">${request.vmCredentials.migId}</span>
+                                    <span id="migid-${request._id}" style="border:1px solid #c3e6c3; border-radius:6px; padding:6px 10px; background:#f0fff0; flex:1;">
+                                        ${request.vmCredentials.migId}
+                                    </span>
+                                    <button type="button" class="copy-btn" data-copytarget="migid-${request._id}" style="background:none; border:none; cursor:pointer; padding:0 6px; flex-shrink:0;">
+                                        <span class="copy-label"><i class="fas fa-copy"></i></span>
+                                    </button>
                                 </div>` : ''}
 
                             </div>
@@ -258,6 +276,41 @@ function displayAllRequests(requests) {
             }
         });
     });
+    
+    document.querySelectorAll('.copy-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const targetId = btn.getAttribute('data-copytarget');
+            const targetElem = document.getElementById(targetId);
+            if (!targetElem) return;
+
+            const text = targetElem.textContent.trim();
+
+            // Clipboard fallback
+            const fallback = () => {
+                const tempInput = document.createElement('input');
+                tempInput.value = text;
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                document.execCommand('copy');
+                document.body.removeChild(tempInput);
+            };
+
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).catch(fallback);
+            } else {
+                fallback();
+            }
+
+            // Show temporary "Copied!" feedback
+            const labelSpan = btn.querySelector('.copy-label');
+            if (!labelSpan) return;
+            const originalContent = labelSpan.innerHTML; // keeps icon intact
+            labelSpan.innerHTML = 'Copied!';
+            setTimeout(() => labelSpan.innerHTML = originalContent, 1200);
+        });
+    });
+
+
         // Add event listeners for delete buttons
         document.querySelectorAll('.delete-request-btn').forEach(btn => {
             btn.addEventListener('click', async function () {
