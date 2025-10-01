@@ -21,6 +21,8 @@ exports.sendOtp = async (req, res) => {
 
     otpStore[email] = { otp, expires, role };
 
+    console.log(`Generated OTP ${otp}`);
+
     // Send OTP via email
     const emailResult = await sendOTPEmail(email, otp, role);
     

@@ -99,9 +99,10 @@ exports.submitResourceRequest = async (req, res) => {
     // Check for existing pending request
     const existingPending = await ResourceRequest.findOne({
       studentId,
-      teacher_action: true,
-      admin_action: false,
-      is_verified: false
+       $or: [
+        { teacher_action: false },                     // teacher pending
+        { teacher_action: true, admin_action: false } // admin pending
+      ]
     });
 
 
