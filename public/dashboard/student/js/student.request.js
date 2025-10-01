@@ -137,18 +137,26 @@ function displayResourcesPage(student) {
             if (form) {
                 form.addEventListener('submit', handleResourceRequest);
                 
-                // Set default expiry date to 30 days from today
                 const expiryDateInput = document.getElementById('expiry-date');
                 if (expiryDateInput) {
+                    const today = new Date();
+
+                    // Default date → 7 days ahead
                     const defaultDate = new Date();
-                    defaultDate.setDate(defaultDate.getDate() + 30); // 30 days from today
+                    defaultDate.setDate(today.getDate() + 7);
                     expiryDateInput.valueAsDate = defaultDate;
-                    
-                    // Set minimum date to tomorrow
+
+                    // Minimum date → tomorrow
                     const minDate = new Date();
-                    minDate.setDate(minDate.getDate() + 1);
+                    minDate.setDate(today.getDate() + 1);
                     expiryDateInput.min = minDate.toISOString().split('T')[0];
+
+                    // Maximum date → 30 days ahead
+                    const maxDate = new Date();
+                    maxDate.setDate(today.getDate() + 30);
+                    expiryDateInput.max = maxDate.toISOString().split('T')[0];
                 }
+
             }
             
         } else {
