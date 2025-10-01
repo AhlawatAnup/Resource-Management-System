@@ -12,6 +12,15 @@
       src="https://kit.fontawesome.com/e05e3e1522.js"
       crossorigin="anonymous"
     ></script>
+    <script>
+      // Detect if the page is being restored from browser's back/forward cache
+      window.addEventListener("pageshow", function(event) {
+        if (event.persisted) {
+          // Reload the page from the server
+          window.location.reload();
+        }
+      });
+    </script>
   </head>
   <link rel="stylesheet" href="/dashboard/admin/style/admin.dashboard.css" />
   <body>
