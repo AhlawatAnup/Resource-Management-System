@@ -209,6 +209,35 @@ tbody td {
   transform: translateY(-1px);
 }
 
+.icon-btn.edit-btn {
+  background-color: #f59e0b;
+  color: white;
+}
+
+.icon-btn.edit-btn:hover {
+  background-color: #d97706;
+  transform: translateY(-1px);
+}
+
+/* Fallback for when icons don't load */
+.icon-btn.approve-btn:not(:has(i))::after {
+  content: "✓";
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.icon-btn.decline-btn:not(:has(i))::after {
+  content: "✕";
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.icon-btn.edit-btn:not(:has(i))::after {
+  content: "✎";
+  font-size: 14px;
+  font-weight: bold;
+}
+
 /* Responsive Table */
 @media (max-width: 768px) {
   .table-container {

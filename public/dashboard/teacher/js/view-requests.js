@@ -77,7 +77,7 @@ function renderResourceRequests(requests) {
       <td>
         <div class="resource-specs">
           <div><strong>CPU:</strong> ${request.cpuCores} cores, ${request.cpuRam}GB RAM</div>
-          <div><strong>GPU:</strong> ${request.gpuCount} × ${request.gpuRam}GB</div>
+          <div><strong>GPU:</strong> ${request.gpuRam}GB</div>
         </div>
       </td>
       <td>
@@ -300,7 +300,7 @@ function showEditModal(requestId) {
   document.getElementById('editExpiryDate').value = req.expiryDate ? req.expiryDate.split('T')[0] : '';
   document.getElementById('editCpuCores').value = req.cpuCores;
   document.getElementById('editCpuRam').value = req.cpuRam;
-  document.getElementById('editGpuCount').value = req.gpuCount;
+  // document.getElementById('editGpuCount').value = req.gpuCount;
   document.getElementById('editGpuRam').value = req.gpuRam;
   document.getElementById('editRequestModal').style.display = 'block';
 }
@@ -314,7 +314,7 @@ async function submitEditRequest() {
     expiryDate: document.getElementById('editExpiryDate').value,
     cpuCores: Number(document.getElementById('editCpuCores').value),
     cpuRam: Number(document.getElementById('editCpuRam').value),
-    gpuCount: Number(document.getElementById('editGpuCount').value),
+    // gpuCount: Number(document.getElementById('editGpuCount').value),
     gpuRam: Number(document.getElementById('editGpuRam').value)
   };
   try {

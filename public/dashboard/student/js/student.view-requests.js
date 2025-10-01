@@ -162,10 +162,6 @@ function displayAllRequests(requests) {
                             <div class="spec-value">${request.cpuRam} GB</div>
                         </div>
                         <div class="spec-item">
-                            <div class="spec-label">GPU Count</div>
-                            <div class="spec-value">${request.gpuCount} GPUs</div>
-                        </div>
-                        <div class="spec-item">
                             <div class="spec-label">GPU RAM (each)</div>
                             <div class="spec-value">${request.gpuRam} GB</div>
                         </div>
@@ -174,6 +170,7 @@ function displayAllRequests(requests) {
                             <div class="spec-value">Until ${formatDate(request.expiryDate)}</div>
                         </div>
 
+                        <br>
                         ${(request.teacher_verified && request.admin_verified && request.is_verified && request.vmCredentials && request.vmCredentials.username && request.vmCredentials.password) ? `
                         <div class="request-credentials" style="background:#e6f7e6; border-radius:12px; width:30vw; padding:16px; margin:12px 0; box-shadow:0 2px 6px rgba(0,0,0,0.1);">
                             <h4 style="margin-bottom:12px; color:#2f6627;">Login Credentials</h4>

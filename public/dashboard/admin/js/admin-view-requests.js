@@ -82,7 +82,7 @@ function renderResourceRequests(requests) {
       <td>
         <div class="resource-specs">
           <div><span class="field-label">CPU:</span> ${request.cpuCores} cores, ${request.cpuRam}GB RAM</div>
-          <div><span class="field-label">GPU:</span> ${request.gpuCount} × ${request.gpuRam}GB</div>
+          <div><span class="field-label">GPU:</span> ${request.gpuRam}GB</div>
         </div>
       </td>
       <td>
@@ -133,13 +133,13 @@ function getActionButtons(request) {
   // Admin can approve/decline/edit
   return `
     <button class="icon-btn approve-btn" title="Approve Request" data-request-id="${request._id}" data-action="approve">
-      <i class="fa-solid fa-check"></i>
+      <i class="fas fa-check"></i>
     </button>
     <button class="icon-btn decline-btn" title="Decline Request" data-request-id="${request._id}" data-action="decline">
-      <i class="fa-solid fa-times"></i>
+      <i class="fas fa-times"></i>
     </button>
     <button class="icon-btn edit-btn" title="Edit Request" data-request-id="${request._id}" data-action="edit">
-      <i class="fa-solid fa-pen-to-square"></i>
+      <i class="fas fa-edit"></i>
     </button>
   `;
 }
@@ -200,7 +200,7 @@ function showVerificationModal(requestId) {
         <p><strong>Roll No:</strong> ${request.studentInfo.rollNo}</p>
         <p><strong>Teacher:</strong> ${request.teacherInfo.name}</p>
         <p><strong>CPU:</strong> ${request.cpuCores} cores, ${request.cpuRam}GB RAM</p>
-        <p><strong>GPU:</strong> ${request.gpuCount} × ${request.gpuRam}GB</p>
+        <p><strong>GPU:</strong> ${request.gpuRam}GB</p>
         <p><strong>Purpose:</strong> ${request.purpose.length > 80 ? request.purpose.substring(0, 80) + '...' : request.purpose}</p>
       </div>
     </div>
@@ -475,7 +475,7 @@ function showEditModal(requestId) {
   document.getElementById('editExpiryDate').value = req.expiryDate ? req.expiryDate.split('T')[0] : '';
   document.getElementById('editCpuCores').value = req.cpuCores;
   document.getElementById('editCpuRam').value = req.cpuRam;
-  document.getElementById('editGpuCount').value = req.gpuCount;
+  // document.getElementById('editGpuCount').value = req.gpuCount;
   document.getElementById('editGpuRam').value = req.gpuRam;
   document.getElementById('editRequestModal').style.display = 'block';
 }
@@ -489,7 +489,7 @@ async function submitEditRequest() {
     expiryDate: document.getElementById('editExpiryDate').value,
     cpuCores: Number(document.getElementById('editCpuCores').value),
     cpuRam: Number(document.getElementById('editCpuRam').value),
-    gpuCount: Number(document.getElementById('editGpuCount').value),
+    // gpuCount: Number(document.getElementById('editGpuCount').value),
     gpuRam: Number(document.getElementById('editGpuRam').value)
   };
   try {
@@ -533,5 +533,11 @@ async function submitEditRequest() {
   }
 }
 
+// Close edit modal function
+function closeEditModal() {
+  document.getElementById('editRequestModal').style.display = 'none';
+}
+
 // Make functions globally available for HTML onclick handlers
 window.closeVerificationModal = closeVerificationModal;
+window.closeEditModal = closeEditModal;

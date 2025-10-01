@@ -26,10 +26,10 @@ const resourceRequestSchema = new mongoose.Schema({
     type: Number, // in GB
     required: true 
   },
-  gpuCount: { 
-    type: Number, 
-    required: true 
-  },
+  // gpuCount: { 
+  //   type: Number, 
+  //   required: true 
+  // },
   gpuRam: { 
     type: Number, // per GPU in GB
     required: true 

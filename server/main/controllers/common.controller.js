@@ -307,7 +307,7 @@ exports.editResourceRequest = async (req, res) => {
   const requestId = req.params.request_id;
   const updateFields = req.body;
   // Only allow certain fields to be updated
-  const allowedFields = ["title", "purpose", "expiryDate", "cpuCores", "cpuRam", "gpuCount", "gpuRam"];
+  const allowedFields = ["title", "purpose", "expiryDate", "cpuCores", "cpuRam", "gpuRam"];
   const updates = {};
   for (const key of allowedFields) {
     if (updateFields[key] !== undefined) {

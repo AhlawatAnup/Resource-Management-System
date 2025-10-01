@@ -50,7 +50,7 @@ exports.submitResourceRequest = async (req, res) => {
       return res.status(401).json({ error: "Not authenticated" });
     }
 
-    const { title, purpose, expiryDate, cpuCores, cpuRam, gpuCount, gpuRam, studentId } = req.body;
+    const { title, purpose, expiryDate, cpuCores, cpuRam, gpuRam, studentId } = req.body;
     
     // Security check: ensure the student can only submit requests for themselves
     if (req.session.user.id !== studentId) {
@@ -58,10 +58,10 @@ exports.submitResourceRequest = async (req, res) => {
     }
 
     // Validate required fields
-    if (!title || !purpose || !expiryDate || !cpuCores || !cpuRam || gpuCount === undefined || gpuRam === undefined || !studentId) {
+    if (!title || !purpose || !expiryDate || !cpuCores || !cpuRam || gpuRam === undefined || !studentId) {
       return res.status(400).json({ 
         error: "Missing required fields",
-        required: ["title", "purpose", "expiryDate", "cpuCores", "cpuRam", "gpuCount", "gpuRam", "studentId"]
+        required: ["title", "purpose", "expiryDate", "cpuCores", "cpuRam", "gpuRam", "studentId"]
       });
     }
 
@@ -70,7 +70,7 @@ exports.submitResourceRequest = async (req, res) => {
       return res.status(400).json({ error: "CPU cores and RAM must be at least 1" });
     }
 
-    if (gpuCount < 0 || gpuRam < 0) {
+    if (gpuRam < 0) {
       return res.status(400).json({ error: "GPU values cannot be negative" });
     }
 
@@ -120,7 +120,7 @@ exports.submitResourceRequest = async (req, res) => {
       expiryDate: expiry,
       cpuCores: parseInt(cpuCores),
       cpuRam: parseInt(cpuRam),
-      gpuCount: parseInt(gpuCount),
+      // gpuCount: parseInt(gpuCount),
       gpuRam: parseInt(gpuRam)
     });
 

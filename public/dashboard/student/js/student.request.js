@@ -114,13 +114,7 @@ function displayResourcesPage(student) {
                                 <h4 style="margin: 0 0 15px 0; color: #333; font-size: 1.1em;">
                                     <i class="fas fa-cube"></i> GPU Requirements (Optional for non-ML tasks)
                                 </h4>
-                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                                    <div class="form-group">
-                                        <label for="gpu-count">GPU Count Required:</label>
-                                        <input type="number" id="gpu-count" class="form-control" min="0" max="8" placeholder="e.g., 2" required>
-                                        <small style="color: #666; font-size: 0.85em;">Use 0 if no GPU needed</small>
-                                    </div>
-                                    
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">                                   
                                     <div class="form-group">
                                         <label for="gpu-ram">GPU RAM per GPU (GB):</label>
                                         <input type="number" id="gpu-ram" class="form-control" min="0" max="80" placeholder="e.g., 12" required>
@@ -252,7 +246,7 @@ async function handleResourceRequest(event) {
             expiryDate: document.getElementById('expiry-date').value,
             cpuCores: parseInt(document.getElementById('cpu-cores').value),
             cpuRam: parseInt(document.getElementById('cpu-ram').value),
-            gpuCount: parseInt(document.getElementById('gpu-count').value),
+            // gpuCount: parseInt(document.getElementById('gpu-count').value),
             gpuRam: parseInt(document.getElementById('gpu-ram').value)
         };
         
@@ -265,9 +259,9 @@ async function handleResourceRequest(event) {
             throw new Error('CPU cores and RAM must be at least 1');
         }
         
-        if (formData.gpuCount < 0 || formData.gpuRam < 0) {
-            throw new Error('GPU values cannot be negative');
-        }
+        // if (formData.gpuCount < 0 || formData.gpuRam < 0) {
+        //     throw new Error('GPU values cannot be negative');
+        // }
         
         // Validate expiry date is in the future
         const expiryDate = new Date(formData.expiryDate);
