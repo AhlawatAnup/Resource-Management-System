@@ -12,6 +12,12 @@ connectDB();
 const app = express();
 const PORT = 3000;
 
+const {
+  requireAuth,
+  preventAuth,
+  noCache
+} = require("../main/middleware/authMiddleware.js");
+
 app.use(cors({
   origin: "http://localhost:3000", 
   credentials: true,
@@ -50,10 +56,7 @@ app.use(
 );
 
 // Homepage route → serve public/home/index.html
-app.get("/", (req, res) => {
-  if (req.session.user) {
-    return res.redirect("/dashboard");
-  }
+app.get("/", preventAuth, noCache, (req, res) => {
   res.sendFile(path.join(publicPath, "home", "home.html"));
 });
 
@@ -65,7 +68,7 @@ app.get("/logout", (req, res) => {
 });
 
 // Registration page
-app.get("/registration", (req, res) => {
+app.get("/registration", preventAuth, noCache, (req, res) => {
   res.sendFile(
     path.join(__dirname, "../../public/registration/registration.html")
   );
@@ -77,7 +80,7 @@ app.use("/auth", authRoutes);
 
 // DASHBOARD ROUTES
 const dashboardRoutes = require("./routes/dashboard.route.js");
-app.use("/dashboard", dashboardRoutes);
+app.use("/dashboard", requireAuth, noCache, dashboardRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);

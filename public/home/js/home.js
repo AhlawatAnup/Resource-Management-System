@@ -4,8 +4,9 @@ let is_request_otp = true;
 function validateTeacherEmail(email) {
   // const teacherEmailRegex = /^[a-zA-Z0-9._%+-]+@pu\.ac\.in$/;
   // return teacherEmailRegex.test(email);
-  const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
-  return gmailRegex.test(email);
+  // const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+  // return gmailRegex.test(email);
+  return true;
 }
 
 // Role selector functionality
