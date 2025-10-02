@@ -80,13 +80,16 @@ exports.updateTeacherVerification = async (req, res) => {
     // Email notification for teacher profile verification/rejection
     if (teacher) {
       const emailService = require("../utils/emailService.js");
-      let emailResult = null;
       if (is_verified) {
-        emailResult = await emailService.sendTeacherProfileVerifiedByAdminEmail(teacher.email, teacher.name);
-        console.log("Email sent for teacher profile verified by admin:", emailResult);
+        // NON-BLOCKING 
+        emailService.sendTeacherProfileVerifiedByAdminEmail(teacher.email, teacher.name)
+          .then(result => console.log("Email sent for teacher profile verified by admin:", result))
+          .catch(error => console.error("Error sending verification email:", error));
       } else {
-        emailResult = await emailService.sendTeacherProfileRejectedByAdminEmail(teacher.email, teacher.name);
-        console.log("Email sent for teacher profile rejected by admin:", emailResult);
+        // NON-BLOCKING 
+        emailService.sendTeacherProfileRejectedByAdminEmail(teacher.email, teacher.name)
+          .then(result => console.log("Email sent for teacher profile rejected by admin:", result))
+          .catch(error => console.error("Error sending rejection email:", error));
       }
     }
 

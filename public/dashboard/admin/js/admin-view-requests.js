@@ -107,7 +107,7 @@ function renderResourceRequests(requests) {
 
 // Get request status information
 function getRequestStatus(request) {
-  if (request.teacher_verified && request.admin_verified) {
+  if (request.admin_action && request.admin_verified) {
     return { text: "Approved", class: "verified" };
   } else if (request.admin_action && !request.admin_verified) {
     return { text: "Declined by Admin", class: "declined" };
@@ -274,6 +274,9 @@ async function submitVerification(requestId, isVerified, credentials = null) {
       resourceRequests[requestIndex].admin_action = true;
       if (isVerified) {
         resourceRequests[requestIndex].is_verified = true;
+        // Set teacher fields when admin approves (admin approval overrides teacher verification)
+        resourceRequests[requestIndex].teacher_verified = true;
+        resourceRequests[requestIndex].teacher_action = true;
         if (credentials) {
           resourceRequests[requestIndex].vmCredentials = credentials;
         }

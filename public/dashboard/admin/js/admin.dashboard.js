@@ -275,11 +275,7 @@ function renderAllTeacherRow(teacher) {
       </button>
     `;
   } else {
-    actionButtons = `
-      <button class="icon-btn view-btn" onclick="viewTeacherDetails('${teacher._id}')" title="View Details">
-        <i class="fas fa-eye"></i>
-      </button>
-    `;
+    actionButtons = `<span class="action-completed">Action Completed</span>`;
   }
   
   return `
@@ -366,11 +362,7 @@ function renderAllStudentRow(student) {
       </button>
     `;
   } else {
-    actionButtons = `
-      <button class="icon-btn view-btn" onclick="viewStudentDetails('${student._id}')" title="View Details">
-        <i class="fas fa-eye"></i>
-      </button>
-    `;
+    actionButtons = `<span class="action-completed">Action Completed</span>`;
   }
   
   return `
@@ -419,9 +411,7 @@ function renderRejectedTeacherRow(teacher) {
     <td>${new Date(teacher.createdAt).toLocaleDateString()}</td>
     <td>
       <div class="admin-actions">
-        <button class="icon-btn view-btn" onclick="viewTeacherDetails('${teacher._id}')" title="View Details">
-          <i class="fas fa-eye"></i>
-        </button>
+        <span class="action-completed">Action Completed</span>
       </div>
     </td>
   `;
@@ -455,9 +445,7 @@ function renderRejectedStudentRow(student) {
     <td><span class="badge ${status.class}">${status.text}</span></td>
     <td>
       <div class="admin-actions">
-        <button class="icon-btn view-btn" onclick="viewStudentDetails('${student._id}')" title="View Details">
-          <i class="fas fa-eye"></i>
-        </button>
+        <span class="action-completed">Action Completed</span>
       </div>
     </td>
   `;
@@ -471,6 +459,14 @@ function showEmptyState(message) {
 
 // Verify teacher function
 async function verifyTeacher(teacherId, isVerified) {
+  // Show confirmation dialog
+  const action = isVerified ? 'approve' : 'reject';
+  const confirmMessage = `Are you sure you want to ${action} this teacher profile?`;
+  
+  if (!confirm(confirmMessage)) {
+    return; // User cancelled the action
+  }
+  
   try {
     const response = await fetch(`/dashboard/admin/verify_teacher/${teacherId}`, {
       method: 'PUT',
@@ -497,6 +493,14 @@ async function verifyTeacher(teacherId, isVerified) {
 
 // Verify student function
 async function verifyStudent(studentId, isVerified) {
+  // Show confirmation dialog
+  const action = isVerified ? 'approve' : 'reject';
+  const confirmMessage = `Are you sure you want to ${action} this student profile?`;
+  
+  if (!confirm(confirmMessage)) {
+    return; // User cancelled the action
+  }
+  
   try {
     const response = await fetch(`/dashboard/admin/verify_student/${studentId}`, {
       method: 'PUT',
@@ -520,16 +524,6 @@ async function verifyStudent(studentId, isVerified) {
     console.error('Error verifying student:', error);
     alert('Error updating student verification status');
   }
-}
-
-// View student details (placeholder)
-function viewStudentDetails(studentId) {
-  alert(`Viewing student details for ID: ${studentId}`);
-}
-
-// View teacher details (placeholder) 
-function viewTeacherDetails(teacherId) {
-  alert(`Viewing teacher details for ID: ${teacherId}`);
 }
 
 // Search functionality
@@ -563,9 +557,7 @@ document.getElementById('searchInput').addEventListener('input', (e) => {
 
 // Make functions globally available
 window.verifyTeacher = verifyTeacher;
-window.viewTeacherDetails = viewTeacherDetails;
 window.verifyStudent = verifyStudent;
-window.viewStudentDetails = viewStudentDetails;
 
 // Initialize dashboard when page loads
 document.addEventListener('DOMContentLoaded', function() {
