@@ -393,21 +393,32 @@ async function updateStudentVerification(studentId, isVerified) {
       student_data[studentIndex].teacher_action = true; // Mark as completed
     }
 
-    // Replace buttons with "Action Completed" text
-    const actionButtons = document.querySelectorAll(`[data-student-id="${studentId}"]`);
-    const buttonContainer = actionButtons[0]?.parentElement;
-    if (buttonContainer) {
-      buttonContainer.innerHTML = '<span style="color: #666; font-style: italic;">Action Completed</span>';
-    }
-
-    // Update the status badge immediately
-    const studentRow = actionButtons[0]?.closest('tr');
-    if (studentRow) {
-      const statusBadge = studentRow.querySelector('.badge');
+    // Re-render the row with updated data
+    const studentRow = document.querySelector(`[data-student-id="${studentId}"]`)?.closest('tr');
+    if (studentRow && studentIndex !== -1) {
+      const tbody = document.getElementById("contactTableBody");
+      const newTr = document.createElement("tr");
+      newTr.innerHTML = studentRow.innerHTML; // Copy original structure
+      
+      // Update with fresh data
+      const updatedStudent = student_data[studentIndex];
+      const verificationStatus = getStudentVerificationStatusForTeacher(updatedStudent);
+      const statusClass = getStudentStatusClassForTeacher(updatedStudent);
+      
+      // Replace status badge
+      const statusBadge = newTr.querySelector('.badge');
       if (statusBadge) {
-        statusBadge.textContent = isVerified ? 'Approved' : 'Declined';
-        statusBadge.className = `badge ${isVerified}`;
+        statusBadge.textContent = verificationStatus;
+        statusBadge.className = `badge ${statusClass}`;
       }
+      
+      // Replace action buttons
+      const buttonContainer = newTr.querySelector('.owner-info');
+      if (buttonContainer) {
+        buttonContainer.innerHTML = '<span style="color: #666; font-style: italic;">Action Completed</span>';
+      }
+      
+      tbody.replaceChild(newTr, studentRow);
     }
 
     // Show success message
