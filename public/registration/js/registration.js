@@ -72,6 +72,13 @@ document
   .addEventListener("submit", async function (e) {
     e.preventDefault();
 
+    const submitBtn = document.querySelector(".submit-btn");
+    
+    // Disable button and show loading state
+    submitBtn.disabled = true;
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = "Signing up...";
+
     const formData = new FormData(this);
     const data = {};
 
@@ -91,6 +98,9 @@ document
       
       // Check if a teacher is selected
       if (!selectedTeacher) {
+        // Re-enable button on validation error
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
         alert("Please select a teacher to proceed with registration.");
         return;
       }
@@ -121,10 +131,16 @@ document
         alert("✅ Registration successful! Login Again");
         window.location.href = "/dashboard"; // redirect to home or login
       } else {
+        // Re-enable button on error
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
         alert(data.error || "Registration failed");
       }
     } catch (err) {
       console.error(err);
+      // Re-enable button on error
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalText;
       alert("Something went wrong");
     }
   });

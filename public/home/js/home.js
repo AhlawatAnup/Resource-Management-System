@@ -1,14 +1,5 @@
 let is_request_otp = true;
 
-// Function to validate teacher email format
-function validateTeacherEmail(email) {
-  // const teacherEmailRegex = /^[a-zA-Z0-9._%+-]+@pu\.ac\.in$/;
-  // return teacherEmailRegex.test(email);
-  // const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
-  // return gmailRegex.test(email);
-  return true;
-}
-
 // Role selector functionality
 document.querySelectorAll(".role-option").forEach((option) => {
   option.addEventListener("click", function () {
@@ -214,6 +205,12 @@ async function sendOtp() {
     return;
   }
 
+  // Validate student email format
+  if (role === "student" && !validateStudentEmail(email)) {
+    alert("Please enter a valid email address (e.g., example@domain.com)");
+    return;
+  }
+
   // Validate teacher email format
   if (role === "teacher" && !validateTeacherEmail(email)) {
     alert("Teachers must use email addresses with pu.ac.in domain (e.g., example@pu.ac.in)");
@@ -311,3 +308,18 @@ sendOtpBtn.addEventListener("click", () => {
     verifyOtp();
   }
 });
+
+// Function to validate teacher email format
+function validateTeacherEmail(email) {
+  // const teacherEmailRegex = /^[a-zA-Z0-9._%+-]+@pu\.ac\.in$/;
+  // return teacherEmailRegex.test(email);
+  // const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+  // return gmailRegex.test(email);
+  return true;
+}
+
+// Function to validate student email format
+function validateStudentEmail(email) {
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  return emailRegex.test(email);
+}
