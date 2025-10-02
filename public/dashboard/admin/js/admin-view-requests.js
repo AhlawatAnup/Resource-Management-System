@@ -444,23 +444,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 
-  // Navigation functionality
-  const dashboardNav = document.getElementById('dashboard-nav');
-  const viewRequestsNav = document.getElementById('view-requests-nav');
-
-  if (dashboardNav) {
-    dashboardNav.addEventListener('click', function(e) {
-      e.preventDefault();
-      window.location.href = '/dashboard/admin/admin.dashboard.html';
-    });
-  }
-
-  if (viewRequestsNav) {
-    viewRequestsNav.addEventListener('click', function(e) {
-      e.preventDefault();
-      // Already on this page
-    });
-  }
 });
 
 // Show edit modal and populate fields

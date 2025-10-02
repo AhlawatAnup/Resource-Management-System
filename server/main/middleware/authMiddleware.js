@@ -25,9 +25,19 @@ exports.preventAuth = (req, res, next) => {
   next();
 };
 
-exports.noCache = (req, res, next) => {
-  res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, private");
-  res.setHeader("Pragma", "no-cache");
-  res.setHeader("Expires", "0");
-  next();
+exports.isAdmin = (req, res, next) => {
+  if (req.session?.user?.role === "admin") {
+    return next();
+  }
+  return res.redirect("/dashboard");
+}
+
+exports.isTeacher = (req, res, next) => {
+  if (req.session?.user?.role === "teacher") return next();
+  return res.redirect("/dashboard"); // redirect non-teachers
+}
+
+exports.isStudent = (req, res, next) => {
+  if (req.session?.user?.role === "student") return next(); // allow access
+  return res.redirect("/dashboard"); // redirect non-students
 }

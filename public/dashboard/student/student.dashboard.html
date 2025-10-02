@@ -12,15 +12,7 @@
       src="https://kit.fontawesome.com/e05e3e1522.js"
       crossorigin="anonymous"
     ></script>
-    <script>
-      // Detect if the page is being restored from browser's back/forward cache
-      window.addEventListener("pageshow", function(event) {
-        if (event.persisted) {
-          // Reload the page from the server
-          window.location.reload();
-        }
-      });
-    </script>
+    
 
   </head>
   <link rel="stylesheet" href="/dashboard/student/style/student.dashboard.css" />
@@ -38,11 +30,11 @@
           <i class="fas fa-home"></i>
           Home
         </a>
-        <a href="/dashboard/student/request-resources.html" class="nav-item">
+        <a href="/dashboard/student/request-resources" class="nav-item">
           <i class="fas fa-plus-circle"></i>
           Request Resources
         </a>
-        <a href="/dashboard/student/view-requests.html" class="nav-item">
+        <a href="/dashboard/student/view-requests" class="nav-item">
           <i class="fas fa-list"></i>
           View Resource Requests
         </a>

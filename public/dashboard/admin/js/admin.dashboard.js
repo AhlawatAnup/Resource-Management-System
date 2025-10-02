@@ -562,30 +562,7 @@ window.verifyStudent = verifyStudent;
 // Initialize dashboard when page loads
 document.addEventListener('DOMContentLoaded', function() {
   initializeAdminDashboard();
-  
-  // Setup navigation for sidebar buttons
-  setupSidebarNavigation();
 });
-
-// Setup sidebar navigation
-function setupSidebarNavigation() {
-  const dashboardNav = document.getElementById('dashboard-nav');
-  const viewRequestsNav = document.getElementById('view-requests-nav');
-
-  if (viewRequestsNav) {
-    viewRequestsNav.addEventListener('click', function(e) {
-      e.preventDefault();
-      window.location.href = '/dashboard/admin/view-requests.html';
-    });
-  }
-
-  if (dashboardNav) {
-    dashboardNav.addEventListener('click', function(e) {
-      e.preventDefault();
-      // Already on dashboard page
-    });
-  }
-}
 
 // Export functions for potential future use
 window.adminDashboard = {

@@ -1,6 +1,7 @@
 const express = require("express");
+const path = require("path");
 
-const { logRequest } = require("../middleware/authMiddleware.js");
+const { logRequest, isAdmin } = require("../middleware/authMiddleware.js");
 const {
   admin_dashboard_data,
   getPendingTeachers,
@@ -23,12 +24,18 @@ const {
 } = require("../controllers/common.controller.js");
 
 const router = express.Router();
+const publicPath = path.join(__dirname, "../../../public");
 
 // Middleware applied to all admin routes
 router.use(logRequest);
 
 // Admin dashboard data
 router.get("/data", admin_dashboard_data);
+
+//sidebar routes
+router.get("/view-requests", isAdmin, (req, res) => {
+  res.sendFile(path.join(publicPath, "dashboard", "admin", "view-requests.html"));
+});
 
 // Teacher management routes
 router.get("/teachers", getAllTeachers);

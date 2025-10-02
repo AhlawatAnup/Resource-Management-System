@@ -15,7 +15,6 @@ const PORT = 3000;
 const {
   requireAuth,
   preventAuth,
-  noCache
 } = require("../main/middleware/authMiddleware.js");
 
 app.use(cors({
@@ -56,7 +55,7 @@ app.use(
 );
 
 // Homepage route → serve public/home/index.html
-app.get("/", preventAuth, noCache, (req, res) => {
+app.get("/", preventAuth, (req, res) => {
   res.sendFile(path.join(publicPath, "home", "home.html"));
 });
 
@@ -68,7 +67,7 @@ app.get("/logout", (req, res) => {
 });
 
 // Registration page
-app.get("/registration", preventAuth, noCache, (req, res) => {
+app.get("/registration", preventAuth, (req, res) => {
   res.sendFile(
     path.join(__dirname, "../../public/registration/registration.html")
   );
@@ -80,7 +79,7 @@ app.use("/auth", authRoutes);
 
 // DASHBOARD ROUTES
 const dashboardRoutes = require("./routes/dashboard.route.js");
-app.use("/dashboard", requireAuth, noCache, dashboardRoutes);
+app.use("/dashboard", requireAuth, dashboardRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
