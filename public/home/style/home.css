@@ -264,6 +264,20 @@ body {
   transform: translateY(-1px);
 }
 
+.login-button:disabled {
+  background: #152848;
+  color: #ffffff;
+  cursor: not-allowed;
+  transform: none;
+  opacity: 0.6;
+}
+
+.login-button:disabled:hover {
+  /* background: #718096; */
+  transform: none;
+  cursor: not-allowed;
+}
+
 @media (max-width: 768px) {
   .container {
     flex-direction: column;

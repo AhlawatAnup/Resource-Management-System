@@ -373,11 +373,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 
-  // Modal close button
-  document.getElementById('closeEditModal').onclick = function() {
-    document.getElementById('editRequestModal').style.display = 'none';
-  };
-
   // Modal form submit
   document.getElementById('editRequestForm').onsubmit = async function(e) {
     e.preventDefault();

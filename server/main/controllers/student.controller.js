@@ -101,7 +101,7 @@ exports.submitResourceRequest = async (req, res) => {
       studentId,
        $or: [
         { teacher_action: false },                     // teacher pending
-        { teacher_action: true, admin_action: false } // admin pending
+        { teacher_action: true, teacher_verified: true, admin_action: false } // waiting for admin after teacher approved
       ]
     });
 

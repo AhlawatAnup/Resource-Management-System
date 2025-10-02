@@ -107,25 +107,30 @@ exports.updateStudentVerification = async (req, res) => {
       { new: true }
     );
 
-    // Send email notification after successful update
+    // Send email notification after successful update (in background)
     if (updatedStudent) {
       const emailService = require("../utils/emailService.js");
-      let emailResult = null;
+      
+      // Send emails asynchronously without waiting
       if (userRole === "teacher") {
         if (is_verified) {
-          emailResult = await emailService.sendStudentProfileVerifiedByTeacherEmail(updatedStudent.email, updatedStudent.name, req.session.user.name);
-          console.log("Email sent for student profile verified by teacher:", emailResult);
+          emailService.sendStudentProfileVerifiedByTeacherEmail(updatedStudent.email, updatedStudent.name, req.session.user.name)
+            .then(result => console.log("Email sent for student profile verified by teacher:", result))
+            .catch(error => console.error("Error sending verification email:", error));
         } else {
-          emailResult = await emailService.sendStudentProfileRejectedByTeacherEmail(updatedStudent.email, updatedStudent.name, req.session.user.name);
-          console.log("Email sent for student profile rejected by teacher:", emailResult);
+          emailService.sendStudentProfileRejectedByTeacherEmail(updatedStudent.email, updatedStudent.name, req.session.user.name)
+            .then(result => console.log("Email sent for student profile rejected by teacher:", result))
+            .catch(error => console.error("Error sending rejection email:", error));
         }
       } else if (userRole === "admin") {
         if (is_verified) {
-          emailResult = await emailService.sendStudentProfileVerifiedByAdminEmail(updatedStudent.email, updatedStudent.name);
-          console.log("Email sent for student profile verified by admin:", emailResult);
+          emailService.sendStudentProfileVerifiedByAdminEmail(updatedStudent.email, updatedStudent.name)
+            .then(result => console.log("Email sent for student profile verified by admin:", result))
+            .catch(error => console.error("Error sending verification email:", error));
         } else {
-          emailResult = await emailService.sendStudentProfileRejectedByAdminEmail(updatedStudent.email, updatedStudent.name);
-          console.log("Email sent for student profile rejected by admin:", emailResult);
+          emailService.sendStudentProfileRejectedByAdminEmail(updatedStudent.email, updatedStudent.name)
+            .then(result => console.log("Email sent for student profile rejected by admin:", result))
+            .catch(error => console.error("Error sending rejection email:", error));
         }
       }
     }
@@ -261,30 +266,37 @@ exports.updateResourceRequestVerification = async (req, res) => {
 
     console.log(`Resource request verification updated by ${userRole}:`, updatedRequest);
 
-    // Only send email if update was successful
+    // Only send email if update was successful (in background)
     if (updatedRequest) {
       const student = await Student.findById(updatedRequest.studentId);
       const emailService = require("../utils/emailService.js");
-      let emailResult;
+      
+      // Send emails asynchronously without waiting
       if (userRole === "teacher") {
         const teacher = await require('../database/teacherModel').findById(userId);
         if (is_verified) {
           // Approved by teacher
-          emailResult = await emailService.sendResourceRequestVerifiedByTeacherEmail(student.email, student.name, updatedRequest.title, teacher.name);
+          emailService.sendResourceRequestVerifiedByTeacherEmail(student.email, student.name, updatedRequest.title, teacher.name)
+            .then(result => console.log("Teacher resource request verification email sent:", result))
+            .catch(error => console.error("Error sending teacher verification email:", error));
         } else {
           // Rejected by teacher
-          emailResult = await emailService.sendResourceRequestRejectedByTeacherEmail(student.email, student.name, updatedRequest.title, teacher.name);
+          emailService.sendResourceRequestRejectedByTeacherEmail(student.email, student.name, updatedRequest.title, teacher.name)
+            .then(result => console.log("Teacher resource request rejection email sent:", result))
+            .catch(error => console.error("Error sending teacher rejection email:", error));
         }
-        console.log("Teacher resource request email sent:", emailResult);
       } else if (userRole === "admin") {
         if (is_verified) {
           // Approved by admin
-          emailResult = await emailService.sendResourceRequestVerifiedByAdminEmail(student.email, student.name, updatedRequest.title, updatedRequest.vmCredentials);
+          emailService.sendResourceRequestVerifiedByAdminEmail(student.email, student.name, updatedRequest.title, updatedRequest.vmCredentials)
+            .then(result => console.log("Admin resource request verification email sent:", result))
+            .catch(error => console.error("Error sending admin verification email:", error));
         } else {
           // Rejected by admin
-          emailResult = await emailService.sendResourceRequestRejectedByAdminEmail(student.email, student.name, updatedRequest.title);
+          emailService.sendResourceRequestRejectedByAdminEmail(student.email, student.name, updatedRequest.title)
+            .then(result => console.log("Admin resource request rejection email sent:", result))
+            .catch(error => console.error("Error sending admin rejection email:", error));
         }
-        console.log("Admin resource request email sent:", emailResult);
       }
     }
 

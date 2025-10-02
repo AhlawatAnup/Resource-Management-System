@@ -164,11 +164,17 @@ updateFormForRole("student");
 async function adminLogin() {
   const username = document.getElementById("username").value;
   const password = document.getElementById("password").value;
+  const sendOtpBtn = document.getElementById("sendOtpBtn");
 
   if (!username || !password) {
     alert("Please enter both username and password");
     return;
   }
+
+  // Disable button and show loading state
+  sendOtpBtn.disabled = true;
+  const originalText = sendOtpBtn.innerHTML;
+  sendOtpBtn.innerHTML = "Logging in...";
 
   try {
     const res = await fetch("/auth/admin-login", {
@@ -181,10 +187,16 @@ async function adminLogin() {
     if (res.ok) {
       window.location.href = data.redirect; // redirect to dashboard
     } else {
+      // Re-enable button on error
+      sendOtpBtn.disabled = false;
+      sendOtpBtn.innerHTML = originalText;
       alert(data.error || "Login failed");
     }
   } catch (err) {
     console.error("Error:", err);
+    // Re-enable button on error
+    sendOtpBtn.disabled = false;
+    sendOtpBtn.innerHTML = originalText;
     alert("Something went wrong");
   }
 }
@@ -195,6 +207,7 @@ async function sendOtp() {
   const role = activeDiv.getAttribute("data-role");
   console.log(role);
   const email = document.getElementById("email").value;
+  const sendOtpBtn = document.getElementById("sendOtpBtn");
 
   if (!email) {
     alert("Please enter your email address");
@@ -207,6 +220,11 @@ async function sendOtp() {
     return;
   }
 
+  // Disable button and show loading state
+  sendOtpBtn.disabled = true;
+  const originalText = sendOtpBtn.innerHTML;
+  sendOtpBtn.innerHTML = "Sending OTP...";
+
   try {
     const res = await fetch("/auth/send-otp", {
       method: "POST",
@@ -218,13 +236,20 @@ async function sendOtp() {
     if (res.ok) {
       document.getElementById("otp-field").style.display = "unset";
       document.getElementById("email-wrapper").style.display = "none";
-      document.getElementById("sendOtpBtn").innerHTML = "Verify OTP";
+      sendOtpBtn.innerHTML = "Verify OTP";
+      sendOtpBtn.disabled = false; // Re-enable for OTP verification
       is_request_otp = false;
     } else {
+      // Re-enable button on error
+      sendOtpBtn.disabled = false;
+      sendOtpBtn.innerHTML = originalText;
       alert(data.error || "Failed to send OTP");
     }
   } catch (err) {
     console.error("Error:", err);
+    // Re-enable button on error
+    sendOtpBtn.disabled = false;
+    sendOtpBtn.innerHTML = originalText;
     alert("Something went wrong");
   }
 }
@@ -234,11 +259,17 @@ async function verifyOtp() {
   const otp = Array.from(otpInputs)
     .map((input) => input.value)
     .join("");
+  const sendOtpBtn = document.getElementById("sendOtpBtn");
 
   if (!otp) {
     alert("Enter OTP");
     return;
   }
+
+  // Disable button and show loading state
+  sendOtpBtn.disabled = true;
+  const originalText = sendOtpBtn.innerHTML;
+  sendOtpBtn.innerHTML = "Verifying...";
 
   try {
     const res = await fetch("/auth/verify-otp", {
@@ -252,10 +283,16 @@ async function verifyOtp() {
       //   alert("✅ Login successful!");
       window.location.href = data.redirect; // redirect to dashboard
     } else {
+      // Re-enable button on error
+      sendOtpBtn.disabled = false;
+      sendOtpBtn.innerHTML = originalText;
       alert(data.error || "Invalid OTP");
     }
   } catch (err) {
     console.error("Error:", err);
+    // Re-enable button on error
+    sendOtpBtn.disabled = false;
+    sendOtpBtn.innerHTML = originalText;
     alert("Something went wrong");
   }
 }

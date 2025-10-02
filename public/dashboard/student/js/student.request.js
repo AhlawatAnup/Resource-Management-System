@@ -262,7 +262,11 @@ async function handleResourceRequest(event) {
         if (!formData.title || !formData.purpose || !formData.expiryDate) {
             throw new Error('Please fill in all required fields');
         }
-        
+
+        if (formData.purpose.length < 100) {
+            throw new Error('Purpose must be at least 100 characters long');
+        }
+                
         if (formData.cpuCores < 1 || formData.cpuRam < 1) {
             throw new Error('CPU cores and RAM must be at least 1');
         }
