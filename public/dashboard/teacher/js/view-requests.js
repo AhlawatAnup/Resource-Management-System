@@ -1,5 +1,11 @@
 // Import common functions
-import { getInitials, getRandomNamedColor } from '../../Common/js/commons.js';
+import { 
+  getInitials, 
+  getRandomNamedColor, 
+  formatDate,
+  initializePurposePanel,
+  createViewMoreButton 
+} from '../../Common/js/commons.js';
 
 let resourceRequests = [];
 let filteredRequests = [];
@@ -71,7 +77,8 @@ function renderResourceRequests(requests) {
       </td>
       <td>
         <div class="purpose-text">
-          ${request.purpose.length > 50 ? request.purpose.substring(0, 50) + '...' : request.purpose}
+          <span>${request.purpose.length > 20 ? request.purpose.substring(0, 20) + '...' : request.purpose}</span>
+          ${createViewMoreButton(request._id, request.purpose)}
         </div>
       </td>
       <td>
@@ -134,18 +141,6 @@ function getActionButtons(request) {
     </button>
   `;
 }
-
-// Format date for display
-function formatDate(dateString) {
-  if (!dateString) return 'N/A';
-  const date = new Date(dateString);
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  });
-}
-
 
 // Update resource request verification status
 async function updateRequestVerification(requestId, isVerified) {
@@ -242,6 +237,9 @@ function showNotification(message, type) {
 
 // Event listeners
 document.addEventListener('DOMContentLoaded', function() {
+  // Initialize purpose panel functionality
+  initializePurposePanel();
+  
   // Load resource requests when page loads
   loadResourceRequests();
 
