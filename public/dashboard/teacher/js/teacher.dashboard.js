@@ -244,14 +244,12 @@ async function getStudentData(stu_id) {
       ...data,
       avatarColor: getRandomNamedColor(),
       avatar: getInitials(data.name),
-      phone: "NA",
     });
 
     student_data.push({
       ...data,
       avatarColor: getRandomNamedColor(),
       avatar: getInitials(data.name),
-      phone: "NA",
     });
 
     // return data;

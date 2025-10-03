@@ -157,23 +157,23 @@ function updateTableHeaders() {
   let headers = [];
   if (currentType === 'teacher') {
     if (currentStatus === 'unverified') {
-      headers = ['Name', 'Email', 'Phone', 'Branch', 'Join Date', 'Actions'];
+      headers = ['Name', 'Email', 'Phone', 'Branch', 'Actions'];
     } else if (currentStatus === 'verified') {
-      headers = ['Name', 'Email', 'Status', 'Students', 'Join Date', 'Actions'];
+      headers = ['Name', 'Email', 'Phone', 'Branch', 'Students', 'Status', 'Actions'];
     } else if (currentStatus === 'rejected') {
-      headers = ['Name', 'Email', 'Status', 'Rejected By', 'Join Date', 'Actions'];
+      headers = ['Name', 'Email', 'Phone', 'Branch', 'Students', 'Status', 'Actions'];
     } else if (currentStatus === 'all') {
-      headers = ['Name', 'Email', 'Status', 'Students', 'Join Date', 'Actions'];
+      headers = ['Name', 'Email', 'Phone', 'Branch', 'Students', 'Status', 'Actions'];
     }
   } else {
     if (currentStatus === 'unverified') {
-      headers = ['Name', 'Email', 'Roll No', 'Teacher', 'Status', 'Actions'];
+      headers = ['Name', 'Email', 'Phone', 'Branch', 'Roll No', 'Teacher', 'Status', 'Actions'];
     } else if (currentStatus === 'verified') {
-      headers = ['Name', 'Email', 'Roll No', 'Teacher', 'Status', 'Actions'];
+      headers = ['Name', 'Email', 'Phone', 'Branch', 'Roll No', 'Teacher', 'Status', 'Actions'];
     } else if (currentStatus === 'rejected') {
-      headers = ['Name', 'Email', 'Roll No', 'Teacher', 'Status', 'Actions'];
+      headers = ['Name', 'Email', 'Phone', 'Branch', 'Roll No', 'Teacher', 'Status', 'Actions'];
     } else if (currentStatus === 'all') {
-      headers = ['Name', 'Email', 'Roll No', 'Teacher', 'Status', 'Actions'];
+      headers = ['Name', 'Email', 'Phone', 'Branch', 'Roll No', 'Teacher', 'Status', 'Actions'];
     }
   }
   
@@ -244,7 +244,6 @@ function renderUnverifiedTeacherRow(teacher) {
     <td>${teacher.email || 'N/A'}</td>
     <td>${teacher.phone || 'N/A'}</td>
     <td>${teacher.branch || 'N/A'}</td>
-    <td>${new Date(teacher.createdAt).toLocaleDateString()}</td>
     <td>
       <div class="admin-actions">
         <button class="btn-approve" onclick="verifyTeacher('${teacher._id}', true)" title="Approve">
@@ -288,9 +287,10 @@ function renderAllTeacherRow(teacher) {
       </div>
     </td>
     <td>${teacher.email || 'N/A'}</td>
-    <td><span class="badge ${statusClass}">${statusText}</span></td>
+    <td>${teacher.phone || 'N/A'}</td>
+    <td>${teacher.branch || 'N/A'}</td>
     <td>${teacher.students ? teacher.students.length : 0} students</td>
-    <td>${new Date(teacher.createdAt).toLocaleDateString()}</td>
+    <td><span class="badge ${statusClass}">${statusText}</span></td>
     <td>
       <div class="admin-actions">
         ${actionButtons}
@@ -322,6 +322,8 @@ function renderUnverifiedStudentRow(student) {
       </div>
     </td>
     <td>${student.email || 'N/A'}</td>
+    <td>${student.phone || 'N/A'}</td>
+    <td>${student.branch || 'N/A'}</td>
     <td>${student.rollNo || 'N/A'}</td>
     <td>${student.teacher?.name || 'N/A'}</td>
     <td><span class="badge ${status.class}">${status.text}</span></td>
@@ -375,6 +377,8 @@ function renderAllStudentRow(student) {
       </div>
     </td>
     <td>${student.email || 'N/A'}</td>
+    <td>${student.phone || 'N/A'}</td>
+    <td>${student.branch || 'N/A'}</td>
     <td>${student.rollNo || 'N/A'}</td>
     <td>${student.teacher?.name || 'N/A'}</td>
     <td><span class="badge ${status.class}">${status.text}</span></td>
@@ -394,7 +398,6 @@ function renderStudentRow(student) {
 // Render rejected teacher row
 function renderRejectedTeacherRow(teacher) {
   const statusText = teacher.is_verified ? 'Verified' : (teacher.verification_completed ? 'Rejected by Admin' : 'Pending');
-  const rejectedBy = teacher.verification_completed && !teacher.is_verified ? 'Admin' : 'Unknown';
   
   return `
     <td>
@@ -406,9 +409,10 @@ function renderRejectedTeacherRow(teacher) {
       </div>
     </td>
     <td>${teacher.email || 'N/A'}</td>
+    <td>${teacher.phone || 'N/A'}</td>
+    <td>${teacher.branch || 'N/A'}</td>
+    <td>${teacher.students ? teacher.students.length : 0} students</td>
     <td><span class="badge rejected">${statusText}</span></td>
-    <td>${rejectedBy}</td>
-    <td>${new Date(teacher.createdAt).toLocaleDateString()}</td>
     <td>
       <div class="admin-actions">
         <span class="action-completed">Action Completed</span>
@@ -440,6 +444,8 @@ function renderRejectedStudentRow(student) {
       </div>
     </td>
     <td>${student.email || 'N/A'}</td>
+    <td>${student.phone || 'N/A'}</td>
+    <td>${student.branch || 'N/A'}</td>
     <td>${student.rollNo || 'N/A'}</td>
     <td>${student.teacher?.name || 'N/A'}</td>
     <td><span class="badge ${status.class}">${status.text}</span></td>
@@ -454,7 +460,7 @@ function renderRejectedStudentRow(student) {
 // Show empty state message
 function showEmptyState(message) {
   const tbody = document.getElementById('dataTableBody');
-  tbody.innerHTML = `<tr><td colspan="6" class="loading">${message}</td></tr>`;
+  tbody.innerHTML = `<tr><td colspan="8" class="loading">${message}</td></tr>`;
 }
 
 // Verify teacher function

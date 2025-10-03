@@ -420,13 +420,6 @@ thead th.sort-desc::after {
   color: #374151;
 }
 
-.expiring-soon {
-  display: block;
-  color: #f59e0b;
-  font-size: 10px;
-  font-weight: 600;
-  margin-top: 2px;
-}
 
 .field-label {
   color: #6b7280;

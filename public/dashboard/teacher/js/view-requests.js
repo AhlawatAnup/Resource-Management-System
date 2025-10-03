@@ -83,7 +83,6 @@ function renderResourceRequests(requests) {
       <td>
         <div class="expiry-date">
           ${formatDate(request.expiryDate)}
-          ${isExpiringSoon(request.expiryDate) ? '<span class="expiring-soon">⚠️ Soon</span>' : ''}
         </div>
       </td>
       <td>
@@ -147,15 +146,6 @@ function formatDate(dateString) {
   });
 }
 
-// Check if date is expiring soon (within 7 days)
-function isExpiringSoon(dateString) {
-  if (!dateString) return false;
-  const expiryDate = new Date(dateString);
-  const today = new Date();
-  const diffTime = expiryDate - today;
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  return diffDays <= 7 && diffDays > 0;
-}
 
 // Update resource request verification status
 async function updateRequestVerification(requestId, isVerified) {

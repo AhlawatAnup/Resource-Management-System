@@ -357,14 +357,6 @@ body {
   color: #4a5568;
 }
 
-.expiring-soon {
-  display: block;
-  font-size: 0.8em;
-  color: #e53e3e;
-  font-weight: 600;
-  margin-top: 4px;
-}
-
 /* Status badge colors for resource requests */
 .badge.pending-teacher {
   background-color: #fbb034;
