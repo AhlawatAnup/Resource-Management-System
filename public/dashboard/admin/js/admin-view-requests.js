@@ -58,7 +58,8 @@ function renderResourceRequests(requests) {
           <div class="avatar ${getRandomNamedColor()}">${getInitials(request.studentInfo.name)}</div>
           <div class="contact-details">
             <h4>${request.studentInfo.name}</h4>
-            <div class="contact-time">${request.studentInfo.rollNo} - ${request.studentInfo.branch}</div>
+            <div class="contact-time">${request.studentInfo.rollNo}</div>
+            <div class="contact-time">${request.studentInfo.branch}</div>
           </div>
         </div>
       </td>
@@ -75,7 +76,8 @@ function renderResourceRequests(requests) {
       </td>
       <td>
         <div class="purpose-text">
-          ${request.purpose.length > 50 ? request.purpose.substring(0, 50) + '...' : request.purpose}
+          <span>${request.purpose.length > 20 ? request.purpose.substring(0, 20) + '...' : request.purpose}</span>
+          <button class="view-more-btn" onclick="showPurposePanel(event, '${request._id}', \`${request.purpose.replace(/`/g, '\\`').replace(/\$/g, '\\$')}\`)">View More</button>
         </div>
       </td>
       <td>
@@ -509,6 +511,71 @@ function closeEditModal() {
   document.getElementById('editRequestModal').style.display = 'none';
 }
 
+// Show purpose panel
+function showPurposePanel(event, requestId, purpose) {
+  const panel = document.getElementById('purposePanel');
+  const textarea = document.getElementById('purposeText');
+  const button = event.target;
+  
+  // Set the purpose text
+  textarea.value = purpose;
+  
+  // Get button position
+  const buttonRect = button.getBoundingClientRect();
+  const panelWidth = 600;
+  const panelHeight = 300;
+  
+  // Set the panel width explicitly
+  panel.style.width = panelWidth + 'px';
+  
+  // Calculate position (to the right and slightly down from the button)
+  let left = buttonRect.right + 10; // 10px gap from button
+  let top = buttonRect.top;
+  
+  // Adjust if panel would go off-screen
+  if (left + panelWidth > window.innerWidth) {
+    left = buttonRect.left - panelWidth - 10; // Show to the left instead
+  }
+  
+  if (top + panelHeight > window.innerHeight) {
+    top = window.innerHeight - panelHeight - 20; // Adjust to fit in viewport
+  }
+  
+  // Position and show the panel
+  panel.style.left = left + 'px';
+  panel.style.top = top + 'px';
+  panel.style.display = 'block';
+  
+  // Close panel when clicking outside
+  setTimeout(() => {
+    document.addEventListener('click', closePanelOnOutsideClick);
+  }, 100);
+}
+
+// Close purpose panel
+function closePurposePanel() {
+  const panel = document.getElementById('purposePanel');
+  panel.style.display = 'none';
+  document.removeEventListener('click', closePanelOnOutsideClick);
+}
+
+// Close panel when clicking outside
+function closePanelOnOutsideClick(event) {
+  const panel = document.getElementById('purposePanel');
+  if (!panel.contains(event.target) && !event.target.classList.contains('view-more-btn')) {
+    closePurposePanel();
+  }
+}
+
+// Handle escape key to close panel
+document.addEventListener('keydown', function(event) {
+  if (event.key === 'Escape') {
+    closePurposePanel();
+  }
+});
+
 // Make functions globally available for HTML onclick handlers
 window.closeVerificationModal = closeVerificationModal;
+window.showPurposePanel = showPurposePanel;
+window.closePurposePanel = closePurposePanel;
 window.closeEditModal = closeEditModal;
