@@ -96,8 +96,8 @@
 			max-width: 180px;
 			display: inline-block !important;
 			align-items: center;
-			background: #e3f0ff;
-			color: #234e8c;
+			background: #c2dfff;
+			color: #103971;
 			border: none;
 			border-radius: 20px;
 			font-size: 1rem;
@@ -106,7 +106,7 @@
 			cursor: pointer;
 	}
 	#change-password-btn:hover {
-		background: #b3daff;
+		background: #91caff;
 		color: #174080;
 	}
 @import url("https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap");

@@ -87,9 +87,10 @@
 
 /* View More Button */
 .view-more-btn {
-  background: #3b82f6;
-  color: white;
+  /* background: #a7c7fa; */
+  color: rgb(0, 0, 0);
   border: none;
+  text-decoration: underline;
   padding: 4px 8px;
   border-radius: 4px;
   font-size: 11px;
@@ -101,7 +102,7 @@
 }
 
 .view-more-btn:hover {
-  background: #2563eb;
+  background: #d1d1d1;
 }
 
 .purpose-text {

@@ -1,6 +1,7 @@
 const Teacher = require("../database/teacherModel");
 const Student = require("../database/studentModel");
 const Admin = require("../database/adminModel");
+const Machine = require('../database/machineModel');
 const ResourceRequest = require("../database/resourceRequestModel");
 const bcrypt = require('bcrypt');
 
@@ -286,5 +287,15 @@ exports.ChangeAdminEmail = async (req, res) => {
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "Failed to update email." });
+  }
+};
+
+exports.getMachines = async (req, res) => {
+  try {
+    const machines = await Machine.find({}).lean();
+    res.json({ ok: true, machines });
+  } catch (err) {
+    console.error('Failed to fetch machines', err);
+    res.status(500).json({ error: 'Failed to fetch machines' });
   }
 };
