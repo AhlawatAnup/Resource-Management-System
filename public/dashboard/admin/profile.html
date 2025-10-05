@@ -71,19 +71,35 @@
             <strong>Email:</strong> <span id="admin-email"></span>
             <button id="edit-email-btn" class="nav-btn" style="padding:4px 10px;font-size:14px;">Edit</button>
           </div>
-          <div id="edit-email-form" style="display:none;align-items:center;gap:8px;margin-top:8px;">
-            <input type="email" id="new-email-input" placeholder="New Email" style="padding:8px;border-radius:6px;border:1px solid #ccc;" />
-            <button id="submit-email-btn" class="nav-btn">Submit</button>
-            <button id="cancel-email-btn" class="nav-btn" style="background:#eee;color:#333;">Cancel</button>
+          <!-- Edit Email Modal -->
+          <div id="edit-email-modal" class="profile-modal" style="display:none;">
+            <div class="profile-modal-content">
+              <button class="profile-modal-close" id="close-email-modal">&times;</button>
+              <h3>Edit Email</h3>
+              <input type="email" id="new-email-input" placeholder="New Email" style="padding:8px;border-radius:6px;border:1px solid #ccc;" />
+              <div style="display:flex;gap:10px;margin-top:16px;">
+                <button id="submit-email-btn" class="nav-btn">Submit</button>
+                <button id="cancel-email-btn" class="nav-btn" style="background:#eee;color:#333;">Cancel</button>
+              </div>
+              <div id="email-error" style="color: red;"></div>
+            </div>
+          </div>
+          <!-- Change Password Modal -->
+          <div id="change-password-modal" class="profile-modal" style="display:none;">
+            <div class="profile-modal-content">
+              <button class="profile-modal-close" id="close-password-modal">&times;</button>
+              <h3>Change Password</h3>
+              <input type="password" id="new-password" placeholder="New Password" style="padding:8px;border-radius:6px;border:1px solid #ccc;" />
+              <input type="password" id="confirm-password" placeholder="Confirm Password" style="padding:8px;border-radius:6px;border:1px solid #ccc;" />
+              <div style="display:flex;gap:10px;margin-top:16px;">
+                <button id="submit-password-btn" class="nav-btn">Submit</button>
+                <button id="cancel-password-btn" class="nav-btn" style="background:#eee;color:#333;">Cancel</button>
+              </div>
+              <div id="password-error" style="color: red;"></div>
+            </div>
           </div>
           <div id="profile-error" style="color: red;"></div>
           <button id="change-password-btn" class="nav-btn" style="margin-top:20px;">Change Password</button>
-          <div id="change-password-form" style="display:none;align-items:center;gap:16px;margin-top:20px;">
-            <input type="password" id="new-password" placeholder="New Password" style="padding:8px;border-radius:6px;border:1px solid #ccc;" />
-            <input type="password" id="confirm-password" placeholder="Confirm Password" style="padding:8px;border-radius:6px;border:1px solid #ccc;" />
-            <button id="submit-password-btn" class="nav-btn">Submit</button>
-            <button id="cancel-password-btn" class="nav-btn" style="background:#eee;color:#333;">Cancel</button>
-          </div>
         </section>
       </main>
     </div>
