@@ -61,7 +61,23 @@
           </div>
         </div>
       </nav>
+      <main class="main-content">
+        <section class="profile-section">
+          <h2>Admin Profile</h2>
+          <div><strong>Username:</strong> <span id="admin-username"></span></div>
+          <div><strong>Name:</strong> <span id="admin-name"></span></div>
+          <div><strong>Email:</strong> <span id="admin-email"></span></div>
+          <div id="profile-error" style="color: red;"></div>
+          <button id="change-password-btn" class="nav-btn" style="margin-top:20px;">Change Password</button>
+          <div id="change-password-form" style="display:none;align-items:center;gap:16px;margin-top:20px;">
+            <input type="password" id="new-password" placeholder="New Password" style="padding:8px;border-radius:6px;border:1px solid #ccc;" />
+            <input type="password" id="confirm-password" placeholder="Confirm Password" style="padding:8px;border-radius:6px;border:1px solid #ccc;" />
+            <button id="submit-password-btn" class="nav-btn">Submit</button>
+          </div>
+        </section>
+      </main>
     </div>
     <!-- Header Ends-->
+    <script src="/dashboard/admin/js/profile.js"></script>
   </body>
 </html>

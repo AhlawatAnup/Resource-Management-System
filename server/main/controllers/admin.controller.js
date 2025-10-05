@@ -2,6 +2,7 @@ const Teacher = require("../database/teacherModel");
 const Student = require("../database/studentModel");
 const Admin = require("../database/adminModel");
 const ResourceRequest = require("../database/resourceRequestModel");
+const bcrypt = require('bcrypt');
 
 exports.admin_dashboard_data = async (req, res) => {
   try {
@@ -216,5 +217,48 @@ exports.getAllResourceRequests = async (req, res) => {
   } catch (err) {
     console.error("Error fetching all resource requests:", err);
     return res.status(500).json({ error: "Failed to fetch resource requests" });
+  }
+};
+
+// Get admin username, name, and email
+exports.getAdminDetails = async (req, res) => {
+  if (!req.session.user || req.session.user.role !== "admin") {
+    return res.status(401).json({ error: "Not authenticated as admin" });
+  }
+  try {
+    const admin = await Admin.findById(req.session.user.id).select("username name email");
+    if (!admin) {
+      return res.status(404).json({ error: "Admin not found" });
+    }
+    return res.json(admin);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Failed to fetch admin details" });
+  }
+};
+
+// Change admin password
+exports.ChangeAdminPassword = async (req, res) => {
+  if (!req.session.user || req.session.user.role !== "admin") {
+    return res.status(401).json({ error: "Not authenticated as admin" });
+  }
+  const { newPassword } = req.body;
+  if (!newPassword || newPassword.length < 6) {
+    return res.status(400).json({ error: "Password must be at least 6 characters." });
+  }
+  try {
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const admin = await Admin.findByIdAndUpdate(
+      req.session.user.id,
+      { password: hashedPassword },
+      { new: true }
+    ).select("username name email");
+    if (!admin) {
+      return res.status(404).json({ error: "Admin not found" });
+    }
+    return res.json({ success: true, message: "Password updated successfully." });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Failed to update password." });
   }
 };

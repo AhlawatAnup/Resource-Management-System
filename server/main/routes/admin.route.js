@@ -12,6 +12,8 @@ const {
   getRejectedTeachers,
   getRejectedStudents,
   getAllResourceRequests,
+  getAdminDetails,
+  ChangeAdminPassword,
 } = require("../controllers/admin.controller.js");
 
 const {
@@ -62,5 +64,10 @@ router.delete("/delete_student/:studentId", deleteStudentAndResources); // Delet
 // Resource request management routes
 router.get("/resource-requests", getAllResourceRequests);
 router.put("/verify_request/:request_id", updateResourceRequestVerification);
+
+// Profile section routes
+router.get("/details", isAdmin, getAdminDetails);
+router.put("/change-password", isAdmin, ChangeAdminPassword);
+
 
 module.exports = router;
