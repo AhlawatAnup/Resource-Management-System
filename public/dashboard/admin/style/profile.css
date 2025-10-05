@@ -91,12 +91,24 @@
 	font-size: 0.98rem;
 }
 #change-password-btn {
-	margin-top: 0 !important;
-	width: auto !important;
-	max-width: 150px;
-	display: inline-block !important;
-	align-items: center;
-}
+			margin-top: 0 !important;
+			width: auto !important;
+			max-width: 180px;
+			display: inline-block !important;
+			align-items: center;
+			background: #e3f0ff;
+			color: #234e8c;
+			border: none;
+			border-radius: 20px;
+			font-size: 1rem;
+			font-weight: 500;
+			padding: 10px 24px;
+			cursor: pointer;
+	}
+	#change-password-btn:hover {
+		background: #b3daff;
+		color: #174080;
+	}
 @import url("https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap");
 
 body {
