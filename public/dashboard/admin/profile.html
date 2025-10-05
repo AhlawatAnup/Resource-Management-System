@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>U.I.E.T Resource Sharing - Admin Profile</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script
+      src="https://kit.fontawesome.com/e05e3e1522.js"
+      crossorigin="anonymous"
+    ></script>
+    <link rel="stylesheet" href="/dashboard/admin/style/dashboard-common.css" />
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="logo">
+        <div class="logo-icon">
+          <i class="fas fa-layer-group"></i>
+        </div>
+        U.I.E.T
+      </div>
+      <nav class="nav-menu">
+        <a href="/dashboard" class="nav-item" id="dashboard-nav">
+          <i class="fas fa-home"></i>
+          Dashboard
+        </a>
+        <a href="/dashboard/admin/view-requests" class="nav-item" id="view-requests-nav">
+          <i class="fas fa-eye"></i>
+          View Resource Requests
+        </a>
+        <a href="/dashboard/admin/machines-page" class="nav-item" id="machines-nav">
+          <i class="fas fa-desktop"></i>
+          Machines
+        </a>
+        <a href="#" class="nav-item active" id="profile-nav">
+          <i class="fas fa-user"></i>
+          Profile
+        </a>
+      </nav>
+      <div style="padding: 20px">
+        <a href="/logout" class="nav-item">
+          <i class="fas fa-sign-out-alt"></i>
+          Log out
+        </a>
+      </div>
+    </div>
+    <!-- Sidebar Ends-->
+    <!-- Header -->
+    <div class="main-wrapper">
+      <nav class="top-nav">
+        <div class="nav-brand">
+          <h2>Profile</h2>
+        </div>
+        <div class="nav-actions">
+          <div class="admin-info">
+            <span class="admin-name">Hello, Admin</span>
+          </div>
+        </div>
+      </nav>
+    </div>
+    <!-- Header Ends-->
+  </body>
+</html>

@@ -29,13 +29,19 @@ const publicPath = path.join(__dirname, "../../../public");
 // Middleware applied to all admin routes
 router.use(logRequest);
 
-// Admin dashboard data
-router.get("/data", admin_dashboard_data);
-
 //sidebar routes
 router.get("/view-requests", isAdmin, (req, res) => {
   res.sendFile(path.join(publicPath, "dashboard", "admin", "view-requests.html"));
 });
+router.get("/profile", isAdmin, (req, res) => {
+  res.sendFile(path.join(publicPath, "dashboard", "admin", "profile.html"));
+});
+router.get("/machines-page", isAdmin, (req, res) => {
+  res.sendFile(path.join(publicPath, "dashboard", "admin", "machines.html"));
+});
+
+// Admin dashboard data
+router.get("/data", admin_dashboard_data);
 
 // Teacher management routes
 router.get("/teachers", getAllTeachers);
