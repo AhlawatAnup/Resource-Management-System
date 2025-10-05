@@ -13,6 +13,7 @@
       crossorigin="anonymous"
     ></script>
     <link rel="stylesheet" href="/dashboard/admin/style/dashboard-common.css" />
+    <link rel="stylesheet" href="/dashboard/admin/style/profile.css" />
   </head>
   <body>
     <!-- Sidebar -->
@@ -65,14 +66,23 @@
         <section class="profile-section">
           <h2>Admin Profile</h2>
           <div><strong>Username:</strong> <span id="admin-username"></span></div>
-          <div><strong>Name:</strong> <span id="admin-name"></span></div>
-          <div><strong>Email:</strong> <span id="admin-email"></span></div>
+          <!-- <div><strong>Name:</strong> <span id="admin-name"></span></div> -->
+          <div style="display:flex;align-items:center;gap:8px;">
+            <strong>Email:</strong> <span id="admin-email"></span>
+            <button id="edit-email-btn" class="nav-btn" style="padding:4px 10px;font-size:14px;">Edit</button>
+          </div>
+          <div id="edit-email-form" style="display:none;align-items:center;gap:8px;margin-top:8px;">
+            <input type="email" id="new-email-input" placeholder="New Email" style="padding:8px;border-radius:6px;border:1px solid #ccc;" />
+            <button id="submit-email-btn" class="nav-btn">Submit</button>
+            <button id="cancel-email-btn" class="nav-btn" style="background:#eee;color:#333;">Cancel</button>
+          </div>
           <div id="profile-error" style="color: red;"></div>
           <button id="change-password-btn" class="nav-btn" style="margin-top:20px;">Change Password</button>
           <div id="change-password-form" style="display:none;align-items:center;gap:16px;margin-top:20px;">
             <input type="password" id="new-password" placeholder="New Password" style="padding:8px;border-radius:6px;border:1px solid #ccc;" />
             <input type="password" id="confirm-password" placeholder="Confirm Password" style="padding:8px;border-radius:6px;border:1px solid #ccc;" />
             <button id="submit-password-btn" class="nav-btn">Submit</button>
+            <button id="cancel-password-btn" class="nav-btn" style="background:#eee;color:#333;">Cancel</button>
           </div>
         </section>
       </main>

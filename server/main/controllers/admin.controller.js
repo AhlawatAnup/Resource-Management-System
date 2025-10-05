@@ -262,3 +262,29 @@ exports.ChangeAdminPassword = async (req, res) => {
     return res.status(500).json({ error: "Failed to update password." });
   }
 };
+
+// Change admin email
+exports.ChangeAdminEmail = async (req, res) => {
+  if (!req.session.user || req.session.user.role !== "admin") {
+    return res.status(401).json({ error: "Not authenticated as admin" });
+  }
+  const { newEmail } = req.body;
+  if (!newEmail || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(newEmail)) {
+    return res.status(400).json({ error: "Invalid email address." });
+  }
+  try {
+    const admin = await Admin.findById(req.session.user.id).select("email");
+    if (!admin) {
+      return res.status(404).json({ error: "Admin not found" });
+    }
+    if (admin.email === newEmail) {
+      return res.status(400).json({ error: "The new email is the same as the current email." });
+    }
+    admin.email = newEmail;
+    await admin.save();
+    return res.json({ success: true, message: "Email updated successfully.", email: admin.email });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Failed to update email." });
+  }
+};

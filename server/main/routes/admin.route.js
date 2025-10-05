@@ -14,6 +14,7 @@ const {
   getAllResourceRequests,
   getAdminDetails,
   ChangeAdminPassword,
+  ChangeAdminEmail,
 } = require("../controllers/admin.controller.js");
 
 const {
@@ -68,6 +69,7 @@ router.put("/verify_request/:request_id", updateResourceRequestVerification);
 // Profile section routes
 router.get("/details", isAdmin, getAdminDetails);
 router.put("/change-password", isAdmin, ChangeAdminPassword);
+router.put("/change-email", isAdmin, ChangeAdminEmail);
 
 
 module.exports = router;
