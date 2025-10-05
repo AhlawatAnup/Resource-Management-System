@@ -162,3 +162,46 @@ body {
   display: flex;
   align-items: center;
 }
+
+/* Import CSV button (top-right under header) */
+.import-csv-wrapper {
+  margin-left: 16px;
+  display: flex;
+  align-items: center;
+}
+
+.import-csv-btn {
+  background: linear-gradient(180deg, #10b981 0%, #059669 100%); /* green */
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(6,95,70,0.12), inset 0 -1px 0 rgba(0,0,0,0.06);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease;
+}
+
+.import-csv-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 22px rgba(6,95,70,0.14);
+}
+
+.import-csv-btn:active {
+  transform: translateY(0);
+  opacity: 0.95;
+}
+
+/* Actions area below the top-nav/header */
+.page-actions {
+  display: flex;
+  justify-content: flex-end; /* right align */
+  padding: 12px 24px; /* spacing below header */
+  background: transparent; /* keep consistent with page background */
+  border-bottom: 1px solid transparent; /* preserves visual separation if needed */
+}
+
+.page-actions .import-csv-wrapper {
+  margin: 0; /* reset margin when placed in page-actions */
+}
