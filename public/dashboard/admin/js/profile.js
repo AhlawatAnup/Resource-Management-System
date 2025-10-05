@@ -74,7 +74,16 @@ document.addEventListener('DOMContentLoaded', function() {
           emailErrorDiv.style.color = 'green';
           emailErrorDiv.textContent = data.message;
           adminEmailSpan.textContent = data.email;
-          setTimeout(() => { emailModal.style.display = 'none'; }, 1200);
+          // Hide form fields, only show success message
+          newEmailInput.style.display = 'none';
+          submitEmailBtn.style.display = 'none';
+          cancelEmailBtn.style.display = 'none';
+          setTimeout(() => { emailModal.style.display = 'none';
+            // Restore form for next open
+            newEmailInput.style.display = '';
+            submitEmailBtn.style.display = '';
+            cancelEmailBtn.style.display = '';
+          }, 1200);
         } else {
           emailErrorDiv.style.color = 'red';
           emailErrorDiv.textContent = data.error || 'Failed to update email.';
@@ -146,9 +155,18 @@ document.addEventListener('DOMContentLoaded', function() {
         if (data.success) {
           passwordErrorDiv.style.color = 'green';
           passwordErrorDiv.textContent = data.message;
-          newPasswordInput.value = '';
-          confirmPasswordInput.value = '';
-          setTimeout(() => { passwordModal.style.display = 'none'; }, 1200);
+          // Hide form fields, only show success message
+          newPasswordInput.style.display = 'none';
+          confirmPasswordInput.style.display = 'none';
+          submitPasswordBtn.style.display = 'none';
+          cancelPasswordBtn.style.display = 'none';
+          setTimeout(() => { passwordModal.style.display = 'none';
+            // Restore form for next open
+            newPasswordInput.style.display = '';
+            confirmPasswordInput.style.display = '';
+            submitPasswordBtn.style.display = '';
+            cancelPasswordBtn.style.display = '';
+          }, 1200);
         } else {
           passwordErrorDiv.style.color = 'red';
           passwordErrorDiv.textContent = data.error || 'Failed to change password.';
