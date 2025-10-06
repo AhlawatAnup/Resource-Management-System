@@ -372,6 +372,53 @@ function showNotification(message, type) {
   }, 3000);
 }
 
+// Generate a secure random password using Web Crypto API
+function generateSecurePassword(length = 12) {
+  try {
+    const upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const lower = 'abcdefghijklmnopqrstuvwxyz';
+    const digits = '0123456789';
+    const symbols = '@#$&';
+    const all = upper + lower + digits + symbols;
+
+    // Helper to get a secure random integer in [0, max)
+    const randInt = (max) => {
+      const uint32 = window.crypto.getRandomValues(new Uint32Array(1))[0];
+      return uint32 % max;
+    };
+
+    // Ensure password has at least one char from each required set
+    let passwordChars = [];
+    passwordChars.push(upper[randInt(upper.length)]);
+    passwordChars.push(lower[randInt(lower.length)]);
+    passwordChars.push(digits[randInt(digits.length)]);
+    passwordChars.push(symbols[randInt(symbols.length)]);
+
+    // Fill the remaining length
+    for (let i = passwordChars.length; i < length; i++) {
+      passwordChars.push(all[randInt(all.length)]);
+    }
+
+    // Shuffle using Fisher-Yates with secure randomness
+    for (let i = passwordChars.length - 1; i > 0; i--) {
+      const j = randInt(i + 1);
+      const tmp = passwordChars[i];
+      passwordChars[i] = passwordChars[j];
+      passwordChars[j] = tmp;
+    }
+
+    return passwordChars.join('');
+  } catch (err) {
+    // Fallback to simple random if crypto isn't available
+    const fallbackChars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let res = '';
+    for (let i = 0; i < length; i++) {
+      res += fallbackChars[Math.floor(Math.random() * fallbackChars.length)];
+    }
+    return res;
+  }
+}
+
 // Event listeners
 document.addEventListener('DOMContentLoaded', function() {
   // Initialize purpose panel and load resource requests
@@ -429,6 +476,27 @@ document.addEventListener('DOMContentLoaded', function() {
       console.error('Clipboard copy failed', err);
       showNotification('Failed to copy', 'error');
     });
+  });
+
+  // Generate VM password button handler
+  document.body.addEventListener('click', (e) => {
+    const genBtn = e.target.closest('#generateVmPasswordBtn');
+    if (!genBtn) return;
+
+    // Generate a secure random password and set it to the vmPassword field
+    const pwd = generateSecurePassword(12);
+    const pwdEl = document.getElementById('vmPassword');
+    if (pwdEl) {
+      pwdEl.value = pwd;
+      // Attempt to copy to clipboard and notify user
+      navigator.clipboard.writeText(pwd).then(() => {
+        showNotification('Generated password copied to clipboard', 'success');
+      }).catch(() => {
+        showNotification('Generated password set (copy failed)', 'success');
+      });
+    } else {
+      showNotification('Password field not found', 'error');
+    }
   });
 
   // Modal form submit
