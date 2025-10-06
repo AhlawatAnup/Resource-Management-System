@@ -3,6 +3,7 @@ const Student = require("../database/studentModel");
 const Teacher = require("../database/teacherModel");
 const Admin = require("../database/adminModel");
 const ResourceRequest = require("../database/resourceRequestModel");
+const Machine = require('../database/machineModel');
 const path = require("path");
 const publicPath = path.join(__dirname, "../../../public");
 
@@ -268,6 +269,27 @@ exports.updateResourceRequestVerification = async (req, res) => {
 
     // Only send email if update was successful (in background)
     if (updatedRequest) {
+      // If admin approved and vmCredentials.migId is present, assign the student to the machine
+      if (userRole === "admin" && updatedRequest.is_verified && updatedRequest.vmCredentials && updatedRequest.vmCredentials.migId) {
+        try {
+          // Find machine by MIGID and set assigned student
+          const migId = updatedRequest.vmCredentials.migId;
+          const machine = await Machine.findOneAndUpdate(
+            { MIGID: migId },
+            { $set: { 'assignedStudent.studentId': updatedRequest.studentId, isAssigned: true } },
+            { new: true }
+          );
+          if (machine) {
+            console.log(`Assigned student ${updatedRequest.studentId} to machine ${migId}`);
+          } else {
+            console.warn(`Machine with MIGID ${migId} not found; could not assign student ${updatedRequest.studentId}`);
+          }
+        } catch (machineErr) {
+          console.error('Error assigning student to machine:', machineErr);
+          // Do not fail the request update if machine update fails
+        }
+      }
+
       const student = await Student.findById(updatedRequest.studentId);
       const emailService = require("../utils/emailService.js");
       

@@ -103,18 +103,17 @@ document.addEventListener('DOMContentLoaded', () => {
         tr.appendChild(td);
       });
 
-      // Assigned student cell: show name if available, then id, otherwise 'Unassigned'
-      const assignedTd = document.createElement('td');
-      (function setAssignedText(val, td) {
-        if (!val) { td.textContent = 'Unassigned'; return; }
-        // if it's an object with a name or studentId, prefer name then id
-        if (typeof val === 'object') {
-          td.textContent = val.name || val.studentId || 'Unassigned';
-          return;
-        }
-        // otherwise assume string
-        td.textContent = String(val);
-      })(m.assignedStudent, assignedTd);
+        // Assigned student cell: show studentId if available, otherwise 'Unassigned'
+        const assignedTd = document.createElement('td');
+        (function setAssignedText(val, td) {
+          if (!val) { td.textContent = 'Unassigned'; return; }
+          // prefer studentId field if object, otherwise show the raw value
+          if (typeof val === 'object') {
+            td.textContent = val.studentId || 'Unassigned';
+            return;
+          }
+          td.textContent = String(val);
+        })(m.assignedStudent, assignedTd);
       tr.appendChild(assignedTd);
 
       // Actions cell: Edit (opens modal) and Delete
@@ -191,7 +190,7 @@ function ensureEditModal() {
       <form id="machineEditForm">
         <div style="margin-bottom:8px;"><label>MIGID<br><input name="MIGID" id="machineMIGID" style="width:100%;padding:8px;"/></label></div>
         <div style="margin-bottom:8px;"><label>GPU RAM (GB)<br><input name="gpuRam" id="machineGpu" style="width:100%;padding:8px;"/></label></div>
-        <div style="margin-bottom:12px;"><label>Assigned Student<br><input name="assignedStudent" id="machineAssigned" style="width:100%;padding:8px;"/></label></div>
+  <div style="margin-bottom:12px;"><label>Assigned Student (ID)<br><input name="assignedStudent" id="machineAssigned" style="width:100%;padding:8px;"/></label></div>
         <div style="display:flex;gap:8px;justify-content:flex-end;">
           <button type="button" id="machineEditCancel" style="padding:8px 12px;">Cancel</button>
           <button type="submit" id="machineEditSave" style="padding:8px 12px;">Save</button>
@@ -261,7 +260,7 @@ function openEditModal(machine, tableRow, assignedCell) {
   modal.dataset.rowSelector = `[data-machine-row-id="${rowId}"]`;
   modal.querySelector('#machineMIGID').value = machine.MIGID || '';
   modal.querySelector('#machineGpu').value = machine.gpuRam !== undefined && machine.gpuRam !== null ? String(machine.gpuRam) : '';
-  modal.querySelector('#machineAssigned').value = (machine.assignedStudent && (machine.assignedStudent.name || machine.assignedStudent)) || '';
+  modal.querySelector('#machineAssigned').value = (machine.assignedStudent && (machine.assignedStudent.studentId || machine.assignedStudent)) || '';
 }
 
 function closeEditModal() {

@@ -25,6 +25,11 @@ const machineSchema = new mongoose.Schema({
     assignedStudent: {
         studentId: { type: mongoose.Schema.Types.ObjectId, ref: 'Student', required: false }
     }
+    ,
+    isAssigned: {
+        type: Boolean,
+        default: false
+    }
 });
 
 module.exports = mongoose.model('Machine', machineSchema);

@@ -309,8 +309,13 @@ exports.updateMachine = async (req, res) => {
     if (MIGID !== undefined) update.MIGID = MIGID;
     if (gpuRam !== undefined) update.gpuRam = gpuRam;
     if (assignedStudent !== undefined) {
-      if (assignedStudent === null) update.assignedStudent = null;
-      else update.assignedStudent = { name: assignedStudent };
+      if (assignedStudent === null) {
+        update.assignedStudent = null;
+        update.isAssigned = false;
+      } else {
+        update.assignedStudent = { studentId: assignedStudent };
+        update.isAssigned = true;
+      }
     }
     const machine = await Machine.findByIdAndUpdate(id, update, { new: true }).lean();
     if (!machine) return res.status(404).json({ error: 'Machine not found' });
