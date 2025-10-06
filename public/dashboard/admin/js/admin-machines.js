@@ -1,6 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
   const importBtn = document.getElementById('importCsvBtn');
   const importInput = document.getElementById('importCsvInput');
+  // cache and filter state
+  let machinesCache = [];
+  let currentFilter = 'all'; // all | free | assigned
 
   // create table container and place it below the page actions so the import button remains top-right
   const tableWrapper = document.createElement('div');
@@ -16,6 +19,19 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   importBtn.addEventListener('click', () => importInput.click());
+
+  // wire filter buttons (UI-only filtering)
+  const filterButtons = document.querySelectorAll('.machines-filters .status-btn');
+  filterButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      // update active class
+      filterButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const f = btn.dataset.filter || 'all';
+      currentFilter = f;
+      applyFilterAndRender();
+    });
+  });
 
   importInput.addEventListener('change', async (e) => {
     const file = e.target.files[0];
@@ -70,8 +86,29 @@ document.addEventListener('DOMContentLoaded', () => {
       const resp = await fetch('/dashboard/admin/machines', { credentials: 'include' });
       if (!resp.ok) return;
       const json = await resp.json();
-      renderTable(json.machines || []);
+      machinesCache = json.machines || [];
+      applyFilterAndRender();
     } catch (err) { console.error('Failed to load machines', err); }
+  }
+
+  function applyFilterAndRender() {
+    if (!machinesCache || !machinesCache.length) {
+      renderTable([]);
+      return;
+    }
+    const filtered = machinesCache.filter(m => {
+      // isAssigned is a boolean per schema. If missing, fallback to assignedStudent presence.
+      let isAssigned = (typeof m.isAssigned === 'boolean') ? m.isAssigned : null;
+      if (isAssigned === null) {
+        isAssigned = !!(m.assignedStudent);
+      }
+
+      if (currentFilter === 'all') return true;
+      if (currentFilter === 'free') return !isAssigned;
+      if (currentFilter === 'assigned') return !!isAssigned;
+      return true;
+    });
+    renderTable(filtered);
   }
 
   function renderTable(machines) {
@@ -95,8 +132,11 @@ document.addEventListener('DOMContentLoaded', () => {
     thead.appendChild(headerRow);
     table.appendChild(thead);
     const tbody = document.createElement('tbody');
-    machines.forEach(m => {
+    machines.forEach((m, idx) => {
       const tr = document.createElement('tr');
+      // give each row an id so edit modal can reference it later
+      const rowId = `machine-row-${m._id || idx}`;
+      tr.setAttribute('data-machine-row-id', rowId);
       [m.MIGID, m.gpuRam].forEach(val => {
         const td = document.createElement('td');
         td.textContent = val === undefined ? '' : val;
