@@ -16,6 +16,8 @@ const {
   ChangeAdminPassword,
   ChangeAdminEmail,
   getMachines,
+  updateMachine,
+  deleteMachine,
 } = require("../controllers/admin.controller.js");
 
 const {
@@ -33,8 +35,6 @@ const publicPath = path.join(__dirname, "../../../public");
 const { upload } = require('../utils/uploadMiddleware');
 const handleMachineCsvFile = require('../utils/machineCsvHandler');
 
-// GET /machines - return list of machines as JSON
-router.get('/machines', isAdmin, getMachines);
 
 // Middleware applied to all admin routes
 router.use(logRequest);
@@ -79,7 +79,7 @@ router.put("/change-password", isAdmin, ChangeAdminPassword);
 router.put("/change-email", isAdmin, ChangeAdminEmail);
 
 
-// POST /upload-machines - minimal: receive file and delegate import logic to util
+// Machines section routes
 router.post('/upload-machines', isAdmin, upload.single('file'), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
   const filePath = req.file.path;
@@ -91,5 +91,9 @@ router.post('/upload-machines', isAdmin, upload.single('file'), async (req, res)
     res.status(500).json({ error: 'Import failed' });
   }
 });
+
+router.get('/machines', isAdmin, getMachines);
+router.put('/machines/:id', isAdmin, updateMachine);
+router.delete('/machines/:id', isAdmin, deleteMachine);
 
 module.exports = router;

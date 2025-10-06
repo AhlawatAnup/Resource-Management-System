@@ -21,6 +21,10 @@ const machineSchema = new mongoose.Schema({
         type: Number,
         required: true // in GB
     }
+    ,
+    assignedStudent: {
+        studentId: { type: mongoose.Schema.Types.ObjectId, ref: 'Student', required: false }
+    }
 });
 
 module.exports = mongoose.model('Machine', machineSchema);

@@ -299,3 +299,37 @@ exports.getMachines = async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch machines' });
   }
 };
+
+// Update a machine (MIGID, gpuRam, assignedStudent)
+exports.updateMachine = async (req, res) => {
+  const { id } = req.params;
+  const { MIGID, gpuRam, assignedStudent } = req.body;
+  try {
+    const update = {};
+    if (MIGID !== undefined) update.MIGID = MIGID;
+    if (gpuRam !== undefined) update.gpuRam = gpuRam;
+    if (assignedStudent !== undefined) {
+      if (assignedStudent === null) update.assignedStudent = null;
+      else update.assignedStudent = { name: assignedStudent };
+    }
+    const machine = await Machine.findByIdAndUpdate(id, update, { new: true }).lean();
+    if (!machine) return res.status(404).json({ error: 'Machine not found' });
+    return res.json({ ok: true, machine });
+  } catch (err) {
+    console.error('Failed to update machine', err);
+    return res.status(500).json({ error: 'Failed to update machine' });
+  }
+};
+
+// Delete a machine
+exports.deleteMachine = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await Machine.findByIdAndDelete(id);
+    if (!result) return res.status(404).json({ error: 'Machine not found' });
+    return res.json({ ok: true });
+  } catch (err) {
+    console.error('Failed to delete machine', err);
+    return res.status(500).json({ error: 'Failed to delete machine' });
+  }
+};

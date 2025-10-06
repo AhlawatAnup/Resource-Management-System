@@ -86,7 +86,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const table = document.createElement('table');
     const thead = document.createElement('thead');
     const headerRow = document.createElement('tr');
-    ['MIGID','cpuCores','cpuRam','gpuRam'].forEach(h => {
+    // add new columns: Assigned student, Edit
+    ['MIGID','gpuRam','Assigned student','Edit'].forEach(h => {
       const th = document.createElement('th');
       th.textContent = h;
       headerRow.appendChild(th);
@@ -96,11 +97,63 @@ document.addEventListener('DOMContentLoaded', () => {
     const tbody = document.createElement('tbody');
     machines.forEach(m => {
       const tr = document.createElement('tr');
-      [m.MIGID, m.cpuCores, m.cpuRam, m.gpuRam].forEach(val => {
+      [m.MIGID, m.gpuRam].forEach(val => {
         const td = document.createElement('td');
         td.textContent = val === undefined ? '' : val;
         tr.appendChild(td);
       });
+
+      // Assigned student cell: show name if available, then id, otherwise 'Unassigned'
+      const assignedTd = document.createElement('td');
+      (function setAssignedText(val, td) {
+        if (!val) { td.textContent = 'Unassigned'; return; }
+        // if it's an object with a name or studentId, prefer name then id
+        if (typeof val === 'object') {
+          td.textContent = val.name || val.studentId || 'Unassigned';
+          return;
+        }
+        // otherwise assume string
+        td.textContent = String(val);
+      })(m.assignedStudent, assignedTd);
+      tr.appendChild(assignedTd);
+
+      // Actions cell: Edit (opens modal) and Delete
+      const actionTd = document.createElement('td');
+      const editBtn = document.createElement('button');
+      editBtn.type = 'button';
+      editBtn.className = 'btn btn-edit';
+      editBtn.textContent = 'Edit';
+      editBtn.addEventListener('click', () => openEditModal(m, tr, assignedTd));
+      actionTd.appendChild(editBtn);
+
+      const deleteBtn = document.createElement('button');
+      deleteBtn.type = 'button';
+      deleteBtn.className = 'btn btn-delete';
+      deleteBtn.textContent = 'Delete';
+      deleteBtn.style.marginLeft = '8px';
+      deleteBtn.addEventListener('click', async () => {
+        if (!machineConfirmDelete(m)) return;
+        try {
+          if (m._id) {
+            const resp = await fetch(`/dashboard/admin/machines/${m._id}`, {
+              method: 'DELETE',
+              credentials: 'include'
+            });
+            if (!resp.ok) {
+              const txt = await resp.text();
+              alert('Delete failed: ' + (txt || resp.statusText));
+              return;
+            }
+          }
+          // remove row from DOM
+          tr.remove();
+        } catch (err) {
+          console.error('Failed to delete machine', err);
+          alert('Failed to delete machine. See console for details.');
+        }
+      });
+      actionTd.appendChild(deleteBtn);
+      tr.appendChild(actionTd);
       tbody.appendChild(tr);
     });
     table.appendChild(tbody);
@@ -110,3 +163,111 @@ document.addEventListener('DOMContentLoaded', () => {
 
   loadMachines();
 });
+
+
+// Confirm delete helper
+function machineConfirmDelete(machine) {
+  const idText = machine.MIGID ? ` (${machine.MIGID})` : '';
+  return confirm(`Are you sure you want to delete this machine${idText}? This action cannot be undone.`);
+}
+
+// Create modal (singleton) and helpers
+function ensureEditModal() {
+  if (document.getElementById('machineEditModal')) return document.getElementById('machineEditModal');
+  const modal = document.createElement('div');
+  modal.id = 'machineEditModal';
+  modal.style.position = 'fixed';
+  modal.style.left = '0';
+  modal.style.top = '0';
+  modal.style.right = '0';
+  modal.style.bottom = '0';
+  modal.style.background = 'rgba(0,0,0,0.4)';
+  modal.style.display = 'none';
+  modal.style.alignItems = 'center';
+  modal.style.justifyContent = 'center';
+  modal.innerHTML = `
+    <div style="background:#fff;padding:18px;border-radius:8px;max-width:480px;width:100%;box-shadow:0 6px 24px rgba(0,0,0,0.2);">
+      <h3 id="machineEditTitle">Edit Machine</h3>
+      <form id="machineEditForm">
+        <div style="margin-bottom:8px;"><label>MIGID<br><input name="MIGID" id="machineMIGID" style="width:100%;padding:8px;"/></label></div>
+        <div style="margin-bottom:8px;"><label>GPU RAM (GB)<br><input name="gpuRam" id="machineGpu" style="width:100%;padding:8px;"/></label></div>
+        <div style="margin-bottom:12px;"><label>Assigned Student<br><input name="assignedStudent" id="machineAssigned" style="width:100%;padding:8px;"/></label></div>
+        <div style="display:flex;gap:8px;justify-content:flex-end;">
+          <button type="button" id="machineEditCancel" style="padding:8px 12px;">Cancel</button>
+          <button type="submit" id="machineEditSave" style="padding:8px 12px;">Save</button>
+        </div>
+      </form>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  const form = modal.querySelector('#machineEditForm');
+  const cancel = modal.querySelector('#machineEditCancel');
+  cancel.addEventListener('click', () => closeEditModal());
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = modal.dataset.machineId;
+    const rowSelector = modal.dataset.rowSelector;
+    const MIGID = modal.querySelector('#machineMIGID').value.trim();
+    const gpuRaw = modal.querySelector('#machineGpu').value.trim();
+    const gpu = gpuRaw === '' ? null : Number(gpuRaw);
+    if (gpu !== null && (Number.isNaN(gpu) || gpu < 0)) { alert('GPU RAM must be a non-negative number'); return; }
+    const assigned = modal.querySelector('#machineAssigned').value.trim() || null;
+
+    try {
+      // call server to update (if id present)
+      if (id) {
+        const resp = await fetch(`/dashboard/admin/machines/${id}`, {
+          method: 'PUT',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ MIGID: MIGID || null, gpuRam: gpu, assignedStudent: assigned })
+        });
+        if (!resp.ok) {
+          const txt = await resp.text();
+          alert('Update failed: ' + (txt || resp.statusText));
+          return;
+        }
+      }
+
+      // update UI row
+      if (rowSelector) {
+        const tr = document.querySelector(rowSelector);
+        if (tr) {
+          const tds = tr.querySelectorAll('td');
+          if (tds[0]) tds[0].textContent = MIGID || '';
+          if (tds[1]) tds[1].textContent = gpu !== null ? String(gpu) : '';
+          if (tds[2]) tds[2].textContent = assigned || 'Unassigned';
+        }
+      }
+
+      closeEditModal();
+    } catch (err) {
+      console.error('Failed to update machine', err);
+      alert('Failed to update machine. See console for details.');
+    }
+  });
+
+  return modal;
+}
+
+function openEditModal(machine, tableRow, assignedCell) {
+  const modal = ensureEditModal();
+  modal.style.display = 'flex';
+  modal.dataset.machineId = machine._id || '';
+  // store a selector so we can find the row later
+  const rowId = `machine-row-${machine._id || Math.random().toString(36).slice(2,9)}`;
+  tableRow.setAttribute('data-machine-row-id', rowId);
+  modal.dataset.rowSelector = `[data-machine-row-id="${rowId}"]`;
+  modal.querySelector('#machineMIGID').value = machine.MIGID || '';
+  modal.querySelector('#machineGpu').value = machine.gpuRam !== undefined && machine.gpuRam !== null ? String(machine.gpuRam) : '';
+  modal.querySelector('#machineAssigned').value = (machine.assignedStudent && (machine.assignedStudent.name || machine.assignedStudent)) || '';
+}
+
+function closeEditModal() {
+  const modal = document.getElementById('machineEditModal');
+  if (!modal) return;
+  modal.style.display = 'none';
+  delete modal.dataset.machineId;
+  delete modal.dataset.rowSelector;
+}
