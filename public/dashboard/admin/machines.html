@@ -14,6 +14,7 @@
     ></script>
     <link rel="stylesheet" href="/dashboard/admin/style/dashboard-common.css" />
   <link rel="stylesheet" href="/dashboard/admin/style/admin.table.css" />
+  <link rel="stylesheet" href="/dashboard/admin/style/machines.css" />
   </head>
   <body>
     <!-- Sidebar -->
@@ -63,7 +64,24 @@
         </div>
       </nav>
       <!-- Page actions below header (right-aligned) -->
-      <div class="page-actions">
+      <div class="page-actions machines-page-actions">
+        <!-- Filters (UI-only) placed to the left of the import button -->
+        <div class="machines-filters" aria-label="Machine filters">
+          <div class="nav-group">
+            <button class="status-btn active" data-filter="all" type="button">
+              <i class="fas fa-list"></i>
+              All
+            </button>
+            <button class="status-btn" data-filter="free" type="button">
+              <i class="fas fa-circle-notch"></i>
+              Free resources
+            </button>
+            <button class="status-btn" data-filter="assigned" type="button">
+              <i class="fas fa-user"></i>
+              Assigned resources
+            </button>
+          </div>
+        </div>
         <div class="import-csv-wrapper">
           <button id="importCsvBtn" class="import-csv-btn" type="button" aria-label="Import machines from CSV">Import CSV</button>
           <input id="importCsvInput" type="file" accept=".csv,text/csv" style="display:none" />

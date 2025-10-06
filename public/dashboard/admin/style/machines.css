@@ -1,0 +1,67 @@
+/* Scoped filter styles for machines page - visually matches admin dashboard filter UI */
+
+.machines-page-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 24px;
+}
+
+.machines-filters {
+  display: flex;
+  align-items: center;
+}
+
+.machines-filters .nav-group {
+  display: flex;
+  background: #f3f4f6;
+  border-radius: 8px;
+  padding: 4px;
+  gap: 4px;
+}
+
+.machines-filters .status-btn {
+  background: transparent;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.machines-filters .status-btn:hover {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.machines-filters .status-btn.active {
+  background: white;
+  color: #1f2937;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+/* Make sure the import button stays visually separated */
+.import-csv-wrapper {
+  margin-left: auto; /* push import to the right within the page-actions container */
+}
+
+/* Small helper to keep layout tidy on narrow screens */
+@media (max-width: 720px) {
+  .machines-page-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .import-csv-wrapper {
+    margin-left: 0;
+    display: flex;
+    justify-content: flex-end;
+  }
+}
