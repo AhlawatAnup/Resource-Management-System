@@ -376,6 +376,31 @@ body {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
+/* Inline input + button wrapper used in verification modal */
+.input-with-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.input-with-button .form-control {
+  flex: 1 1 auto;
+  min-width: 0; /* allow shrinking inside flex */
+}
+.input-with-button .copy-btn {
+  background: transparent;
+  border: 1px solid #e2e8f0;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #475569;
+}
+.input-with-button .copy-btn:hover {
+  background: #f1f5f9;
+}
+
 .stat-icon {
   width: 50px;
   height: 50px;

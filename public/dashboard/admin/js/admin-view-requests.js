@@ -199,9 +199,46 @@ function showVerificationModal(requestId) {
   // Clear form fields
   document.getElementById('vmUsername').value = '';
   document.getElementById('vmPassword').value = '';
+  // Populate available machines into the MIGID select
+  populateAvailableMachinesSelect();
 
   // Show modal
   modal.style.display = 'block';
+}
+
+// Fetch machines and populate the MIGID select with unassigned machines
+async function populateAvailableMachinesSelect() {
+  const select = document.getElementById('vmMigId');
+  if (!select) return;
+
+  // Show loading option
+  select.innerHTML = '<option value="" disabled selected>Loading available machines...</option>';
+
+  try {
+    const resp = await fetch('/dashboard/admin/machines', { credentials: 'include' });
+    if (!resp.ok) throw new Error('Failed to load machines');
+    const json = await resp.json();
+    const machines = json.machines || [];
+
+    // Filter unassigned machines (isAssigned false or assignedStudent null)
+    const freeMachines = machines.filter(m => {
+      // backend normalizes assignedStudent to null when unassigned
+      const isAssigned = (typeof m.isAssigned === 'boolean') ? m.isAssigned : !!m.assignedStudent;
+      return !isAssigned;
+    });
+
+    if (!freeMachines.length) {
+      select.innerHTML = '<option value="" disabled selected>No available machines</option>';
+      return;
+    }
+
+    // Build options
+    select.innerHTML = '<option value="" disabled selected>Select a machine</option>' +
+      freeMachines.map(m => `<option value="${m.MIGID}">${m.MIGID} (${m.gpuRam}GB GPU)</option>`).join('');
+  } catch (err) {
+    console.error('Error loading machines for MIGID select', err);
+    select.innerHTML = '<option value="" disabled selected>Error loading machines</option>';
+  }
 }
 
 // Close verification modal
@@ -362,6 +399,36 @@ document.addEventListener('DOMContentLoaded', function() {
         updateRequestVerification(requestId, isVerified);
       }
     }
+  });
+
+  // Copy button delegation inside modals (copy username/password/migId)
+  document.body.addEventListener('click', (e) => {
+    const btn = e.target.closest('.copy-btn');
+    if (!btn) return;
+    const targetId = btn.getAttribute('data-target');
+    if (!targetId) return;
+
+    const el = document.getElementById(targetId);
+    if (!el) {
+      showNotification('Field not found to copy', 'error');
+      return;
+    }
+
+    // Get value for select or input
+    const value = (el.tagName.toLowerCase() === 'select') ? (el.value || '') : (el.value || '');
+
+    if (!value) {
+      showNotification('Nothing to copy', 'error');
+      return;
+    }
+
+    // Use clipboard API
+    navigator.clipboard.writeText(value).then(() => {
+      showNotification('Copied to clipboard', 'success');
+    }).catch(err => {
+      console.error('Clipboard copy failed', err);
+      showNotification('Failed to copy', 'error');
+    });
   });
 
   // Modal form submit
