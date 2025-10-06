@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const thead = document.createElement('thead');
     const headerRow = document.createElement('tr');
     // add new columns: Assigned student, Edit
-    ['MIGID','gpuRam','Assigned student','Edit'].forEach(h => {
+    ['MIGID', 'gpuRam', 'Assigned student', 'Edit'].forEach(h => {
       const th = document.createElement('th');
       th.textContent = h;
       headerRow.appendChild(th);
@@ -143,17 +143,33 @@ document.addEventListener('DOMContentLoaded', () => {
         tr.appendChild(td);
       });
 
-        // Assigned student cell: show studentId if available, otherwise 'Unassigned'
-        const assignedTd = document.createElement('td');
-        (function setAssignedText(val, td) {
-          if (!val) { td.textContent = 'Unassigned'; return; }
-          // prefer studentId field if object, otherwise show the raw value
-          if (typeof val === 'object') {
-            td.textContent = val.studentId || 'Unassigned';
+      // Assigned student cell: show roll number and name when available, otherwise studentId or 'Unassigned'
+      const assignedTd = document.createElement('td');
+      (function setAssignedText(val, td) {
+        if (!val) { td.textContent = 'Unassigned'; return; }
+        // treat only non-null plain objects (not arrays) as student objects
+        const isPlainObj = val && typeof val === 'object' && !Array.isArray(val);
+        if (isPlainObj) {
+          // server normalizes to { studentId, rollNumber, name }
+          const roll = val.rollNumber || null;
+          const name = val.name || null;
+
+          if (roll && name) {
+            td.textContent = ''; // clear existing content
+            td.appendChild(document.createTextNode(roll));
+            td.appendChild(document.createElement('br'));
+            td.appendChild(document.createTextNode(name));
             return;
           }
-          td.textContent = String(val);
-        })(m.assignedStudent, assignedTd);
+          if (roll) { td.textContent = roll; return; }
+          if (name) { td.textContent = name; return; }
+          if (val.studentId) { td.textContent = val.studentId; return; }
+          td.textContent = JSON.stringify(val);
+          return;
+        }
+
+        td.textContent = String(val);
+      })(m.assignedStudent, assignedTd);
       tr.appendChild(assignedTd);
 
       // Actions cell: Edit (opens modal) and Delete
@@ -295,7 +311,7 @@ function openEditModal(machine, tableRow, assignedCell) {
   modal.style.display = 'flex';
   modal.dataset.machineId = machine._id || '';
   // store a selector so we can find the row later
-  const rowId = `machine-row-${machine._id || Math.random().toString(36).slice(2,9)}`;
+  const rowId = `machine-row-${machine._id || Math.random().toString(36).slice(2, 9)}`;
   tableRow.setAttribute('data-machine-row-id', rowId);
   modal.dataset.rowSelector = `[data-machine-row-id="${rowId}"]`;
   modal.querySelector('#machineMIGID').value = machine.MIGID || '';
