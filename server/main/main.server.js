@@ -6,6 +6,8 @@ const bodyParser = require("body-parser");
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
 const connectDB = require("./database/db");
+const schedule = require("node-schedule");
+const { runBackup } = require("./services/backup");
 // ✅ Connect to DB
 connectDB();
 
@@ -80,6 +82,17 @@ app.use("/auth", authRoutes);
 // DASHBOARD ROUTES
 const dashboardRoutes = require("./routes/dashboard.route.js");
 app.use("/dashboard", requireAuth, dashboardRoutes);
+
+// const backupSchedule = "*/2 * * * *"; // every 2 minutes (example)
+const backupSchedule = "*/5 * * * *";
+
+schedule.scheduleJob(backupSchedule, () => {
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString(); // e.g., "10:03:00 AM"
+  
+  console.log(`🕒 ${timeStr} — starting MongoDB backup...`);
+  runBackup();
+});
 
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
