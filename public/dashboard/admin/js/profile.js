@@ -30,6 +30,16 @@ document.addEventListener('DOMContentLoaded', function() {
   const adminEmailSpan = document.getElementById('admin-email');
   const emailErrorDiv = document.getElementById('email-error');
 
+  // Username Modal elements
+  const editUsernameBtn = document.getElementById('edit-username-btn');
+  const usernameModal = document.getElementById('edit-username-modal');
+  const closeUsernameModal = document.getElementById('close-username-modal');
+  const submitUsernameBtn = document.getElementById('submit-username-btn');
+  const cancelUsernameBtn = document.getElementById('cancel-username-btn');
+  const newUsernameInput = document.getElementById('new-username-input');
+  const adminUsernameSpan = document.getElementById('admin-username');
+  const usernameErrorDiv = document.getElementById('username-error');
+
   if (editEmailBtn && emailModal) {
     editEmailBtn.addEventListener('click', function() {
       emailModal.style.display = 'flex';
@@ -37,15 +47,34 @@ document.addEventListener('DOMContentLoaded', function() {
       emailErrorDiv.textContent = '';
     });
   }
+  // Username modal open
+  if (editUsernameBtn && usernameModal) {
+    editUsernameBtn.addEventListener('click', function() {
+      usernameModal.style.display = 'flex';
+      newUsernameInput.value = adminUsernameSpan.textContent;
+      usernameErrorDiv.textContent = '';
+    });
+  }
   if (closeEmailModal && emailModal) {
     closeEmailModal.addEventListener('click', function() {
       emailModal.style.display = 'none';
+    });
+  }
+  if (closeUsernameModal && usernameModal) {
+    closeUsernameModal.addEventListener('click', function() {
+      usernameModal.style.display = 'none';
     });
   }
   if (cancelEmailBtn && emailModal) {
     cancelEmailBtn.addEventListener('click', function(e) {
       e.preventDefault();
       emailModal.style.display = 'none';
+    });
+  }
+  if (cancelUsernameBtn && usernameModal) {
+    cancelUsernameBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      usernameModal.style.display = 'none';
     });
   }
   if (submitEmailBtn) {
@@ -61,7 +90,7 @@ document.addEventListener('DOMContentLoaded', function() {
         emailErrorDiv.textContent = 'Please enter a valid email address.';
         return;
       }
-      fetch('/dashboard/admin/change-email', {
+      fetch('/dashboard/admin/update-profile', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
@@ -73,7 +102,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if (data.success) {
           emailErrorDiv.style.color = 'green';
           emailErrorDiv.textContent = data.message;
-          adminEmailSpan.textContent = data.email;
+          // Update displayed email from response if present, otherwise use the submitted value
+          adminEmailSpan.textContent = (data.changes && data.changes.email) ? data.changes.email : newEmail;
           // Hide form fields, only show success message
           newEmailInput.style.display = 'none';
           submitEmailBtn.style.display = 'none';
@@ -92,6 +122,51 @@ document.addEventListener('DOMContentLoaded', function() {
       .catch(() => {
         emailErrorDiv.style.color = 'red';
         emailErrorDiv.textContent = 'Failed to update email.';
+      });
+    });
+  }
+
+  // Username submit handler
+  if (submitUsernameBtn) {
+    submitUsernameBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      const newUsername = newUsernameInput.value.trim();
+      usernameErrorDiv.textContent = '';
+      if (!newUsername) {
+        usernameErrorDiv.textContent = 'Please enter a new username.';
+        return;
+      }
+      fetch('/dashboard/admin/update-profile', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ newUsername })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          usernameErrorDiv.style.color = 'green';
+          usernameErrorDiv.textContent = data.message;
+          adminUsernameSpan.textContent = newUsername;
+          // Hide form fields, only show success message
+          newUsernameInput.style.display = 'none';
+          submitUsernameBtn.style.display = 'none';
+          cancelUsernameBtn.style.display = 'none';
+          setTimeout(() => { usernameModal.style.display = 'none';
+            // Restore form for next open
+            newUsernameInput.style.display = '';
+            submitUsernameBtn.style.display = '';
+            cancelUsernameBtn.style.display = '';
+          }, 1200);
+        } else {
+          usernameErrorDiv.style.color = 'red';
+          usernameErrorDiv.textContent = data.error || 'Failed to update username.';
+        }
+      })
+      .catch(() => {
+        usernameErrorDiv.style.color = 'red';
+        usernameErrorDiv.textContent = 'Failed to update username.';
       });
     });
   }

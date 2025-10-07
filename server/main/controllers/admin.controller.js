@@ -264,31 +264,70 @@ exports.ChangeAdminPassword = async (req, res) => {
   }
 };
 
-// Change admin email
-exports.ChangeAdminEmail = async (req, res) => {
+// Update admin username and/or email
+exports.UpdateAdminProfile = async (req, res) => {
   if (!req.session.user || req.session.user.role !== "admin") {
     return res.status(401).json({ error: "Not authenticated as admin" });
   }
-  const { newEmail } = req.body;
-  if (!newEmail || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(newEmail)) {
+
+  const { newEmail, newUsername } = req.body;
+
+  if (!newEmail && !newUsername) {
+    return res.status(400).json({ error: "Provide newEmail and/or newUsername to update." });
+  }
+
+  // Validation
+  if (newEmail && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(newEmail)) {
     return res.status(400).json({ error: "Invalid email address." });
   }
+  if (newUsername && String(newUsername).trim().length === 0) {
+    return res.status(400).json({ error: "Invalid username." });
+  }
+
   try {
-    const admin = await Admin.findById(req.session.user.id).select("email");
-    if (!admin) {
-      return res.status(404).json({ error: "Admin not found" });
+    const admin = await Admin.findById(req.session.user.id).select("username email");
+    if (!admin) return res.status(404).json({ error: "Admin not found" });
+
+    const changes = {};
+
+    // Check email uniqueness and change
+    if (newEmail && admin.email !== newEmail) {
+      const exists = await Admin.findOne({ email: newEmail });
+      if (exists) return res.status(400).json({ error: "Email already in use." });
+      changes.email = newEmail;
+      admin.email = newEmail;
     }
-    if (admin.email === newEmail) {
-      return res.status(400).json({ error: "The new email is the same as the current email." });
+
+    // Check username uniqueness and change
+    if (newUsername && admin.username !== newUsername) {
+      const existsU = await Admin.findOne({ username: newUsername });
+      if (existsU) return res.status(400).json({ error: "Username already in use." });
+      changes.username = newUsername;
+      admin.username = newUsername;
     }
-    admin.email = newEmail;
+
+    if (Object.keys(changes).length === 0) {
+      return res.status(400).json({ error: "No changes detected or values are same as current." });
+    }
+
     await admin.save();
-    return res.json({ success: true, message: "Email updated successfully.", email: admin.email });
+
+    // Update session user fields so frontend sees new values without re-login
+    if (req.session.user) {
+      if (changes.username) req.session.user.username = changes.username;
+      if (changes.email) req.session.user.email = changes.email;
+    }
+
+    return res.json({ success: true, message: "Admin identity updated.", changes });
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ error: "Failed to update email." });
+    return res.status(500).json({ error: "Failed to update admin identity." });
   }
 };
+
+// Backwards compatible aliases: support both older and newer names
+exports.ChangeAdminEmail = exports.UpdateAdminProfile;
+exports.UpdateAdminIdentity = exports.UpdateAdminProfile;
 
 exports.getMachines = async (req, res) => {
   try {

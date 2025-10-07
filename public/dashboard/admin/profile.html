@@ -65,7 +65,10 @@
       <main class="main-content">
         <section class="profile-section">
           <h2>Admin Profile</h2>
-          <div><strong>Username:</strong> <span id="admin-username"></span></div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <strong>Username:</strong> <span id="admin-username"></span>
+            <button id="edit-username-btn" class="nav-btn" style="padding:4px 10px;font-size:14px;">Edit</button>
+          </div>
           <!-- <div><strong>Name:</strong> <span id="admin-name"></span></div> -->
           <div style="display:flex;align-items:center;gap:8px;">
             <strong>Email:</strong> <span id="admin-email"></span>
@@ -96,6 +99,19 @@
                 <button id="cancel-password-btn" class="nav-btn" style="background:#eee;color:#333;">Cancel</button>
               </div>
               <div id="password-error" style="color: red;"></div>
+            </div>
+          </div>
+          <!-- Edit Username Modal -->
+          <div id="edit-username-modal" class="profile-modal" style="display:none;">
+            <div class="profile-modal-content">
+              <button class="profile-modal-close" id="close-username-modal">&times;</button>
+              <h3>Edit Username</h3>
+              <input type="text" id="new-username-input" placeholder="New Username" style="padding:8px;border-radius:6px;border:1px solid #ccc;" />
+              <div style="display:flex;gap:10px;margin-top:16px;">
+                <button id="submit-username-btn" class="nav-btn" style="background:#27ae60;color:#fff;">Submit</button>
+                <button id="cancel-username-btn" class="nav-btn" style="background:#eee;color:#333;">Cancel</button>
+              </div>
+              <div id="username-error" style="color: red;"></div>
             </div>
           </div>
           <div id="profile-error" style="color: red;"></div>

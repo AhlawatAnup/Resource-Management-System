@@ -18,6 +18,7 @@ const {
   getMachines,
   updateMachine,
   deleteMachine,
+  UpdateAdminProfile,
 } = require("../controllers/admin.controller.js");
 
 const {
@@ -76,7 +77,8 @@ router.put("/verify_request/:request_id", updateResourceRequestVerification);
 // Profile section routes
 router.get("/details", isAdmin, getAdminDetails);
 router.put("/change-password", isAdmin, ChangeAdminPassword);
-router.put("/change-email", isAdmin, ChangeAdminEmail);
+router.put("/update-profile", isAdmin, UpdateAdminProfile);
+// router.put("/change-email", isAdmin, ChangeAdminEmail);
 
 
 // Machines section routes
