@@ -398,7 +398,7 @@
 
 .specs-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    /* grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); */
     gap: 8px;
     margin-top: 8px;
 }
@@ -408,6 +408,7 @@
     padding: 8px;
     border-radius: 4px;
     font-size: 0.85em;
+    width: 15vw;
 }
 
 .spec-label {
