@@ -90,7 +90,7 @@ function renderResourceRequests(requests) {
       </td>
       <td>
         <div class="resource-specs">
-          <div><span class="field-label">CPU:</span> ${request.cpuCores} cores, ${request.cpuRam}GB RAM</div>
+          <!-- <div><span class="field-label">CPU:</span> ${request.cpuCores} cores, ${request.cpuRam}GB RAM</div> -->
           <div><span class="field-label">GPU:</span> ${request.gpuRam}GB</div>
         </div>
       </td>
@@ -186,7 +186,7 @@ function showVerificationModal(requestId) {
         <p><strong>Student:</strong> ${request.studentInfo.name}</p>
         <p><strong>Roll No:</strong> ${request.studentInfo.rollNo}</p>
         <p><strong>Teacher:</strong> ${request.teacherInfo.name}</p>
-        <p><strong>CPU:</strong> ${request.cpuCores} cores, ${request.cpuRam}GB RAM</p>
+        <!-- <p><strong>CPU:</strong> ${request.cpuCores} cores, ${request.cpuRam}GB RAM</p> -->
         <p><strong>GPU:</strong> ${request.gpuRam}GB</p>
         <p><strong>Purpose:</strong> ${request.purpose.length > 80 ? request.purpose.substring(0, 80) + '...' : request.purpose}</p>
       </div>
@@ -577,8 +577,8 @@ function showEditModal(requestId) {
   document.getElementById('editTitle').value = req.title;
   document.getElementById('editPurpose').value = req.purpose;
   document.getElementById('editExpiryDate').value = req.expiryDate ? req.expiryDate.split('T')[0] : '';
-  document.getElementById('editCpuCores').value = req.cpuCores;
-  document.getElementById('editCpuRam').value = req.cpuRam;
+  // document.getElementById('editCpuCores').value = req.cpuCores;
+  // document.getElementById('editCpuRam').value = req.cpuRam;
   // document.getElementById('editGpuCount').value = req.gpuCount;
   document.getElementById('editGpuRam').value = req.gpuRam;
   document.getElementById('editRequestModal').style.display = 'block';
@@ -591,8 +591,8 @@ async function submitEditRequest() {
     title: document.getElementById('editTitle').value,
     purpose: document.getElementById('editPurpose').value,
     expiryDate: document.getElementById('editExpiryDate').value,
-    cpuCores: Number(document.getElementById('editCpuCores').value),
-    cpuRam: Number(document.getElementById('editCpuRam').value),
+    // cpuCores: Number(document.getElementById('editCpuCores').value),
+    // cpuRam: Number(document.getElementById('editCpuRam').value),
     // gpuCount: Number(document.getElementById('editGpuCount').value),
     gpuRam: Number(document.getElementById('editGpuRam').value)
   };
