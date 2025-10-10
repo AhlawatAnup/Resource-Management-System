@@ -80,6 +80,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  const addBtn = document.getElementById('addMachineBtn');
+  if (addBtn) {
+    addBtn.addEventListener('click', () => {
+      const modal = ensureAddModal();
+      openAddModal(modal);
+    });
+  }
+
   // load machines and render simple table
   async function loadMachines() {
     try {
@@ -90,6 +98,9 @@ document.addEventListener('DOMContentLoaded', () => {
       applyFilterAndRender();
     } catch (err) { console.error('Failed to load machines', err); }
   }
+
+  // expose for other helpers to refresh after create
+  window.reloadMachines = loadMachines;
 
   function applyFilterAndRender() {
     if (!machinesCache || !machinesCache.length) {
@@ -304,6 +315,93 @@ function ensureEditModal() {
   });
 
   return modal;
+}
+
+// --- Add Machine modal ---
+function ensureAddModal() {
+  if (document.getElementById('machineAddModal')) return document.getElementById('machineAddModal');
+  const modal = document.createElement('div');
+  modal.id = 'machineAddModal';
+  modal.style.position = 'fixed';
+  modal.style.left = '0';
+  modal.style.top = '0';
+  modal.style.right = '0';
+  modal.style.bottom = '0';
+  modal.style.background = 'rgba(0,0,0,0.4)';
+  modal.style.display = 'none';
+  modal.style.alignItems = 'center';
+  modal.style.justifyContent = 'center';
+  modal.innerHTML = `
+    <div style="background:#fff;padding:18px;border-radius:8px;max-width:520px;width:100%;box-shadow:0 6px 24px rgba(0,0,0,0.2);">
+      <h3 id="machineAddTitle">Add Machine</h3>
+      <form id="machineAddForm">
+        <div style="margin-bottom:8px;"><label>MIGID<br><input name="MIGID" id="addMIGID" style="width:100%;padding:8px;"/></label></div>
+        <div style="margin-bottom:8px;"><label>GPU RAM<br><input name="gpuRam" id="addGpuRam" style="width:100%;padding:8px;"/></label></div>
+        <div style="display:flex;gap:8px;justify-content:flex-end;">
+          <button type="button" id="machineAddCancel" style="padding:8px 12px;">Cancel</button>
+          <button type="submit" id="machineAddSave" style="padding:8px 12px;">Save</button>
+        </div>
+      </form>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  // handlers: cancel closes modal, submit just closes (UI-only)
+  const cancel = modal.querySelector('#machineAddCancel');
+  cancel.addEventListener('click', () => closeAddModal());
+  const form = modal.querySelector('#machineAddForm');
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const MIGID = modal.querySelector('#addMIGID').value.trim();
+    const gpuRaw = modal.querySelector('#addGpuRam').value.trim();
+    const gpu = gpuRaw === '' ? null : Number(gpuRaw);
+    if (!MIGID) { alert('MIGID is required'); return; }
+    if (gpu === null || Number.isNaN(gpu) || gpu < 0) { alert('GPU RAM must be a non-negative number'); return; }
+
+    try {
+      const resp = await fetch('/dashboard/admin/create-machine', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ MIGID, gpuRam: gpu })
+      });
+      const json = await resp.json();
+      if (!resp.ok) {
+        alert('Create failed: ' + (json.error || resp.statusText));
+        return;
+      }
+      // success: close and reload list
+      closeAddModal();
+      if (window.reloadMachines) window.reloadMachines(); else location.reload();
+    } catch (err) {
+      console.error('Failed to create machine', err);
+      alert('Failed to create machine. See console for details.');
+    }
+  });
+
+  // clicking outside content closes modal
+  modal.addEventListener('click', (e) => { if (e.target === modal) closeAddModal(); });
+  // escape key
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeAddModal(); });
+
+  return modal;
+}
+
+function openAddModal(modal) {
+  if (!modal) modal = ensureAddModal();
+  modal.style.display = 'flex';
+  const first = modal.querySelector('input');
+  if (first) first.focus();
+}
+
+function closeAddModal() {
+  const modal = document.getElementById('machineAddModal');
+  if (!modal) return;
+  modal.style.display = 'none';
+  // clear fields for next open
+  const form = modal.querySelector('#machineAddForm');
+  if (form) form.reset();
 }
 
 function openEditModal(machine, tableRow, assignedCell) {

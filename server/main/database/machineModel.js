@@ -9,14 +9,14 @@ const machineSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
-    cpuCores: {
-        type: Number,
-        required: true
-    },
-    cpuRam: {
-        type: Number,
-        required: true // in GB
-    },
+    // cpuCores: {
+    //     type: Number,
+    //     required: true
+    // },
+    // cpuRam: {
+    //     type: Number,
+    //     required: true // in GB
+    // },
     gpuRam: {
         type: Number,
         required: true // in GB
