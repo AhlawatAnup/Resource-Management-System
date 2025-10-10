@@ -38,7 +38,7 @@ const sendOTPEmail = async (email, otp, role) => {
         
         <p>Dear User,</p>
         
-        <p>You are registering as a <strong>${role}</strong> for the UIET Cluster Resource Management System.</p>
+        <p>You are verifying your identity as a <strong>${role}</strong> for the UIET Cluster Resource Management System.</p>
         
         <div style="background-color: #f0f8ff; border: 2px solid #2196F3; padding: 25px; border-radius: 8px; margin: 25px 0; text-align: center;">
           <h3 style="color: #333; margin-top: 0;">Your Verification Code:</h3>

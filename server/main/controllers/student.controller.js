@@ -50,7 +50,8 @@ exports.submitResourceRequest = async (req, res) => {
       return res.status(401).json({ error: "Not authenticated" });
     }
 
-    const { title, purpose, expiryDate, cpuCores, cpuRam, gpuRam, studentId } = req.body;
+    // const { title, purpose, expiryDate, cpuCores, cpuRam, gpuRam, studentId } = req.body;
+    const { title, purpose, expiryDate, gpuRam, studentId } = req.body;
     
     // Security check: ensure the student can only submit requests for themselves
     if (req.session.user.id !== studentId) {
@@ -58,20 +59,17 @@ exports.submitResourceRequest = async (req, res) => {
     }
 
     // Validate required fields
-    if (!title || !purpose || !expiryDate || !cpuCores || !cpuRam || gpuRam === undefined || !studentId) {
+    if (!title || !purpose || !expiryDate || gpuRam === undefined || !studentId) {
       return res.status(400).json({ 
         error: "Missing required fields",
-        required: ["title", "purpose", "expiryDate", "cpuCores", "cpuRam", "gpuRam", "studentId"]
+        required: ["title", "purpose", "expiryDate", "gpuRam", "studentId"]
       });
     }
 
-    // Validate data types and ranges
-    if (cpuCores < 1 || cpuRam < 1) {
-      return res.status(400).json({ error: "CPU cores and RAM must be at least 1" });
-    }
-
-    if (gpuRam < 0) {
-      return res.status(400).json({ error: "GPU values cannot be negative" });
+    // Validate data types and ranges for gpuRam
+    const gpuRamNum = Number(gpuRam);
+    if (!Number.isFinite(gpuRamNum) || gpuRamNum < 0) {
+      return res.status(400).json({ error: "gpuRam must be a non-negative number" });
     }
 
     // Validate expiry date is in the future
@@ -118,10 +116,8 @@ exports.submitResourceRequest = async (req, res) => {
       title: title.trim(),
       purpose: purpose.trim(),
       expiryDate: expiry,
-      cpuCores: parseInt(cpuCores),
-      cpuRam: parseInt(cpuRam),
       // gpuCount: parseInt(gpuCount),
-      gpuRam: parseInt(gpuRam)
+      gpuRam: parseInt(gpuRam, 10)
     });
 
     // Save to database

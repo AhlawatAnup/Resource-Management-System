@@ -153,18 +153,22 @@ function displayAllRequests(requests) {
                 <div class="request-specs">
                     <h4>Resource Specifications</h4>
                     <div class="specs-grid">
-                        <div class="spec-item">
+                            <!-- 
+                            ===========================================================================
+                            <div class="spec-item">
                             <div class="spec-label">CPU Cores</div>
                             <div class="spec-value">${request.cpuCores} cores</div>
-                        </div>
-                        <div class="spec-item">
+                            </div>
+                            <div class="spec-item">
                             <div class="spec-label">CPU RAM</div>
                             <div class="spec-value">${request.cpuRam} GB</div>
-                        </div>
-                        <div class="spec-item">
-                            <div class="spec-label">GPU RAM (each)</div>
+                            </div>
+                            =============================================================================
+                            -->
+                            <div class="spec-item">
+                            <div class="spec-label">GPU RAM</div>
                             <div class="spec-value">${request.gpuRam} GB</div>
-                        </div>
+                            </div>
                         <div class="spec-item">
                             <div class="spec-label">Duration</div>
                             <div class="spec-value">Until ${formatDate(request.expiryDate)}</div>

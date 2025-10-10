@@ -91,7 +91,9 @@ function displayResourcesPage(student) {
                                 <small style="color: #666; font-size: 0.85em;">Select the date when you no longer need these resources</small>
                             </div>
                             
-                            <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                            <!-- 
+                            =============================================================================
+                            <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 20px 0;"> 
                                 <h4 style="margin: 0 0 15px 0; color: #333; font-size: 1.1em;">
                                     <i class="fas fa-microchip"></i> CPU Requirements
                                 </h4>
@@ -109,6 +111,8 @@ function displayResourcesPage(student) {
                                     </div>
                                 </div>
                             </div>
+                            =============================================================================
+                            -->
                             
                             <div style="background: #f0f8ff; padding: 15px; border-radius: 8px; margin: 20px 0;">
                                 <h4 style="margin: 0 0 15px 0; color: #333; font-size: 1.1em;">
@@ -136,27 +140,6 @@ function displayResourcesPage(student) {
             const form = document.getElementById('resource-request-form');
             if (form) {
                 form.addEventListener('submit', handleResourceRequest);
-                
-                const expiryDateInput = document.getElementById('expiry-date');
-                if (expiryDateInput) {
-                    const today = new Date();
-
-                    // Default date → 7 days ahead
-                    const defaultDate = new Date();
-                    defaultDate.setDate(today.getDate() + 7);
-                    expiryDateInput.valueAsDate = defaultDate;
-
-                    // Minimum date → tomorrow
-                    const minDate = new Date();
-                    minDate.setDate(today.getDate() + 1);
-                    expiryDateInput.min = minDate.toISOString().split('T')[0];
-
-                    // Maximum date → 30 days ahead
-                    const maxDate = new Date();
-                    maxDate.setDate(today.getDate() + 30);
-                    expiryDateInput.max = maxDate.toISOString().split('T')[0];
-                }
-
             }
             
         } else {
@@ -252,8 +235,8 @@ async function handleResourceRequest(event) {
             title: document.getElementById('title').value.trim(),
             purpose: document.getElementById('purpose').value.trim(),
             expiryDate: document.getElementById('expiry-date').value,
-            cpuCores: parseInt(document.getElementById('cpu-cores').value),
-            cpuRam: parseInt(document.getElementById('cpu-ram').value),
+            // cpuCores: parseInt(document.getElementById('cpu-cores').value),
+            // cpuRam: parseInt(document.getElementById('cpu-ram').value),
             // gpuCount: parseInt(document.getElementById('gpu-count').value),
             gpuRam: parseInt(document.getElementById('gpu-ram').value)
         };
@@ -267,21 +250,50 @@ async function handleResourceRequest(event) {
             throw new Error('Purpose must be at least 100 characters long');
         }
                 
-        if (formData.cpuCores < 1 || formData.cpuRam < 1) {
-            throw new Error('CPU cores and RAM must be at least 1');
-        }
+        // if (formData.cpuCores < 1 || formData.cpuRam < 1) {
+        //     throw new Error('CPU cores and RAM must be at least 1');
+        // }
         
         // if (formData.gpuCount < 0 || formData.gpuRam < 0) {
         //     throw new Error('GPU values cannot be negative');
         // }
         
-        // Validate expiry date is in the future
-        const expiryDate = new Date(formData.expiryDate);
-        const today = new Date();
-        today.setHours(0, 0, 0, 0); // Reset time to compare dates only
-        
-        if (expiryDate <= today) {
-            throw new Error('Expiry date must be in the future');
+        // Handle expiry date defaults, limits, and validation
+        const expiryDateInput = document.getElementById('expiry-date');
+        if (expiryDateInput) {
+            const today = new Date();
+            const formatDate = (d) => d.toISOString().split('T')[0];
+
+            // Default → 7 days ahead
+            if (!expiryDateInput.value) {
+                const defaultDate = new Date();
+                defaultDate.setDate(today.getDate() + 7);
+                expiryDateInput.value = formatDate(defaultDate);
+                formData.expiryDate = expiryDateInput.value;
+            }
+
+            // Set min/max limits
+            const minDate = new Date();
+            minDate.setDate(today.getDate() + 1);
+            expiryDateInput.min = formatDate(minDate);
+
+            const maxDate = new Date();
+            maxDate.setDate(today.getDate() + 30);
+            expiryDateInput.max = formatDate(maxDate);
+
+            // Validate expiry date
+            const expiryDate = new Date(formData.expiryDate);
+            today.setHours(0, 0, 0, 0); // compare date only
+
+            if (expiryDate <= today) {
+                throw new Error('Expiry date must be in the future');
+            }
+            if (expiryDate < minDate) {
+                throw new Error('Expiry date must be at least one day ahead');
+            }
+            if (expiryDate > maxDate) {
+                throw new Error('Expiry date cannot be more than 30 days ahead');
+            }
         }
         
         // Get student ID

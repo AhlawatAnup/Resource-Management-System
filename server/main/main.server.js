@@ -84,7 +84,7 @@ const dashboardRoutes = require("./routes/dashboard.route.js");
 app.use("/dashboard", requireAuth, dashboardRoutes);
 
 // const backupSchedule = "*/2 * * * *"; // every 2 minutes (example)
-const backupSchedule = "*/10 * * * *";
+const backupSchedule = "0 3 * * *";
 
 schedule.scheduleJob(backupSchedule, () => {
   const now = new Date();

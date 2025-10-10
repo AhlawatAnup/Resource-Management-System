@@ -18,14 +18,14 @@ const resourceRequestSchema = new mongoose.Schema({
     type: Date, 
     required: true 
   },
-  cpuCores: { 
-    type: Number, 
-    required: true 
-  },
-  cpuRam: { 
-    type: Number, // in GB
-    required: true 
-  },
+  // cpuCores: { 
+  //   type: Number, 
+  //   required: true 
+  // },
+  // cpuRam: { 
+  //   type: Number, // in GB
+  //   required: true 
+  // },
   // gpuCount: { 
   //   type: Number, 
   //   required: true 
