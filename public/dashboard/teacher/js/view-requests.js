@@ -290,6 +290,7 @@ function showEditModal(requestId) {
   // document.getElementById('editCpuRam').value = req.cpuRam;
   // document.getElementById('editGpuCount').value = req.gpuCount;
   document.getElementById('editGpuRam').value = req.gpuRam;
+  document.getElementById('editUsername').value = req.username || '';
   document.getElementById('editRequestModal').style.display = 'block';
 }
 
@@ -303,7 +304,8 @@ async function submitEditRequest() {
     // cpuCores: Number(document.getElementById('editCpuCores').value),
     // cpuRam: Number(document.getElementById('editCpuRam').value),
     // gpuCount: Number(document.getElementById('editGpuCount').value),
-    gpuRam: Number(document.getElementById('editGpuRam').value)
+    gpuRam: Number(document.getElementById('editGpuRam').value),
+    username: document.getElementById('editUsername').value
   };
   try {
     const response = await fetch(`/dashboard/teacher/edit_request/${requestId}`, {

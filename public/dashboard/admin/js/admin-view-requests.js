@@ -197,8 +197,16 @@ function showVerificationModal(requestId) {
   modal.setAttribute('data-request-id', requestId);
 
   // Clear form fields
-  document.getElementById('vmUsername').value = '';
-  document.getElementById('vmPassword').value = '';
+  const vmUsernameEl = document.getElementById('vmUsername');
+  const vmPasswordEl = document.getElementById('vmPassword');
+
+  // Username is always required and provided by student, so prefill and make read-only
+  if (vmUsernameEl) {
+    vmUsernameEl.value = request.username;
+    vmUsernameEl.readOnly = true;
+  }
+
+  if (vmPasswordEl) vmPasswordEl.value = '';
   // Populate available machines into the MIGID select
   populateAvailableMachinesSelect();
 
@@ -581,6 +589,7 @@ function showEditModal(requestId) {
   // document.getElementById('editCpuRam').value = req.cpuRam;
   // document.getElementById('editGpuCount').value = req.gpuCount;
   document.getElementById('editGpuRam').value = req.gpuRam;
+  document.getElementById('editUsername').value=req.username;
   document.getElementById('editRequestModal').style.display = 'block';
 }
 
@@ -594,7 +603,8 @@ async function submitEditRequest() {
     // cpuCores: Number(document.getElementById('editCpuCores').value),
     // cpuRam: Number(document.getElementById('editCpuRam').value),
     // gpuCount: Number(document.getElementById('editGpuCount').value),
-    gpuRam: Number(document.getElementById('editGpuRam').value)
+    gpuRam: Number(document.getElementById('editGpuRam').value),
+    username: document.getElementById('editUsername').value
   };
   try {
     // Use admin endpoint for editing
