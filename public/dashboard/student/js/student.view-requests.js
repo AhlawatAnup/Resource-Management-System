@@ -146,6 +146,11 @@ function displayAllRequests(requests) {
             <!-- Body -->
             <div class="request-body">
                 <div class="request-purpose">
+                    <h4>Username</h4>
+                    <p>${request.username}</p>
+                </div>
+
+                <div class="request-purpose">
                     <h4>Purpose</h4>
                     <p>${request.purpose}</p>
                 </div>

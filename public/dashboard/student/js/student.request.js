@@ -76,6 +76,11 @@ function displayResourcesPage(student) {
                         
                         <form id="resource-request-form">
                             <div class="form-group">
+                                <label for="username">Desired VM Username:</label>
+                                <input type="text" id="username" class="form-control" placeholder="e.g., yourpreferreduser" required>
+                                <small style="color: #666; font-size: 0.85em;">Enter a username that will be assigned to your VM if approved</small>
+                            </div>
+                            <div class="form-group">
                                 <label for="title">Request Title:</label>
                                 <input type="text" id="title" class="form-control" placeholder="e.g., Machine Learning Training Project" required>
                             </div>
@@ -232,6 +237,7 @@ async function handleResourceRequest(event) {
     try {
         // Get form data according to ResourceRequestModel schema
         const formData = {
+            username: document.getElementById('username').value.trim(),
             title: document.getElementById('title').value.trim(),
             purpose: document.getElementById('purpose').value.trim(),
             expiryDate: document.getElementById('expiry-date').value,
@@ -241,9 +247,14 @@ async function handleResourceRequest(event) {
             gpuRam: parseInt(document.getElementById('gpu-ram').value)
         };
         
-        // Validate required fields
-        if (!formData.title || !formData.purpose || !formData.expiryDate) {
+        // Validate required fields (include gpuRam)
+        if (!formData.username || !formData.title || !formData.purpose || !formData.expiryDate || formData.gpuRam === undefined || formData.gpuRam === null) {
             throw new Error('Please fill in all required fields');
+        }
+
+        // Validate gpuRam is non-negative number
+        if (!Number.isFinite(formData.gpuRam) || formData.gpuRam < 0) {
+            throw new Error('GPU RAM must be a non-negative number');
         }
 
         if (formData.purpose.length < 100) {

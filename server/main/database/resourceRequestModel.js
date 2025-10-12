@@ -35,6 +35,12 @@ const resourceRequestSchema = new mongoose.Schema({
     required: true 
   },
 
+  // Username set by student at request time (VM username they want)
+  username: {
+    type: String,
+    required: false
+  },
+
 
   // Status tracking
   teacher_action: { type: Boolean, default: false },

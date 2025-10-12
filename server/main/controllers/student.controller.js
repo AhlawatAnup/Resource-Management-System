@@ -51,7 +51,7 @@ exports.submitResourceRequest = async (req, res) => {
     }
 
     // const { title, purpose, expiryDate, cpuCores, cpuRam, gpuRam, studentId } = req.body;
-    const { title, purpose, expiryDate, gpuRam, studentId } = req.body;
+  const { title, purpose, expiryDate, gpuRam, studentId, username } = req.body;
     
     // Security check: ensure the student can only submit requests for themselves
     if (req.session.user.id !== studentId) {
@@ -59,10 +59,10 @@ exports.submitResourceRequest = async (req, res) => {
     }
 
     // Validate required fields
-    if (!title || !purpose || !expiryDate || gpuRam === undefined || !studentId) {
+    if (!title || !purpose || !expiryDate || gpuRam === undefined || !studentId || !username) {
       return res.status(400).json({ 
         error: "Missing required fields",
-        required: ["title", "purpose", "expiryDate", "gpuRam", "studentId"]
+        required: ["title", "purpose", "expiryDate", "gpuRam", "studentId", "username"]
       });
     }
 
@@ -116,6 +116,7 @@ exports.submitResourceRequest = async (req, res) => {
       title: title.trim(),
       purpose: purpose.trim(),
       expiryDate: expiry,
+      username: username ? String(username).trim() : undefined,
       // gpuCount: parseInt(gpuCount),
       gpuRam: parseInt(gpuRam, 10)
     });
