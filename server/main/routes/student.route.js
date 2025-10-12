@@ -17,16 +17,18 @@ const publicPath = path.join(__dirname, "../../../public");
 
 // Middleware applied to all auth routes
 router.use(logRequest);
+// All student routes require student role
+router.use(isStudent);
 
 router.get("/student_data/:stu_id", student_data);
 
 // Route: Request Resources
-router.get("/request-resources", isStudent, (req, res) => {
+router.get("/request-resources", (req, res) => {
   res.sendFile(path.join(publicPath, "dashboard", "student", "request-resources.html"));
 });
 
 // Route: View Requests
-router.get("/view-requests", isStudent, (req, res) => {
+router.get("/view-requests", (req, res) => {
   res.sendFile(path.join(publicPath, "dashboard", "student", "view-requests.html"));
 });
 

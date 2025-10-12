@@ -41,3 +41,12 @@ exports.isStudent = (req, res, next) => {
   if (req.session?.user?.role === "student") return next(); // allow access
   return res.redirect("/dashboard"); // redirect non-students
 }
+
+// Only allow access to registration page if user has verified email (OTP)
+exports.requireRegistrationSession = (req, res, next) => {
+  if (!req.session.email || !req.session.role) {
+    // Optionally, redirect to OTP verification page or home
+    return res.redirect("/");
+  }
+  next();
+};

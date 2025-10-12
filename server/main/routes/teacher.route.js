@@ -20,6 +20,8 @@ const publicPath = path.join(__dirname, "../../../public");
 
 // Middleware applied to all auth routes
 router.use(logRequest);
+// All teacher routes require teacher role
+router.use(isTeacher);
 
 router.get("/data", teacher_dashboard_data);
 

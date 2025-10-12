@@ -19,7 +19,7 @@ async function loadTeachers() {
       data.teachers.forEach((t) => {
         const option = document.createElement("option");
         option.value = t._id;
-        option.textContent = t.name || t.email;
+        option.textContent = t.name;
         assignedTeacherSelect.appendChild(option);
       });
     } else {

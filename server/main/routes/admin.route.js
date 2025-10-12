@@ -40,15 +40,16 @@ const handleMachineCsvFile = require('../utils/machineCsvHandler');
 
 // Middleware applied to all admin routes
 router.use(logRequest);
+router.use(isAdmin);
 
 //sidebar routes
-router.get("/view-requests", isAdmin, (req, res) => {
+router.get("/view-requests", (req, res) => {
   res.sendFile(path.join(publicPath, "dashboard", "admin", "view-requests.html"));
 });
-router.get("/profile", isAdmin, (req, res) => {
+router.get("/profile", (req, res) => {
   res.sendFile(path.join(publicPath, "dashboard", "admin", "profile.html"));
 });
-router.get("/machines-page", isAdmin, (req, res) => {
+router.get("/machines-page", (req, res) => {
   res.sendFile(path.join(publicPath, "dashboard", "admin", "machines.html"));
 });
 

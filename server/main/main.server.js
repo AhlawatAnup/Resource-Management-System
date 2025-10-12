@@ -17,6 +17,7 @@ const PORT = 3000;
 const {
   requireAuth,
   preventAuth,
+  requireRegistrationSession,
 } = require("../main/middleware/authMiddleware.js");
 
 app.use(cors({
@@ -61,25 +62,25 @@ app.get("/", preventAuth, (req, res) => {
   res.sendFile(path.join(publicPath, "home", "home.html"));
 });
 
-// Logout route
-app.get("/logout", (req, res) => {
+// Logout route (should only be accessible to authenticated users)
+app.get("/logout", requireAuth, (req, res) => {
   req.session.destroy(() => {
     res.redirect("/");
   });
 });
 
-// Registration page
-app.get("/registration", preventAuth, (req, res) => {
+// Registration page (only accessible after email verification)
+app.get("/registration", preventAuth, requireRegistrationSession, (req, res) => {
   res.sendFile(
     path.join(__dirname, "../../public/registration/registration.html")
   );
 });
 
-// Routes
+// Auth routes (should only be accessible to unauthenticated users)
 const authRoutes = require("./routes/authRoutes");
-app.use("/auth", authRoutes);
+app.use("/auth", preventAuth, authRoutes);
 
-// DASHBOARD ROUTES
+// DASHBOARD ROUTES (protected)
 const dashboardRoutes = require("./routes/dashboard.route.js");
 app.use("/dashboard", requireAuth, dashboardRoutes);
 

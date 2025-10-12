@@ -3,8 +3,15 @@ const express = require("express");
 const { logRequest } = require("../middleware/authMiddleware.js");
 const {
   roleBasedDashboard,
-  getCurrentUserId
+  getCurrentUserId,
 } = require("../controllers/common.controller.js");
+const {
+  requireAuth,
+  isTeacher,
+  isStudent,
+  isAdmin,
+} = require("../middleware/authMiddleware.js");
+
 const teacherRoutes = require("./teacher.route.js");
 const studentRoutes = require("./student.route.js");
 const adminRoutes = require("./admin.route.js");
@@ -16,16 +23,14 @@ router.use(logRequest);
 // Routes
 // router.post("/send-otp", sendOtp);
 // router.post("/verify-otp", verifyOtp);
-// GET /dashboard → render role-based dashboard
-router.get("/", roleBasedDashboard);
+router.get("/", requireAuth, roleBasedDashboard);
 
-// GET /dashboard/current-user-id → get current user's ID from session
-router.get("/current-user-id", getCurrentUserId);
+// get current user's ID from session (any authenticated user)
+router.get("/current-user-id", requireAuth, getCurrentUserId);
 
-// Mount teacher routes under /teacher path
-router.use("/teacher", teacherRoutes);
-router.use("/student", studentRoutes);
-router.use("/admin", adminRoutes);
+router.use("/teacher", isTeacher, teacherRoutes);
+router.use("/student", isStudent, studentRoutes);
+router.use("/admin", isAdmin, adminRoutes);
 
 // router.post("/register", register);
 

@@ -241,8 +241,7 @@ exports.register = async (req, res) => {
 
 exports.getVerifiedTeachers = async (req, res) => {
   try {
-    // Only return verified teachers for student registration
-    const teachers = await Teacher.find({ is_verified: true });
+    const teachers = await Teacher.find({ is_verified: true }, '_id name');
     res.json({ teachers });
   } catch (err) {
     console.error(err);
