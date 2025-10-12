@@ -76,13 +76,13 @@ function displayResourcesPage(student) {
                         
                         <form id="resource-request-form">
                             <div class="form-group">
+                                <label for="title">Request Title:</label>
+                                <input type="text" id="title" class="form-control" placeholder="e.g., Machine Learning Training Project" required>
+                            </div>
+                            <div class="form-group">
                                 <label for="username">Desired VM Username:</label>
                                 <input type="text" id="username" class="form-control" placeholder="e.g., yourpreferreduser" required>
                                 <small style="color: #666; font-size: 0.85em;">Enter a username that will be assigned to your VM if approved</small>
-                            </div>
-                            <div class="form-group">
-                                <label for="title">Request Title:</label>
-                                <input type="text" id="title" class="form-control" placeholder="e.g., Machine Learning Training Project" required>
                             </div>
                             
                             <div class="form-group">
