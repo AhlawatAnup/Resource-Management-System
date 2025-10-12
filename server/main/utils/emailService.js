@@ -765,7 +765,59 @@ const sendTeacherProfileRejectedByAdminEmail = async (teacherEmail, teacherName)
   }
 };
 
+// ================== RESOURCE EXPIRY NOTIFICATION EMAIL ==================
 
+/**
+ * Send an email to the student and admin when a resource request is about to expire.
+ * @param {Object} param0
+ * @param {string} param0.studentEmail - Student's email address
+ * @param {string} param0.adminEmail - Admin's email address
+ * @param {Object} param0.resourceRequest - The resource request object
+ * @param {Date} param0.expiryDate - The expiry date of the resource
+ */
+const sendExpiringResourceEmail = async ({ studentEmail, adminEmail, resourceRequest, expiryDate }) => {
+  const transporter = createTransporter();
+  const formattedDate = new Date(expiryDate).toLocaleDateString();
+
+  // Email content
+  const subject = `Resource Request Expiry Notice - Action Required`;
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #e53935;">⏰ Resource Request Expiry Notice</h2>
+      <p>Dear User,</p>
+      <p>This is a reminder that the following resource request is about to expire:</p>
+      <div style="background-color: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 5px; margin: 20px 0;">
+        <strong>Resource title:</strong> ${resourceRequest.title || 'N/A'}<br>
+        <strong>Request ID:</strong> ${resourceRequest._id}<br>
+        <strong>Expiry Date:</strong> ${formattedDate}
+      </div>
+      <p>Please take any necessary action before the expiry date.</p>
+      <p>If you have questions, contact the administration.</p>
+      <p>Best regards,<br><strong>UIET Cluster Resource Management System</strong></p>
+      <hr style="margin-top: 30px; border: none; border-top: 1px solid #eee;">
+      <p style="font-size: 12px; color: #666;">This is an automated email. Please do not reply to this message.</p>
+    </div>
+  `;
+
+  // Send to both student and admin
+  const recipients = [studentEmail, adminEmail].filter(Boolean).join(",");
+
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: recipients,
+    subject,
+    html
+  };
+
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log('Resource expiry notification email sent:', info.messageId);
+    return { success: true, messageId: info.messageId };
+  } catch (error) {
+    console.error('Error sending resource expiry notification email:', error);
+    return { success: false, error: error.message };
+  }
+};
 
 module.exports = {
   // Student registration emails
@@ -794,5 +846,8 @@ module.exports = {
   
   // Legacy functions (for backward compatibility)
   sendResourceApprovalEmail: sendResourceRequestVerifiedByAdminEmail,
-  sendResourceRejectionEmail: sendResourceRequestRejectedByAdminEmail
+  sendResourceRejectionEmail: sendResourceRequestRejectedByAdminEmail,
+
+  // Expiring resource email
+  sendExpiringResourceEmail
 };

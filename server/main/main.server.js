@@ -8,6 +8,8 @@ const MongoStore = require("connect-mongo");
 const connectDB = require("./database/db");
 const schedule = require("node-schedule");
 const { runBackup } = require("./services/backup");
+const { checkExpiringResourceRequests } = require("./services/resourceExpiryNotifier");
+
 // ✅ Connect to DB
 connectDB();
 
@@ -93,6 +95,14 @@ schedule.scheduleJob(backupSchedule, () => {
   
   console.log(`🕒 ${timeStr} — starting MongoDB backup...`);
   runBackup();
+});
+
+const expiryNotifySchedule = "* * * * *";
+schedule.scheduleJob(expiryNotifySchedule, () => {
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString();
+  console.log(`🕒 ${timeStr} — checking for expiring resource requests...`);
+  checkExpiringResourceRequests();
 });
 
 app.listen(PORT, () => {
