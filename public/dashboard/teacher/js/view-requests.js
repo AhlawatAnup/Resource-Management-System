@@ -72,7 +72,7 @@ function renderResourceRequests(requests) {
       </td>
       <td>
         <div class="request-title">
-          <h4>${request.title}</h4>
+          <small>${request.title}</small>
           <div class="request-date">Created: ${formatDate(request.createdAt)}</div>
         </div>
       </td>
@@ -317,6 +317,16 @@ async function submitEditRequest() {
     return;
   } else if (usernameErrorDiv) {
     usernameErrorDiv.textContent = '';
+  }
+  // Title max length check
+  const titleErrorDiv = document.getElementById('edit-title-error');
+  if (payload.title.length > 50) {
+    if (titleErrorDiv) {
+      titleErrorDiv.textContent = 'Title must not exceed 50 characters';
+    }
+    return;
+  } else if (titleErrorDiv) {
+    titleErrorDiv.textContent = '';
   }
   try {
     const response = await fetch(`/dashboard/teacher/edit_request/${requestId}`, {

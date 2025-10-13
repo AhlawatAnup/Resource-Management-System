@@ -256,6 +256,10 @@ async function handleResourceRequest(event) {
         if (!isValidUsername(formData.username)) {
             throw new Error('Username can only contain letters, numbers, hyphens (-), and underscores (_), with no spaces or special characters');
         }
+        // Title max length check
+        if (formData.title.length > 50) {
+            throw new Error('Title must not exceed 50 characters');
+        }
 
         // Validate gpuRam is non-negative number
         if (!Number.isFinite(formData.gpuRam) || formData.gpuRam < 0) {

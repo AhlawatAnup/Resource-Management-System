@@ -79,7 +79,7 @@ function renderResourceRequests(requests) {
       </td>
       <td>
         <div class="request-title">
-          <h4>${request.title}</h4>
+          <p>${request.title}<p>
           <div class="request-date"><span class="field-label">Created:</span> ${formatDate(request.createdAt)}</div>
         </div>
       </td>
@@ -615,6 +615,16 @@ async function submitEditRequest() {
     return;
   } else if (usernameErrorDiv) {
     usernameErrorDiv.textContent = '';
+  }
+  // Title max length check
+  const titleErrorDiv = document.getElementById('edit-title-error');
+  if (payload.title.length > 50) {
+    if (titleErrorDiv) {
+      titleErrorDiv.textContent = 'Title must not exceed 50 characters';
+    }
+    return;
+  } else if (titleErrorDiv) {
+    titleErrorDiv.textContent = '';
   }
   try {
     // Use admin endpoint for editing
