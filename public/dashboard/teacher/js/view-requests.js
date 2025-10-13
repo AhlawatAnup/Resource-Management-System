@@ -4,7 +4,8 @@ import {
   getRandomNamedColor, 
   formatDate,
   initializePurposePanel,
-  createViewMoreButton 
+  createViewMoreButton,
+  isValidUsername
 } from '../../Common/js/commons.js';
 
 let resourceRequests = [];
@@ -116,6 +117,7 @@ function getRequestStatus(request) {
     return { text: "Declined by Admin", class: "declined" };
   } else if (request.teacher_verified && !request.admin_action) {
     return { text: "Pending Admin", class: "pending-admin" };
+    
   } else if (!request.teacher_action) {
     return { text: "Pending Teacher", class: "pending-teacher" };
   } else {
@@ -307,6 +309,15 @@ async function submitEditRequest() {
     gpuRam: Number(document.getElementById('editGpuRam').value),
     username: document.getElementById('editUsername').value
   };
+  const usernameErrorDiv = document.getElementById('edit-username-error');
+  if (!isValidUsername(payload.username)) {
+    if (usernameErrorDiv) {
+      usernameErrorDiv.textContent = 'Username can only contain letters, numbers, hyphens (-), and underscores (_), with no spaces or special characters';
+    }
+    return;
+  } else if (usernameErrorDiv) {
+    usernameErrorDiv.textContent = '';
+  }
   try {
     const response = await fetch(`/dashboard/teacher/edit_request/${requestId}`, {
       method: 'PUT',

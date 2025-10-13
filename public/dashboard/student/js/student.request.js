@@ -1,5 +1,5 @@
 // Import common functions
-import { formatDate } from '/dashboard/common/js/commons.js';
+import { formatDate, isValidUsername } from '/dashboard/common/js/commons.js';
 import { getLoggedInStudentId, showLoadingState, showErrorMessage } from './student.utils.js';
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -81,8 +81,9 @@ function displayResourcesPage(student) {
                             </div>
                             <div class="form-group">
                                 <label for="username">Desired VM Username:</label>
-                                <input type="text" id="username" class="form-control" placeholder="e.g., yourpreferreduser" required>
-                                <small style="color: #666; font-size: 0.85em;">Enter a username that will be assigned to your VM if approved</small>
+                                <input type="text" id="username" class="form-control" placeholder="e.g., your_preferred_username" required>
+                                <p style="color: #666; font-size: 0.85em;">Enter a username that will be assigned to your VM if approved. </p>
+                                <small style="color: #666; font-size: 0.85em;">Note: Username can contain only letters, numbers, hyphens (-), and underscores (_); no spaces or other special characters are allowed. </small>
                             </div>
                             
                             <div class="form-group">
@@ -250,6 +251,10 @@ async function handleResourceRequest(event) {
         // Validate required fields (include gpuRam)
         if (!formData.username || !formData.title || !formData.purpose || !formData.expiryDate || formData.gpuRam === undefined || formData.gpuRam === null) {
             throw new Error('Please fill in all required fields');
+        }
+
+        if (!isValidUsername(formData.username)) {
+            throw new Error('Username can only contain letters, numbers, hyphens (-), and underscores (_), with no spaces or special characters');
         }
 
         // Validate gpuRam is non-negative number

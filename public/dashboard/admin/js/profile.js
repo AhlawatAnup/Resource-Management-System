@@ -1,3 +1,4 @@
+import { isValidUsername } from '/dashboard/common/js/commons.js';
 // profile.js - Fetch and display admin details
 function loadAdminProfile() {
   fetch('/dashboard/admin/details')
@@ -134,6 +135,10 @@ document.addEventListener('DOMContentLoaded', function() {
       usernameErrorDiv.textContent = '';
       if (!newUsername) {
         usernameErrorDiv.textContent = 'Please enter a new username.';
+        return;
+      }
+      if (!isValidUsername(newUsername)) {
+        usernameErrorDiv.textContent = 'Username can only contain letters, numbers, hyphens (-), and underscores (_), with no spaces or special characters';
         return;
       }
       fetch('/dashboard/admin/update-profile', {

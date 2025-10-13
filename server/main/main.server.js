@@ -97,7 +97,7 @@ schedule.scheduleJob(backupSchedule, () => {
   runBackup();
 });
 
-const expiryNotifySchedule = "* * * * *";
+const expiryNotifySchedule = "5 3 * * *";
 schedule.scheduleJob(expiryNotifySchedule, () => {
   const now = new Date();
   const timeStr = now.toLocaleTimeString();

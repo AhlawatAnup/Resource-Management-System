@@ -6,7 +6,8 @@ import {
   showPurposePanel, 
   closePurposePanel, 
   initializePurposePanel,
-  createViewMoreButton 
+  createViewMoreButton,
+  isValidUsername
 } from '../../Common/js/commons.js';
 
 let resourceRequests = [];
@@ -606,6 +607,15 @@ async function submitEditRequest() {
     gpuRam: Number(document.getElementById('editGpuRam').value),
     username: document.getElementById('editUsername').value
   };
+  const usernameErrorDiv = document.getElementById('edit-username-error');
+  if (!isValidUsername(payload.username)) {
+    if (usernameErrorDiv) {
+      usernameErrorDiv.textContent = 'Username can only contain letters, numbers, hyphens (-), and underscores (_), with no spaces or special characters';
+    }
+    return;
+  } else if (usernameErrorDiv) {
+    usernameErrorDiv.textContent = '';
+  }
   try {
     // Use admin endpoint for editing
     const response = await fetch(`/dashboard/admin/edit_request/${requestId}`, {
