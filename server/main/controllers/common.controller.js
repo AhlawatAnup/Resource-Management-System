@@ -348,6 +348,9 @@ exports.editResourceRequest = async (req, res) => {
       updates[key] = updateFields[key];
     }
   }
+  if (updates.username !== undefined && !/^[A-Za-z0-9_-]+$/.test(updates.username)) {
+    return res.status(400).json({ error: "Username can only contain letters, numbers, hyphens (-), and underscores (_), with no spaces or special characters" });
+  }
   updates.updatedAt = new Date();
   try {
     const updatedRequest = await ResourceRequest.findByIdAndUpdate(requestId, updates, { new: true });

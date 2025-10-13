@@ -65,6 +65,10 @@ exports.submitResourceRequest = async (req, res) => {
         required: ["title", "purpose", "expiryDate", "gpuRam", "studentId", "username"]
       });
     }
+    
+    if (!/^[A-Za-z0-9_-]+$/.test(username)) {
+      return res.status(400).json({ error: "Username can only contain letters, numbers, hyphens (-), and underscores (_), with no spaces or special characters" });
+    }
 
     // Validate data types and ranges for gpuRam
     const gpuRamNum = Number(gpuRam);
