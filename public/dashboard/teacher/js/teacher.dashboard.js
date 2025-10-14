@@ -103,7 +103,7 @@ function renderTeacherProfile(teacherData) {
             <div><strong>Phone:</strong> ${teacherData.phone || 'N/A'}</div>
             <div><strong>Students:</strong> ${teacherData.students ? teacherData.students.length : 0}</div>
             <div><strong>Member Since:</strong> ${formatDate(teacherData.createdAt)}</div>
-            <div><strong>Teacher ID:</strong> ${teacherData._id ? teacherData._id.slice(-8) : 'N/A'}</div>
+            <div><strong>Teacher ID:</strong> ${teacherData._id ? teacherData._id : 'N/A'}</div>
           </div>
         </div>
       </div>

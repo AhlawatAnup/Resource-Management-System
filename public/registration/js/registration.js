@@ -93,6 +93,24 @@ document
     console.log("Registration data:", data);
     // return;
     let payload = {};
+
+    const name = document.getElementById("name").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+
+    if (!/^[A-Za-z\s]+$/.test(name)) {
+      alert("Name should only contain letters and spaces.");
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalText;
+      return;
+    }
+
+    if (!/^\d{10}$/.test(phone)) {
+      alert("Please enter a valid 10-digit phone number.");
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalText;
+      return;
+    }
+
     if (role === "student") {
       const selectedTeacher = document.getElementById("assignedTeacher").value;
       
@@ -104,6 +122,14 @@ document
         alert("Please select a teacher to proceed with registration.");
         return;
       }
+      const rollNo = document.getElementById("rollNumber").value.trim();
+      if (!/^[A-Za-z0-9]+$/.test(rollNo)) {
+        alert("Roll number should only contain letters and numbers.");
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
+        return;
+      }
+
       
       payload = {
         ...payload,
@@ -111,12 +137,12 @@ document
         rollNo: document.getElementById("rollNumber").value,
         teacher_id: selectedTeacher,
         branch: document.getElementById("branch").value,
-        phone: document.getElementById("phone").value,
+        phone: phone,
       };
-    } else if (role === "teacher") {
+    } else if (role === "teacher") {``
       payload.name = document.getElementById("name").value;
       payload.branch = document.getElementById("branch").value;
-      payload.phone = document.getElementById("phone").value;
+      payload.phone = phone;
     }
 
     try {

@@ -1,19 +1,19 @@
 
 /* Footer styling (light, unobtrusive) */
 .site-footer {
-  width: 100%;
+  position: absolute;
+  bottom: 0px;
+  left: 50%;
+  transform: translateX(-50%);
   background: transparent;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  padding: 0.75rem 1.5rem;
+  /* padding: 0.5rem 0.5rem; */
   display: flex;
   justify-content: center;
   pointer-events: none; /* outer doesn't intercept clicks */
   z-index: 40;
 }
 .site-footer .footer-content {
-  background: rgba(28, 35, 50, 0.836);
+  background: rgb(28, 35, 50);
   color: #ffffff;
   padding: 0.5rem 1rem;
   border-radius: 6px;

@@ -25,11 +25,18 @@ router.use(isTeacher);
 
 router.get("/data", teacher_dashboard_data);
 
+// side bar routes
 router.get("/view-requests", isTeacher, (req, res) => {
   res.sendFile(
     path.join(publicPath, "dashboard", "teacher", "view-requests.html")
   );
 });
+router.get("/about-us", isTeacher, (req, res) => {
+  res.sendFile(
+    path.join(publicPath, "dashboard", "teacher", "about-us.html")
+  );
+});
+
 
 router.get("/student_data/:stu_id", student_data);
 

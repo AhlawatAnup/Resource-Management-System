@@ -78,6 +78,7 @@ body {
 .main-content {
   flex: 1;
   padding: 20px 40px;
+  position: relative; /* container for the footer so footer centers within main area */
   overflow-y: auto;
 }
 
