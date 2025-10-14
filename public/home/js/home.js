@@ -311,11 +311,11 @@ sendOtpBtn.addEventListener("click", () => {
 
 // Function to validate teacher email format
 function validateTeacherEmail(email) {
-  // const teacherEmailRegex = /^[a-zA-Z0-9._%+-]+@pu\.ac\.in$/;
-  // return teacherEmailRegex.test(email);
+  const teacherEmailRegex = /^[a-zA-Z0-9._%+-]+@pu\.ac\.in$/;
+  return teacherEmailRegex.test(email);
   // const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
   // return gmailRegex.test(email);
-  return true;
+  // return true;
 }
 
 // Function to validate student email format

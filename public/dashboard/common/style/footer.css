@@ -1,0 +1,37 @@
+
+/* Footer styling (light, unobtrusive) */
+.site-footer {
+  width: 100%;
+  background: transparent;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  padding: 0.75rem 1.5rem;
+  display: flex;
+  justify-content: center;
+  pointer-events: none; /* outer doesn't intercept clicks */
+  z-index: 40;
+}
+.site-footer .footer-content {
+  background: rgba(28, 35, 50, 0.836);
+  color: #ffffff;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  text-align: center;
+  line-height: 1.2;
+  pointer-events: auto; /* inner content interactable if needed */
+}
+
+@media (max-width: 768px) {
+  .logo {
+    top: 1rem;
+    left: 1rem;
+  }
+  .logo-img {
+    height: 40px;
+  }
+  .site-footer {
+    padding: 0.5rem 1rem;
+  }
+}
