@@ -122,7 +122,7 @@ function displayResourcesPage(student) {
                             
                             <div style="background: #f0f8ff; padding: 15px; border-radius: 8px; margin: 20px 0;">
                                 <h4 style="margin: 0 0 15px 0; color: #333; font-size: 1.1em;">
-                                    <i class="fas fa-cube"></i> GPU Requirements (Optional for non-ML tasks)
+                                    <i class="fas fa-cube"></i> GPU Requirements
                                 </h4>
                                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">                                   
                                     <div class="form-group">

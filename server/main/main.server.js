@@ -20,6 +20,7 @@ const {
   requireAuth,
   preventAuth,
   requireRegistrationSession,
+  noCache,
 } = require("../main/middleware/authMiddleware.js");
 
 app.use(cors({
@@ -60,7 +61,7 @@ app.use(
 );
 
 // Homepage route → serve public/home/index.html
-app.get("/", preventAuth, (req, res) => {
+app.get("/", noCache, preventAuth, (req, res) => {
   res.sendFile(path.join(publicPath, "home", "home.html"));
 });
 
@@ -84,7 +85,7 @@ app.use("/auth", preventAuth, authRoutes);
 
 // DASHBOARD ROUTES (protected)
 const dashboardRoutes = require("./routes/dashboard.route.js");
-app.use("/dashboard", requireAuth, dashboardRoutes);
+app.use("/dashboard", noCache, requireAuth, dashboardRoutes);
 
 // const backupSchedule = "*/2 * * * *"; // every 2 minutes (example)
 const backupSchedule = "0 3 * * *";
