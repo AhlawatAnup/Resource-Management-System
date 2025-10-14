@@ -1,0 +1,27 @@
+/* About page styles */
+.about-panel {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(31,41,55,0.08);
+  padding: 32px;
+  margin: 20px auto;
+}
+
+.about-title {
+  font-size: 28px;
+  color: #111827;
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+.about-text {
+  color: #374151;
+  line-height: 1.7;
+  font-size: 15px;
+  margin-bottom: 12px;
+}
+
+.about-note {
+  color: #6b7280;
+  font-size: 13px;
+}

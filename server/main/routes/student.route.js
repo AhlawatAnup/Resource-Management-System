@@ -32,6 +32,11 @@ router.get("/view-requests", (req, res) => {
   res.sendFile(path.join(publicPath, "dashboard", "student", "view-requests.html"));
 });
 
+// Route: About Us
+router.get("/about-us", (req, res) => {
+  res.sendFile(path.join(publicPath, "dashboard", "student", "about-us.html"));
+});
+
 // Delete a resource request by ID
 router.delete("/del_requests/:requestId", deleteStudentResourceRequest);
 router.post("/submit-resource-request", submitResourceRequest);
