@@ -24,7 +24,7 @@ const {
 } = require("../main/middleware/authMiddleware.js");
 
 app.use(cors({
-  origin: "http://localhost:3000", 
+  origin: process.env.CLIENT_URL, 
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE"]
 }));
@@ -48,11 +48,11 @@ app.use(express.urlencoded({ extended: true })); // for form data
 // ✅ Session middleware
 app.use(
   session({
-    secret: "super-secret-key", // change to strong key
+    secret: process.env.SESSION_SECRET, // change to strong key
     resave: false,
     saveUninitialized: false,
     store: MongoStore.create({
-      mongoUrl: 'mongodb://localhost:27017/college_resources', // Replace with your actual MongoDB URL
+      mongoUrl: process.env.MONGO_URI, // Replace with your actual MongoDB URI
       touchAfter: 24 * 3600, // lazy session update
       ttl: 60 * 60 * 24 // 1 days session expiry
     }),
