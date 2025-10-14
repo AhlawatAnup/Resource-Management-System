@@ -32,17 +32,15 @@ body {
   color: #2d3748;
 }
 
-.logo-icon {
-  width: 32px;
-  height: 32px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 8px;
-  margin-right: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 16px;
+.logo-icon img {
+  width: 28px; /* visual size inside the 40x40 container */
+  height: 28px;
+  object-fit: contain;
+  display: block; /* remove inline-gap */
+  max-width: 100%;
+  max-height: 100%;
+  margin-left: 20px;
+  margin-right: 20px;
 }
 
 .nav-menu {
