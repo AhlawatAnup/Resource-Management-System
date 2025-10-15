@@ -19,6 +19,7 @@ const {
   createMachine,
   updateMachine,
   deleteMachine,
+  deleteResourceRequestByMig,
   UpdateAdminProfile,
 } = require("../controllers/admin.controller.js");
 
@@ -100,5 +101,6 @@ router.get('/machines', isAdmin, getMachines);
 router.post('/create-machine', isAdmin, createMachine);
 router.put('/machines/:id', isAdmin, updateMachine);
 router.delete('/machines/:id', isAdmin, deleteMachine);
+router.delete('/machines/requests/:migId', isAdmin, deleteResourceRequestByMig);
 
 module.exports = router;

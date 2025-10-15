@@ -415,3 +415,28 @@ exports.deleteMachine = async (req, res) => {
     return res.status(500).json({ error: 'Failed to delete machine' });
   }
 };
+
+exports.deleteResourceRequestByMig = async (req, res) => {
+  try {
+    const { migId } = req.params;
+    if (!migId) return res.status(400).json({ error: 'MIGID is required' });
+
+    // Find a single resource request that references this MIGID in vmCredentials
+    const request = await ResourceRequest.findOne({ 'vmCredentials.migId': migId });
+    if (!request) {
+      return res.json({ ok: true, deleted: 0 });
+    }
+
+    // remove reference from student's resourceRequests array if present
+    if (request.studentId) {
+      await Student.findByIdAndUpdate(request.studentId, { $pull: { resourceRequests: request._id } });
+    }
+
+    await ResourceRequest.findByIdAndDelete(request._id);
+
+    return res.json({ ok: true, deleted: 1, requestId: request._id });
+  } catch (err) {
+    console.error('Error deleting resource request by MIGID:', err);
+    return res.status(500).json({ error: 'Failed to delete resource request' });
+  }
+};

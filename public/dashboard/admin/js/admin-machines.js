@@ -244,7 +244,7 @@ document.addEventListener('DOMContentLoaded', () => {
           }
 
           try {
-            let ok = true;
+            // Step 1: revoke assignment on machine (if we have an id)
             if (m._id) {
               const resp = await fetch(`/dashboard/admin/machines/${m._id}`, {
                 method: 'PUT',
@@ -252,19 +252,34 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ assignedStudent: null })
               });
-              if (!resp.ok) ok = false;
+              if (!resp.ok) {
+                const txt = await resp.text().catch(() => null);
+                alert('Revoke failed: ' + (txt || resp.statusText));
+                return;
+              }
             }
 
-            if (ok) {
-              assignedTd.textContent = 'Unassigned';
-              revokeBtn.remove();
-              if (window.reloadMachines) {
-                try { await window.reloadMachines(); } catch (e) { /* ignore reload errors */ }
+            // Step 2: delete related resource request(s) by MIGID (if we have a MIGID)
+            if (m.MIGID) {
+              const delResp = await fetch(`/dashboard/admin/machines/requests/${encodeURIComponent(m.MIGID)}`, {
+                method: 'DELETE',
+                credentials: 'include'
+              });
+              if (!delResp.ok) {
+                const txt = await delResp.text().catch(() => null);
+                alert('Revoke succeeded but deleting related resource request(s) failed: ' + (txt || delResp.statusText));
+                return;
               }
-              alert('Assignment revoked successfully.');
-            } else {
-              alert('Revoke failed. Please try again.');
+              const json = await delResp.json().catch(() => null);
+              console.log('Deleted resource requests by MIGID:', json);
             }
+
+            assignedTd.textContent = 'Unassigned';
+            revokeBtn.remove();
+            if (window.reloadMachines) {
+              try { await window.reloadMachines(); } catch (e) { /* ignore reload errors */ }
+            }
+            alert('Assignment revoked successfully.');
           } catch (err) {
             console.error('Failed to revoke assignment', err);
             alert('Failed to revoke assignment. See console for details.');
