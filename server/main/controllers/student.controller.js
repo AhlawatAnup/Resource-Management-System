@@ -114,6 +114,15 @@ exports.submitResourceRequest = async (req, res) => {
       });
     }
 
+    // Check if requested username already exists in other resource requests
+    const usernameTrim = username ? String(username).trim() : '';
+    if (usernameTrim) {
+      const usernameExists = await ResourceRequest.findOne({ username: usernameTrim });
+      if (usernameExists) {
+        return res.status(400).json({ error: 'Username already exists' });
+      }
+    }
+
     // Create new resource request
     const resourceRequest = new ResourceRequest({
       studentId,

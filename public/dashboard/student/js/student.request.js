@@ -347,7 +347,13 @@ async function handleResourceRequest(event) {
                 showErrorMessage('You already have a pending request. Please wait for it to be processed or delete it if no action has been taken by teacher/admin.', 'request-content');
                 return;
             }
-            throw new Error(errorData.message || 'Failed to submit request');
+            // If backend returned a simple 'Username already exists' message, show inline under username like other field errors
+            if (errorData.error && /username already exists/i.test(errorData.error)) {
+                showErrorNotification('Username already taken. Please choose a different username.');
+                return;
+            }
+
+            throw new Error(errorData.message || (errorData.error || 'Failed to submit request'));
         }
         
         const result = await response.json();
