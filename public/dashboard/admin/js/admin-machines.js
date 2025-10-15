@@ -236,9 +236,15 @@ document.addEventListener('DOMContentLoaded', () => {
         revokeBtn.style.color = '#fff';
         revokeBtn.addEventListener('click', async () => {
           const idText = m.MIGID ? ` (${m.MIGID})` : '';
-          if (!confirm(`Revoke assignment for this machine${idText}?`)) return;
-          if (!confirm('Are you absolutely sure? This will clear the assigned student and cannot be undone.')) return;
+          const input = prompt(`Type CONFIRM to revoke assignment for this machine${idText}, or cancel to abort.`);
+          if (input === null) return; // cancelled
+          if (String(input).trim().toUpperCase() !== 'CONFIRM') {
+            alert('Revoke cancelled — confirmation not entered correctly.');
+            return;
+          }
+
           try {
+            let ok = true;
             if (m._id) {
               const resp = await fetch(`/dashboard/admin/machines/${m._id}`, {
                 method: 'PUT',
@@ -246,18 +252,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ assignedStudent: null })
               });
-              if (!resp.ok) {
-                const txt = await resp.text();
-                alert('Revoke failed: ' + (txt || resp.statusText));
-                return;
-              }
+              if (!resp.ok) ok = false;
             }
-            // optimistic UI update: mark as unassigned
-            assignedTd.textContent = 'Unassigned';
-            // remove revoke button
-            revokeBtn.remove();
-            // refresh cache from server to keep table normalized
-            if (window.reloadMachines) window.reloadMachines();
+
+            if (ok) {
+              assignedTd.textContent = 'Unassigned';
+              revokeBtn.remove();
+              if (window.reloadMachines) {
+                try { await window.reloadMachines(); } catch (e) { /* ignore reload errors */ }
+              }
+              alert('Assignment revoked successfully.');
+            } else {
+              alert('Revoke failed. Please try again.');
+            }
           } catch (err) {
             console.error('Failed to revoke assignment', err);
             alert('Failed to revoke assignment. See console for details.');
