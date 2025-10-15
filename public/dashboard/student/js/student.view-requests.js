@@ -179,7 +179,7 @@ function displayAllRequests(requests) {
                             <div class="spec-value">Until ${formatDate(request.expiryDate)}</div>
                         </div>
 
-                        ${(request.teacher_verified && request.admin_verified && request.is_verified && request.vmCredentials && request.vmCredentials.username && request.vmCredentials.password) ? `
+                        ${(request.teacher_verified && request.admin_verified && request.is_verified && request.vmCredentials && request.vmCredentials.password) ? `
                         <div class="request-credentials" style="background:#e6f7e6; border-radius:12px; width:30vw; padding:16px; margin:12px 0; box-shadow:0 2px 6px rgba(0,0,0,0.1);">
                             <h4 style="margin-bottom:12px; color:#2f6627;">Login Credentials</h4>
                             <div class="credentials-grid" style="display:flex; flex-direction:column; gap:10px;">
@@ -188,7 +188,7 @@ function displayAllRequests(requests) {
                                 <div class="credential-item" style="display:flex; align-items:center; gap:10px; max-width:100%;">
                                     <strong style="width:80px;">Username:</strong>
                                     <span id="username-${request._id}" style="border:1px solid #c3e6c3; border-radius:6px; padding:6px 10px; background:#f0fff0; flex:1;">
-                                        ${request.vmCredentials.username}
+                                        ${request.username}
                                     </span>
                                     <button type="button" class="copy-btn" data-copytarget="username-${request._id}" style="background:none; border:none; cursor:pointer; padding:0 6px; flex-shrink:0;">
                                         <span class="copy-label"><i class="fas fa-copy"></i></span>

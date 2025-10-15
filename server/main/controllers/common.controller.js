@@ -239,7 +239,7 @@ exports.updateResourceRequestVerification = async (req, res) => {
           admin_action: true,
           is_verified: true,
           vmCredentials: {
-            username,
+            // username,
             password,
             ip,
             migId

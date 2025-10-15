@@ -38,7 +38,8 @@ const resourceRequestSchema = new mongoose.Schema({
   // Username set by student at request time (VM username they want)
   username: {
     type: String,
-    required: false
+    required: false, 
+    unique: true
   },
 
 
@@ -51,7 +52,7 @@ const resourceRequestSchema = new mongoose.Schema({
 
     // VM access credentials (provided when admin finally verifies)
   vmCredentials: {
-    username: { type: String },
+    // username: { type: String },
     password: { type: String },
     ip: { type: String },
     migId: { type: String }
