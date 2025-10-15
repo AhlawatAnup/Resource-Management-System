@@ -14,7 +14,7 @@ const { checkExpiringResourceRequests } = require("./services/resourceExpiryNoti
 connectDB();
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 const {
   requireAuth,
@@ -88,7 +88,7 @@ const dashboardRoutes = require("./routes/dashboard.route.js");
 app.use("/dashboard", noCache, requireAuth, dashboardRoutes);
 
 // const backupSchedule = "*/2 * * * *"; // every 2 minutes (example)
-const backupSchedule = "0 3 * * *";
+const backupSchedule = process.env.BACKUP_SCHEDULE || "0 3 * * *";
 
 schedule.scheduleJob(backupSchedule, () => {
   const now = new Date();
@@ -98,7 +98,7 @@ schedule.scheduleJob(backupSchedule, () => {
   runBackup();
 });
 
-const expiryNotifySchedule = "5 3 * * *";
+const expiryNotifySchedule = process.env.EXPIRY_NOTIFY_SCHEDULE || "5 3 * * *";
 schedule.scheduleJob(expiryNotifySchedule, () => {
   const now = new Date();
   const timeStr = now.toLocaleTimeString();

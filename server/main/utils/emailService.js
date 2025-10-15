@@ -787,7 +787,7 @@ const sendExpiringResourceEmail = async ({ studentEmail, adminEmail, resourceReq
       <p>This is a reminder that the following resource request is about to expire:</p>
       <div style="background-color: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 5px; margin: 20px 0;">
         <strong>Resource title:</strong> ${resourceRequest.title || 'N/A'}<br>
-        <strong>Request ID:</strong> ${resourceRequest._id}<br>
+        <strong>Username:</strong> ${resourceRequest.username || 'N/A'}<br>
         <strong>Expiry Date:</strong> ${formattedDate}
       </div>
       <p>Please take any necessary action before the expiry date.</p>

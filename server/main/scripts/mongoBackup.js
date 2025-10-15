@@ -1,22 +1,17 @@
-/**
- * MongoDB Backup Script (Node.js + PM2)
- * - Runs backup immediately on start
- * - Schedules backup daily at 3 AM
- * - Uses same folder structure as your .bat file
- * - Optionally uploads to Google Drive via rclone
- */
-
 const { exec } = require("child_process");
 const path = require("path");
 const fs = require("fs");
 const schedule = require("node-schedule");
+require('dotenv').config();
 
-const MONGO_DB = "college_resources";
-const BACKUP_BASE = "C:\\MongoBackup\\backup\\mongo";
-const MONGO_DUMP = `"C:\\Program Files\\MongoDB\\Tools\\100\\bin\\mongodump.exe"`;
-const RCLONE_PATH = `"C:\\MongoBackup\\Tools\\rclone-v1.71.1-windows-amd64\\rclone.exe"`;
-const REMOTE_NAME = "mygdrive";
-const REMOTE_PATH = "MongoBackups";
+const MONGO_DB = process.env.MONGO_DB;
+// BACKUP_BASE should be an absolute path. In .env you can use double backslashes (C:\\path\\to) or forward slashes (C:/path/to).
+const BACKUP_BASE = process.env.BACKUP_BASE;
+// MONGO_DUMP and RCLONE_PATH should point to the executable files. Do NOT include surrounding quotes in the .env value; the script will quote paths when building the command.
+const MONGO_DUMP = process.env.MONGO_DUMP;
+const RCLONE_PATH = process.env.RCLONE_PATH;
+const REMOTE_NAME = process.env.REMOTE_NAME;
+const REMOTE_PATH = process.env.REMOTE_PATH;
 const LOG_FILE = path.join(BACKUP_BASE, "backup.log");
 
 function getDateTime() {
@@ -34,10 +29,17 @@ function runBackup() {
   const DATETIME = getDateTime();
   const BACKUP_DIR = path.join(BACKUP_BASE, DATETIME);
 
+  // Ensure base and backup directory exist
+  if (!fs.existsSync(BACKUP_BASE)) fs.mkdirSync(BACKUP_BASE, { recursive: true });
   if (!fs.existsSync(BACKUP_DIR)) fs.mkdirSync(BACKUP_DIR, { recursive: true });
 
+  // Ensure log file directory exists
+  const logDir = path.dirname(LOG_FILE);
+  if (!fs.existsSync(logDir)) fs.mkdirSync(logDir, { recursive: true });
+
   console.log(`[${new Date().toLocaleString()}] Starting backup...`);
-  const dumpCmd = `${MONGO_DUMP} --db ${MONGO_DB} --out "${BACKUP_DIR}"`;
+  // Quote executable paths and target paths so spaces in Windows paths are handled safely
+  const dumpCmd = `"${MONGO_DUMP}" --db ${MONGO_DB} --out "${BACKUP_DIR}"`;
 
   exec(dumpCmd, (err, stdout, stderr) => {
     if (err) {
@@ -48,22 +50,24 @@ function runBackup() {
 
     console.log(`✅ Local backup completed at: ${BACKUP_DIR}`);
 
-    // Upload to Google Drive using rclone
-    const uploadCmd = `${RCLONE_PATH} copy "${BACKUP_DIR}" ${REMOTE_NAME}:${REMOTE_PATH}/${DATETIME}`;
-    exec(uploadCmd, (uploadErr) => {
-      if (uploadErr) {
-        console.error(`⚠️ Upload failed: ${uploadErr.message}`);
-        fs.appendFileSync(LOG_FILE, `${DATETIME} - Upload FAILED\n`);
-      } else {
-        console.log(`☁️  Uploaded to Google Drive: ${REMOTE_PATH}/${DATETIME}`);
-        fs.appendFileSync(LOG_FILE, `${DATETIME} - Backup successful\n`);
-      }
-    });
+    // Upload to Google Drive using rclone. Only run if RCLONE_PATH and REMOTE_NAME are set and the rclone binary exists.
+    if (RCLONE_PATH && REMOTE_NAME && fs.existsSync(RCLONE_PATH)) {
+      const uploadCmd = `"${RCLONE_PATH}" copy "${BACKUP_DIR}" ${REMOTE_NAME}:${REMOTE_PATH}/${DATETIME}`;
+      exec(uploadCmd, (uploadErr) => {
+        if (uploadErr) {
+          console.error(`⚠️ Upload failed: ${uploadErr.message}`);
+          fs.appendFileSync(LOG_FILE, `${DATETIME} - Upload FAILED\n`);
+        } else {
+          console.log(`☁️  Uploaded to Google Drive: ${REMOTE_PATH}/${DATETIME}`);
+          fs.appendFileSync(LOG_FILE, `${DATETIME} - Backup successful\n`);
+        }
+      });
+    } else {
+      console.log('⚠️  rclone not configured or binary not found; skipping upload.');
+      fs.appendFileSync(LOG_FILE, `${DATETIME} - Backup local-only (rclone skipped)\n`);
+    }
   });
 }
 
 // Run immediately
 runBackup();
-
-// Schedule daily at 3:00 AM
-schedule.scheduleJob("0 3 * * *", runBackup);
