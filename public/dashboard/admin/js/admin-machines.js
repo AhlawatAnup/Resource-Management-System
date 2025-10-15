@@ -236,7 +236,7 @@ document.addEventListener('DOMContentLoaded', () => {
         revokeBtn.style.color = '#fff';
         revokeBtn.addEventListener('click', async () => {
           const idText = m.MIGID ? ` (${m.MIGID})` : '';
-          const input = prompt(`Type CONFIRM to revoke assignment for this machine${idText}, or cancel to abort.`);
+          const input = prompt(`Type CONFIRM to revoke assignment for this machine${idText}, or cancel to abort. The resource request will also be deleted. This Process is irreversible.`);
           if (input === null) return; // cancelled
           if (String(input).trim().toUpperCase() !== 'CONFIRM') {
             alert('Revoke cancelled — confirmation not entered correctly.');

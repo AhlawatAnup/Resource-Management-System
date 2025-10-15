@@ -204,23 +204,18 @@ exports.updateResourceRequestVerification = async (req, res) => {
     } else if (userRole === "admin") {
       // Admin verification logic
       if (is_verified) {
-        // For approvals, VM credentials are required
-        if (!vmCredentials) {
-          return res.status(400).json({ error: "VM credentials are required when approving a request" });
+        // For approvals, VM credentials must include password/ip/migId
+        if (!vmCredentials || !vmCredentials.password || !vmCredentials.ip || !vmCredentials.migId) {
+          return res.status(400).json({ error: "Password, IP, and MIG ID are required for VM credentials" });
         }
 
-        // Validate VM credentials
-        if (!vmCredentials.username || !vmCredentials.password || !vmCredentials.ip || !vmCredentials.migId) {
-          return res.status(400).json({ error: "Username, password, IP, and MIG ID are required for VM credentials" });
-        }
-
-        const username = vmCredentials.username.trim();
+        // const username = vmCredentials.username.trim();
         const password = vmCredentials.password.trim();
         const ip = vmCredentials.ip.trim();
         const migId = vmCredentials.migId.trim();
-        if (username.length < 3) {
-          return res.status(400).json({ error: "Username must be at least 3 characters long" });
-        }
+        // if (username.length < 3) {
+        //   return res.status(400).json({ error: "Username must be at least 3 characters long" });
+        // }
         if (password.length < 6) {
           return res.status(400).json({ error: "Password must be at least 6 characters long" });
         }
@@ -328,7 +323,9 @@ exports.updateResourceRequestVerification = async (req, res) => {
     });
   } catch (err) {
     console.error("Error updating resource request verification:", err);
-    return res.status(500).json({ error: "Failed to update resource request verification" });
+    // Return the real error message to help the frontend diagnose (trim long stack if necessary)
+    const message = err && err.message ? err.message : 'Failed to update resource request verification';
+    return res.status(500).json({ error: message });
   }
 };
 

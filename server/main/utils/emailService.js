@@ -491,7 +491,7 @@ const sendResourceRequestRejectedByTeacherEmail = async (studentEmail, studentNa
 };
 
 // 9. Send email when student resource request is verified by admin (with VM credentials)
-const sendResourceRequestVerifiedByAdminEmail = async (studentEmail, studentName, requestTitle, vmCredentials) => {
+const sendResourceRequestVerifiedByAdminEmail = async (studentEmail, studentName, requestTitle, vmCredentials, requestUsername) => {
   const transporter = createTransporter();
   
   const mailOptions = {
@@ -508,7 +508,7 @@ const sendResourceRequestVerifiedByAdminEmail = async (studentEmail, studentName
         
         <div style="background-color: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
           <h3 style="color: #333; margin-top: 0;">VM Access Credentials:</h3>
-          <p><strong>Username:</strong> <code style="background: #e8e8e8; padding: 2px 4px;">${vmCredentials.username}</code></p>
+          <p><strong>Username:</strong> <code style="background: #e8e8e8; padding: 2px 4px;">${requestUsername || 'N/A'}</code></p>
           <p><strong>Password:</strong> <code style="background: #e8e8e8; padding: 2px 4px;">${vmCredentials.password}</code></p>
           <p><strong>IP:</strong> <code style="background: #e8e8e8; padding: 2px 4px;">${vmCredentials.ip}</code></p>
           <p><strong>MIG ID:</strong> <code style="background: #e8e8e8; padding: 2px 4px;">${vmCredentials.migId}</code></p>
