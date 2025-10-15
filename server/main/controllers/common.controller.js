@@ -276,7 +276,7 @@ exports.updateResourceRequestVerification = async (req, res) => {
           const migId = updatedRequest.vmCredentials.migId;
           const machine = await Machine.findOneAndUpdate(
             { MIGID: migId },
-            { $set: { 'assignedStudent.studentId': updatedRequest.studentId, isAssigned: true } },
+            { $set: { assignedStudent: { studentId: updatedRequest.studentId }, isAssigned: true } },
             { new: true }
           );
           if (machine) {

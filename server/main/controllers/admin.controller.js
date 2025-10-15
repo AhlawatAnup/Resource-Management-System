@@ -367,7 +367,7 @@ exports.createMachine = async (req, res) => {
     const gpu = (gpuRam === undefined || gpuRam === null || gpuRam === '') ? null : Number(gpuRam);
     if (gpu === null || Number.isNaN(gpu) || gpu < 0) return res.status(400).json({ error: 'gpuRam must be a non-negative number' });
 
-    const machine = new Machine({ MIGID: MIGID.trim(), gpuRam: gpu});
+    const machine = new Machine({ MIGID: MIGID.trim(), gpuRam: gpu, assignedStudent: null });
     await machine.save();
     return res.status(201).json({ ok: true, machine });
   } catch (err) {
