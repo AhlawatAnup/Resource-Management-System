@@ -154,7 +154,11 @@ document.addEventListener('DOMContentLoaded', () => {
         tr.appendChild(td);
       });
 
-      // Assigned student cell: show roll number and name when available, otherwise studentId or 'Unassigned'
+  // determine assigned state for this row
+  let _isAssigned = (typeof m.isAssigned === 'boolean') ? m.isAssigned : null;
+  if (_isAssigned === null) _isAssigned = !!(m.assignedStudent);
+
+  // Assigned student cell: show roll number and name when available, otherwise studentId or 'Unassigned'
       const assignedTd = document.createElement('td');
       (function setAssignedText(val, td) {
         if (!val) { td.textContent = 'Unassigned'; return; }
@@ -183,7 +187,7 @@ document.addEventListener('DOMContentLoaded', () => {
       })(m.assignedStudent, assignedTd);
       tr.appendChild(assignedTd);
 
-      // Actions cell: Edit (opens modal) and Delete
+    // Actions cell: Edit (opens modal), Delete and Revoke (if assigned)
       const actionTd = document.createElement('td');
       const editBtn = document.createElement('button');
       editBtn.type = 'button';
@@ -219,6 +223,48 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
       actionTd.appendChild(deleteBtn);
+
+      // Revoke assignment button: only show when machine is assigned
+      if (_isAssigned) {
+        const revokeBtn = document.createElement('button');
+        revokeBtn.type = 'button';
+        revokeBtn.className = 'btn btn-revoke';
+        revokeBtn.textContent = 'Revoke';
+        revokeBtn.style.marginLeft = '8px';
+        // style as red button
+        revokeBtn.style.background = '#fa6251ff';
+        revokeBtn.style.color = '#fff';
+        revokeBtn.addEventListener('click', async () => {
+          const idText = m.MIGID ? ` (${m.MIGID})` : '';
+          if (!confirm(`Revoke assignment for this machine${idText}?`)) return;
+          if (!confirm('Are you absolutely sure? This will clear the assigned student and cannot be undone.')) return;
+          try {
+            if (m._id) {
+              const resp = await fetch(`/dashboard/admin/machines/${m._id}`, {
+                method: 'PUT',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ assignedStudent: null })
+              });
+              if (!resp.ok) {
+                const txt = await resp.text();
+                alert('Revoke failed: ' + (txt || resp.statusText));
+                return;
+              }
+            }
+            // optimistic UI update: mark as unassigned
+            assignedTd.textContent = 'Unassigned';
+            // remove revoke button
+            revokeBtn.remove();
+            // refresh cache from server to keep table normalized
+            if (window.reloadMachines) window.reloadMachines();
+          } catch (err) {
+            console.error('Failed to revoke assignment', err);
+            alert('Failed to revoke assignment. See console for details.');
+          }
+        });
+        actionTd.appendChild(revokeBtn);
+      }
       tr.appendChild(actionTd);
       tbody.appendChild(tr);
     });
@@ -257,7 +303,6 @@ function ensureEditModal() {
       <form id="machineEditForm">
         <div style="margin-bottom:8px;"><label>MIGID<br><input name="MIGID" id="machineMIGID" style="width:100%;padding:8px;"/></label></div>
         <div style="margin-bottom:8px;"><label>GPU RAM (GB)<br><input name="gpuRam" id="machineGpu" style="width:100%;padding:8px;"/></label></div>
-  <div style="margin-bottom:12px;"><label>Assigned Student (ID)<br><input name="assignedStudent" id="machineAssigned" style="width:100%;padding:8px;"/></label></div>
         <div style="display:flex;gap:8px;justify-content:flex-end;">
           <button type="button" id="machineEditCancel" style="padding:8px 12px;">Cancel</button>
           <button type="submit" id="machineEditSave" style="padding:8px 12px;">Save</button>
@@ -278,7 +323,6 @@ function ensureEditModal() {
     const gpuRaw = modal.querySelector('#machineGpu').value.trim();
     const gpu = gpuRaw === '' ? null : Number(gpuRaw);
     if (gpu !== null && (Number.isNaN(gpu) || gpu < 0)) { alert('GPU RAM must be a non-negative number'); return; }
-    const assigned = modal.querySelector('#machineAssigned').value.trim() || null;
 
     try {
       // call server to update (if id present)
@@ -287,7 +331,7 @@ function ensureEditModal() {
           method: 'PUT',
           credentials: 'include',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ MIGID: MIGID || null, gpuRam: gpu, assignedStudent: assigned })
+          body: JSON.stringify({ MIGID: MIGID || null, gpuRam: gpu })
         });
         if (!resp.ok) {
           const txt = await resp.text();
@@ -303,7 +347,6 @@ function ensureEditModal() {
           const tds = tr.querySelectorAll('td');
           if (tds[0]) tds[0].textContent = MIGID || '';
           if (tds[1]) tds[1].textContent = gpu !== null ? String(gpu) : '';
-          if (tds[2]) tds[2].textContent = assigned || 'Unassigned';
         }
       }
 
@@ -414,7 +457,8 @@ function openEditModal(machine, tableRow, assignedCell) {
   modal.dataset.rowSelector = `[data-machine-row-id="${rowId}"]`;
   modal.querySelector('#machineMIGID').value = machine.MIGID || '';
   modal.querySelector('#machineGpu').value = machine.gpuRam !== undefined && machine.gpuRam !== null ? String(machine.gpuRam) : '';
-  modal.querySelector('#machineAssigned').value = (machine.assignedStudent && (machine.assignedStudent.studentId || machine.assignedStudent)) || '';
+  const assignedInput = modal.querySelector('#machineAssigned');
+  if (assignedInput) assignedInput.value = (machine.assignedStudent && (machine.assignedStudent.studentId || machine.assignedStudent)) || '';
 }
 
 function closeEditModal() {
