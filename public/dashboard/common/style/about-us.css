@@ -25,3 +25,11 @@
   color: #6b7280;
   font-size: 13px;
 }
+
+/* Visual separator placed after about text blocks */
+.about-separator {
+  height: 1px;
+  background: linear-gradient(90deg, rgba(0,0,0,0.06), rgba(0,0,0,0.12), rgba(0,0,0,0.06));
+  margin: 20px 0 28px 0;
+  border-radius: 2px;
+}

@@ -1,26 +1,49 @@
 
 /* Footer styling (light, unobtrusive) */
 .site-footer {
-  position: absolute;
-  bottom: 0px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: transparent;
-  /* padding: 0.5rem 0.5rem; */
-  display: flex;
-  justify-content: center;
-  pointer-events: none; /* outer doesn't intercept clicks */
-  z-index: 40;
+  /* default: footer participates in normal flow */
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 1rem 0;
 }
 .site-footer .footer-content {
-  background: rgb(28, 35, 50);
+  background: rgba(76, 79, 87, 0.438);
   color: #ffffff;
   padding: 0.5rem 1rem;
   border-radius: 6px;
   font-size: 0.85rem;
   text-align: center;
   line-height: 1.2;
-  pointer-events: auto; /* inner content interactable if needed */
+  margin: 0 auto;
+  max-width: 900px;
+}
+
+/* When footer is inside an about-panel card, make it visually part of the card */
+.about-panel > .site-footer {
+  padding: 0;
+}
+.about-panel > .site-footer .footer-content {
+  background: transparent;
+  color: #6b7280;
+  padding: 0;
+  border-radius: 0;
+  text-align: center; 
+  max-width: none;
+  margin-top: 12px;
+}
+
+/* When footer is inside the left-section (homepage), center it vertically and left-align container */
+.left-section > .site-footer {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 2rem; /* small gap from bottom of left panel */
+  width: auto;
+  pointer-events: none;
+}
+.left-section > .site-footer .footer-content {
+  pointer-events: auto;
 }
 
 @media (max-width: 768px) {
