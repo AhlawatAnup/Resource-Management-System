@@ -29,13 +29,15 @@ app.use(cors({
   methods: ["GET", "POST", "PUT", "DELETE"]
 }));
 
-const allowedHost = "localhost:3000";
-app.use((req, res, next) => {
-  if (req.headers.host !== allowedHost) {
-    return res.status(403).json({ message: "Forbidden: Only localhost allowed" });
-  }
-  next();
-});
+// HTTPS enforcement: enable when ENFORCE_HTTPS=true
+if (process.env.ENFORCE_HTTPS === 'true') {
+  app.set('trust proxy', 1);
+  // Force HTTPS for all requests
+  app.use((req, res, next) => {
+    if (req.secure || req.headers['x-forwarded-proto'] === 'https') return next();
+    return res.redirect(301, `https://${req.headers.host}${req.originalUrl}`);
+  });
+}
 
 // Define path to public folder (go one level up from server/main/)
 const publicPath = path.join(__dirname, "../../public");

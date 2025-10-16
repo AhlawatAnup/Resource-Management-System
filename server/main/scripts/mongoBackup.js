@@ -5,9 +5,7 @@ const schedule = require("node-schedule");
 require('dotenv').config();
 
 const MONGO_DB = process.env.MONGO_DB;
-// BACKUP_BASE should be an absolute path. In .env you can use double backslashes (C:\\path\\to) or forward slashes (C:/path/to).
 const BACKUP_BASE = process.env.BACKUP_BASE;
-// MONGO_DUMP and RCLONE_PATH should point to the executable files. Do NOT include surrounding quotes in the .env value; the script will quote paths when building the command.
 const MONGO_DUMP = process.env.MONGO_DUMP;
 const RCLONE_PATH = process.env.RCLONE_PATH;
 const REMOTE_NAME = process.env.REMOTE_NAME;
