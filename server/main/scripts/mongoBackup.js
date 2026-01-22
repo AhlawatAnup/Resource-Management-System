@@ -37,7 +37,7 @@ function runBackup() {
 
   console.log(`[${new Date().toLocaleString()}] Starting backup...`);
   // Quote executable paths and target paths so spaces in Windows paths are handled safely
-  const dumpCmd = `"${MONGO_DUMP}" --db ${MONGO_DB} --out "${BACKUP_DIR}"`;
+  const dumpCmd = `"${MONGO_DUMP}" --uri="${process.env.MONGO_URI}" --db ${MONGO_DB} --out "${BACKUP_DIR}"`;
 
   exec(dumpCmd, (err, stdout, stderr) => {
     if (err) {
