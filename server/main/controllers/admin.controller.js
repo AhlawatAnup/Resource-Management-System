@@ -63,7 +63,7 @@ exports.updateTeacherVerification = async (req, res) => {
   const { teacher_id } = req.params;
   const { is_verified } = req.body;
 
-  console.log("Updating teacher verification", teacher_id, "to", is_verified);
+  // console.log("Updating teacher verification", teacher_id, "to", is_verified);
 
   try {
     const teacher = await Teacher.findByIdAndUpdate(
@@ -95,7 +95,7 @@ exports.updateTeacherVerification = async (req, res) => {
       }
     }
 
-    console.log("Teacher verification updated:", teacher);
+    // console.log("Teacher verification updated:", teacher);
     return res.json({
       message: "Teacher verification status updated successfully",
       teacher: { ...teacher._doc }
@@ -173,7 +173,7 @@ exports.getRejectedStudents = async (req, res) => {
 exports.getAllResourceRequests = async (req, res) => {
   const role = req.session.user.role;
   const uid = req.session.user.id;
-  console.log("Admin requested all resource requests", uid);
+  // console.log("Admin requested all resource requests", uid);
 
   if (role !== "admin") {
     return res.status(403).json({ error: "Access denied. Admin role required." });
@@ -192,7 +192,7 @@ exports.getAllResourceRequests = async (req, res) => {
       })
       .sort({ createdAt: -1 }); // Most recent first
 
-    console.log(`Found ${resourceRequests.length} total resource requests for admin`);
+    // console.log(`Found ${resourceRequests.length} total resource requests for admin`);
 
     // Format the data to include teacher info in the response
     const formattedRequests = resourceRequests.map(request => ({

@@ -26,13 +26,13 @@ async function loadResourceRequests() {
     }
 
     const data = await response.json();
-    console.log("Teacher Dashboard Data:", data);
+    // console.log("Teacher Dashboard Data:", data);
 
     // Extract resource requests from the dashboard data
     resourceRequests = data.resourceRequests || [];
     filteredRequests = [...resourceRequests];
 
-    console.log(`Found ${resourceRequests.length} resource requests`);
+    // console.log(`Found ${resourceRequests.length} resource requests`);
     renderResourceRequests(filteredRequests);
 
   } catch (error) {
@@ -165,7 +165,7 @@ async function updateRequestVerification(requestId, isVerified) {
     }
 
     const result = await response.json();
-    console.log('Request verification updated:', result);
+    // console.log('Request verification updated:', result);
 
     // Update the local data
     const requestIndex = resourceRequests.findIndex(r => r._id === requestId);
@@ -334,7 +334,7 @@ async function submitEditRequest() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
-    console.log("Status:", response.status);
+    // console.log("Status:", response.status);
     let result;
     try {
       result = await response.json();
@@ -342,7 +342,7 @@ async function submitEditRequest() {
       console.error("Failed to parse JSON response:", jsonErr);
       throw new Error('Invalid server response');
     }
-    console.log("Response:", result);
+    // console.log("Response:", result);
     if (!response.ok || !result.success) {
       const errorMsg = result && result.error ? result.error : 'Failed to edit request';
       throw new Error(errorMsg);

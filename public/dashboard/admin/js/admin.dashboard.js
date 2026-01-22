@@ -8,7 +8,7 @@ let currentStatus = 'unverified'; // all, verified or unverified
 
 // Initialize admin dashboard
 function initializeAdminDashboard() {
-  console.log('Admin Dashboard Initialized');
+  // console.log('Admin Dashboard Initialized');
   
   // Set up navigation
   setupNavigation();

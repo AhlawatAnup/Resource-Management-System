@@ -16,7 +16,7 @@ async function getTeacherDashboardData() {
     }
 
     const data = await response.json();
-    console.log("Dashboard Data:", data);
+    // console.log("Dashboard Data:", data);
 
     renderDashboardHeader(data);
     renderTeacherProfile(data);
@@ -47,11 +47,11 @@ function renderTeacherProfile(teacherData) {
   if (!profileSection) return;
 
   // Debug logging to understand teacher verification status
-  console.log('Teacher verification data:', {
-    is_verified: teacherData.is_verified,
-    verification_completed: teacherData.verification_completed,
-    name: teacherData.name
-  });
+  // console.log('Teacher verification data:', {
+  //   is_verified: teacherData.is_verified,
+  //   verification_completed: teacherData.verification_completed,
+  //   name: teacherData.name
+  // });
 
   const verificationStatus = getVerificationStatus(teacherData);
   const statusClass = getStatusClass(teacherData);
@@ -151,13 +151,13 @@ function formatDate(dateString) {
 
 // Function to determine student verification status from teacher's perspective
 function getStudentVerificationStatusForTeacher(student) {
-  console.log('Student verification fields from teacher view:', {
-    teacher_verified: student.teacher_verified,
-    admin_verified: student.admin_verified,
-    teacher_action: student.teacher_action,
-    admin_action: student.admin_action,
-    name: student.name
-  });
+  // console.log('Student verification fields from teacher view:', {
+  //   teacher_verified: student.teacher_verified,
+  //   admin_verified: student.admin_verified,
+  //   teacher_action: student.teacher_action,
+  //   admin_action: student.admin_action,
+  //   name: student.name
+  // });
 
   // If both teacher and admin have verified
   if (student.teacher_verified && student.admin_verified) {
@@ -239,7 +239,7 @@ async function getStudentData(stu_id) {
     }
 
     const data = await response.json();
-    console.log("Student Data:", data);
+    // console.log("Student Data:", data);
     render_students_table({
       ...data,
       avatarColor: getRandomNamedColor(),
@@ -319,7 +319,7 @@ function render_students_table(student) {
 
 // Event listeners
 document.getElementById("searchInput").addEventListener("input", (e) => {
-  console.log(student_data);
+  // console.log(student_data);
   filter_student(e.target.value);
 });
 
@@ -382,7 +382,7 @@ async function updateStudentVerification(studentId, isVerified) {
     }
 
     const result = await response.json();
-    console.log('Verification updated:', result);
+    // console.log('Verification updated:', result);
 
     // Update the student data in the local array
     const studentIndex = student_data.findIndex(s => s._id === studentId);

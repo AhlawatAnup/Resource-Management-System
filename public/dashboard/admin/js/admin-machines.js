@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const msg = `Imported: ${json.imported} / ${json.total}`;
         if (json.skipped && json.skipped.length) {
           alert(msg + '\nSkipped rows: ' + json.skipped.length + '\nCheck console for details');
-          console.log('Skipped rows:', json.skipped);
+          // console.log('Skipped rows:', json.skipped);
         } else {
           alert(msg);
         }
@@ -271,7 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
               }
               const json = await delResp.json().catch(() => null);
-              console.log('Deleted resource requests by MIGID:', json);
+              // console.log('Deleted resource requests by MIGID:', json);
             }
 
             assignedTd.textContent = 'Unassigned';

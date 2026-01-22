@@ -9,7 +9,7 @@ document.querySelectorAll(".role-option").forEach((option) => {
     this.classList.add("active");
 
     const role = this.dataset.role;
-    console.log("Selected role:", role);
+    // console.log("Selected role:", role);
     updateFormForRole(role);
   });
 });
@@ -117,7 +117,7 @@ function checkOTPComplete() {
     .map((input) => input.value)
     .join("");
   if (otp.length === 6) {
-    console.log("OTP Complete:", otp);
+    // console.log("OTP Complete:", otp);
   }
 }
 
@@ -196,7 +196,7 @@ async function adminLogin() {
 async function sendOtp() {
   const activeDiv = document.querySelector(".role-option.active");
   const role = activeDiv.getAttribute("data-role");
-  console.log(role);
+  // console.log(role);
   const email = document.getElementById("email").value;
   const sendOtpBtn = document.getElementById("sendOtpBtn");
 

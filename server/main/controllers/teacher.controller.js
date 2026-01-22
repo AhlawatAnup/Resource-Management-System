@@ -6,7 +6,7 @@ const ResourceRequest = require("../database/resourceRequestModel.js");
 exports.teacher_dashboard_data = async (req, res) => {
   const role = req.session.user.role;
   const uid = req.session.user.id;
-  console.log("requested Dashboard data", role, uid);
+  // console.log("requested Dashboard data", role, uid);
 
   if (role === "teacher") {
     try {
@@ -22,7 +22,7 @@ exports.teacher_dashboard_data = async (req, res) => {
         return res.status(404).json({ error: "Teacher not found" });
       }
 
-      console.log(`Found ${teacher.students.length} students for teacher ${uid}`);
+      // console.log(`Found ${teacher.students.length} students for teacher ${uid}`);
 
       // Collect all resource requests from all students
       let allResourceRequests = [];
@@ -46,7 +46,7 @@ exports.teacher_dashboard_data = async (req, res) => {
       // Sort resource requests by creation date (most recent first)
       allResourceRequests.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-      console.log(`Found ${allResourceRequests.length} total resource requests`);
+      // console.log(`Found ${allResourceRequests.length} total resource requests`);
 
       // Return teacher data with students and resource requests
       return res.json({ 

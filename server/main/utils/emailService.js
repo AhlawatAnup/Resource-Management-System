@@ -3,13 +3,13 @@ const nodemailer = require('nodemailer');
 // Create transporter with Gmail configuration
 const createTransporter = () => {
   // Debug environment variables at transporter creation
-  console.log('🔧 Creating email transporter...');
-  console.log('EMAIL_USER available:', !!process.env.EMAIL_USER);
-  console.log('EMAIL_PASS available:', !!process.env.EMAIL_PASS);
+  // console.log('🔧 Creating email transporter...');
+  // console.log('EMAIL_USER available:', !!process.env.EMAIL_USER);
+  // console.log('EMAIL_PASS available:', !!process.env.EMAIL_PASS);
   
   if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
     console.error('❌ Email credentials missing!');
-    console.log('EMAIL_USER:', process.env.EMAIL_USER);
+    // console.log('EMAIL_USER:', process.env.EMAIL_USER);
   }
   
   return nodemailer.createTransport({
@@ -72,7 +72,7 @@ const sendOTPEmail = async (email, otp, role) => {
 
   try {
     const info = await transporter.sendMail(mailOptions);
-    console.log('OTP email sent successfully:', info.messageId);
+    // console.log('OTP email sent successfully:', info.messageId);
     return { success: true, messageId: info.messageId };
   } catch (error) {
     console.error('Error sending OTP email:', error);
@@ -123,7 +123,7 @@ const sendStudentRegistrationSuccessEmail = async (studentEmail, studentName) =>
 
   try {
     const info = await transporter.sendMail(mailOptions);
-    console.log('Student registration success email sent successfully:', info.messageId);
+    // console.log('Student registration success email sent successfully:', info.messageId);
     return { success: true, messageId: info.messageId };
   } catch (error) {
     console.error('Error sending student registration success email:', error);
@@ -169,7 +169,7 @@ const sendStudentProfileVerifiedByTeacherEmail = async (studentEmail, studentNam
 
   try {
     const info = await transporter.sendMail(mailOptions);
-    console.log('Student profile verified by teacher email sent successfully:', info.messageId);
+    // console.log('Student profile verified by teacher email sent successfully:', info.messageId);
     return { success: true, messageId: info.messageId };
   } catch (error) {
     console.error('Error sending student profile verified by teacher email:', error);
@@ -222,7 +222,7 @@ const sendStudentProfileRejectedByTeacherEmail = async (studentEmail, studentNam
 
   try {
     const info = await transporter.sendMail(mailOptions);
-    console.log('Student profile rejected by teacher email sent successfully:', info.messageId);
+    // console.log('Student profile rejected by teacher email sent successfully:', info.messageId);
     return { success: true, messageId: info.messageId };
   } catch (error) {
     console.error('Error sending student profile rejected by teacher email:', error);
@@ -276,7 +276,7 @@ const sendStudentProfileVerifiedByAdminEmail = async (studentEmail, studentName)
 
   try {
     const info = await transporter.sendMail(mailOptions);
-    console.log('Student profile verified by admin email sent successfully:', info.messageId);
+    // console.log('Student profile verified by admin email sent successfully:', info.messageId);
     return { success: true, messageId: info.messageId };
   } catch (error) {
     console.error('Error sending student profile verified by admin email:', error);
@@ -329,7 +329,7 @@ const sendStudentProfileRejectedByAdminEmail = async (studentEmail, studentName)
 
   try {
     const info = await transporter.sendMail(mailOptions);
-    console.log('Student profile rejected by admin email sent successfully:', info.messageId);
+    // console.log('Student profile rejected by admin email sent successfully:', info.messageId);
     return { success: true, messageId: info.messageId };
   } catch (error) {
     console.error('Error sending student profile rejected by admin email:', error);
@@ -385,7 +385,7 @@ const sendResourceRequestSubmittedEmail = async (studentEmail, studentName, requ
 
   try {
     const info = await transporter.sendMail(mailOptions);
-    console.log('Resource request submitted email sent successfully:', info.messageId);
+    // console.log('Resource request submitted email sent successfully:', info.messageId);
     return { success: true, messageId: info.messageId };
   } catch (error) {
     console.error('Error sending resource request submitted email:', error);
@@ -429,7 +429,7 @@ const sendResourceRequestVerifiedByTeacherEmail = async (studentEmail, studentNa
 
   try {
     const info = await transporter.sendMail(mailOptions);
-    console.log('Resource request verified by teacher email sent successfully:', info.messageId);
+    // console.log('Resource request verified by teacher email sent successfully:', info.messageId);
     return { success: true, messageId: info.messageId };
   } catch (error) {
     console.error('Error sending resource request verified by teacher email:', error);
@@ -482,7 +482,7 @@ const sendResourceRequestRejectedByTeacherEmail = async (studentEmail, studentNa
 
   try {
     const info = await transporter.sendMail(mailOptions);
-    console.log('Resource request rejected by teacher email sent successfully:', info.messageId);
+    // console.log('Resource request rejected by teacher email sent successfully:', info.messageId);
     return { success: true, messageId: info.messageId };
   } catch (error) {
     console.error('Error sending resource request rejected by teacher email:', error);
@@ -539,7 +539,7 @@ const sendResourceRequestVerifiedByAdminEmail = async (studentEmail, studentName
 
   try {
     const info = await transporter.sendMail(mailOptions);
-    console.log('Resource request verified by admin email sent successfully:', info.messageId);
+    // console.log('Resource request verified by admin email sent successfully:', info.messageId);
     return { success: true, messageId: info.messageId };
   } catch (error) {
     console.error('Error sending resource request verified by admin email:', error);
@@ -592,7 +592,7 @@ const sendResourceRequestRejectedByAdminEmail = async (studentEmail, studentName
 
   try {
     const info = await transporter.sendMail(mailOptions);
-    console.log('Resource request rejected by admin email sent successfully:', info.messageId);
+    // console.log('Resource request rejected by admin email sent successfully:', info.messageId);
     return { success: true, messageId: info.messageId };
   } catch (error) {
     console.error('Error sending resource request rejected by admin email:', error);
@@ -648,7 +648,7 @@ const sendTeacherRegistrationSuccessEmail = async (teacherEmail, teacherName) =>
 
   try {
     const info = await transporter.sendMail(mailOptions);
-    console.log('Teacher registration success email sent successfully:', info.messageId);
+    // console.log('Teacher registration success email sent successfully:', info.messageId);
     return { success: true, messageId: info.messageId };
   } catch (error) {
     console.error('Error sending teacher registration success email:', error);
@@ -703,7 +703,7 @@ const sendTeacherProfileVerifiedByAdminEmail = async (teacherEmail, teacherName)
 
   try {
     const info = await transporter.sendMail(mailOptions);
-    console.log('Teacher profile verified by admin email sent successfully:', info.messageId);
+    // console.log('Teacher profile verified by admin email sent successfully:', info.messageId);
     return { success: true, messageId: info.messageId };
   } catch (error) {
     console.error('Error sending teacher profile verified by admin email:', error);
@@ -756,7 +756,7 @@ const sendTeacherProfileRejectedByAdminEmail = async (teacherEmail, teacherName)
 
   try {
     const info = await transporter.sendMail(mailOptions);
-    console.log('Teacher profile rejected by admin email sent successfully:', info.messageId);
+    // console.log('Teacher profile rejected by admin email sent successfully:', info.messageId);
     return { success: true, messageId: info.messageId };
   } catch (error) {
     console.error('Error sending teacher profile rejected by admin email:', error);
@@ -810,7 +810,7 @@ const sendExpiringResourceEmail = async ({ studentEmail, adminEmail, resourceReq
 
   try {
     const info = await transporter.sendMail(mailOptions);
-    console.log('Resource expiry notification email sent:', info.messageId);
+    // console.log('Resource expiry notification email sent:', info.messageId);
     return { success: true, messageId: info.messageId };
   } catch (error) {
     console.error('Error sending resource expiry notification email:', error);

@@ -28,12 +28,12 @@ async function loadResourceRequests() {
     }
 
     const data = await response.json();
-    console.log("Admin Resource Requests Data:", data);
+    // console.log("Admin Resource Requests Data:", data);
 
     resourceRequests = data.requests || [];
     filteredRequests = [...resourceRequests];
 
-    console.log(`Found ${resourceRequests.length} resource requests`);
+    // console.log(`Found ${resourceRequests.length} resource requests`);
     renderResourceRequests(filteredRequests);
 
   } catch (error) {
@@ -259,18 +259,18 @@ function closeVerificationModal() {
 // Submit verification with credentials
 async function submitVerification(requestId, isVerified, credentials = null) {
   try {
-    console.log('Submitting verification:', {
-      requestId,
-      isVerified,
-      credentials
-    });
+    // console.log('Submitting verification:', {
+    //   requestId,
+    //   isVerified,
+    //   credentials
+    // });
 
     const requestBody = { 
       is_verified: isVerified,
       vmCredentials: credentials
     };
     
-    console.log('Request body:', JSON.stringify(requestBody, null, 2));
+    // console.log('Request body:', JSON.stringify(requestBody, null, 2));
 
     const response = await fetch(`/dashboard/admin/verify_request/${requestId}`, {
       method: 'PUT',
@@ -298,7 +298,7 @@ async function submitVerification(requestId, isVerified, credentials = null) {
     }
 
     const result = await response.json();
-    console.log('Request verification updated:', result);
+    // console.log('Request verification updated:', result);
 
     // Update the local data
     const requestIndex = resourceRequests.findIndex(r => r._id === requestId);
@@ -556,7 +556,7 @@ document.addEventListener('DOMContentLoaded', function() {
         migId
       };
       
-      console.log('Form submission - credentials:', credentials);
+      // console.log('Form submission - credentials:', credentials);
       
       try {
         await submitVerification(requestId, true, credentials);
@@ -633,7 +633,7 @@ async function submitEditRequest() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
-    console.log("Status:", response.status);
+    // console.log("Status:", response.status);
     let result;
     try {
       result = await response.json();
@@ -641,7 +641,7 @@ async function submitEditRequest() {
       console.error("Failed to parse JSON response:", jsonErr);
       throw new Error('Invalid server response');
     }
-    console.log("Response:", result);
+    // console.log("Response:", result);
     if (!response.ok || !result.success) {
       const errorMsg = result && result.error ? result.error : 'Failed to edit request';
       throw new Error(errorMsg);

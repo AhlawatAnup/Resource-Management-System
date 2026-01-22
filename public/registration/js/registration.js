@@ -11,7 +11,7 @@ async function loadTeachers() {
     const res = await fetch("/auth/get-teachers");
     const data = await res.json();
 
-    console.log(data);
+    // console.log(data);
     assignedTeacherSelect.innerHTML =
       '<option value="">Select a Teacher</option>';
     
@@ -90,7 +90,7 @@ document
 
     data.role = role || "general";
 
-    console.log("Registration data:", data);
+    // console.log("Registration data:", data);
     // return;
     let payload = {};
 

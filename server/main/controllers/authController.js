@@ -21,13 +21,13 @@ exports.sendOtp = async (req, res) => {
 
     otpStore[email] = { otp, expires, role };
 
-    console.log(`Generated OTP ${otp}`);
+    // console.log(`Generated OTP ${otp}`);
 
     // Send OTP via email
     const emailResult = await sendOTPEmail(email, otp, role);
     
     if (emailResult.success) {
-      console.log(`📧 ${otp} OTP  email sent successfully to ${email} for ${role} registration `);
+      // console.log(`📧 ${otp} OTP  email sent successfully to ${email} for ${role} registration `);
       res.json({ 
         message: "OTP sent to your email address",
         messageId: emailResult.messageId 
@@ -35,7 +35,7 @@ exports.sendOtp = async (req, res) => {
     } else {
       console.error(`❌ Failed to send OTP email to ${email}:`, emailResult.error);
       // Fallback: still allow OTP generation but notify about email failure
-      console.log(`📧 Fallback - OTP for ${email} (${role}): ${otp}`);
+      // console.log(`📧 Fallback - OTP for ${email} (${role}): ${otp}`);
       res.json({ 
         message: "OTP generated successfully (email service temporarily unavailable)",
         fallback: true 
@@ -48,7 +48,7 @@ exports.sendOtp = async (req, res) => {
     const otp = generateOtp();
     const expires = Date.now() + 5 * 60 * 1000;
     otpStore[email] = { otp, expires, role };
-    console.log(`📧 Emergency fallback (Failed to send OTP on email) - OTP for ${email} (${role}): ${otp}`);
+    // console.log(`📧 Emergency fallback (Failed to send OTP on email) - OTP for ${email} (${role}): ${otp}`);
     
     res.json({ 
       message: "OTP generated (email service error, check console for testing)",
@@ -187,7 +187,7 @@ exports.register = async (req, res) => {
         // Send registration success email to student
         try {
           await sendStudentRegistrationSuccessEmail(req.session.email, name);
-          console.log('Student registration success email sent to:', req.session.email);
+          // console.log('Student registration success email sent to:', req.session.email);
         } catch (emailError) {
           console.error('Error sending student registration email:', emailError);
           // Don't fail the registration if email fails
@@ -216,7 +216,7 @@ exports.register = async (req, res) => {
         // Send registration success email to teacher
         try {
           await sendTeacherRegistrationSuccessEmail(req.session.email, name);
-          console.log('Teacher registration success email sent to:', req.session.email);
+          // console.log('Teacher registration success email sent to:', req.session.email);
         } catch (emailError) {
           console.error('Error sending teacher registration email:', emailError);
           // Don't fail the registration if email fails

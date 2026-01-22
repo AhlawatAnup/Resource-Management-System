@@ -38,7 +38,7 @@ exports.getCurrentUserId = (req, res) => {
 
 exports.student_data = async (req, res) => {
   const { stu_id } = req.params;
-  console.log("requested Student data", stu_id);
+  // console.log("requested Student data", stu_id);
 
   try {
     const student = await Student.findOne({ _id: stu_id })
@@ -47,7 +47,7 @@ exports.student_data = async (req, res) => {
     if (!student) {
       return res.status(404).json({ error: "Student not found" });
     }
-    console.log(student);
+    // console.log(student);
     return res.json({ ...student._doc });
   } catch (err) {
     console.error(err);
@@ -62,7 +62,7 @@ exports.updateStudentVerification = async (req, res) => {
 
   const studentId = stu_id || student_id; // Use whichever parameter is provided
 
-  console.log(`${userRole} updating student verification`, studentId, "to", is_verified);
+  // console.log(`${userRole} updating student verification`, studentId, "to", is_verified);
 
   try {
     const student = await Student.findById(studentId);
@@ -136,7 +136,7 @@ exports.updateStudentVerification = async (req, res) => {
       }
     }
 
-    console.log(`Student verification updated by ${userRole}:`, updatedStudent);
+    // console.log(`Student verification updated by ${userRole}:`, updatedStudent);
     return res.json({
       message: "Student verification status updated successfully",
       student: { ...updatedStudent._doc }
@@ -149,14 +149,14 @@ exports.updateStudentVerification = async (req, res) => {
 
 exports.teacher_data = async (req, res) => {
   const { teacher_id } = req.params;
-  console.log("requested Teacher data", teacher_id);
+  // console.log("requested Teacher data", teacher_id);
 
   try {
     const teacher = await Teacher.findOne({ _id: teacher_id });
     if (!teacher) {
       return res.status(404).json({ error: "Teacher not found" });
     }
-    console.log(teacher);
+    // console.log(teacher);
     return res.json({ ...teacher._doc });
   } catch (err) {
     console.error(err);
@@ -170,11 +170,11 @@ exports.updateResourceRequestVerification = async (req, res) => {
   const userRole = req.session.user?.role;
   const userId = req.session.user?.id;
 
-  console.log(`${userRole} ${userId} updating resource request verification`, request_id, "to", is_verified);
+  // console.log(`${userRole} ${userId} updating resource request verification`, request_id, "to", is_verified);
 
   // Validate request ID format
   if (!request_id || !request_id.match(/^[0-9a-fA-F]{24}$/)) {
-    console.log("Invalid request ID format:", request_id);
+    // console.log("Invalid request ID format:", request_id);
     return res.status(400).json({ error: "Invalid request ID format" });
   }
 
@@ -260,7 +260,7 @@ exports.updateResourceRequestVerification = async (req, res) => {
       { new: true }
     );
 
-    console.log(`Resource request verification updated by ${userRole}:`, updatedRequest);
+    // console.log(`Resource request verification updated by ${userRole}:`, updatedRequest);
 
     // Only send email if update was successful (in background)
     if (updatedRequest) {
@@ -275,7 +275,7 @@ exports.updateResourceRequestVerification = async (req, res) => {
             { new: true }
           );
           if (machine) {
-            console.log(`Assigned student ${updatedRequest.studentId} to machine ${migId}`);
+            // console.log(`Assigned student ${updatedRequest.studentId} to machine ${migId}`);
           } else {
             console.warn(`Machine with MIGID ${migId} not found; could not assign student ${updatedRequest.studentId}`);
           }

@@ -41,7 +41,7 @@ async function loadRequestResourcesPage() {
 }
 
 function displayResourcesPage(student) {
-    console.log('Displaying resources page for student:', student);
+    // console.log('Displaying resources page for student:', student);
     
     // Check if student is verified
     const isVerified = student.teacher_verified && student.admin_verified;
@@ -192,13 +192,13 @@ function displayResourcesPage(student) {
 
 // Function to determine student verification status based on new schema
 function getStudentVerificationStatus(student) {
-    console.log('Student verification fields:', {
-        teacher_verified: student.teacher_verified,
-        admin_verified: student.admin_verified,
-        teacher_action: student.teacher_action,
-        admin_action: student.admin_action,
-        is_verified: student.is_verified
-    });
+    // console.log('Student verification fields:', {
+    //     teacher_verified: student.teacher_verified,
+    //     admin_verified: student.admin_verified,
+    //     teacher_action: student.teacher_action,
+    //     admin_action: student.admin_action,
+    //     is_verified: student.is_verified
+    // });
 
     // If both teacher and admin have verified
     if (student.teacher_verified && student.admin_verified) {

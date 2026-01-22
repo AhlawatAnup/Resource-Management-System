@@ -140,12 +140,12 @@ exports.submitResourceRequest = async (req, res) => {
     // Add the resource request ID to the student's resourceRequests array
     if (savedRequest) {
       await addResourceRequestToStudent(studentId, savedRequest._id);
-      console.log(`New resource request submitted by student ${studentId}:`, savedRequest._id);
+      // console.log(`New resource request submitted by student ${studentId}:`, savedRequest._id);
       // Send email to student after successful request
       const { sendResourceRequestSubmittedEmail } = require('../utils/emailService');
       try {
         await sendResourceRequestSubmittedEmail(student.email, student.name, savedRequest.title);
-        console.log(`Resource request email sent to ${student.email}`);
+        // console.log(`Resource request email sent to ${student.email}`);
       } catch (emailErr) {
         console.error('Error sending resource request email:', emailErr);
       }
@@ -207,7 +207,7 @@ exports.getStudentResourceRequests = async (req, res) => {
       .sort({ createdAt: -1 })
       .limit(50); // Limit to last 50 requests to avoid performance issues
 
-    console.log(`Retrieved ${resourceRequests.length} resource requests for student ${studentId}`);
+    // console.log(`Retrieved ${resourceRequests.length} resource requests for student ${studentId}`);
 
     return res.json(resourceRequests);
 
