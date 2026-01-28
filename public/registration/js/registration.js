@@ -47,23 +47,32 @@ async function loadTeachers() {
   }
 }
 
-loadTeachers();
+
 
 // Get the role from query parameters
 const role = getQueryParam("role");
 const studentFields = document.getElementById("studentFields");
 const teacherSelect = document.getElementById("assignedTeacher");
 const rollNumberInput = document.getElementById("rollNumber");
+const container = document.getElementById("pageContainer");
+
+if (!role) {
+  window.location.href = "/";
+}
 
 // Configure form based on role
 if (role === "student") {
   studentFields.style.display = "block";
   teacherSelect.required = true;
   rollNumberInput.required = true;
+  container.style.display = "flex";
+  loadTeachers();
 } else if (role === "teacher") {
   studentFields.style.display = "none";
+  container.style.display = "flex";
 } else {
   studentFields.style.display = "none";
+  window.location.replace("/");
 }
 
 // Handle form submission

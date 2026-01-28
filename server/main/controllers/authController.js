@@ -235,6 +235,33 @@ exports.register = async (req, res) => {
     return res.status(400).json({ error: "Invalid role" });
   } catch (err) {
     console.error(err);
+
+    // MongoDB duplicate key error
+    if (err.code === 11000) {
+      if (err.keyPattern?.rollNo) {
+        return res.status(409).json({
+          error: "Roll number already exists",
+        });
+      }
+
+      if (err.keyPattern?.email) {
+        return res.status(409).json({
+          error: "Email already registered",
+        });
+      }
+
+      return res.status(409).json({
+        error: "Duplicate value exists",
+      });
+    }
+
+    // Mongoose validation error
+    if (err.name === "ValidationError") {
+      return res.status(400).json({
+        error: err.message,
+      });
+    }
+
     res.status(500).json({ error: "Registration failed" });
   }
 };
