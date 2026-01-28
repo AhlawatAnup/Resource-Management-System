@@ -75,7 +75,7 @@ app.get("/logout", requireAuth, (req, res) => {
 });
 
 // Registration page (only accessible after email verification)
-app.get("/registration", preventAuth, requireRegistrationSession, (req, res) => {
+app.get("/registration", noCache, preventAuth, requireRegistrationSession, (req, res) => {
   res.sendFile(
     path.join(__dirname, "../../public/registration/registration.html")
   );

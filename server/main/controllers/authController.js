@@ -27,7 +27,7 @@ exports.sendOtp = async (req, res) => {
     const emailResult = await sendOTPEmail(email, otp, role);
     
     if (emailResult.success) {
-      // console.log(`📧 ${otp} OTP  email sent successfully to ${email} for ${role} registration `);
+      console.log(`📧 ${otp} OTP  email sent successfully to ${email} for ${role} registration `);
       res.json({ 
         message: "OTP sent to your email address",
         messageId: emailResult.messageId 
