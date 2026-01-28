@@ -1,5 +1,5 @@
 // Import only the functions we need from commons.js
-import { renderDashboardHeader, getInitials, getRandomNamedColor } from '../../Common/js/commons.js';
+import { renderDashboardHeader, getInitials, getRandomNamedColor } from '../../common/js/commons.js';
 
 // Data storage
 let currentData = [];

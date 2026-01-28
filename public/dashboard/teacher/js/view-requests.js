@@ -6,7 +6,7 @@ import {
   initializePurposePanel,
   createViewMoreButton,
   isValidUsername
-} from '../../Common/js/commons.js';
+} from '../../common/js/commons.js';
 
 let resourceRequests = [];
 let filteredRequests = [];
