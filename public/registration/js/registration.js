@@ -11,7 +11,7 @@ async function loadTeachers() {
     const res = await fetch("/auth/get-teachers");
     const data = await res.json();
 
-    console.log(data);
+    // console.log(data);
     assignedTeacherSelect.innerHTML =
       '<option value="">Select a Teacher</option>';
     
@@ -19,7 +19,7 @@ async function loadTeachers() {
       data.teachers.forEach((t) => {
         const option = document.createElement("option");
         option.value = t._id;
-        option.textContent = t.name || t.email;
+        option.textContent = t.name;
         assignedTeacherSelect.appendChild(option);
       });
     } else {
@@ -72,6 +72,13 @@ document
   .addEventListener("submit", async function (e) {
     e.preventDefault();
 
+    const submitBtn = document.querySelector(".submit-btn");
+    
+    // Disable button and show loading state
+    submitBtn.disabled = true;
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = "Signing up...";
+
     const formData = new FormData(this);
     const data = {};
 
@@ -83,17 +90,46 @@ document
 
     data.role = role || "general";
 
-    console.log("Registration data:", data);
+    // console.log("Registration data:", data);
     // return;
     let payload = {};
+
+    const name = document.getElementById("name").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+
+    if (!/^[A-Za-z\s]+$/.test(name)) {
+      alert("Name should only contain letters and spaces.");
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalText;
+      return;
+    }
+
+    if (!/^\d{10}$/.test(phone)) {
+      alert("Please enter a valid 10-digit phone number.");
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalText;
+      return;
+    }
+
     if (role === "student") {
       const selectedTeacher = document.getElementById("assignedTeacher").value;
       
       // Check if a teacher is selected
       if (!selectedTeacher) {
+        // Re-enable button on validation error
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
         alert("Please select a teacher to proceed with registration.");
         return;
       }
+      const rollNo = document.getElementById("rollNumber").value.trim();
+      if (!/^[A-Za-z0-9]+$/.test(rollNo)) {
+        alert("Roll number should only contain letters and numbers.");
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
+        return;
+      }
+
       
       payload = {
         ...payload,
@@ -101,12 +137,12 @@ document
         rollNo: document.getElementById("rollNumber").value,
         teacher_id: selectedTeacher,
         branch: document.getElementById("branch").value,
-        phone: document.getElementById("phone").value,
+        phone: phone,
       };
-    } else if (role === "teacher") {
+    } else if (role === "teacher") {``
       payload.name = document.getElementById("name").value;
       payload.branch = document.getElementById("branch").value;
-      payload.phone = document.getElementById("phone").value;
+      payload.phone = phone;
     }
 
     try {
@@ -121,10 +157,16 @@ document
         alert("✅ Registration successful! Login Again");
         window.location.href = "/dashboard"; // redirect to home or login
       } else {
+        // Re-enable button on error
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
         alert(data.error || "Registration failed");
       }
     } catch (err) {
       console.error(err);
+      // Re-enable button on error
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalText;
       alert("Something went wrong");
     }
   });

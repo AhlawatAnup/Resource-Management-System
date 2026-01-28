@@ -50,7 +50,8 @@ exports.submitResourceRequest = async (req, res) => {
       return res.status(401).json({ error: "Not authenticated" });
     }
 
-    const { title, purpose, expiryDate, cpuCores, cpuRam, gpuCount, gpuRam, studentId } = req.body;
+    // const { title, purpose, expiryDate, cpuCores, cpuRam, gpuRam, studentId } = req.body;
+  const { title, purpose, expiryDate, gpuRam, studentId, username } = req.body;
     
     // Security check: ensure the student can only submit requests for themselves
     if (req.session.user.id !== studentId) {
@@ -58,20 +59,21 @@ exports.submitResourceRequest = async (req, res) => {
     }
 
     // Validate required fields
-    if (!title || !purpose || !expiryDate || !cpuCores || !cpuRam || gpuCount === undefined || gpuRam === undefined || !studentId) {
+    if (!title || !purpose || !expiryDate || gpuRam === undefined || !studentId || !username) {
       return res.status(400).json({ 
         error: "Missing required fields",
-        required: ["title", "purpose", "expiryDate", "cpuCores", "cpuRam", "gpuCount", "gpuRam", "studentId"]
+        required: ["title", "purpose", "expiryDate", "gpuRam", "studentId", "username"]
       });
     }
-
-    // Validate data types and ranges
-    if (cpuCores < 1 || cpuRam < 1) {
-      return res.status(400).json({ error: "CPU cores and RAM must be at least 1" });
+    
+    if (!/^[A-Za-z0-9_-]+$/.test(username)) {
+      return res.status(400).json({ error: "Username can only contain letters, numbers, hyphens (-), and underscores (_), with no spaces or special characters" });
     }
 
-    if (gpuCount < 0 || gpuRam < 0) {
-      return res.status(400).json({ error: "GPU values cannot be negative" });
+    // Validate data types and ranges for gpuRam
+    const gpuRamNum = Number(gpuRam);
+    if (!Number.isFinite(gpuRamNum) || gpuRamNum < 0) {
+      return res.status(400).json({ error: "gpuRam must be a non-negative number" });
     }
 
     // Validate expiry date is in the future
@@ -98,11 +100,12 @@ exports.submitResourceRequest = async (req, res) => {
 
     // Check for existing pending request
     const existingPending = await ResourceRequest.findOne({
-  studentId,
-  teacher_action: true,
-  admin_action: false,
-  is_verified: false
-});
+      studentId,
+       $or: [
+        { teacher_action: false },                     // teacher pending
+        { teacher_action: true, teacher_verified: true, admin_action: false } // waiting for admin after teacher approved
+      ]
+    });
 
 
     if (existingPending) {
@@ -111,16 +114,24 @@ exports.submitResourceRequest = async (req, res) => {
       });
     }
 
+    // Check if requested username already exists in other resource requests
+    const usernameTrim = username ? String(username).trim() : '';
+    if (usernameTrim) {
+      const usernameExists = await ResourceRequest.findOne({ username: usernameTrim });
+      if (usernameExists) {
+        return res.status(400).json({ error: 'Username already exists' });
+      }
+    }
+
     // Create new resource request
     const resourceRequest = new ResourceRequest({
       studentId,
       title: title.trim(),
       purpose: purpose.trim(),
       expiryDate: expiry,
-      cpuCores: parseInt(cpuCores),
-      cpuRam: parseInt(cpuRam),
-      gpuCount: parseInt(gpuCount),
-      gpuRam: parseInt(gpuRam)
+      username: username ? String(username).trim() : undefined,
+      // gpuCount: parseInt(gpuCount),
+      gpuRam: parseInt(gpuRam, 10)
     });
 
     // Save to database
@@ -129,12 +140,12 @@ exports.submitResourceRequest = async (req, res) => {
     // Add the resource request ID to the student's resourceRequests array
     if (savedRequest) {
       await addResourceRequestToStudent(studentId, savedRequest._id);
-      console.log(`New resource request submitted by student ${studentId}:`, savedRequest._id);
+      // console.log(`New resource request submitted by student ${studentId}:`, savedRequest._id);
       // Send email to student after successful request
       const { sendResourceRequestSubmittedEmail } = require('../utils/emailService');
       try {
         await sendResourceRequestSubmittedEmail(student.email, student.name, savedRequest.title);
-        console.log(`Resource request email sent to ${student.email}`);
+        // console.log(`Resource request email sent to ${student.email}`);
       } catch (emailErr) {
         console.error('Error sending resource request email:', emailErr);
       }
@@ -196,7 +207,7 @@ exports.getStudentResourceRequests = async (req, res) => {
       .sort({ createdAt: -1 })
       .limit(50); // Limit to last 50 requests to avoid performance issues
 
-    console.log(`Retrieved ${resourceRequests.length} resource requests for student ${studentId}`);
+    // console.log(`Retrieved ${resourceRequests.length} resource requests for student ${studentId}`);
 
     return res.json(resourceRequests);
 

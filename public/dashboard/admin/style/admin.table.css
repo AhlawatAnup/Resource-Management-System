@@ -209,6 +209,35 @@ tbody td {
   transform: translateY(-1px);
 }
 
+.icon-btn.edit-btn {
+  background-color: #f59e0b;
+  color: white;
+}
+
+.icon-btn.edit-btn:hover {
+  background-color: #d97706;
+  transform: translateY(-1px);
+}
+
+/* Fallback for when icons don't load */
+.icon-btn.approve-btn:not(:has(i))::after {
+  content: "✓";
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.icon-btn.decline-btn:not(:has(i))::after {
+  content: "✕";
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.icon-btn.edit-btn:not(:has(i))::after {
+  content: "✎";
+  font-size: 14px;
+  font-weight: bold;
+}
+
 /* Responsive Table */
 @media (max-width: 768px) {
   .table-container {
@@ -391,16 +420,11 @@ thead th.sort-desc::after {
   color: #374151;
 }
 
-.expiring-soon {
-  display: block;
-  color: #f59e0b;
-  font-size: 10px;
-  font-weight: 600;
-  margin-top: 2px;
-}
 
 .field-label {
   color: #6b7280;
   font-size: 11px;
   font-weight: 500;
 }
+
+/* View More Button styling moved to common/style/purpose-panel.css */

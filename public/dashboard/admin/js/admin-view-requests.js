@@ -1,5 +1,14 @@
-// Import common functions (assuming similar structure as teacher)
-import { getInitials, getRandomNamedColor } from '../../Common/js/commons.js';
+// Import common functions
+import { 
+  getInitials, 
+  getRandomNamedColor, 
+  formatDate,
+  showPurposePanel, 
+  closePurposePanel, 
+  initializePurposePanel,
+  createViewMoreButton,
+  isValidUsername
+} from '../../Common/js/commons.js';
 
 let resourceRequests = [];
 let filteredRequests = [];
@@ -19,12 +28,12 @@ async function loadResourceRequests() {
     }
 
     const data = await response.json();
-    console.log("Admin Resource Requests Data:", data);
+    // console.log("Admin Resource Requests Data:", data);
 
     resourceRequests = data.requests || [];
     filteredRequests = [...resourceRequests];
 
-    console.log(`Found ${resourceRequests.length} resource requests`);
+    // console.log(`Found ${resourceRequests.length} resource requests`);
     renderResourceRequests(filteredRequests);
 
   } catch (error) {
@@ -58,37 +67,37 @@ function renderResourceRequests(requests) {
           <div class="avatar ${getRandomNamedColor()}">${getInitials(request.studentInfo.name)}</div>
           <div class="contact-details">
             <h4>${request.studentInfo.name}</h4>
-            <div class="contact-time">${request.studentInfo.rollNo} - ${request.studentInfo.branch}</div>
+            <div class="contact-time">${request.studentInfo.rollNo}</div>
+            <div class="contact-time">${request.studentInfo.branch}</div>
           </div>
         </div>
       </td>
       <td>
         <div class="teacher-info">
           <h4>${request.teacherInfo.name}</h4>
-          <div class="teacher-subtitle">Supervising Teacher</div>
         </div>
       </td>
       <td>
         <div class="request-title">
-          <h4>${request.title}</h4>
+          <p>${request.title}<p>
           <div class="request-date"><span class="field-label">Created:</span> ${formatDate(request.createdAt)}</div>
         </div>
       </td>
       <td>
         <div class="purpose-text">
-          ${request.purpose.length > 50 ? request.purpose.substring(0, 50) + '...' : request.purpose}
+          <span>${request.purpose.length > 20 ? request.purpose.substring(0, 20) + '...' : request.purpose}</span>
+          ${createViewMoreButton(request._id, request.purpose)}
         </div>
       </td>
       <td>
         <div class="resource-specs">
-          <div><span class="field-label">CPU:</span> ${request.cpuCores} cores, ${request.cpuRam}GB RAM</div>
-          <div><span class="field-label">GPU:</span> ${request.gpuCount} × ${request.gpuRam}GB</div>
+          <!-- <div><span class="field-label">CPU:</span> ${request.cpuCores} cores, ${request.cpuRam}GB RAM</div> -->
+          <div><span class="field-label">GPU:</span> ${request.gpuRam}GB</div>
         </div>
       </td>
       <td>
         <div class="expiry-date">
           ${formatDate(request.expiryDate)}
-          ${isExpiringSoon(request.expiryDate) ? '<span class="expiring-soon">⚠️ Soon</span>' : ''}
         </div>
       </td>
       <td>
@@ -107,7 +116,7 @@ function renderResourceRequests(requests) {
 
 // Get request status information
 function getRequestStatus(request) {
-  if (request.teacher_verified && request.admin_verified) {
+  if (request.admin_action && request.admin_verified) {
     return { text: "Approved", class: "verified" };
   } else if (request.admin_action && !request.admin_verified) {
     return { text: "Declined by Admin", class: "declined" };
@@ -133,36 +142,15 @@ function getActionButtons(request) {
   // Admin can approve/decline/edit
   return `
     <button class="icon-btn approve-btn" title="Approve Request" data-request-id="${request._id}" data-action="approve">
-      <i class="fa-solid fa-check"></i>
+      <i class="fas fa-check"></i>
     </button>
     <button class="icon-btn decline-btn" title="Decline Request" data-request-id="${request._id}" data-action="decline">
-      <i class="fa-solid fa-times"></i>
+      <i class="fas fa-times"></i>
     </button>
     <button class="icon-btn edit-btn" title="Edit Request" data-request-id="${request._id}" data-action="edit">
-      <i class="fa-solid fa-pen-to-square"></i>
+      <i class="fas fa-edit"></i>
     </button>
   `;
-}
-
-// Format date for display
-function formatDate(dateString) {
-  if (!dateString) return 'N/A';
-  const date = new Date(dateString);
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  });
-}
-
-// Check if date is expiring soon (within 7 days)
-function isExpiringSoon(dateString) {
-  if (!dateString) return false;
-  const expiryDate = new Date(dateString);
-  const today = new Date();
-  const diffTime = expiryDate - today;
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  return diffDays <= 7 && diffDays > 0;
 }
 
 // Update resource request verification status
@@ -199,8 +187,8 @@ function showVerificationModal(requestId) {
         <p><strong>Student:</strong> ${request.studentInfo.name}</p>
         <p><strong>Roll No:</strong> ${request.studentInfo.rollNo}</p>
         <p><strong>Teacher:</strong> ${request.teacherInfo.name}</p>
-        <p><strong>CPU:</strong> ${request.cpuCores} cores, ${request.cpuRam}GB RAM</p>
-        <p><strong>GPU:</strong> ${request.gpuCount} × ${request.gpuRam}GB</p>
+        <!-- <p><strong>CPU:</strong> ${request.cpuCores} cores, ${request.cpuRam}GB RAM</p> -->
+        <p><strong>GPU:</strong> ${request.gpuRam}GB</p>
         <p><strong>Purpose:</strong> ${request.purpose.length > 80 ? request.purpose.substring(0, 80) + '...' : request.purpose}</p>
       </div>
     </div>
@@ -210,11 +198,56 @@ function showVerificationModal(requestId) {
   modal.setAttribute('data-request-id', requestId);
 
   // Clear form fields
-  document.getElementById('vmUsername').value = '';
-  document.getElementById('vmPassword').value = '';
+  const vmUsernameEl = document.getElementById('vmUsername');
+  const vmPasswordEl = document.getElementById('vmPassword');
+
+  // Username is always required and provided by student, so prefill and make read-only
+  if (vmUsernameEl) {
+    vmUsernameEl.value = request.username;
+    vmUsernameEl.readOnly = true;
+  }
+
+  if (vmPasswordEl) vmPasswordEl.value = '';
+  // Populate available machines into the MIGID select
+  populateAvailableMachinesSelect();
 
   // Show modal
   modal.style.display = 'block';
+}
+
+// Fetch machines and populate the MIGID select with unassigned machines
+async function populateAvailableMachinesSelect() {
+  const select = document.getElementById('vmMigId');
+  if (!select) return;
+
+  // Show loading option
+  select.innerHTML = '<option value="" disabled selected>Loading available machines...</option>';
+
+  try {
+    const resp = await fetch('/dashboard/admin/machines', { credentials: 'include' });
+    if (!resp.ok) throw new Error('Failed to load machines');
+    const json = await resp.json();
+    const machines = json.machines || [];
+
+    // Filter unassigned machines (isAssigned false or assignedStudent null)
+    const freeMachines = machines.filter(m => {
+      // backend normalizes assignedStudent to null when unassigned
+      const isAssigned = (typeof m.isAssigned === 'boolean') ? m.isAssigned : !!m.assignedStudent;
+      return !isAssigned;
+    });
+
+    if (!freeMachines.length) {
+      select.innerHTML = '<option value="" disabled selected>No available machines</option>';
+      return;
+    }
+
+    // Build options
+    select.innerHTML = '<option value="" disabled selected>Select a machine</option>' +
+      freeMachines.map(m => `<option value="${m.MIGID}">${m.MIGID} (${m.gpuRam}GB GPU)</option>`).join('');
+  } catch (err) {
+    console.error('Error loading machines for MIGID select', err);
+    select.innerHTML = '<option value="" disabled selected>Error loading machines</option>';
+  }
 }
 
 // Close verification modal
@@ -226,18 +259,18 @@ function closeVerificationModal() {
 // Submit verification with credentials
 async function submitVerification(requestId, isVerified, credentials = null) {
   try {
-    console.log('Submitting verification:', {
-      requestId,
-      isVerified,
-      credentials
-    });
+    // console.log('Submitting verification:', {
+    //   requestId,
+    //   isVerified,
+    //   credentials
+    // });
 
     const requestBody = { 
       is_verified: isVerified,
       vmCredentials: credentials
     };
     
-    console.log('Request body:', JSON.stringify(requestBody, null, 2));
+    // console.log('Request body:', JSON.stringify(requestBody, null, 2));
 
     const response = await fetch(`/dashboard/admin/verify_request/${requestId}`, {
       method: 'PUT',
@@ -265,7 +298,7 @@ async function submitVerification(requestId, isVerified, credentials = null) {
     }
 
     const result = await response.json();
-    console.log('Request verification updated:', result);
+    // console.log('Request verification updated:', result);
 
     // Update the local data
     const requestIndex = resourceRequests.findIndex(r => r._id === requestId);
@@ -274,6 +307,9 @@ async function submitVerification(requestId, isVerified, credentials = null) {
       resourceRequests[requestIndex].admin_action = true;
       if (isVerified) {
         resourceRequests[requestIndex].is_verified = true;
+        // Set teacher fields when admin approves (admin approval overrides teacher verification)
+        resourceRequests[requestIndex].teacher_verified = true;
+        resourceRequests[requestIndex].teacher_action = true;
         if (credentials) {
           resourceRequests[requestIndex].vmCredentials = credentials;
         }
@@ -345,9 +381,57 @@ function showNotification(message, type) {
   }, 3000);
 }
 
+// Generate a secure random password using Web Crypto API
+function generateSecurePassword(length = 12) {
+  try {
+    const upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const lower = 'abcdefghijklmnopqrstuvwxyz';
+    const digits = '0123456789';
+    const symbols = '@#$&';
+    const all = upper + lower + digits + symbols;
+
+    // Helper to get a secure random integer in [0, max)
+    const randInt = (max) => {
+      const uint32 = window.crypto.getRandomValues(new Uint32Array(1))[0];
+      return uint32 % max;
+    };
+
+    // Ensure password has at least one char from each required set
+    let passwordChars = [];
+    passwordChars.push(upper[randInt(upper.length)]);
+    passwordChars.push(lower[randInt(lower.length)]);
+    passwordChars.push(digits[randInt(digits.length)]);
+    passwordChars.push(symbols[randInt(symbols.length)]);
+
+    // Fill the remaining length
+    for (let i = passwordChars.length; i < length; i++) {
+      passwordChars.push(all[randInt(all.length)]);
+    }
+
+    // Shuffle using Fisher-Yates with secure randomness
+    for (let i = passwordChars.length - 1; i > 0; i--) {
+      const j = randInt(i + 1);
+      const tmp = passwordChars[i];
+      passwordChars[i] = passwordChars[j];
+      passwordChars[j] = tmp;
+    }
+
+    return passwordChars.join('');
+  } catch (err) {
+    // Fallback to simple random if crypto isn't available
+    const fallbackChars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let res = '';
+    for (let i = 0; i < length; i++) {
+      res += fallbackChars[Math.floor(Math.random() * fallbackChars.length)];
+    }
+    return res;
+  }
+}
+
 // Event listeners
 document.addEventListener('DOMContentLoaded', function() {
-  // Load resource requests when page loads
+  // Initialize purpose panel and load resource requests
+  initializePurposePanel();
   loadResourceRequests();
 
   // Search functionality
@@ -373,10 +457,56 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 
-  // Modal close button
-  document.getElementById('closeEditModal').onclick = function() {
-    document.getElementById('editRequestModal').style.display = 'none';
-  };
+  // Copy button delegation inside modals (copy username/password/migId)
+  document.body.addEventListener('click', (e) => {
+    const btn = e.target.closest('.copy-btn');
+    if (!btn) return;
+    const targetId = btn.getAttribute('data-target');
+    if (!targetId) return;
+
+    const el = document.getElementById(targetId);
+    if (!el) {
+      showNotification('Field not found to copy', 'error');
+      return;
+    }
+
+    // Get value for select or input
+    const value = (el.tagName.toLowerCase() === 'select') ? (el.value || '') : (el.value || '');
+
+    if (!value) {
+      showNotification('Nothing to copy', 'error');
+      return;
+    }
+
+    // Use clipboard API
+    navigator.clipboard.writeText(value).then(() => {
+      showNotification('Copied to clipboard', 'success');
+    }).catch(err => {
+      console.error('Clipboard copy failed', err);
+      showNotification('Failed to copy', 'error');
+    });
+  });
+
+  // Generate VM password button handler
+  document.body.addEventListener('click', (e) => {
+    const genBtn = e.target.closest('#generateVmPasswordBtn');
+    if (!genBtn) return;
+
+    // Generate a secure random password and set it to the vmPassword field
+    const pwd = generateSecurePassword(12);
+    const pwdEl = document.getElementById('vmPassword');
+    if (pwdEl) {
+      pwdEl.value = pwd;
+      // Attempt to copy to clipboard and notify user
+      navigator.clipboard.writeText(pwd).then(() => {
+        showNotification('Generated password copied to clipboard', 'success');
+      }).catch(() => {
+        showNotification('Generated password set (copy failed)', 'success');
+      });
+    } else {
+      showNotification('Password field not found', 'error');
+    }
+  });
 
   // Modal form submit
   document.getElementById('editRequestForm').onsubmit = async function(e) {
@@ -426,7 +556,7 @@ document.addEventListener('DOMContentLoaded', function() {
         migId
       };
       
-      console.log('Form submission - credentials:', credentials);
+      // console.log('Form submission - credentials:', credentials);
       
       try {
         await submitVerification(requestId, true, credentials);
@@ -446,23 +576,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 
-  // Navigation functionality
-  const dashboardNav = document.getElementById('dashboard-nav');
-  const viewRequestsNav = document.getElementById('view-requests-nav');
-
-  if (dashboardNav) {
-    dashboardNav.addEventListener('click', function(e) {
-      e.preventDefault();
-      window.location.href = '/dashboard/admin/admin.dashboard.html';
-    });
-  }
-
-  if (viewRequestsNav) {
-    viewRequestsNav.addEventListener('click', function(e) {
-      e.preventDefault();
-      // Already on this page
-    });
-  }
 });
 
 // Show edit modal and populate fields
@@ -473,10 +586,11 @@ function showEditModal(requestId) {
   document.getElementById('editTitle').value = req.title;
   document.getElementById('editPurpose').value = req.purpose;
   document.getElementById('editExpiryDate').value = req.expiryDate ? req.expiryDate.split('T')[0] : '';
-  document.getElementById('editCpuCores').value = req.cpuCores;
-  document.getElementById('editCpuRam').value = req.cpuRam;
-  document.getElementById('editGpuCount').value = req.gpuCount;
+  // document.getElementById('editCpuCores').value = req.cpuCores;
+  // document.getElementById('editCpuRam').value = req.cpuRam;
+  // document.getElementById('editGpuCount').value = req.gpuCount;
   document.getElementById('editGpuRam').value = req.gpuRam;
+  document.getElementById('editUsername').value=req.username;
   document.getElementById('editRequestModal').style.display = 'block';
 }
 
@@ -487,11 +601,31 @@ async function submitEditRequest() {
     title: document.getElementById('editTitle').value,
     purpose: document.getElementById('editPurpose').value,
     expiryDate: document.getElementById('editExpiryDate').value,
-    cpuCores: Number(document.getElementById('editCpuCores').value),
-    cpuRam: Number(document.getElementById('editCpuRam').value),
-    gpuCount: Number(document.getElementById('editGpuCount').value),
-    gpuRam: Number(document.getElementById('editGpuRam').value)
+    // cpuCores: Number(document.getElementById('editCpuCores').value),
+    // cpuRam: Number(document.getElementById('editCpuRam').value),
+    // gpuCount: Number(document.getElementById('editGpuCount').value),
+    gpuRam: Number(document.getElementById('editGpuRam').value),
+    username: document.getElementById('editUsername').value
   };
+  const usernameErrorDiv = document.getElementById('edit-username-error');
+  if (!isValidUsername(payload.username)) {
+    if (usernameErrorDiv) {
+      usernameErrorDiv.textContent = 'Username can only contain letters, numbers, hyphens (-), and underscores (_), with no spaces or special characters';
+    }
+    return;
+  } else if (usernameErrorDiv) {
+    usernameErrorDiv.textContent = '';
+  }
+  // Title max length check
+  const titleErrorDiv = document.getElementById('edit-title-error');
+  if (payload.title.length > 50) {
+    if (titleErrorDiv) {
+      titleErrorDiv.textContent = 'Title must not exceed 50 characters';
+    }
+    return;
+  } else if (titleErrorDiv) {
+    titleErrorDiv.textContent = '';
+  }
   try {
     // Use admin endpoint for editing
     const response = await fetch(`/dashboard/admin/edit_request/${requestId}`, {
@@ -499,7 +633,7 @@ async function submitEditRequest() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
-    console.log("Status:", response.status);
+    // console.log("Status:", response.status);
     let result;
     try {
       result = await response.json();
@@ -507,7 +641,7 @@ async function submitEditRequest() {
       console.error("Failed to parse JSON response:", jsonErr);
       throw new Error('Invalid server response');
     }
-    console.log("Response:", result);
+    // console.log("Response:", result);
     if (!response.ok || !result.success) {
       const errorMsg = result && result.error ? result.error : 'Failed to edit request';
       throw new Error(errorMsg);
@@ -533,5 +667,11 @@ async function submitEditRequest() {
   }
 }
 
+// Close edit modal function
+function closeEditModal() {
+  document.getElementById('editRequestModal').style.display = 'none';
+}
+
 // Make functions globally available for HTML onclick handlers
 window.closeVerificationModal = closeVerificationModal;
+window.closeEditModal = closeEditModal;

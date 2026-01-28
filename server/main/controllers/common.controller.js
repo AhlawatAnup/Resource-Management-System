@@ -1,7 +1,9 @@
+
 const Student = require("../database/studentModel");
 const Teacher = require("../database/teacherModel");
 const Admin = require("../database/adminModel");
 const ResourceRequest = require("../database/resourceRequestModel");
+const Machine = require('../database/machineModel');
 const path = require("path");
 const publicPath = path.join(__dirname, "../../../public");
 
@@ -36,7 +38,7 @@ exports.getCurrentUserId = (req, res) => {
 
 exports.student_data = async (req, res) => {
   const { stu_id } = req.params;
-  console.log("requested Student data", stu_id);
+  // console.log("requested Student data", stu_id);
 
   try {
     const student = await Student.findOne({ _id: stu_id })
@@ -45,7 +47,7 @@ exports.student_data = async (req, res) => {
     if (!student) {
       return res.status(404).json({ error: "Student not found" });
     }
-    console.log(student);
+    // console.log(student);
     return res.json({ ...student._doc });
   } catch (err) {
     console.error(err);
@@ -60,7 +62,7 @@ exports.updateStudentVerification = async (req, res) => {
 
   const studentId = stu_id || student_id; // Use whichever parameter is provided
 
-  console.log(`${userRole} updating student verification`, studentId, "to", is_verified);
+  // console.log(`${userRole} updating student verification`, studentId, "to", is_verified);
 
   try {
     const student = await Student.findById(studentId);
@@ -106,30 +108,35 @@ exports.updateStudentVerification = async (req, res) => {
       { new: true }
     );
 
-    // Send email notification after successful update
+    // Send email notification after successful update (in background)
     if (updatedStudent) {
       const emailService = require("../utils/emailService.js");
-      let emailResult = null;
+      
+      // Send emails asynchronously without waiting
       if (userRole === "teacher") {
         if (is_verified) {
-          emailResult = await emailService.sendStudentProfileVerifiedByTeacherEmail(updatedStudent.email, updatedStudent.name, req.session.user.name);
-          console.log("Email sent for student profile verified by teacher:", emailResult);
+          emailService.sendStudentProfileVerifiedByTeacherEmail(updatedStudent.email, updatedStudent.name, req.session.user.name)
+            .then(result => console.log("Email sent for student profile verified by teacher:", result))
+            .catch(error => console.error("Error sending verification email:", error));
         } else {
-          emailResult = await emailService.sendStudentProfileRejectedByTeacherEmail(updatedStudent.email, updatedStudent.name, req.session.user.name);
-          console.log("Email sent for student profile rejected by teacher:", emailResult);
+          emailService.sendStudentProfileRejectedByTeacherEmail(updatedStudent.email, updatedStudent.name, req.session.user.name)
+            .then(result => console.log("Email sent for student profile rejected by teacher:", result))
+            .catch(error => console.error("Error sending rejection email:", error));
         }
       } else if (userRole === "admin") {
         if (is_verified) {
-          emailResult = await emailService.sendStudentProfileVerifiedByAdminEmail(updatedStudent.email, updatedStudent.name);
-          console.log("Email sent for student profile verified by admin:", emailResult);
+          emailService.sendStudentProfileVerifiedByAdminEmail(updatedStudent.email, updatedStudent.name)
+            .then(result => console.log("Email sent for student profile verified by admin:", result))
+            .catch(error => console.error("Error sending verification email:", error));
         } else {
-          emailResult = await emailService.sendStudentProfileRejectedByAdminEmail(updatedStudent.email, updatedStudent.name);
-          console.log("Email sent for student profile rejected by admin:", emailResult);
+          emailService.sendStudentProfileRejectedByAdminEmail(updatedStudent.email, updatedStudent.name)
+            .then(result => console.log("Email sent for student profile rejected by admin:", result))
+            .catch(error => console.error("Error sending rejection email:", error));
         }
       }
     }
 
-    console.log(`Student verification updated by ${userRole}:`, updatedStudent);
+    // console.log(`Student verification updated by ${userRole}:`, updatedStudent);
     return res.json({
       message: "Student verification status updated successfully",
       student: { ...updatedStudent._doc }
@@ -142,14 +149,14 @@ exports.updateStudentVerification = async (req, res) => {
 
 exports.teacher_data = async (req, res) => {
   const { teacher_id } = req.params;
-  console.log("requested Teacher data", teacher_id);
+  // console.log("requested Teacher data", teacher_id);
 
   try {
     const teacher = await Teacher.findOne({ _id: teacher_id });
     if (!teacher) {
       return res.status(404).json({ error: "Teacher not found" });
     }
-    console.log(teacher);
+    // console.log(teacher);
     return res.json({ ...teacher._doc });
   } catch (err) {
     console.error(err);
@@ -163,11 +170,11 @@ exports.updateResourceRequestVerification = async (req, res) => {
   const userRole = req.session.user?.role;
   const userId = req.session.user?.id;
 
-  console.log(`${userRole} ${userId} updating resource request verification`, request_id, "to", is_verified);
+  // console.log(`${userRole} ${userId} updating resource request verification`, request_id, "to", is_verified);
 
   // Validate request ID format
   if (!request_id || !request_id.match(/^[0-9a-fA-F]{24}$/)) {
-    console.log("Invalid request ID format:", request_id);
+    // console.log("Invalid request ID format:", request_id);
     return res.status(400).json({ error: "Invalid request ID format" });
   }
 
@@ -197,23 +204,18 @@ exports.updateResourceRequestVerification = async (req, res) => {
     } else if (userRole === "admin") {
       // Admin verification logic
       if (is_verified) {
-        // For approvals, VM credentials are required
-        if (!vmCredentials) {
-          return res.status(400).json({ error: "VM credentials are required when approving a request" });
+        // For approvals, VM credentials must include password/ip/migId
+        if (!vmCredentials || !vmCredentials.password || !vmCredentials.ip || !vmCredentials.migId) {
+          return res.status(400).json({ error: "Password, IP, and MIG ID are required for VM credentials" });
         }
 
-        // Validate VM credentials
-        if (!vmCredentials.username || !vmCredentials.password || !vmCredentials.ip || !vmCredentials.migId) {
-          return res.status(400).json({ error: "Username, password, IP, and MIG ID are required for VM credentials" });
-        }
-
-        const username = vmCredentials.username.trim();
+        // const username = vmCredentials.username.trim();
         const password = vmCredentials.password.trim();
         const ip = vmCredentials.ip.trim();
         const migId = vmCredentials.migId.trim();
-        if (username.length < 3) {
-          return res.status(400).json({ error: "Username must be at least 3 characters long" });
-        }
+        // if (username.length < 3) {
+        //   return res.status(400).json({ error: "Username must be at least 3 characters long" });
+        // }
         if (password.length < 6) {
           return res.status(400).json({ error: "Password must be at least 6 characters long" });
         }
@@ -232,7 +234,7 @@ exports.updateResourceRequestVerification = async (req, res) => {
           admin_action: true,
           is_verified: true,
           vmCredentials: {
-            username,
+            // username,
             password,
             ip,
             migId
@@ -258,32 +260,60 @@ exports.updateResourceRequestVerification = async (req, res) => {
       { new: true }
     );
 
-    console.log(`Resource request verification updated by ${userRole}:`, updatedRequest);
+    // console.log(`Resource request verification updated by ${userRole}:`, updatedRequest);
 
-    // Only send email if update was successful
+    // Only send email if update was successful (in background)
     if (updatedRequest) {
+      // If admin approved and vmCredentials.migId is present, assign the student to the machine
+      if (userRole === "admin" && updatedRequest.is_verified && updatedRequest.vmCredentials && updatedRequest.vmCredentials.migId) {
+        try {
+          // Find machine by MIGID and set assigned student
+          const migId = updatedRequest.vmCredentials.migId;
+          const machine = await Machine.findOneAndUpdate(
+            { MIGID: migId },
+            { $set: { assignedStudent: { studentId: updatedRequest.studentId }, isAssigned: true } },
+            { new: true }
+          );
+          if (machine) {
+            // console.log(`Assigned student ${updatedRequest.studentId} to machine ${migId}`);
+          } else {
+            console.warn(`Machine with MIGID ${migId} not found; could not assign student ${updatedRequest.studentId}`);
+          }
+        } catch (machineErr) {
+          console.error('Error assigning student to machine:', machineErr);
+          // Do not fail the request update if machine update fails
+        }
+      }
+
       const student = await Student.findById(updatedRequest.studentId);
       const emailService = require("../utils/emailService.js");
-      let emailResult;
+      
+      // Send emails asynchronously without waiting
       if (userRole === "teacher") {
         const teacher = await require('../database/teacherModel').findById(userId);
         if (is_verified) {
           // Approved by teacher
-          emailResult = await emailService.sendResourceRequestVerifiedByTeacherEmail(student.email, student.name, updatedRequest.title, teacher.name);
+          emailService.sendResourceRequestVerifiedByTeacherEmail(student.email, student.name, updatedRequest.title, teacher.name)
+            .then(result => console.log("Teacher resource request verification email sent:", result))
+            .catch(error => console.error("Error sending teacher verification email:", error));
         } else {
           // Rejected by teacher
-          emailResult = await emailService.sendResourceRequestRejectedByTeacherEmail(student.email, student.name, updatedRequest.title, teacher.name);
+          emailService.sendResourceRequestRejectedByTeacherEmail(student.email, student.name, updatedRequest.title, teacher.name)
+            .then(result => console.log("Teacher resource request rejection email sent:", result))
+            .catch(error => console.error("Error sending teacher rejection email:", error));
         }
-        console.log("Teacher resource request email sent:", emailResult);
       } else if (userRole === "admin") {
         if (is_verified) {
           // Approved by admin
-          emailResult = await emailService.sendResourceRequestVerifiedByAdminEmail(student.email, student.name, updatedRequest.title, updatedRequest.vmCredentials);
+          emailService.sendResourceRequestVerifiedByAdminEmail(student.email, student.name, updatedRequest.title, updatedRequest.vmCredentials)
+            .then(result => console.log("Admin resource request verification email sent:", result))
+            .catch(error => console.error("Error sending admin verification email:", error));
         } else {
           // Rejected by admin
-          emailResult = await emailService.sendResourceRequestRejectedByAdminEmail(student.email, student.name, updatedRequest.title);
+          emailService.sendResourceRequestRejectedByAdminEmail(student.email, student.name, updatedRequest.title)
+            .then(result => console.log("Admin resource request rejection email sent:", result))
+            .catch(error => console.error("Error sending admin rejection email:", error));
         }
-        console.log("Admin resource request email sent:", emailResult);
       }
     }
 
@@ -293,7 +323,9 @@ exports.updateResourceRequestVerification = async (req, res) => {
     });
   } catch (err) {
     console.error("Error updating resource request verification:", err);
-    return res.status(500).json({ error: "Failed to update resource request verification" });
+    // Return the real error message to help the frontend diagnose (trim long stack if necessary)
+    const message = err && err.message ? err.message : 'Failed to update resource request verification';
+    return res.status(500).json({ error: message });
   }
 };
 
@@ -306,12 +338,15 @@ exports.editResourceRequest = async (req, res) => {
   const requestId = req.params.request_id;
   const updateFields = req.body;
   // Only allow certain fields to be updated
-  const allowedFields = ["title", "purpose", "expiryDate", "cpuCores", "cpuRam", "gpuCount", "gpuRam"];
+  const allowedFields = ["title", "purpose", "expiryDate", "cpuCores", "cpuRam", "gpuRam", "username"];
   const updates = {};
   for (const key of allowedFields) {
     if (updateFields[key] !== undefined) {
       updates[key] = updateFields[key];
     }
+  }
+  if (updates.username !== undefined && !/^[A-Za-z0-9_-]+$/.test(updates.username)) {
+    return res.status(400).json({ error: "Username can only contain letters, numbers, hyphens (-), and underscores (_), with no spaces or special characters" });
   }
   updates.updatedAt = new Date();
   try {
@@ -323,5 +358,22 @@ exports.editResourceRequest = async (req, res) => {
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "Failed to update resource request", details: err.message });
+  }
+};
+
+// Delete student and corresponding resource requests (for admin/teacher)
+exports.deleteStudentAndResources = async (req, res) => {
+  const { studentId } = req.params;
+  try {
+    const student = await Student.findById(studentId);
+    if (!student) {
+      return res.status(404).json({ message: "Student not found." });
+    }
+    // Cascade delete handled by studentModel pre middleware
+    const result = await Student.findOneAndDelete({ _id: studentId });
+    res.json({ message: "Student and corresponding resource requests deleted successfully.", student: result });
+  } catch (error) {
+    console.error("Error deleting student:", error);
+    res.status(500).json({ message: "Error deleting student.", error: error.message || error });
   }
 };

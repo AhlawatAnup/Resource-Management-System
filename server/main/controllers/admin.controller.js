@@ -1,7 +1,9 @@
 const Teacher = require("../database/teacherModel");
 const Student = require("../database/studentModel");
 const Admin = require("../database/adminModel");
+const Machine = require('../database/machineModel');
 const ResourceRequest = require("../database/resourceRequestModel");
+const bcrypt = require('bcrypt');
 
 exports.admin_dashboard_data = async (req, res) => {
   try {
@@ -61,7 +63,7 @@ exports.updateTeacherVerification = async (req, res) => {
   const { teacher_id } = req.params;
   const { is_verified } = req.body;
 
-  console.log("Updating teacher verification", teacher_id, "to", is_verified);
+  // console.log("Updating teacher verification", teacher_id, "to", is_verified);
 
   try {
     const teacher = await Teacher.findByIdAndUpdate(
@@ -80,17 +82,20 @@ exports.updateTeacherVerification = async (req, res) => {
     // Email notification for teacher profile verification/rejection
     if (teacher) {
       const emailService = require("../utils/emailService.js");
-      let emailResult = null;
       if (is_verified) {
-        emailResult = await emailService.sendTeacherProfileVerifiedByAdminEmail(teacher.email, teacher.name);
-        console.log("Email sent for teacher profile verified by admin:", emailResult);
+        // NON-BLOCKING 
+        emailService.sendTeacherProfileVerifiedByAdminEmail(teacher.email, teacher.name)
+          .then(result => console.log("Email sent for teacher profile verified by admin:", result))
+          .catch(error => console.error("Error sending verification email:", error));
       } else {
-        emailResult = await emailService.sendTeacherProfileRejectedByAdminEmail(teacher.email, teacher.name);
-        console.log("Email sent for teacher profile rejected by admin:", emailResult);
+        // NON-BLOCKING 
+        emailService.sendTeacherProfileRejectedByAdminEmail(teacher.email, teacher.name)
+          .then(result => console.log("Email sent for teacher profile rejected by admin:", result))
+          .catch(error => console.error("Error sending rejection email:", error));
       }
     }
 
-    console.log("Teacher verification updated:", teacher);
+    // console.log("Teacher verification updated:", teacher);
     return res.json({
       message: "Teacher verification status updated successfully",
       teacher: { ...teacher._doc }
@@ -168,7 +173,7 @@ exports.getRejectedStudents = async (req, res) => {
 exports.getAllResourceRequests = async (req, res) => {
   const role = req.session.user.role;
   const uid = req.session.user.id;
-  console.log("Admin requested all resource requests", uid);
+  // console.log("Admin requested all resource requests", uid);
 
   if (role !== "admin") {
     return res.status(403).json({ error: "Access denied. Admin role required." });
@@ -187,7 +192,7 @@ exports.getAllResourceRequests = async (req, res) => {
       })
       .sort({ createdAt: -1 }); // Most recent first
 
-    console.log(`Found ${resourceRequests.length} total resource requests for admin`);
+    // console.log(`Found ${resourceRequests.length} total resource requests for admin`);
 
     // Format the data to include teacher info in the response
     const formattedRequests = resourceRequests.map(request => ({
@@ -213,5 +218,225 @@ exports.getAllResourceRequests = async (req, res) => {
   } catch (err) {
     console.error("Error fetching all resource requests:", err);
     return res.status(500).json({ error: "Failed to fetch resource requests" });
+  }
+};
+
+// Get admin username, name, and email
+exports.getAdminDetails = async (req, res) => {
+  if (!req.session.user || req.session.user.role !== "admin") {
+    return res.status(401).json({ error: "Not authenticated as admin" });
+  }
+  try {
+    const admin = await Admin.findById(req.session.user.id).select("username name email");
+    if (!admin) {
+      return res.status(404).json({ error: "Admin not found" });
+    }
+    return res.json(admin);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Failed to fetch admin details" });
+  }
+};
+
+// Change admin password
+exports.ChangeAdminPassword = async (req, res) => {
+  if (!req.session.user || req.session.user.role !== "admin") {
+    return res.status(401).json({ error: "Not authenticated as admin" });
+  }
+  const { newPassword } = req.body;
+  if (!newPassword || newPassword.length < 6) {
+    return res.status(400).json({ error: "Password must be at least 6 characters." });
+  }
+  try {
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const admin = await Admin.findByIdAndUpdate(
+      req.session.user.id,
+      { password: hashedPassword },
+      { new: true }
+    ).select("username name email");
+    if (!admin) {
+      return res.status(404).json({ error: "Admin not found" });
+    }
+    return res.json({ success: true, message: "Password updated successfully." });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Failed to update password." });
+  }
+};
+
+// Update admin username and/or email
+exports.UpdateAdminProfile = async (req, res) => {
+  if (!req.session.user || req.session.user.role !== "admin") {
+    return res.status(401).json({ error: "Not authenticated as admin" });
+  }
+
+  const { newEmail, newUsername } = req.body;
+
+  if (!newEmail && !newUsername) {
+    return res.status(400).json({ error: "Provide newEmail and/or newUsername to update." });
+  }
+
+  // Validation
+  if (newEmail && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(newEmail)) {
+    return res.status(400).json({ error: "Invalid email address." });
+  }
+  if (newUsername && String(newUsername).trim().length === 0) {
+    return res.status(400).json({ error: "Invalid username." });
+  }
+
+  try {
+    const admin = await Admin.findById(req.session.user.id).select("username email");
+    if (!admin) return res.status(404).json({ error: "Admin not found" });
+
+    const changes = {};
+
+    // Check email uniqueness and change
+    if (newEmail && admin.email !== newEmail) {
+      const exists = await Admin.findOne({ email: newEmail });
+      if (exists) return res.status(400).json({ error: "Email already in use." });
+      changes.email = newEmail;
+      admin.email = newEmail;
+    }
+
+    // Check username uniqueness and change
+    if (newUsername && admin.username !== newUsername) {
+      const existsU = await Admin.findOne({ username: newUsername });
+      if (existsU) return res.status(400).json({ error: "Username already in use." });
+      changes.username = newUsername;
+      admin.username = newUsername;
+    }
+
+    if (Object.keys(changes).length === 0) {
+      return res.status(400).json({ error: "No changes detected or values are same as current." });
+    }
+
+    await admin.save();
+
+    // Update session user fields so frontend sees new values without re-login
+    if (req.session.user) {
+      if (changes.username) req.session.user.username = changes.username;
+      if (changes.email) req.session.user.email = changes.email;
+    }
+
+    return res.json({ success: true, message: "Admin identity updated.", changes });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Failed to update admin identity." });
+  }
+};
+
+// Backwards compatible aliases: support both older and newer names
+exports.ChangeAdminEmail = exports.UpdateAdminProfile;
+exports.UpdateAdminIdentity = exports.UpdateAdminProfile;
+
+exports.getMachines = async (req, res) => {
+  try {
+    // populate nested assignedStudent.studentId with student's name and rollNo
+    const machines = await Machine.find({})
+      .populate({ path: 'assignedStudent.studentId', select: 'name rollNo' })
+      .lean();
+
+    // normalize assignedStudent to include rollNumber and name for frontend
+    const normalized = machines.map(m => {
+      const copy = { ...m };
+      if (copy.assignedStudent && copy.assignedStudent.studentId) {
+        const s = copy.assignedStudent.studentId;
+        copy.assignedStudent = {
+          studentId: s._id,
+          rollNumber: s.rollNo || null,
+          name: s.name || null
+        };
+      } else {
+        copy.assignedStudent = null;
+      }
+      return copy;
+    });
+
+    return res.json({ ok: true, machines: normalized });
+  } catch (err) {
+    console.error('Failed to fetch machines', err);
+    return res.status(500).json({ error: 'Failed to fetch machines' });
+  }
+};
+
+// Create a new machine
+exports.createMachine = async (req, res) => {
+  try {
+    const { MIGID, gpuRam } = req.body;
+    if (!MIGID || MIGID.trim() === '') return res.status(400).json({ error: 'MIGID is required' });
+    const gpu = (gpuRam === undefined || gpuRam === null || gpuRam === '') ? null : Number(gpuRam);
+    if (gpu === null || Number.isNaN(gpu) || gpu < 0) return res.status(400).json({ error: 'gpuRam must be a non-negative number' });
+
+    const machine = new Machine({ MIGID: MIGID.trim(), gpuRam: gpu, assignedStudent: null });
+    await machine.save();
+    return res.status(201).json({ ok: true, machine });
+  } catch (err) {
+    console.error('Failed to create machine', err);
+    if (err.code === 11000) return res.status(409).json({ error: 'MIGID already exists' });
+    return res.status(500).json({ error: 'Failed to create machine' });
+  }
+};
+
+// Update a machine (MIGID, gpuRam, assignedStudent)
+exports.updateMachine = async (req, res) => {
+  const { id } = req.params;
+  const { MIGID, gpuRam, assignedStudent } = req.body;
+  try {
+    const update = {};
+    if (MIGID !== undefined) update.MIGID = MIGID;
+    if (gpuRam !== undefined) update.gpuRam = gpuRam;
+    if (assignedStudent !== undefined) {
+      if (assignedStudent === null) {
+        update.assignedStudent = null;
+        update.isAssigned = false;
+      } else {
+        update.assignedStudent = { studentId: assignedStudent };
+        update.isAssigned = true;
+      }
+    }
+    const machine = await Machine.findByIdAndUpdate(id, update, { new: true }).lean();
+    if (!machine) return res.status(404).json({ error: 'Machine not found' });
+    return res.json({ ok: true, machine });
+  } catch (err) {
+    console.error('Failed to update machine', err);
+    return res.status(500).json({ error: 'Failed to update machine' });
+  }
+};
+
+// Delete a machine
+exports.deleteMachine = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await Machine.findByIdAndDelete(id);
+    if (!result) return res.status(404).json({ error: 'Machine not found' });
+    return res.json({ ok: true });
+  } catch (err) {
+    console.error('Failed to delete machine', err);
+    return res.status(500).json({ error: 'Failed to delete machine' });
+  }
+};
+
+exports.deleteResourceRequestByMig = async (req, res) => {
+  try {
+    const { migId } = req.params;
+    if (!migId) return res.status(400).json({ error: 'MIGID is required' });
+
+    // Find a single resource request that references this MIGID in vmCredentials
+    const request = await ResourceRequest.findOne({ 'vmCredentials.migId': migId });
+    if (!request) {
+      return res.json({ ok: true, deleted: 0 });
+    }
+
+    // remove reference from student's resourceRequests array if present
+    if (request.studentId) {
+      await Student.findByIdAndUpdate(request.studentId, { $pull: { resourceRequests: request._id } });
+    }
+
+    await ResourceRequest.findByIdAndDelete(request._id);
+
+    return res.json({ ok: true, deleted: 1, requestId: request._id });
+  } catch (err) {
+    console.error('Error deleting resource request by MIGID:', err);
+    return res.status(500).json({ error: 'Failed to delete resource request' });
   }
 };

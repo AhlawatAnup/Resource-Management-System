@@ -36,7 +36,7 @@ body {
   color: #333;
 }
 
-.logo-icon {
+/* .logo-icon {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   width: 40px;
   height: 40px;
@@ -46,6 +46,17 @@ body {
   justify-content: center;
   margin-right: 15px;
   color: white;
+} */
+
+.logo-icon img {
+  width: 28px; /* visual size inside the 40x40 container */
+  height: 28px;
+  object-fit: contain;
+  display: block; /* remove inline-gap */
+  max-width: 100%;
+  max-height: 100%;
+  margin-left: 20px;
+  margin-right: 20px;
 }
 
 .nav-menu {
@@ -374,6 +385,31 @@ body {
 .stat-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Inline input + button wrapper used in verification modal */
+.input-with-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.input-with-button .form-control {
+  flex: 1 1 auto;
+  min-width: 0; /* allow shrinking inside flex */
+}
+.input-with-button .copy-btn {
+  background: transparent;
+  border: 1px solid #e2e8f0;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #475569;
+}
+.input-with-button .copy-btn:hover {
+  background: #f1f5f9;
 }
 
 .stat-icon {
@@ -733,4 +769,5 @@ body {
 .modal-footer{
   display: flex;
   gap: 10px;
+  justify-content: flex-end;
 }

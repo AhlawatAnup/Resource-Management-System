@@ -8,7 +8,7 @@ let currentStatus = 'unverified'; // all, verified or unverified
 
 // Initialize admin dashboard
 function initializeAdminDashboard() {
-  console.log('Admin Dashboard Initialized');
+  // console.log('Admin Dashboard Initialized');
   
   // Set up navigation
   setupNavigation();
@@ -157,23 +157,23 @@ function updateTableHeaders() {
   let headers = [];
   if (currentType === 'teacher') {
     if (currentStatus === 'unverified') {
-      headers = ['Name', 'Email', 'Phone', 'Branch', 'Join Date', 'Actions'];
+      headers = ['Name', 'Email', 'Phone', 'Branch', 'Actions'];
     } else if (currentStatus === 'verified') {
-      headers = ['Name', 'Email', 'Status', 'Students', 'Join Date', 'Actions'];
+      headers = ['Name', 'Email', 'Phone', 'Branch', 'Students', 'Status', 'Actions'];
     } else if (currentStatus === 'rejected') {
-      headers = ['Name', 'Email', 'Status', 'Rejected By', 'Join Date', 'Actions'];
+      headers = ['Name', 'Email', 'Phone', 'Branch', 'Students', 'Status', 'Actions'];
     } else if (currentStatus === 'all') {
-      headers = ['Name', 'Email', 'Status', 'Students', 'Join Date', 'Actions'];
+      headers = ['Name', 'Email', 'Phone', 'Branch', 'Students', 'Status', 'Actions'];
     }
   } else {
     if (currentStatus === 'unverified') {
-      headers = ['Name', 'Email', 'Roll No', 'Teacher', 'Status', 'Actions'];
+      headers = ['Name', 'Email', 'Phone', 'Branch', 'Roll No', 'Teacher', 'Status', 'Actions'];
     } else if (currentStatus === 'verified') {
-      headers = ['Name', 'Email', 'Roll No', 'Teacher', 'Status', 'Actions'];
+      headers = ['Name', 'Email', 'Phone', 'Branch', 'Roll No', 'Teacher', 'Status', 'Actions'];
     } else if (currentStatus === 'rejected') {
-      headers = ['Name', 'Email', 'Roll No', 'Teacher', 'Status', 'Actions'];
+      headers = ['Name', 'Email', 'Phone', 'Branch', 'Roll No', 'Teacher', 'Status', 'Actions'];
     } else if (currentStatus === 'all') {
-      headers = ['Name', 'Email', 'Roll No', 'Teacher', 'Status', 'Actions'];
+      headers = ['Name', 'Email', 'Phone', 'Branch', 'Roll No', 'Teacher', 'Status', 'Actions'];
     }
   }
   
@@ -244,7 +244,6 @@ function renderUnverifiedTeacherRow(teacher) {
     <td>${teacher.email || 'N/A'}</td>
     <td>${teacher.phone || 'N/A'}</td>
     <td>${teacher.branch || 'N/A'}</td>
-    <td>${new Date(teacher.createdAt).toLocaleDateString()}</td>
     <td>
       <div class="admin-actions">
         <button class="btn-approve" onclick="verifyTeacher('${teacher._id}', true)" title="Approve">
@@ -275,11 +274,7 @@ function renderAllTeacherRow(teacher) {
       </button>
     `;
   } else {
-    actionButtons = `
-      <button class="icon-btn view-btn" onclick="viewTeacherDetails('${teacher._id}')" title="View Details">
-        <i class="fas fa-eye"></i>
-      </button>
-    `;
+    actionButtons = `<span class="action-completed">Action Completed</span>`;
   }
   
   return `
@@ -292,9 +287,10 @@ function renderAllTeacherRow(teacher) {
       </div>
     </td>
     <td>${teacher.email || 'N/A'}</td>
-    <td><span class="badge ${statusClass}">${statusText}</span></td>
+    <td>${teacher.phone || 'N/A'}</td>
+    <td>${teacher.branch || 'N/A'}</td>
     <td>${teacher.students ? teacher.students.length : 0} students</td>
-    <td>${new Date(teacher.createdAt).toLocaleDateString()}</td>
+    <td><span class="badge ${statusClass}">${statusText}</span></td>
     <td>
       <div class="admin-actions">
         ${actionButtons}
@@ -326,6 +322,8 @@ function renderUnverifiedStudentRow(student) {
       </div>
     </td>
     <td>${student.email || 'N/A'}</td>
+    <td>${student.phone || 'N/A'}</td>
+    <td>${student.branch || 'N/A'}</td>
     <td>${student.rollNo || 'N/A'}</td>
     <td>${student.teacher?.name || 'N/A'}</td>
     <td><span class="badge ${status.class}">${status.text}</span></td>
@@ -366,11 +364,7 @@ function renderAllStudentRow(student) {
       </button>
     `;
   } else {
-    actionButtons = `
-      <button class="icon-btn view-btn" onclick="viewStudentDetails('${student._id}')" title="View Details">
-        <i class="fas fa-eye"></i>
-      </button>
-    `;
+    actionButtons = `<span class="action-completed">Action Completed</span>`;
   }
   
   return `
@@ -383,6 +377,8 @@ function renderAllStudentRow(student) {
       </div>
     </td>
     <td>${student.email || 'N/A'}</td>
+    <td>${student.phone || 'N/A'}</td>
+    <td>${student.branch || 'N/A'}</td>
     <td>${student.rollNo || 'N/A'}</td>
     <td>${student.teacher?.name || 'N/A'}</td>
     <td><span class="badge ${status.class}">${status.text}</span></td>
@@ -402,7 +398,6 @@ function renderStudentRow(student) {
 // Render rejected teacher row
 function renderRejectedTeacherRow(teacher) {
   const statusText = teacher.is_verified ? 'Verified' : (teacher.verification_completed ? 'Rejected by Admin' : 'Pending');
-  const rejectedBy = teacher.verification_completed && !teacher.is_verified ? 'Admin' : 'Unknown';
   
   return `
     <td>
@@ -414,14 +409,13 @@ function renderRejectedTeacherRow(teacher) {
       </div>
     </td>
     <td>${teacher.email || 'N/A'}</td>
+    <td>${teacher.phone || 'N/A'}</td>
+    <td>${teacher.branch || 'N/A'}</td>
+    <td>${teacher.students ? teacher.students.length : 0} students</td>
     <td><span class="badge rejected">${statusText}</span></td>
-    <td>${rejectedBy}</td>
-    <td>${new Date(teacher.createdAt).toLocaleDateString()}</td>
     <td>
       <div class="admin-actions">
-        <button class="icon-btn view-btn" onclick="viewTeacherDetails('${teacher._id}')" title="View Details">
-          <i class="fas fa-eye"></i>
-        </button>
+        <span class="action-completed">Action Completed</span>
       </div>
     </td>
   `;
@@ -450,14 +444,14 @@ function renderRejectedStudentRow(student) {
       </div>
     </td>
     <td>${student.email || 'N/A'}</td>
+    <td>${student.phone || 'N/A'}</td>
+    <td>${student.branch || 'N/A'}</td>
     <td>${student.rollNo || 'N/A'}</td>
     <td>${student.teacher?.name || 'N/A'}</td>
     <td><span class="badge ${status.class}">${status.text}</span></td>
     <td>
       <div class="admin-actions">
-        <button class="icon-btn view-btn" onclick="viewStudentDetails('${student._id}')" title="View Details">
-          <i class="fas fa-eye"></i>
-        </button>
+        <span class="action-completed">Action Completed</span>
       </div>
     </td>
   `;
@@ -466,11 +460,19 @@ function renderRejectedStudentRow(student) {
 // Show empty state message
 function showEmptyState(message) {
   const tbody = document.getElementById('dataTableBody');
-  tbody.innerHTML = `<tr><td colspan="6" class="loading">${message}</td></tr>`;
+  tbody.innerHTML = `<tr><td colspan="8" class="loading">${message}</td></tr>`;
 }
 
 // Verify teacher function
 async function verifyTeacher(teacherId, isVerified) {
+  // Show confirmation dialog
+  const action = isVerified ? 'approve' : 'reject';
+  const confirmMessage = `Are you sure you want to ${action} this teacher profile?`;
+  
+  if (!confirm(confirmMessage)) {
+    return; // User cancelled the action
+  }
+  
   try {
     const response = await fetch(`/dashboard/admin/verify_teacher/${teacherId}`, {
       method: 'PUT',
@@ -497,6 +499,14 @@ async function verifyTeacher(teacherId, isVerified) {
 
 // Verify student function
 async function verifyStudent(studentId, isVerified) {
+  // Show confirmation dialog
+  const action = isVerified ? 'approve' : 'reject';
+  const confirmMessage = `Are you sure you want to ${action} this student profile?`;
+  
+  if (!confirm(confirmMessage)) {
+    return; // User cancelled the action
+  }
+  
   try {
     const response = await fetch(`/dashboard/admin/verify_student/${studentId}`, {
       method: 'PUT',
@@ -520,16 +530,6 @@ async function verifyStudent(studentId, isVerified) {
     console.error('Error verifying student:', error);
     alert('Error updating student verification status');
   }
-}
-
-// View student details (placeholder)
-function viewStudentDetails(studentId) {
-  alert(`Viewing student details for ID: ${studentId}`);
-}
-
-// View teacher details (placeholder) 
-function viewTeacherDetails(teacherId) {
-  alert(`Viewing teacher details for ID: ${teacherId}`);
 }
 
 // Search functionality
@@ -563,37 +563,12 @@ document.getElementById('searchInput').addEventListener('input', (e) => {
 
 // Make functions globally available
 window.verifyTeacher = verifyTeacher;
-window.viewTeacherDetails = viewTeacherDetails;
 window.verifyStudent = verifyStudent;
-window.viewStudentDetails = viewStudentDetails;
 
 // Initialize dashboard when page loads
 document.addEventListener('DOMContentLoaded', function() {
   initializeAdminDashboard();
-  
-  // Setup navigation for sidebar buttons
-  setupSidebarNavigation();
 });
-
-// Setup sidebar navigation
-function setupSidebarNavigation() {
-  const dashboardNav = document.getElementById('dashboard-nav');
-  const viewRequestsNav = document.getElementById('view-requests-nav');
-
-  if (viewRequestsNav) {
-    viewRequestsNav.addEventListener('click', function(e) {
-      e.preventDefault();
-      window.location.href = '/dashboard/admin/view-requests.html';
-    });
-  }
-
-  if (dashboardNav) {
-    dashboardNav.addEventListener('click', function(e) {
-      e.preventDefault();
-      // Already on dashboard page
-    });
-  }
-}
 
 // Export functions for potential future use
 window.adminDashboard = {

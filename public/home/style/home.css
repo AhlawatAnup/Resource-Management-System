@@ -43,9 +43,16 @@ body {
 }
 
 .logo::before {
-  content: "🏠";
+  content: ""; 
+  display: inline-block;
+  width: 50px;      
+  height: 50px;     
   margin-right: 0.5rem;
-  font-size: 1.5rem;
+  background-image: url('../../assets/images/UIET-logo.png');
+  background-size: contain;   /* scale image to fit */
+  background-repeat: no-repeat;
+  background-position: center;
+  vertical-align: middle;    /* align with text */
 }
 
 .hero-text {
@@ -262,6 +269,20 @@ body {
 .login-button:hover {
   background: #1a202c;
   transform: translateY(-1px);
+}
+
+.login-button:disabled {
+  background: #152848;
+  color: #ffffff;
+  cursor: not-allowed;
+  transform: none;
+  opacity: 0.6;
+}
+
+.login-button:disabled:hover {
+  /* background: #718096; */
+  transform: none;
+  cursor: not-allowed;
 }
 
 @media (max-width: 768px) {

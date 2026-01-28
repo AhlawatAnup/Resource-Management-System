@@ -12,25 +12,31 @@
       src="https://kit.fontawesome.com/e05e3e1522.js"
       crossorigin="anonymous"
     ></script>
+    
   </head>
   <link rel="stylesheet" href="/dashboard/teacher/style/teacher.dashboard.css" />
+  <link rel="stylesheet" href="/dashboard/common/style/purpose-panel.css" />
   <body>
     <div class="sidebar">
       <div class="logo">
         <div class="logo-icon">
-          <i class="fas fa-layer-group"></i>
+          <img src="../../assets/images/UIET-logo.png" alt="Logo" />
         </div>
         U.I.E.T
       </div>
 
       <nav class="nav-menu">
-        <a href="teacher.dashboard.html" class="nav-item" id="home-nav">
+        <a href="/dashboard" class="nav-item" id="home-nav">
           <i class="fas fa-home"></i>
           Home
         </a>
         <a href="#" class="nav-item active" id="view-requests-nav">
           <i class="fas fa-eye"></i>
           View Resource Requests 
+        </a>
+        <a href="/dashboard/teacher/about-us" class="nav-item">
+          <i class="fas fa-info-circle"></i>
+          About Us
         </a>
       </nav>
 
@@ -103,6 +109,7 @@
                   <div class="form-group">
                     <label for="editTitle">Title:</label>
                     <input type="text" id="editTitle" name="title" class="form-control" required />
+                    <div id="edit-title-error" style="color: red; font-size: 0.9em; margin-top: 2px;"></div>
                   </div>
                   <div class="form-group">
                     <label for="editPurpose">Purpose:</label>
@@ -116,28 +123,33 @@
                   </div>
                 </div>
                 <div class="form-row">
-                  <div class="form-group">
+                  <!-- <div class="form-group">
                     <label for="editCpuCores">CPU Cores:</label>
                     <input type="number" id="editCpuCores" name="cpuCores" class="form-control" min="1" required />
                   </div>
                   <div class="form-group">
                     <label for="editCpuRam">CPU RAM (GB):</label>
                     <input type="number" id="editCpuRam" name="cpuRam" class="form-control" min="1" required />
-                  </div>
+                  </div> -->
                 </div>
                 <div class="form-row">
-                  <div class="form-group">
+                  <!-- <div class="form-group">
                     <label for="editGpuCount">GPU Count:</label>
                     <input type="number" id="editGpuCount" name="gpuCount" class="form-control" min="0" required />
-                  </div>
+                  </div> -->
                   <div class="form-group">
                     <label for="editGpuRam">GPU RAM (GB):</label>
                     <input type="number" id="editGpuRam" name="gpuRam" class="form-control" min="0" required />
                   </div>
+                  <div class="form-group">
+                    <label for="editUsername">Username:</label>
+                    <input type="text" id="editUsername" name="username" class="form-control" />
+                    <div id="edit-username-error" style="color: red; font-size: 0.9em; margin-top: 2px;"></div>
+                  </div>
                 </div>
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" id="closeEditModal">Cancel</button>
+                <!-- <button type="button" class="btn btn-secondary" id="closeEditModal">Cancel</button> -->
                 <button type="submit" class="btn btn-primary">Save Changes</button>
               </div>
             </form>
@@ -145,6 +157,17 @@
         </div>
       </div>
     </main>
+
+    <!-- Purpose View Panel -->
+    <div id="purposePanel" class="purpose-panel">
+      <div class="purpose-panel-header">
+        <span class="purpose-panel-title">Request Purpose</span>
+        <button class="purpose-panel-close" onclick="closePurposePanel()">&times;</button>
+      </div>
+      <div class="purpose-panel-body">
+        <textarea id="purposeText" readonly></textarea>
+      </div>
+    </div>
 
     <script type="module" src="/dashboard/teacher/js/view-requests.js"></script>
   </body>

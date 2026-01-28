@@ -6,7 +6,7 @@ const {
   adminLogin,
   getVerifiedTeachers,
 } = require("../controllers/authController");
-const { logRequest } = require("../middleware/authMiddleware.js");
+const { logRequest, requireRegistrationSession } = require("../middleware/authMiddleware.js");
 
 const router = express.Router();
 
@@ -18,8 +18,8 @@ router.post("/send-otp", sendOtp);
 router.post("/verify-otp", verifyOtp);
 router.post("/admin-login", adminLogin);
 
-router.get("/get-teachers", getVerifiedTeachers);
+router.get("/get-teachers", requireRegistrationSession, getVerifiedTeachers);
 
-router.post("/register", register);
+router.post("/register", requireRegistrationSession, register);
 
 module.exports = router;

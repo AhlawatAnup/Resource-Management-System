@@ -16,7 +16,7 @@ async function getTeacherDashboardData() {
     }
 
     const data = await response.json();
-    console.log("Dashboard Data:", data);
+    // console.log("Dashboard Data:", data);
 
     renderDashboardHeader(data);
     renderTeacherProfile(data);
@@ -47,11 +47,11 @@ function renderTeacherProfile(teacherData) {
   if (!profileSection) return;
 
   // Debug logging to understand teacher verification status
-  console.log('Teacher verification data:', {
-    is_verified: teacherData.is_verified,
-    verification_completed: teacherData.verification_completed,
-    name: teacherData.name
-  });
+  // console.log('Teacher verification data:', {
+  //   is_verified: teacherData.is_verified,
+  //   verification_completed: teacherData.verification_completed,
+  //   name: teacherData.name
+  // });
 
   const verificationStatus = getVerificationStatus(teacherData);
   const statusClass = getStatusClass(teacherData);
@@ -103,7 +103,7 @@ function renderTeacherProfile(teacherData) {
             <div><strong>Phone:</strong> ${teacherData.phone || 'N/A'}</div>
             <div><strong>Students:</strong> ${teacherData.students ? teacherData.students.length : 0}</div>
             <div><strong>Member Since:</strong> ${formatDate(teacherData.createdAt)}</div>
-            <div><strong>Teacher ID:</strong> ${teacherData._id ? teacherData._id.slice(-8) : 'N/A'}</div>
+            <div><strong>Teacher ID:</strong> ${teacherData._id ? teacherData._id : 'N/A'}</div>
           </div>
         </div>
       </div>
@@ -151,13 +151,13 @@ function formatDate(dateString) {
 
 // Function to determine student verification status from teacher's perspective
 function getStudentVerificationStatusForTeacher(student) {
-  console.log('Student verification fields from teacher view:', {
-    teacher_verified: student.teacher_verified,
-    admin_verified: student.admin_verified,
-    teacher_action: student.teacher_action,
-    admin_action: student.admin_action,
-    name: student.name
-  });
+  // console.log('Student verification fields from teacher view:', {
+  //   teacher_verified: student.teacher_verified,
+  //   admin_verified: student.admin_verified,
+  //   teacher_action: student.teacher_action,
+  //   admin_action: student.admin_action,
+  //   name: student.name
+  // });
 
   // If both teacher and admin have verified
   if (student.teacher_verified && student.admin_verified) {
@@ -239,19 +239,17 @@ async function getStudentData(stu_id) {
     }
 
     const data = await response.json();
-    console.log("Student Data:", data);
+    // console.log("Student Data:", data);
     render_students_table({
       ...data,
       avatarColor: getRandomNamedColor(),
       avatar: getInitials(data.name),
-      phone: "NA",
     });
 
     student_data.push({
       ...data,
       avatarColor: getRandomNamedColor(),
       avatar: getInitials(data.name),
-      phone: "NA",
     });
 
     // return data;
@@ -321,7 +319,7 @@ function render_students_table(student) {
 
 // Event listeners
 document.getElementById("searchInput").addEventListener("input", (e) => {
-  console.log(student_data);
+  // console.log(student_data);
   filter_student(e.target.value);
 });
 
@@ -384,7 +382,7 @@ async function updateStudentVerification(studentId, isVerified) {
     }
 
     const result = await response.json();
-    console.log('Verification updated:', result);
+    // console.log('Verification updated:', result);
 
     // Update the student data in the local array
     const studentIndex = student_data.findIndex(s => s._id === studentId);
@@ -393,21 +391,32 @@ async function updateStudentVerification(studentId, isVerified) {
       student_data[studentIndex].teacher_action = true; // Mark as completed
     }
 
-    // Replace buttons with "Action Completed" text
-    const actionButtons = document.querySelectorAll(`[data-student-id="${studentId}"]`);
-    const buttonContainer = actionButtons[0]?.parentElement;
-    if (buttonContainer) {
-      buttonContainer.innerHTML = '<span style="color: #666; font-style: italic;">Action Completed</span>';
-    }
-
-    // Update the status badge immediately
-    const studentRow = actionButtons[0]?.closest('tr');
-    if (studentRow) {
-      const statusBadge = studentRow.querySelector('.badge');
+    // Re-render the row with updated data
+    const studentRow = document.querySelector(`[data-student-id="${studentId}"]`)?.closest('tr');
+    if (studentRow && studentIndex !== -1) {
+      const tbody = document.getElementById("contactTableBody");
+      const newTr = document.createElement("tr");
+      newTr.innerHTML = studentRow.innerHTML; // Copy original structure
+      
+      // Update with fresh data
+      const updatedStudent = student_data[studentIndex];
+      const verificationStatus = getStudentVerificationStatusForTeacher(updatedStudent);
+      const statusClass = getStudentStatusClassForTeacher(updatedStudent);
+      
+      // Replace status badge
+      const statusBadge = newTr.querySelector('.badge');
       if (statusBadge) {
-        statusBadge.textContent = isVerified ? 'Approved' : 'Declined';
-        statusBadge.className = `badge ${isVerified}`;
+        statusBadge.textContent = verificationStatus;
+        statusBadge.className = `badge ${statusClass}`;
       }
+      
+      // Replace action buttons
+      const buttonContainer = newTr.querySelector('.owner-info');
+      if (buttonContainer) {
+        buttonContainer.innerHTML = '<span style="color: #666; font-style: italic;">Action Completed</span>';
+      }
+      
+      tbody.replaceChild(newTr, studentRow);
     }
 
     // Show success message
@@ -449,22 +458,22 @@ function showNotification(message, type) {
   }, 3000);
 }
 
-// Navigation functionality for sidebar buttons
-document.addEventListener('DOMContentLoaded', function() {
-  const viewRequestsNav = document.getElementById('view-requests-nav');
-  const homeNav = document.getElementById('home-nav');
+// // Navigation functionality for sidebar buttons
+// document.addEventListener('DOMContentLoaded', function() {
+//   const viewRequestsNav = document.getElementById('view-requests-nav');
+//   const homeNav = document.getElementById('home-nav');
 
-  if (viewRequestsNav) {
-    viewRequestsNav.addEventListener('click', function(e) {
-      e.preventDefault();
-      window.location.href = '/dashboard/teacher/view-requests.html';
-    });
-  }
+//   if (viewRequestsNav) {
+//     viewRequestsNav.addEventListener('click', function(e) {
+//       e.preventDefault();
+//       window.location.href = '/dashboard/teacher/view-requests.html';
+//     });
+//   }
 
-  if (homeNav) {
-    homeNav.addEventListener('click', function(e) {
-      e.preventDefault();
-      window.location.href = '/dashboard/teacher/teacher.dashboard.html';
-    });
-  }
-});
+//   if (homeNav) {
+//     homeNav.addEventListener('click', function(e) {
+//       e.preventDefault();
+//       window.location.href = '/dashboard/teacher/teacher.dashboard.html';
+//     });
+//   }
+// });

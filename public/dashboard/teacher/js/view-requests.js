@@ -1,5 +1,12 @@
 // Import common functions
-import { getInitials, getRandomNamedColor } from '../../Common/js/commons.js';
+import { 
+  getInitials, 
+  getRandomNamedColor, 
+  formatDate,
+  initializePurposePanel,
+  createViewMoreButton,
+  isValidUsername
+} from '../../Common/js/commons.js';
 
 let resourceRequests = [];
 let filteredRequests = [];
@@ -19,13 +26,13 @@ async function loadResourceRequests() {
     }
 
     const data = await response.json();
-    console.log("Teacher Dashboard Data:", data);
+    // console.log("Teacher Dashboard Data:", data);
 
     // Extract resource requests from the dashboard data
     resourceRequests = data.resourceRequests || [];
     filteredRequests = [...resourceRequests];
 
-    console.log(`Found ${resourceRequests.length} resource requests`);
+    // console.log(`Found ${resourceRequests.length} resource requests`);
     renderResourceRequests(filteredRequests);
 
   } catch (error) {
@@ -65,25 +72,25 @@ function renderResourceRequests(requests) {
       </td>
       <td>
         <div class="request-title">
-          <h4>${request.title}</h4>
+          <small>${request.title}</small>
           <div class="request-date">Created: ${formatDate(request.createdAt)}</div>
         </div>
       </td>
       <td>
         <div class="purpose-text">
-          ${request.purpose.length > 50 ? request.purpose.substring(0, 50) + '...' : request.purpose}
+          <span>${request.purpose.length > 20 ? request.purpose.substring(0, 20) + '...' : request.purpose}</span>
+          ${createViewMoreButton(request._id, request.purpose)}
         </div>
       </td>
       <td>
         <div class="resource-specs">
-          <div><strong>CPU:</strong> ${request.cpuCores} cores, ${request.cpuRam}GB RAM</div>
-          <div><strong>GPU:</strong> ${request.gpuCount} × ${request.gpuRam}GB</div>
+          <!-- <div><strong>CPU:</strong> ${request.cpuCores} cores, ${request.cpuRam}GB RAM</div> -->
+          <div><strong>GPU:</strong> ${request.gpuRam}GB</div>
         </div>
       </td>
       <td>
         <div class="expiry-date">
           ${formatDate(request.expiryDate)}
-          ${isExpiringSoon(request.expiryDate) ? '<span class="expiring-soon">⚠️ Soon</span>' : ''}
         </div>
       </td>
       <td>
@@ -110,6 +117,7 @@ function getRequestStatus(request) {
     return { text: "Declined by Admin", class: "declined" };
   } else if (request.teacher_verified && !request.admin_action) {
     return { text: "Pending Admin", class: "pending-admin" };
+    
   } else if (!request.teacher_action) {
     return { text: "Pending Teacher", class: "pending-teacher" };
   } else {
@@ -136,27 +144,6 @@ function getActionButtons(request) {
   `;
 }
 
-// Format date for display
-function formatDate(dateString) {
-  if (!dateString) return 'N/A';
-  const date = new Date(dateString);
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  });
-}
-
-// Check if date is expiring soon (within 7 days)
-function isExpiringSoon(dateString) {
-  if (!dateString) return false;
-  const expiryDate = new Date(dateString);
-  const today = new Date();
-  const diffTime = expiryDate - today;
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  return diffDays <= 7 && diffDays > 0;
-}
-
 // Update resource request verification status
 async function updateRequestVerification(requestId, isVerified) {
   try {
@@ -178,7 +165,7 @@ async function updateRequestVerification(requestId, isVerified) {
     }
 
     const result = await response.json();
-    console.log('Request verification updated:', result);
+    // console.log('Request verification updated:', result);
 
     // Update the local data
     const requestIndex = resourceRequests.findIndex(r => r._id === requestId);
@@ -252,6 +239,9 @@ function showNotification(message, type) {
 
 // Event listeners
 document.addEventListener('DOMContentLoaded', function() {
+  // Initialize purpose panel functionality
+  initializePurposePanel();
+  
   // Load resource requests when page loads
   loadResourceRequests();
 
@@ -298,10 +288,11 @@ function showEditModal(requestId) {
   document.getElementById('editTitle').value = req.title;
   document.getElementById('editPurpose').value = req.purpose;
   document.getElementById('editExpiryDate').value = req.expiryDate ? req.expiryDate.split('T')[0] : '';
-  document.getElementById('editCpuCores').value = req.cpuCores;
-  document.getElementById('editCpuRam').value = req.cpuRam;
-  document.getElementById('editGpuCount').value = req.gpuCount;
+  // document.getElementById('editCpuCores').value = req.cpuCores;
+  // document.getElementById('editCpuRam').value = req.cpuRam;
+  // document.getElementById('editGpuCount').value = req.gpuCount;
   document.getElementById('editGpuRam').value = req.gpuRam;
+  document.getElementById('editUsername').value = req.username || '';
   document.getElementById('editRequestModal').style.display = 'block';
 }
 
@@ -312,18 +303,38 @@ async function submitEditRequest() {
     title: document.getElementById('editTitle').value,
     purpose: document.getElementById('editPurpose').value,
     expiryDate: document.getElementById('editExpiryDate').value,
-    cpuCores: Number(document.getElementById('editCpuCores').value),
-    cpuRam: Number(document.getElementById('editCpuRam').value),
-    gpuCount: Number(document.getElementById('editGpuCount').value),
-    gpuRam: Number(document.getElementById('editGpuRam').value)
+    // cpuCores: Number(document.getElementById('editCpuCores').value),
+    // cpuRam: Number(document.getElementById('editCpuRam').value),
+    // gpuCount: Number(document.getElementById('editGpuCount').value),
+    gpuRam: Number(document.getElementById('editGpuRam').value),
+    username: document.getElementById('editUsername').value
   };
+  const usernameErrorDiv = document.getElementById('edit-username-error');
+  if (!isValidUsername(payload.username)) {
+    if (usernameErrorDiv) {
+      usernameErrorDiv.textContent = 'Username can only contain letters, numbers, hyphens (-), and underscores (_), with no spaces or special characters';
+    }
+    return;
+  } else if (usernameErrorDiv) {
+    usernameErrorDiv.textContent = '';
+  }
+  // Title max length check
+  const titleErrorDiv = document.getElementById('edit-title-error');
+  if (payload.title.length > 50) {
+    if (titleErrorDiv) {
+      titleErrorDiv.textContent = 'Title must not exceed 50 characters';
+    }
+    return;
+  } else if (titleErrorDiv) {
+    titleErrorDiv.textContent = '';
+  }
   try {
     const response = await fetch(`/dashboard/teacher/edit_request/${requestId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
-    console.log("Status:", response.status);
+    // console.log("Status:", response.status);
     let result;
     try {
       result = await response.json();
@@ -331,7 +342,7 @@ async function submitEditRequest() {
       console.error("Failed to parse JSON response:", jsonErr);
       throw new Error('Invalid server response');
     }
-    console.log("Response:", result);
+    // console.log("Response:", result);
     if (!response.ok || !result.success) {
       const errorMsg = result && result.error ? result.error : 'Failed to edit request';
       throw new Error(errorMsg);

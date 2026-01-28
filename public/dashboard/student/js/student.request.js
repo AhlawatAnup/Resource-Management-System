@@ -1,5 +1,5 @@
 // Import common functions
-import { formatDate } from '/dashboard/common/js/commons.js';
+import { formatDate, isValidUsername } from '/dashboard/common/js/commons.js';
 import { getLoggedInStudentId, showLoadingState, showErrorMessage } from './student.utils.js';
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -41,7 +41,7 @@ async function loadRequestResourcesPage() {
 }
 
 function displayResourcesPage(student) {
-    console.log('Displaying resources page for student:', student);
+    // console.log('Displaying resources page for student:', student);
     
     // Check if student is verified
     const isVerified = student.teacher_verified && student.admin_verified;
@@ -79,6 +79,12 @@ function displayResourcesPage(student) {
                                 <label for="title">Request Title:</label>
                                 <input type="text" id="title" class="form-control" placeholder="e.g., Machine Learning Training Project" required>
                             </div>
+                            <div class="form-group">
+                                <label for="username">Desired VM Username:</label>
+                                <input type="text" id="username" class="form-control" placeholder="e.g., your_preferred_username" required>
+                                <p style="color: #666; font-size: 0.85em;">Enter a username that will be assigned to your VM if approved. </p>
+                                <small style="color: #666; font-size: 0.85em;">Note: Username can contain only letters, numbers, hyphens (-), and underscores (_); no spaces or other special characters are allowed. </small>
+                            </div>
                             
                             <div class="form-group">
                                 <label for="purpose">Purpose/Description:</label>
@@ -91,7 +97,9 @@ function displayResourcesPage(student) {
                                 <small style="color: #666; font-size: 0.85em;">Select the date when you no longer need these resources</small>
                             </div>
                             
-                            <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                            <!-- 
+                            =============================================================================
+                            <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 20px 0;"> 
                                 <h4 style="margin: 0 0 15px 0; color: #333; font-size: 1.1em;">
                                     <i class="fas fa-microchip"></i> CPU Requirements
                                 </h4>
@@ -109,18 +117,14 @@ function displayResourcesPage(student) {
                                     </div>
                                 </div>
                             </div>
+                            =============================================================================
+                            -->
                             
                             <div style="background: #f0f8ff; padding: 15px; border-radius: 8px; margin: 20px 0;">
                                 <h4 style="margin: 0 0 15px 0; color: #333; font-size: 1.1em;">
-                                    <i class="fas fa-cube"></i> GPU Requirements (Optional for non-ML tasks)
+                                    <i class="fas fa-cube"></i> GPU Requirements
                                 </h4>
-                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                                    <div class="form-group">
-                                        <label for="gpu-count">GPU Count Required:</label>
-                                        <input type="number" id="gpu-count" class="form-control" min="0" max="8" placeholder="e.g., 2" required>
-                                        <small style="color: #666; font-size: 0.85em;">Use 0 if no GPU needed</small>
-                                    </div>
-                                    
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">                                   
                                     <div class="form-group">
                                         <label for="gpu-ram">GPU RAM per GPU (GB):</label>
                                         <input type="number" id="gpu-ram" class="form-control" min="0" max="80" placeholder="e.g., 12" required>
@@ -142,19 +146,6 @@ function displayResourcesPage(student) {
             const form = document.getElementById('resource-request-form');
             if (form) {
                 form.addEventListener('submit', handleResourceRequest);
-                
-                // Set default expiry date to 30 days from today
-                const expiryDateInput = document.getElementById('expiry-date');
-                if (expiryDateInput) {
-                    const defaultDate = new Date();
-                    defaultDate.setDate(defaultDate.getDate() + 30); // 30 days from today
-                    expiryDateInput.valueAsDate = defaultDate;
-                    
-                    // Set minimum date to tomorrow
-                    const minDate = new Date();
-                    minDate.setDate(minDate.getDate() + 1);
-                    expiryDateInput.min = minDate.toISOString().split('T')[0];
-                }
             }
             
         } else {
@@ -201,13 +192,13 @@ function displayResourcesPage(student) {
 
 // Function to determine student verification status based on new schema
 function getStudentVerificationStatus(student) {
-    console.log('Student verification fields:', {
-        teacher_verified: student.teacher_verified,
-        admin_verified: student.admin_verified,
-        teacher_action: student.teacher_action,
-        admin_action: student.admin_action,
-        is_verified: student.is_verified
-    });
+    // console.log('Student verification fields:', {
+    //     teacher_verified: student.teacher_verified,
+    //     admin_verified: student.admin_verified,
+    //     teacher_action: student.teacher_action,
+    //     admin_action: student.admin_action,
+    //     is_verified: student.is_verified
+    // });
 
     // If both teacher and admin have verified
     if (student.teacher_verified && student.admin_verified) {
@@ -247,35 +238,82 @@ async function handleResourceRequest(event) {
     try {
         // Get form data according to ResourceRequestModel schema
         const formData = {
+            username: document.getElementById('username').value.trim(),
             title: document.getElementById('title').value.trim(),
             purpose: document.getElementById('purpose').value.trim(),
             expiryDate: document.getElementById('expiry-date').value,
-            cpuCores: parseInt(document.getElementById('cpu-cores').value),
-            cpuRam: parseInt(document.getElementById('cpu-ram').value),
-            gpuCount: parseInt(document.getElementById('gpu-count').value),
+            // cpuCores: parseInt(document.getElementById('cpu-cores').value),
+            // cpuRam: parseInt(document.getElementById('cpu-ram').value),
+            // gpuCount: parseInt(document.getElementById('gpu-count').value),
             gpuRam: parseInt(document.getElementById('gpu-ram').value)
         };
         
-        // Validate required fields
-        if (!formData.title || !formData.purpose || !formData.expiryDate) {
+        // Validate required fields (include gpuRam)
+        if (!formData.username || !formData.title || !formData.purpose || !formData.expiryDate || formData.gpuRam === undefined || formData.gpuRam === null) {
             throw new Error('Please fill in all required fields');
         }
-        
-        if (formData.cpuCores < 1 || formData.cpuRam < 1) {
-            throw new Error('CPU cores and RAM must be at least 1');
+
+        if (!isValidUsername(formData.username)) {
+            throw new Error('Username can only contain letters, numbers, hyphens (-), and underscores (_), with no spaces or special characters');
         }
-        
-        if (formData.gpuCount < 0 || formData.gpuRam < 0) {
-            throw new Error('GPU values cannot be negative');
+        // Title max length check
+        if (formData.title.length > 50) {
+            throw new Error('Title must not exceed 50 characters');
         }
+
+        // Validate gpuRam is non-negative number
+        if (!Number.isFinite(formData.gpuRam) || formData.gpuRam < 0) {
+            throw new Error('GPU RAM must be a non-negative number');
+        }
+
+        if (formData.purpose.length < 100) {
+            throw new Error('Purpose must be at least 100 characters long');
+        }
+                
+        // if (formData.cpuCores < 1 || formData.cpuRam < 1) {
+        //     throw new Error('CPU cores and RAM must be at least 1');
+        // }
         
-        // Validate expiry date is in the future
-        const expiryDate = new Date(formData.expiryDate);
-        const today = new Date();
-        today.setHours(0, 0, 0, 0); // Reset time to compare dates only
+        // if (formData.gpuCount < 0 || formData.gpuRam < 0) {
+        //     throw new Error('GPU values cannot be negative');
+        // }
         
-        if (expiryDate <= today) {
-            throw new Error('Expiry date must be in the future');
+        // Handle expiry date defaults, limits, and validation
+        const expiryDateInput = document.getElementById('expiry-date');
+        if (expiryDateInput) {
+            const today = new Date();
+            const formatDate = (d) => d.toISOString().split('T')[0];
+
+            // Default → 7 days ahead
+            if (!expiryDateInput.value) {
+                const defaultDate = new Date();
+                defaultDate.setDate(today.getDate() + 7);
+                expiryDateInput.value = formatDate(defaultDate);
+                formData.expiryDate = expiryDateInput.value;
+            }
+
+            // Set min/max limits
+            const minDate = new Date();
+            minDate.setDate(today.getDate() + 1);
+            expiryDateInput.min = formatDate(minDate);
+
+            const maxDate = new Date();
+            maxDate.setDate(today.getDate() + 30);
+            expiryDateInput.max = formatDate(maxDate);
+
+            // Validate expiry date
+            const expiryDate = new Date(formData.expiryDate);
+            today.setHours(0, 0, 0, 0); // compare date only
+
+            if (expiryDate <= today) {
+                throw new Error('Expiry date must be in the future');
+            }
+            if (expiryDate < minDate) {
+                throw new Error('Expiry date must be at least one day ahead');
+            }
+            if (expiryDate > maxDate) {
+                throw new Error('Expiry date cannot be more than 30 days ahead');
+            }
         }
         
         // Get student ID
@@ -309,7 +347,13 @@ async function handleResourceRequest(event) {
                 showErrorMessage('You already have a pending request. Please wait for it to be processed or delete it if no action has been taken by teacher/admin.', 'request-content');
                 return;
             }
-            throw new Error(errorData.message || 'Failed to submit request');
+            // If backend returned a simple 'Username already exists' message, show inline under username like other field errors
+            if (errorData.error && /username already exists/i.test(errorData.error)) {
+                showErrorNotification('Username already taken. Please choose a different username.');
+                return;
+            }
+
+            throw new Error(errorData.message || (errorData.error || 'Failed to submit request'));
         }
         
         const result = await response.json();

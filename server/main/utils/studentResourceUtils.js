@@ -15,7 +15,7 @@ async function addResourceRequestToStudent(studentId, resourceRequestId) {
       studentId,
       { $addToSet: { resourceRequests: resourceRequestId } }
     );
-    console.log(`Added resource request ${resourceRequestId} to student ${studentId}`);
+    // console.log(`Added resource request ${resourceRequestId} to student ${studentId}`);
     return true;
   } catch (error) {
     console.error('Error adding resource request to student:', error);

@@ -1,4 +1,5 @@
 // Script to create admin
+require("dotenv").config({ path: "../../../.env" });
 const bcrypt = require("bcrypt");
 const Admin = require("../database/adminModel");
 const mongoose = require("mongoose");
@@ -6,7 +7,7 @@ const mongoose = require("mongoose");
 async function createDefaultAdmin() {
   try {
     // Connect to database
-    await mongoose.connect("mongodb://127.0.0.1:27017/college_resources");
+    await mongoose.connect(process.env.MONGO_URI);
 
     // Check if admin already exists
     const existingAdmin = await Admin.findOne({ username: "admin" });
