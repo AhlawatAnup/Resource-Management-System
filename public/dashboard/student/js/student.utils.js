@@ -11,7 +11,7 @@ export async function getLoggedInStudentId() {
             const data = await response.json();
             if (data.id) {
                 // Store for future use
-                localStorage.setItem('studentId', data.id);
+                // localStorage.setItem('studentId', data.id);
                 return data.id;
             }
         }
