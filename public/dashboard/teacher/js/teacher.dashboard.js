@@ -352,7 +352,19 @@ function filter_student(searchTerm) {
 async function updateStudentVerification(studentId, isVerified) {
   try {
     const action = isVerified ? 'approve' : 'decline';
-    if (!confirm(`Are you sure you want to ${action} this student?`)) {
+    const result_confirmation = await Swal.fire({
+      title: 'Are you sure?',
+      text: `Do you want to ${action} this student?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: `Approve`,
+      cancelButtonText: 'Cancel',
+      draggable: true
+    });
+    
+    if (!result_confirmation.isConfirmed) {
       return;
     }
 
