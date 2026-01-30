@@ -366,15 +366,15 @@ async function handleResourceRequest(event) {
         const result = await response.json();
         
         // Show success message with SweetAlert2
-        Swal.fire({
+        await Swal.fire({
             title: "Success!",
             text: "Resource request submitted successfully! You will be notified once it is processed.",
             icon: "success",
             draggable: true
         });
         
-        // Reset form
-        document.getElementById('resource-request-form').reset();
+        // Redirect to view requests page
+        window.location.href = '/dashboard/student/view-requests';
         
     } catch (error) {
         console.error('Error submitting resource request:', error);
