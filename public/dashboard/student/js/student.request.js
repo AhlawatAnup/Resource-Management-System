@@ -234,6 +234,15 @@ function getStudentVerificationStatus(student) {
 async function handleResourceRequest(event) {
     event.preventDefault();
     
+    // Disable submit button immediately to prevent double submission
+    const submitBtn = event.target.querySelector('button[type="submit"]');
+    if (submitBtn.disabled) {
+        return; // Already processing a request
+    }
+    const originalText = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+    
     try {
         // Get form data according to ResourceRequestModel schema
         const formData = {
@@ -321,12 +330,6 @@ async function handleResourceRequest(event) {
             throw new Error('Student ID not found. Please login again.');
         }
         
-        // Disable submit button to prevent double submission
-        const submitBtn = event.target.querySelector('button[type="submit"]');
-        const originalText = submitBtn.innerHTML;
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
-        
         // Send request to backend
         const response = await fetch('/dashboard/student/submit-resource-request', {
             method: 'POST',
@@ -348,7 +351,12 @@ async function handleResourceRequest(event) {
             }
             // If backend returned a simple 'Username already exists' message, show inline under username like other field errors
             if (errorData.error && /username already exists/i.test(errorData.error)) {
-                showErrorNotification('Username already taken. Please choose a different username.');
+                Swal.fire({
+                    title: "Error!",
+                    text: "Username already taken. Please choose a different username.",
+                    icon: "error",
+                    draggable: true
+                });
                 return;
             }
 
@@ -357,21 +365,30 @@ async function handleResourceRequest(event) {
         
         const result = await response.json();
         
-        // Show success message
-        showSuccessMessage('Resource request submitted successfully! You will be notified once it is processed.');
+        // Show success message with SweetAlert2
+        Swal.fire({
+            title: "Success!",
+            text: "Resource request submitted successfully! You will be notified once it is processed.",
+            icon: "success",
+            draggable: true
+        });
         
         // Reset form
         document.getElementById('resource-request-form').reset();
         
     } catch (error) {
         console.error('Error submitting resource request:', error);
-        showErrorNotification('Failed to submit request: ' + error.message);
+        Swal.fire({
+            title: "Error!",
+            text: "Failed to submit request: " + error.message,
+            icon: "error",
+            draggable: true
+        });
     } finally {
         // Re-enable submit button
-        const submitBtn = event.target.querySelector('button[type="submit"]');
         if (submitBtn) {
             submitBtn.disabled = false;
-            submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Resource Request';
+            submitBtn.innerHTML = originalText;
         }
     }
 }

@@ -320,7 +320,19 @@ function displayAllRequests(requests) {
         document.querySelectorAll('.delete-request-btn').forEach(btn => {
             btn.addEventListener('click', async function () {
                 const requestId = btn.getAttribute('data-request-id');
-                if (confirm('Are you sure you want to delete this request?')) {
+                const result = await Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'Do you want to delete this request?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Delete',
+                    cancelButtonText: 'Cancel',
+                    draggable: true
+                });
+                
+                if (result.isConfirmed) {
                     try {
                         const response = await fetch(`/dashboard/student/del_requests/${requestId}`, {
                             method: 'DELETE',
@@ -329,13 +341,29 @@ function displayAllRequests(requests) {
                             }
                         });
                         if (response.ok) {
+                            await Swal.fire({
+                                title: 'Deleted!',
+                                text: 'Your request has been deleted.',
+                                icon: 'success',
+                                draggable: true
+                            });
                             // Remove the request from the UI or reload
                             loadViewRequestsPage();
                         } else {
-                            alert('Failed to delete request.');
+                            Swal.fire({
+                                title: 'Error!',
+                                text: 'Failed to delete request.',
+                                icon: 'error',
+                                draggable: true
+                            });
                         }
                     } catch (error) {
-                        alert('Error deleting request.');
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'Error deleting request.',
+                            icon: 'error',
+                            draggable: true
+                        });
                     }
                 }
             });
