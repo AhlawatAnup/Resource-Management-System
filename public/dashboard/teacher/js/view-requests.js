@@ -73,7 +73,7 @@ function renderResourceRequests(requests) {
       <td>
         <div class="request-title">
           <small>${request.title}</small>
-          <div class="request-date">Created: ${formatDate(request.createdAt)}</div>
+          <div class="request-date"> ${formatDate(request.createdAt)}</div>
         </div>
       </td>
       <td>

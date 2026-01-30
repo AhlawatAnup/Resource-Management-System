@@ -80,7 +80,7 @@ function renderResourceRequests(requests) {
       <td>
         <div class="request-title">
           <p>${request.title}<p>
-          <div class="request-date"><span class="field-label">Created:</span> ${formatDate(request.createdAt)}</div>
+          <div class="request-date"> ${formatDate(request.createdAt)}</div>
         </div>
       </td>
       <td>

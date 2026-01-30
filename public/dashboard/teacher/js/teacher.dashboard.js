@@ -1,5 +1,5 @@
 // Import only the functions we need from commons.js
-import { renderDashboardHeader, getInitials, getRandomNamedColor } from '../../common/js/commons.js';
+import { renderDashboardHeader, getInitials, getRandomNamedColor, formatDate } from '../../common/js/commons.js';
 
 const student_data = [];
 async function getTeacherDashboardData() {
@@ -138,17 +138,6 @@ function getStatusColor(isVerified) {
   return isVerified ? '#28a745' : '#ffc107';
 }
 
-// Function to format date
-function formatDate(dateString) {
-  if (!dateString) return 'N/A';
-  const date = new Date(dateString);
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  });
-}
-
 // Function to determine student verification status from teacher's perspective
 function getStudentVerificationStatusForTeacher(student) {
   // console.log('Student verification fields from teacher view:', {
@@ -276,9 +265,7 @@ function render_students_table(student) {
   }</div>
                             <div class="contact-details">
                                 <h4>${student.name}</h4>
-                                <div class="contact-time">${new Date(
-                                  student.createdAt
-                                ).toUTCString()}</div>
+                                <div class="contact-time">${formatDate(student.createdAt)}</div>
                             </div>
                         </div>
                     </td>

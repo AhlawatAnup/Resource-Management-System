@@ -128,7 +128,6 @@ function displayResourcesPage(student) {
                                     <div class="form-group">
                                         <label for="gpu-ram">GPU RAM per GPU (GB):</label>
                                         <input type="number" id="gpu-ram" class="form-control" min="0" max="80" placeholder="e.g., 12" required>
-                                        <small style="color: #666; font-size: 0.85em;">Common: 8-24 GB for deep learning</small>
                                     </div>
                                 </div>
                             </div>

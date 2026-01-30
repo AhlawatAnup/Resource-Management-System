@@ -1,5 +1,5 @@
 // Import only the functions we need from commons.js
-import { renderDashboardHeader, getInitials, getRandomNamedColor } from '../../common/js/commons.js';
+import { renderDashboardHeader, getInitials, getRandomNamedColor, formatDate } from '../../common/js/commons.js';
 
 // Data storage
 let currentData = [];
@@ -238,6 +238,10 @@ function renderUnverifiedTeacherRow(teacher) {
         <div class="avatar ${getRandomNamedColor()}">${getInitials(teacher.name || 'Teacher')}</div>
         <div class="contact-details">
           <h4>${teacher.name || 'Unknown'}</h4>
+          <div class="contact-time">
+            ${formatDate(teacher.createdAt)}
+          </div>
+
         </div>
       </div>
     </td>
@@ -283,6 +287,9 @@ function renderAllTeacherRow(teacher) {
         <div class="avatar ${getRandomNamedColor()}">${getInitials(teacher.name || 'Teacher')}</div>
         <div class="contact-details">
           <h4>${teacher.name || 'Unknown'}</h4>
+          <div class="contact-time">
+            ${formatDate(teacher.createdAt)}
+          </div>
         </div>
       </div>
     </td>
@@ -318,6 +325,9 @@ function renderUnverifiedStudentRow(student) {
         <div class="avatar ${getRandomNamedColor()}">${getInitials(student.name || 'Student')}</div>
         <div class="contact-details">
           <h4>${student.name || 'Unknown'}</h4>
+          <div class="contact-time">
+            ${formatDate(student.createdAt)}
+          </div>
         </div>
       </div>
     </td>
@@ -373,6 +383,9 @@ function renderAllStudentRow(student) {
         <div class="avatar ${getRandomNamedColor()}">${getInitials(student.name || 'Student')}</div>
         <div class="contact-details">
           <h4>${student.name || 'Unknown'}</h4>
+          <div class="contact-time">
+            ${formatDate(student.createdAt)}
+          </div>
         </div>
       </div>
     </td>
@@ -405,6 +418,9 @@ function renderRejectedTeacherRow(teacher) {
         <div class="avatar ${getRandomNamedColor()}">${getInitials(teacher.name || 'Teacher')}</div>
         <div class="contact-details">
           <h4>${teacher.name || 'Unknown'}</h4>
+          <div class="contact-time">
+            ${formatDate(teacher.createdAt)}
+          </div>
         </div>
       </div>
     </td>
@@ -440,6 +456,9 @@ function renderRejectedStudentRow(student) {
         <div class="avatar ${getRandomNamedColor()}">${getInitials(student.name || 'Student')}</div>
         <div class="contact-details">
           <h4>${student.name || 'Unknown'}</h4>
+          <div class="contact-time">
+            ${formatDate(student.createdAt)}
+          </div>
         </div>
       </div>
     </td>
