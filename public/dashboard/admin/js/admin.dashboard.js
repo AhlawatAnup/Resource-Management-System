@@ -296,7 +296,7 @@ function renderAllTeacherRow(teacher) {
     <td>${teacher.email || 'N/A'}</td>
     <td>${teacher.phone || 'N/A'}</td>
     <td>${teacher.branch || 'N/A'}</td>
-    <td>${teacher.students ? teacher.students.length : 0} students</td>
+    <td>${teacher.students ? teacher.students.length : 0}</td>
     <td><span class="badge ${statusClass}">${statusText}</span></td>
     <td>
       <div class="admin-actions">

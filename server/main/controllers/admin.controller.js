@@ -41,7 +41,7 @@ exports.admin_dashboard_data = async (req, res) => {
 
 exports.getPendingTeachers = async (req, res) => {
   try {
-    const pendingTeachers = await Teacher.find({ verification_completed: false });
+    const pendingTeachers = await Teacher.find({ verification_completed: false }).sort({ createdAt: -1 });
     return res.json({ teachers: pendingTeachers });
   } catch (err) {
     console.error(err);
@@ -51,7 +51,7 @@ exports.getPendingTeachers = async (req, res) => {
 
 exports.getAllTeachers = async (req, res) => {
   try {
-    const teachers = await Teacher.find().populate('students', 'name rollNo');
+    const teachers = await Teacher.find().populate('students', 'name rollNo').sort({ createdAt: -1 });
     return res.json({ teachers });
   } catch (err) {
     console.error(err);
@@ -117,7 +117,7 @@ exports.getPendingStudents = async (req, res) => {
         // Case 2: teacher has acted & verified, but admin still pending
         { teacher_action: true, teacher_verified: true, admin_action: false }
       ]
-    }).populate('teacher', 'name');
+    }).populate('teacher', 'name').sort({ createdAt: -1 });
 
     return res.json({ students: pendingStudents });
   } catch (err) {
@@ -128,7 +128,7 @@ exports.getPendingStudents = async (req, res) => {
 
 exports.getAllStudents = async (req, res) => {
   try {
-    const students = await Student.find().populate('teacher', 'name');
+    const students = await Student.find().populate('teacher', 'name').sort({ createdAt: -1 });
     return res.json({ students });
   } catch (err) {
     console.error(err);
@@ -142,7 +142,7 @@ exports.getRejectedTeachers = async (req, res) => {
     const rejectedTeachers = await Teacher.find({
       verification_completed: true,
       is_verified: false
-    });
+    }).sort({ createdAt: -1 });
     return res.json({ teachers: rejectedTeachers });
   } catch (err) {
     console.error(err);
@@ -161,7 +161,7 @@ exports.getRejectedStudents = async (req, res) => {
         // Case 2: admin has taken action and rejected the student (teacher approved but admin rejected)
         { teacher_action: true, teacher_verified: true, admin_action: true, admin_verified: false }
       ]
-    }).populate('teacher', 'name');
+    }).populate('teacher', 'name').sort({ createdAt: -1 });
 
     return res.json({ students: rejectedStudents });
   } catch (err) {
