@@ -5,12 +5,37 @@ const Machine = require('../database/machineModel');
 async function importMachinesFromCsv(filePath) {
   try {
     const rows = [];
+    const normalizeKey = (key) => (key || '')
+      .toString()
+      .replace(/\r/g, '')
+      .trim()
+      .toLowerCase();
+
+    const normalizeVal = (val) => (val == null ? '' : val)
+      .toString()
+      .replace(/\r/g, '')
+      .trim();
+
+    const parseNumberSafe = (val) => {
+      const v = normalizeVal(val);
+      if (!v) return NaN;
+      const n = Number(v);
+      return Number.isFinite(n) ? n : NaN;
+    };
 
     // Read and parse CSV
     await new Promise((resolve, reject) => {
       fs.createReadStream(filePath)
         .pipe(csv())
-        .on('data', (data) => rows.push(data))
+        .on('data', (data) => {
+          const cleaned = {};
+          for (const [k, v] of Object.entries(data)) {
+            const nk = normalizeKey(k);
+            if (!nk) continue;
+            cleaned[nk] = normalizeVal(v);
+          }
+          rows.push(cleaned);
+        })
         .on('end', resolve)
         .on('error', reject);
     });
@@ -22,8 +47,8 @@ async function importMachinesFromCsv(filePath) {
     const docs = [];
 
     for (const r of rows) {
-      const MIGID = (r.MIGID || '').trim();
-      const gpuRam = Number(r.gpuRam || r.gpuram || r.gpu);
+      const MIGID = normalizeVal(r.migid || r.mig_id || r.mig);
+      const gpuRam = parseNumberSafe(r.gpuram || r.gpu_ram || r.gpu || r.gpu_memory);
 
       if (!MIGID) {
         throw new Error('Missing MIGID in one or more rows.');
@@ -48,7 +73,7 @@ async function importMachinesFromCsv(filePath) {
     }));
 
     await Machine.bulkWrite(ops);
-    return { ok: true, imported: docs.length };
+    return { ok: true, imported: docs.length, total: rows.length, skipped: [] };
 
   } catch (err) {
     console.error('Import failed:', err.message);

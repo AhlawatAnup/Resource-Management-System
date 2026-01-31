@@ -62,10 +62,18 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         const msg = `Imported: ${json.imported} / ${json.total}`;
         if (json.skipped && json.skipped.length) {
-          alert(msg + '\nSkipped rows: ' + json.skipped.length + '\nCheck console for details');
+          Swal.fire({
+            icon: 'success',
+            title: 'Import completed',
+            text: `${msg}. Skipped rows: ${json.skipped.length}`
+          });
           // console.log('Skipped rows:', json.skipped);
         } else {
-          alert(msg);
+          Swal.fire({
+            icon: 'success',
+            title: 'Import successful',
+            text: msg
+          });
         }
       }
     } catch (err) {
