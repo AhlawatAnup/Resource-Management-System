@@ -486,9 +486,19 @@ function showEmptyState(message) {
 async function verifyTeacher(teacherId, isVerified) {
   // Show confirmation dialog
   const action = isVerified ? 'approve' : 'reject';
-  const confirmMessage = `Are you sure you want to ${action} this teacher profile?`;
+  const result = await Swal.fire({
+    title: 'Are you sure?',
+    text: `Do you want to ${action} this teacher profile?`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: `Yes, ${action}`,
+    cancelButtonText: 'Cancel',
+    draggable: true
+  });
   
-  if (!confirm(confirmMessage)) {
+  if (!result.isConfirmed) {
     return; // User cancelled the action
   }
   
@@ -505,14 +515,29 @@ async function verifyTeacher(teacherId, isVerified) {
       // Reload current view
       await loadCurrentView();
       
-      // Show success message
-      alert(`Teacher ${isVerified ? 'approved' : 'rejected'} successfully!`);
+      // Show success message with SweetAlert2
+      Swal.fire({
+        title: 'Success!',
+        text: `Teacher ${isVerified ? 'approved' : 'rejected'} successfully!`,
+        icon: 'success',
+        draggable: true
+      });
     } else {
-      alert('Failed to update teacher verification status');
+      Swal.fire({
+        title: 'Error!',
+        text: 'Failed to update teacher verification status',
+        icon: 'error',
+        draggable: true
+      });
     }
   } catch (error) {
     console.error('Error verifying teacher:', error);
-    alert('Error updating teacher verification status');
+    Swal.fire({
+      title: 'Error!',
+      text: 'Error updating teacher verification status',
+      icon: 'error',
+      draggable: true
+    });
   }
 }
 
@@ -520,9 +545,19 @@ async function verifyTeacher(teacherId, isVerified) {
 async function verifyStudent(studentId, isVerified) {
   // Show confirmation dialog
   const action = isVerified ? 'approve' : 'reject';
-  const confirmMessage = `Are you sure you want to ${action} this student profile?`;
+  const result = await Swal.fire({
+    title: 'Are you sure?',
+    text: `Do you want to ${action} this student profile?`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: `Yes, ${action}`,
+    cancelButtonText: 'Cancel',
+    draggable: true
+  });
   
-  if (!confirm(confirmMessage)) {
+  if (!result.isConfirmed) {
     return; // User cancelled the action
   }
   
@@ -539,15 +574,30 @@ async function verifyStudent(studentId, isVerified) {
       // Reload current view
       await loadCurrentView();
       
-      // Show success message
-      alert(`Student ${isVerified ? 'approved' : 'rejected'} successfully!`);
+      // Show success message with SweetAlert2
+      Swal.fire({
+        title: 'Success!',
+        text: `Student ${isVerified ? 'approved' : 'rejected'} successfully!`,
+        icon: 'success',
+        draggable: true
+      });
     } else {
       const errorData = await response.json();
-      alert(errorData.error || 'Failed to update student verification status');
+      Swal.fire({
+        title: 'Error!',
+        text: errorData.error || 'Failed to update student verification status',
+        icon: 'error',
+        draggable: true
+      });
     }
   } catch (error) {
     console.error('Error verifying student:', error);
-    alert('Error updating student verification status');
+    Swal.fire({
+      title: 'Error!',
+      text: 'Error updating student verification status',
+      icon: 'error',
+      draggable: true
+    });
   }
 }
 

@@ -157,7 +157,19 @@ function getActionButtons(request) {
 async function updateRequestVerification(requestId, isVerified) {
   // For decline, show immediate confirmation
   if (!isVerified) {
-    if (!confirm(`Are you sure you want to decline this resource request?`)) {
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: 'Do you want to decline this resource request?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, decline it!',
+      cancelButtonText: 'Cancel',
+      draggable: true
+    });
+    
+    if (!result.isConfirmed) {
       return;
     }
     await submitVerification(requestId, isVerified);
