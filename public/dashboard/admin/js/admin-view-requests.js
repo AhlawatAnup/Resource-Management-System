@@ -574,10 +574,20 @@ document.addEventListener('DOMContentLoaded', function() {
       // console.log('Form submission - credentials:', credentials);
       
       try {
-        await submitVerification(requestId, true, credentials);
-        closeVerificationModal();
+        // Show processing indicator with disabled confirm button
+        Swal.fire({
+          width: 250,
+          showConfirmButton: false,
+          allowOutsideClick: false,
+          didOpen: async () => {
+            Swal.showLoading();
+            await submitVerification(requestId, true, credentials);
+            Swal.close();
+            closeVerificationModal();
+          }
+        });
+
       } catch (error) {
-        // Error already handled in submitVerification
         console.error('Form submission error:', error);
       }
     });
