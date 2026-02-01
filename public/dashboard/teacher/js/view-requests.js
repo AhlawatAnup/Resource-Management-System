@@ -288,7 +288,8 @@ document.addEventListener('DOMContentLoaded', function() {
   // Modal form submit
   document.getElementById('editRequestForm').onsubmit = async function(e) {
     e.preventDefault();
-    await submitEditRequest();
+    const submitBtn = e.submitter || this.querySelector('button[type="submit"]');
+    await submitEditRequest(submitBtn);
   };
 });
 
@@ -296,6 +297,12 @@ document.addEventListener('DOMContentLoaded', function() {
 function showEditModal(requestId) {
   const req = resourceRequests.find(r => r._id === requestId);
   if (!req) return;
+  const submitBtn = document.querySelector('#editRequestForm button[type="submit"]');
+  if (submitBtn) {
+    submitBtn.disabled = false;
+    submitBtn.style.opacity = '';
+    submitBtn.style.cursor = '';
+  }
   document.getElementById('editRequestId').value = req._id;
   document.getElementById('editTitle').value = req.title;
   document.getElementById('editPurpose').value = req.purpose;
@@ -309,7 +316,7 @@ function showEditModal(requestId) {
 }
 
 // Submit edit request to backend
-async function submitEditRequest() {
+async function submitEditRequest(submitBtn) {
   const requestId = document.getElementById('editRequestId').value;
   const payload = {
     title: document.getElementById('editTitle').value,
@@ -341,6 +348,11 @@ async function submitEditRequest() {
     titleErrorDiv.textContent = '';
   }
   try {
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.style.opacity = '0.6';
+      submitBtn.style.cursor = 'not-allowed';
+    }
     const response = await fetch(`/dashboard/teacher/edit_request/${requestId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -374,5 +386,10 @@ async function submitEditRequest() {
   } catch (err) {
     console.error('Edit request error:', err);
     showNotification(err.message || 'Failed to update resource request.', 'error');
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.style.opacity = '';
+      submitBtn.style.cursor = '';
+    }
   }
 }
