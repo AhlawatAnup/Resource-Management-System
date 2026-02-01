@@ -157,7 +157,9 @@ async function updateRequestVerification(requestId, isVerified) {
       cancelButtonColor: '#d33',
       confirmButtonText: `Yes, ${action}`,
       cancelButtonText: 'Cancel',
-      draggable: true
+      draggable: true,
+      scrollbarPadding: false,
+      heightAuto: false
     });
     
     if (!result_confirmation.isConfirmed) {

@@ -355,7 +355,9 @@ async function handleResourceRequest(event) {
                     title: "Error!",
                     text: "Username already taken. Please choose a different username.",
                     icon: "error",
-                    draggable: true
+                    draggable: true,
+                    scrollbarPadding: false,
+                    heightAuto: false
                 });
                 return;
             }
@@ -370,7 +372,9 @@ async function handleResourceRequest(event) {
             title: "Success!",
             text: "Resource request submitted successfully! You will be notified once it is processed.",
             icon: "success",
-            draggable: true
+            draggable: true,
+            scrollbarPadding: false,
+            heightAuto: false
         });
         
         // Redirect to view requests page

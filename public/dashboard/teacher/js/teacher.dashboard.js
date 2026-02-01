@@ -361,7 +361,9 @@ async function updateStudentVerification(studentId, isVerified) {
       cancelButtonColor: '#d33',
       confirmButtonText: `Approve`,
       cancelButtonText: 'Cancel',
-      draggable: true
+      draggable: true,
+      scrollbarPadding: false,
+      heightAuto: false
     });
     
     if (!result_confirmation.isConfirmed) {

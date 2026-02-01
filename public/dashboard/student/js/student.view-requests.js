@@ -330,7 +330,9 @@ function displayAllRequests(requests) {
                     cancelButtonColor: '#3085d6',
                     confirmButtonText: 'Delete',
                     cancelButtonText: 'Cancel',
-                    draggable: true
+                    draggable: true,
+                    scrollbarPadding: false,
+                    heightAuto: false
                 });
                 
                 if (result.isConfirmed) {
