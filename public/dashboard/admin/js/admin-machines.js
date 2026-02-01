@@ -390,12 +390,26 @@ function ensureEditModal() {
   cancel.addEventListener('click', () => closeEditModal());
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
+
+    const saveBtn = modal.querySelector('#machineEditSave');
+    saveBtn.disabled = true;
+    saveBtn.style.opacity = '0.5';
+
     const id = modal.dataset.machineId;
     const rowSelector = modal.dataset.rowSelector;
+
     const MIGID = modal.querySelector('#machineMIGID').value.trim();
+
     const gpuRaw = modal.querySelector('#machineGpu').value.trim();
     const gpu = gpuRaw === '' ? null : Number(gpuRaw);
-    if (gpu !== null && (Number.isNaN(gpu) || gpu < 0)) { alert('GPU RAM must be a non-negative number'); return; }
+
+    if (gpu !== null && (Number.isNaN(gpu) || gpu < 0)) {
+      alert('GPU RAM must be a non-negative number');
+
+      saveBtn.disabled = false;
+      saveBtn.style.opacity = '1';
+      return;
+    }
 
     try {
       // call server to update (if id present)
