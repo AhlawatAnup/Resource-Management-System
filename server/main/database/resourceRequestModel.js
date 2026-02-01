@@ -61,6 +61,9 @@ const resourceRequestSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 
+  // Edit tracking
+  isEdited: { type: Boolean, default: false },
+
   // Notification flags for expiry emails (7 and 2 days)
   notified: {
     type: {

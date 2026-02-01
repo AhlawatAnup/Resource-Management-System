@@ -64,7 +64,6 @@ function displayStudentDetails(student) {
                     </div>
                     <div class="profile-info">
                         <h2 style="margin: 0 0 8px 0; color: #333; font-size: 2em;">${student.name}</h2>
-                        <p style="margin: 5px 0; color: #666; font-size: 1.1em;">Student ID: ${student._id}</p>
                         <p style="margin: 5px 0; color: #666; font-size: 1.1em;">Roll No: ${student.rollNo}</p>
                         <span class="verification-badge ${statusClass}" style="display: inline-block; padding: 8px 16px; border-radius: 20px; font-size: 0.9em; font-weight: bold;">${verificationStatus}</span>
                     </div>

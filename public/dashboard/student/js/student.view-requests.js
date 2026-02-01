@@ -124,6 +124,7 @@ function displayAllRequests(requests) {
         const statusClass = getRequestStatusClass(request);
         const statusIcon = getRequestStatusIcon(request);
         const statusText = getRequestStatusText(request);
+        const editedBadge = request.isEdited ? '<span class="edited-badge" style="margin-left: 8px; color: #ff7a45; font-size: 0.85em; font-weight: 500;">(edited by teacher/admin)</span>' : '';
 
         // Only allow delete if no action by admin/teacher and is_verified is false
         const canDelete = !request.teacher_action && !request.admin_action && !request.is_verified;
@@ -138,7 +139,7 @@ function displayAllRequests(requests) {
                 <div class="request-title">
                     <h3>${request.title}</h3>
                     <span class="status-badge ${statusClass}">
-                        ${statusIcon} ${statusText}
+                        ${statusIcon} ${statusText}${editedBadge}
                     </span>
                 </div>
             </div>
@@ -467,11 +468,11 @@ function getRequestStatusText(request) {
     }
 
     if (request.teacher_action && request.teacher_verified && !request.admin_action) {
-        return 'Pending Admin Approval';
+        return 'Pending Admin';
     }
 
     if (!request.teacher_action) {
-        return 'Pending Teacher Review';
+        return 'Pending Teacher';
     }
 
     return 'Pending Review';
