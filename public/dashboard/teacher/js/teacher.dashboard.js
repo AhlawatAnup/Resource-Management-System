@@ -102,8 +102,7 @@ function renderTeacherProfile(teacherData) {
             <div><strong>Branch:</strong> ${teacherData.branch || 'N/A'}</div>
             <div><strong>Phone:</strong> ${teacherData.phone || 'N/A'}</div>
             <div><strong>Students:</strong> ${teacherData.students ? teacherData.students.length : 0}</div>
-            <div><strong>Member Since:</strong> ${formatDate(teacherData.createdAt)}</div>
-            <div><strong>Teacher ID:</strong> ${teacherData._id ? teacherData._id : 'N/A'}</div>
+            <div><strong>Joined:</strong> ${formatDate(teacherData.createdAt)}</div>
           </div>
         </div>
       </div>
