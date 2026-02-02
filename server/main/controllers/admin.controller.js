@@ -66,40 +66,46 @@ exports.updateTeacherVerification = async (req, res) => {
   // console.log("Updating teacher verification", teacher_id, "to", is_verified);
 
   try {
-    const teacher = await Teacher.findByIdAndUpdate(
-      teacher_id,
-      {
-        is_verified: is_verified,
-        verification_completed: true // Mark as completed when admin takes action
-      },
-      { new: true } // Return the updated document
-    );
-
+    const teacher = await Teacher.findById(teacher_id);
     if (!teacher) {
       return res.status(404).json({ error: "Teacher not found" });
     }
 
     // Email notification for teacher profile verification/rejection
-    if (teacher) {
-      const emailService = require("../utils/emailService.js");
-      if (is_verified) {
-        // NON-BLOCKING 
-        emailService.sendTeacherProfileVerifiedByAdminEmail(teacher.email, teacher.name)
-          .then(result => console.log("Email sent for teacher profile verified by admin:", result))
-          .catch(error => console.error("Error sending verification email:", error));
-      } else {
-        // NON-BLOCKING 
-        emailService.sendTeacherProfileRejectedByAdminEmail(teacher.email, teacher.name)
-          .then(result => console.log("Email sent for teacher profile rejected by admin:", result))
-          .catch(error => console.error("Error sending rejection email:", error));
-      }
-    }
+    const emailService = require("../utils/emailService.js");
+    if (is_verified) {
+      // Approve: Update teacher verification status
+      const updatedTeacher = await Teacher.findByIdAndUpdate(
+        teacher_id,
+        {
+          is_verified: is_verified,
+          verification_completed: true
+        },
+        { new: true }
+      );
 
-    // console.log("Teacher verification updated:", teacher);
-    return res.json({
-      message: "Teacher verification status updated successfully",
-      teacher: { ...teacher._doc }
-    });
+      // NON-BLOCKING 
+      emailService.sendTeacherProfileVerifiedByAdminEmail(teacher.email, teacher.name)
+        .then(result => console.log("Email sent for teacher profile verified by admin:", result))
+        .catch(error => console.error("Error sending verification email:", error));
+
+      // console.log("Teacher verification updated:", updatedTeacher);
+      return res.json({
+        message: "Teacher verification status updated successfully",
+        teacher: { ...updatedTeacher._doc }
+      });
+    } else {
+      // Reject: Delete the teacher account
+      // NON-BLOCKING 
+      emailService.sendTeacherProfileRejectedByAdminEmail(teacher.email, teacher.name)
+        .then(result => console.log("Email sent for teacher profile rejected by admin:", result))
+        .catch(error => console.error("Error sending rejection email:", error));
+
+      // Delete the teacher account
+      await Teacher.findByIdAndDelete(teacher_id);
+
+      return res.json({ message: "Teacher account has been deleted successfully" });
+    }
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "Failed to update teacher verification" });

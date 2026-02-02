@@ -90,12 +90,18 @@ exports.updateStudentVerification = async (req, res) => {
           is_verified: true
         };
       } else {
-        // Admin rejects → only update admin side
-        updateData = {
-          admin_verified: false,
-          admin_action: true,
-          is_verified: false
-        };
+        // Admin rejects → delete the student account and all related resources
+        const emailService = require("../utils/emailService.js");
+        
+        // Send rejection email before deleting
+        emailService.sendStudentProfileRejectedByAdminEmail(student.email, student.name)
+          .then(result => console.log("Email sent for student profile rejected by admin:", result))
+          .catch(error => console.error("Error sending rejection email:", error));
+        
+        // Delete the student (cascade delete will handle resource requests)
+        await Student.findByIdAndDelete(studentId);
+        
+        return res.json({ message: "Student account and associated resources have been deleted successfully" });
       }
     } else {
       return res.status(403).json({ error: "Unauthorized to update student verification" });
@@ -128,10 +134,6 @@ exports.updateStudentVerification = async (req, res) => {
           emailService.sendStudentProfileVerifiedByAdminEmail(updatedStudent.email, updatedStudent.name)
             .then(result => console.log("Email sent for student profile verified by admin:", result))
             .catch(error => console.error("Error sending verification email:", error));
-        } else {
-          emailService.sendStudentProfileRejectedByAdminEmail(updatedStudent.email, updatedStudent.name)
-            .then(result => console.log("Email sent for student profile rejected by admin:", result))
-            .catch(error => console.error("Error sending rejection email:", error));
         }
       }
     }
