@@ -127,7 +127,7 @@ function displayResourcesPage(student) {
                                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">                                   
                                     <div class="form-group">
                                         <label for="gpu-ram">GPU RAM per GPU (GB):</label>
-                                        <input type="number" id="gpu-ram" class="form-control" min="0" max="80" placeholder="e.g., 12" required>
+                                        <input type="number" id="gpu-ram" class="form-control" min="0" max="20" placeholder="e.g., 12" required>
                                     </div>
                                 </div>
                             </div>
