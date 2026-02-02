@@ -186,37 +186,23 @@ const sendStudentProfileRejectedByTeacherEmail = async (studentEmail, studentNam
     to: studentEmail,
     subject: 'Profile Verification Update - Teacher Review Required',
     html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #f44336;">📋 Profile Verification Update</h2>
-        
+      <div style="font-family: Arial, sans-serif; max-width:600px; margin:auto;">
+        <h2 style="color:#f44336;">Profile Rejected by Teacher</h2>
+
         <p>Dear <strong>${studentName}</strong>,</p>
-        
-        <p>Your student profile has been reviewed by <strong>${teacherName}</strong>.</p>
-        
-        <div style="background-color: #ffebee; border: 1px solid #ffcdd2; padding: 20px; border-radius: 8px; margin: 20px 0;">
-          <p style="margin: 0;"><strong>Status:</strong> Profile requires revision</p>
+
+        <p>Your student profile has been <strong>rejected by the teacher</strong>.</p>
+
+        <div style="background:#ffebee; padding:15px; border-radius:6px; border:1px solid #ffcdd2;">
+          <p>Your account has been deleted from the system.</p>
+          <p>If you wish to use the system, kindly complete a <strong>fresh registration</strong> with correct details.</p>
         </div>
-        
-        <div style="background-color: #e3f2fd; border: 1px solid #bbdefb; padding: 15px; border-radius: 5px; margin: 20px 0;">
-          <strong>📝 Next Steps:</strong>
-          <ul>
-            <li>Contact <strong>${teacherName}</strong> for specific feedback</li>
-            <li>Review your profile information for accuracy</li>
-            <li>Update any incorrect or missing information</li>
-            <li>Resubmit your profile for verification</li>
-          </ul>
-        </div>
-        
-        <p>Please reach out to your teacher for guidance on resolving any issues with your profile.</p>
-        
-        <p>Best regards,<br>
-        <strong>UIET Cluster Resource Management System</strong></p>
-        
-        <hr style="margin-top: 30px; border: none; border-top: 1px solid #eee;">
-        <p style="font-size: 12px; color: #666;">
-          This is an automated email. Please do not reply to this message.
-        </p>
+
+        <p>Best regards,<br/>UIET Cluster Resource Management System</p>
+        <hr/>
+        <p style="font-size:12px;color:#777;">This is an automated email. Please do not reply.</p>
       </div>
+
     `
   };
 
@@ -293,37 +279,23 @@ const sendStudentProfileRejectedByAdminEmail = async (studentEmail, studentName)
     to: studentEmail,
     subject: 'Profile Verification Update - Admin Review',
     html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #f44336;">📋 Profile Verification Update</h2>
-        
+      <div style="font-family: Arial, sans-serif; max-width:600px; margin:auto;">
+        <h2 style="color:#f44336;">Profile Rejected by Admin</h2>
+
         <p>Dear <strong>${studentName}</strong>,</p>
-        
-        <p>Your student profile has been reviewed by the administrator.</p>
-        
-        <div style="background-color: #ffebee; border: 1px solid #ffcdd2; padding: 20px; border-radius: 8px; margin: 20px 0;">
-          <p style="margin: 0;"><strong>Status:</strong> Profile requires admin review</p>
+
+        <p>Your student profile has been <strong>rejected by the administrator</strong>.</p>
+
+        <div style="background:#ffebee; padding:15px; border-radius:6px; border:1px solid #ffcdd2;">
+          <p>Your account has been deleted from the system.</p>
+          <p>If you wish to use the system, kindly complete a <strong>fresh registration</strong>.</p>
         </div>
-        
-        <div style="background-color: #e3f2fd; border: 1px solid #bbdefb; padding: 15px; border-radius: 5px; margin: 20px 0;">
-          <strong>📝 Next Steps:</strong>
-          <ul>
-            <li>Contact the IT support team for specific feedback</li>
-            <li>Review your profile information thoroughly</li>
-            <li>Ensure all documents and information are accurate</li>
-            <li>Work with your teacher to address any concerns</li>
-          </ul>
-        </div>
-        
-        <p>Please contact the administrator or IT support team for guidance on resolving any issues with your profile.</p>
-        
-        <p>Best regards,<br>
-        <strong>UIET Cluster Resource Management System</strong></p>
-        
-        <hr style="margin-top: 30px; border: none; border-top: 1px solid #eee;">
-        <p style="font-size: 12px; color: #666;">
-          This is an automated email. Please do not reply to this message.
-        </p>
+
+        <p>Best regards,<br/>UIET Cluster Resource Management System</p>
+        <hr/>
+        <p style="font-size:12px;color:#777;">This is an automated email. Please do not reply.</p>
       </div>
+
     `
   };
 
@@ -446,36 +418,20 @@ const sendResourceRequestRejectedByTeacherEmail = async (studentEmail, studentNa
     to: studentEmail,
     subject: 'Resource Request Update - Teacher Review Required',
     html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #f44336;">📋 Resource Request Update</h2>
-        
+      <div style="font-family: Arial, sans-serif; max-width:600px; margin:auto;">
+        <h2 style="color:#f44336;">Resource Request Rejected by Teacher</h2>
+
         <p>Dear <strong>${studentName}</strong>,</p>
-        
-        <p>Your resource request "<strong>${requestTitle}</strong>" has been reviewed by <strong>${teacherName}</strong>.</p>
-        
-        <div style="background-color: #ffebee; border: 1px solid #ffcdd2; padding: 20px; border-radius: 8px; margin: 20px 0;">
-          <p style="margin: 0;"><strong>Status:</strong> Request requires revision</p>
+
+        <p>Your resource request "<strong>${requestTitle}</strong>" has been rejected by the teacher.</p>
+
+        <div style="background:#ffebee; padding:15px; border-radius:6px; border:1px solid #ffcdd2;">
+          <p>Please create a <strong>new valid resource request</strong> with proper details and requirements.</p>
         </div>
-        
-        <div style="background-color: #e3f2fd; border: 1px solid #bbdefb; padding: 15px; border-radius: 5px; margin: 20px 0;">
-          <strong>📝 Next Steps:</strong>
-          <ul>
-            <li>Contact <strong>${teacherName}</strong> for specific feedback</li>
-            <li>Review your request details and requirements</li>
-            <li>Revise your request based on teacher's guidance</li>
-            <li>Resubmit your request for verification</li>
-          </ul>
-        </div>
-        
-        <p>Please reach out to your teacher to understand the specific concerns and how to address them.</p>
-        
-        <p>Best regards,<br>
-        <strong>UIET Cluster Resource Management System</strong></p>
-        
-        <hr style="margin-top: 30px; border: none; border-top: 1px solid #eee;">
-        <p style="font-size: 12px; color: #666;">
-          This is an automated email. Please do not reply to this message.
-        </p>
+
+        <p>Best regards,<br/>UIET Cluster Resource Management System</p>
+        <hr/>
+        <p style="font-size:12px;color:#777;">This is an automated email. Please do not reply.</p>
       </div>
     `
   };
@@ -556,37 +512,22 @@ const sendResourceRequestRejectedByAdminEmail = async (studentEmail, studentName
     to: studentEmail,
     subject: 'Resource Request Update - Admin Review',
     html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #f44336;">📋 Resource Request Update</h2>
-        
+      <div style="font-family: Arial, sans-serif; max-width:600px; margin:auto;">
+        <h2 style="color:#f44336;">Resource Request Rejected by Admin</h2>
+
         <p>Dear <strong>${studentName}</strong>,</p>
-        
-        <p>Your resource request "<strong>${requestTitle}</strong>" has been reviewed by the administrator.</p>
-        
-        <div style="background-color: #ffebee; border: 1px solid #ffcdd2; padding: 20px; border-radius: 8px; margin: 20px 0;">
-          <p style="margin: 0;"><strong>Status:</strong> Request not approved by administrator</p>
+
+        <p>Your resource request "<strong>${requestTitle}</strong>" has been rejected by the administrator.</p>
+
+        <div style="background:#ffebee; padding:15px; border-radius:6px; border:1px solid #ffcdd2;">
+          <p>Please create a <strong>new valid resource request</strong> with proper details and requirements.</p>
         </div>
-        
-        <div style="background-color: #e3f2fd; border: 1px solid #bbdefb; padding: 15px; border-radius: 5px; margin: 20px 0;">
-          <strong>📝 Next Steps:</strong>
-          <ul>
-            <li>Contact the IT support team for specific feedback</li>
-            <li>Review your request requirements and justification</li>
-            <li>Consider alternative resource configurations</li>
-            <li>Resubmit with revised requirements if appropriate</li>
-          </ul>
-        </div>
-        
-        <p>Please contact the administrator or IT support team for guidance on resolving any issues with your request.</p>
-        
-        <p>Best regards,<br>
-        <strong>UIET Cluster Resource Management System</strong></p>
-        
-        <hr style="margin-top: 30px; border: none; border-top: 1px solid #eee;">
-        <p style="font-size: 12px; color: #666;">
-          This is an automated email. Please do not reply to this message.
-        </p>
+
+        <p>Best regards,<br/>UIET Cluster Resource Management System</p>
+        <hr/>
+        <p style="font-size:12px;color:#777;">This is an automated email. Please do not reply.</p>
       </div>
+
     `
   };
 
@@ -720,37 +661,23 @@ const sendTeacherProfileRejectedByAdminEmail = async (teacherEmail, teacherName)
     to: teacherEmail,
     subject: 'Teacher Profile Verification Update - Admin Review',
     html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #f44336;">📋 Profile Verification Update</h2>
-        
+      <div style="font-family: Arial, sans-serif; max-width:600px; margin:auto;">
+        <h2 style="color:#f44336;">Teacher Profile Rejected by Admin</h2>
+
         <p>Dear <strong>${teacherName}</strong>,</p>
-        
-        <p>Your teacher profile has been reviewed by the administrator.</p>
-        
-        <div style="background-color: #ffebee; border: 1px solid #ffcdd2; padding: 20px; border-radius: 8px; margin: 20px 0;">
-          <p style="margin: 0;"><strong>Status:</strong> Profile requires admin review</p>
+
+        <p>Your teacher profile request has been <strong>rejected by the administrator</strong>.</p>
+
+        <div style="background:#ffebee; padding:15px; border-radius:6px; border:1px solid #ffcdd2;">
+          <p>Your account has been deleted from the system.</p>
+          <p>If you wish to access the system, kindly complete a <strong>fresh registration</strong>.</p>
         </div>
-        
-        <div style="background-color: #e3f2fd; border: 1px solid #bbdefb; padding: 15px; border-radius: 5px; margin: 20px 0;">
-          <strong>📝 Next Steps:</strong>
-          <ul>
-            <li>Contact the IT support team for specific feedback</li>
-            <li>Review your profile information and credentials</li>
-            <li>Ensure all required documentation is provided</li>
-            <li>Address any concerns raised by the administrator</li>
-          </ul>
-        </div>
-        
-        <p>Please contact the administrator or IT support team for guidance on resolving any issues with your teacher profile.</p>
-        
-        <p>Best regards,<br>
-        <strong>UIET Cluster Resource Management System</strong></p>
-        
-        <hr style="margin-top: 30px; border: none; border-top: 1px solid #eee;">
-        <p style="font-size: 12px; color: #666;">
-          This is an automated email. Please do not reply to this message.
-        </p>
+
+        <p>Best regards,<br/>UIET Cluster Resource Management System</p>
+        <hr/>
+        <p style="font-size:12px;color:#777;">This is an automated email. Please do not reply.</p>
       </div>
+
     `
   };
 
