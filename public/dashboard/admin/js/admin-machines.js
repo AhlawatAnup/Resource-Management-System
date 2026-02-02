@@ -285,7 +285,7 @@ document.addEventListener('DOMContentLoaded', () => {
           if (!result.isConfirmed) return;
 
           try {
-            // Step 1: revoke assignment on machine (if we have an id)
+            // Revoke assignment
             if (m._id) {
               const resp = await fetch(`/dashboard/admin/machines/${m._id}`, {
                 method: 'PUT',
@@ -298,21 +298,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('Revoke failed: ' + (txt || resp.statusText));
                 return;
               }
-            }
-
-            // Step 2: delete related resource request(s) by MIGID (if we have a MIGID)
-            if (m.MIGID) {
-              const delResp = await fetch(`/dashboard/admin/machines/requests/${encodeURIComponent(m.MIGID)}`, {
-                method: 'DELETE',
-                credentials: 'include'
-              });
-              if (!delResp.ok) {
-                const txt = await delResp.text().catch(() => null);
-                alert('Revoke succeeded but deleting related resource request(s) failed: ' + (txt || delResp.statusText));
-                return;
-              }
-              const json = await delResp.json().catch(() => null);
-              // console.log('Deleted resource requests by MIGID:', json);
             }
 
             assignedTd.textContent = 'Unassigned';

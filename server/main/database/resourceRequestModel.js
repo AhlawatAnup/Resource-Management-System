@@ -50,6 +50,12 @@ const resourceRequestSchema = new mongoose.Schema({
   admin_verified: { type: Boolean, default: false },
   is_verified: { type: Boolean, default: false },
 
+  //assinged machine  
+  machineId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Machine"
+  },
+
     // VM access credentials (provided when admin finally verifies)
   vmCredentials: {
     // username: { type: String },

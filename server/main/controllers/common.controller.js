@@ -226,6 +226,13 @@ exports.updateResourceRequestVerification = async (req, res) => {
         if (!migId) {
           return res.status(400).json({ error: "MIG ID is required" });
         }
+
+        // Find the machine by MIGID to get its ObjectId
+        const machine = await Machine.findOne({ MIGID: migId });
+        if (!machine) {
+          return res.status(404).json({ error: `Machine with MIG ID '${migId}' not found` });
+        }
+
         // Admin approves → set everything true and add VM credentials
         updateData = {
           teacher_verified: true,
@@ -233,6 +240,7 @@ exports.updateResourceRequestVerification = async (req, res) => {
           admin_verified: true,
           admin_action: true,
           is_verified: true,
+          machineId: machine._id,
           vmCredentials: {
             // username,
             password,
@@ -264,20 +272,25 @@ exports.updateResourceRequestVerification = async (req, res) => {
 
     // Only send email if update was successful (in background)
     if (updatedRequest) {
-      // If admin approved and vmCredentials.migId is present, assign the student to the machine
-      if (userRole === "admin" && updatedRequest.is_verified && updatedRequest.vmCredentials && updatedRequest.vmCredentials.migId) {
+      // If admin approved and machineId is present, assign the student to the machine
+      if (userRole === "admin" && updatedRequest.is_verified && updatedRequest.machineId) {
         try {
-          // Find machine by MIGID and set assigned student
-          const migId = updatedRequest.vmCredentials.migId;
-          const machine = await Machine.findOneAndUpdate(
-            { MIGID: migId },
-            { $set: { assignedStudent: { studentId: updatedRequest.studentId }, isAssigned: true } },
+          // Update machine to assign student and resource request
+          const machine = await Machine.findByIdAndUpdate(
+            updatedRequest.machineId,
+            { $set: { 
+              assignedStudent: { 
+                studentId: updatedRequest.studentId,
+                resourceRequestId: updatedRequest._id
+              }, 
+              isAssigned: true 
+            } },
             { new: true }
           );
           if (machine) {
-            // console.log(`Assigned student ${updatedRequest.studentId} to machine ${migId}`);
+            // console.log(`Assigned student ${updatedRequest.studentId} to machine ${machine.MIGID}`);
           } else {
-            console.warn(`Machine with MIGID ${migId} not found; could not assign student ${updatedRequest.studentId}`);
+            console.warn(`Machine with ID ${updatedRequest.machineId} not found; could not assign student ${updatedRequest.studentId}`);
           }
         } catch (machineErr) {
           console.error('Error assigning student to machine:', machineErr);

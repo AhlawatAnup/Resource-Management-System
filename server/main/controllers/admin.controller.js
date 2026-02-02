@@ -377,7 +377,21 @@ exports.createMachine = async (req, res) => {
   }
 };
 
+// Helper function to delete resource request and clean up references
+async function deleteResourceRequestAndCleanup(resourceRequestId, studentId) {
+  if (!resourceRequestId) return;
+
+  // Remove reference from student's resourceRequests array
+  if (studentId) {
+    await Student.findByIdAndUpdate(studentId, { $pull: { resourceRequests: resourceRequestId } });
+  }
+
+  // Delete the resource request by ObjectId
+  await ResourceRequest.findByIdAndDelete(resourceRequestId);
+}
+
 // Update a machine (MIGID, gpuRam, assignedStudent)
+// When unassigning, also deletes the associated resource request
 exports.updateMachine = async (req, res) => {
   const { id } = req.params;
   const { MIGID, gpuRam, assignedStudent } = req.body;
@@ -385,14 +399,20 @@ exports.updateMachine = async (req, res) => {
     const update = {};
     if (MIGID !== undefined) update.MIGID = MIGID;
     if (gpuRam !== undefined) update.gpuRam = gpuRam;
-    if (assignedStudent !== undefined) {
-      if (assignedStudent === null) {
-        update.assignedStudent = null;
-        update.isAssigned = false;
-      } else {
-        update.assignedStudent = { studentId: assignedStudent };
-        update.isAssigned = true;
+    if (assignedStudent !== undefined && assignedStudent === null) {
+      // Get the current machine to find resourceRequestId
+      const currentMachine = await Machine.findById(id);
+      if (currentMachine && currentMachine.assignedStudent && currentMachine.assignedStudent.resourceRequestId) {
+        const resourceRequestId = currentMachine.assignedStudent.resourceRequestId;
+        const studentId = currentMachine.assignedStudent.studentId;
+        
+        // Delete the resource request and clean up references
+        await deleteResourceRequestAndCleanup(resourceRequestId, studentId);
       }
+
+      // Clear both studentId and resourceRequestId when unassigning
+      update.assignedStudent = { studentId: null, resourceRequestId: null };
+      update.isAssigned = false;
     }
     const machine = await Machine.findByIdAndUpdate(id, update, { new: true }).lean();
     if (!machine) return res.status(404).json({ error: 'Machine not found' });
@@ -413,30 +433,5 @@ exports.deleteMachine = async (req, res) => {
   } catch (err) {
     console.error('Failed to delete machine', err);
     return res.status(500).json({ error: 'Failed to delete machine' });
-  }
-};
-
-exports.deleteResourceRequestByMig = async (req, res) => {
-  try {
-    const { migId } = req.params;
-    if (!migId) return res.status(400).json({ error: 'MIGID is required' });
-
-    // Find a single resource request that references this MIGID in vmCredentials
-    const request = await ResourceRequest.findOne({ 'vmCredentials.migId': migId });
-    if (!request) {
-      return res.json({ ok: true, deleted: 0 });
-    }
-
-    // remove reference from student's resourceRequests array if present
-    if (request.studentId) {
-      await Student.findByIdAndUpdate(request.studentId, { $pull: { resourceRequests: request._id } });
-    }
-
-    await ResourceRequest.findByIdAndDelete(request._id);
-
-    return res.json({ ok: true, deleted: 1, requestId: request._id });
-  } catch (err) {
-    console.error('Error deleting resource request by MIGID:', err);
-    return res.status(500).json({ error: 'Failed to delete resource request' });
   }
 };
