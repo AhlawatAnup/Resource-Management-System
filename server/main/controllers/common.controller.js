@@ -6,6 +6,7 @@ const ResourceRequest = require("../database/resourceRequestModel");
 const Machine = require('../database/machineModel');
 const path = require("path");
 const publicPath = path.join(__dirname, "../../../public");
+const emailService = require("../utils/emailService.js");
 
 exports.roleBasedDashboard = (req, res) => {
   if (!req.session.user) {
@@ -74,10 +75,25 @@ exports.updateStudentVerification = async (req, res) => {
 
     if (userRole === "teacher") {
       // Teacher verification logic
-      updateData = {
-        teacher_verified: is_verified,
-        teacher_action: true
-      };
+      if (is_verified) {
+        // Teacher approves
+        updateData = {
+          teacher_verified: is_verified,
+          teacher_action: true
+        };
+      } else {
+        // Teacher rejects → delete the student account and all related resources
+        
+        // Send rejection email before deleting
+        emailService.sendStudentProfileRejectedByTeacherEmail(student.email, student.name, req.session.user.name)
+          .then(result => console.log("Email sent for student profile rejected by teacher:", result))
+          .catch(error => console.error("Error sending rejection email:", error));
+        
+        // Delete the student (cascade delete will handle resource requests)
+        await Student.findByIdAndDelete(studentId);
+        
+        return res.json({ message: "Student account and associated resources have been deleted successfully" });
+      }
     } else if (userRole === "admin") {
       // Admin verification logic
       if (is_verified) {
@@ -91,7 +107,6 @@ exports.updateStudentVerification = async (req, res) => {
         };
       } else {
         // Admin rejects → delete the student account and all related resources
-        const emailService = require("../utils/emailService.js");
         
         // Send rejection email before deleting
         emailService.sendStudentProfileRejectedByAdminEmail(student.email, student.name)
@@ -116,7 +131,6 @@ exports.updateStudentVerification = async (req, res) => {
 
     // Send email notification after successful update (in background)
     if (updatedStudent) {
-      const emailService = require("../utils/emailService.js");
       
       // Send emails asynchronously without waiting
       if (userRole === "teacher") {
