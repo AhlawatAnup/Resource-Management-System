@@ -112,6 +112,77 @@ exports.updateTeacherVerification = async (req, res) => {
   }
 };
 
+// Teacher unverfication logic
+exports.unverifyTeacherIfPossible = async (req, res) => {
+  const { teacher_id } = req.params;
+
+  try {
+    const teacher = await Teacher.findById(teacher_id).select('students');
+    if (!teacher) {
+      return res.status(404).json({ error: "Teacher not found" });
+    }
+
+    const studentIds = Array.isArray(teacher.students) ? teacher.students : [];
+
+    // 1️⃣ Block if any student has allotted resource
+    if (studentIds.length > 0) {
+      const allottedRequest = await ResourceRequest.findOne({
+        studentId: { $in: studentIds },
+        is_verified: true
+      }).select('_id studentId');
+
+      if (allottedRequest) {
+        return res.status(400).json({
+          error: "Unverify blocked: one or more students have allotted resources",
+          studentId: allottedRequest.studentId
+        });
+      }
+    }
+
+    // 2️⃣ Delete ALL resource requests of students
+    if (studentIds.length > 0) {
+      await ResourceRequest.deleteMany({
+        studentId: { $in: studentIds }
+      });
+    }
+
+    // 3️⃣ Unverify teacher
+    await Teacher.findByIdAndUpdate(
+      teacher_id,
+      {
+        is_verified: false,
+        verification_completed: false
+      }
+    );
+
+    // 4️⃣ Unverify all students
+    if (studentIds.length > 0) {
+      await Student.updateMany(
+        { _id: { $in: studentIds } },
+        {
+          $set: {
+            teacher_verified: false,
+            teacher_action: false,
+            admin_verified: false,
+            admin_action: false,
+            is_verified: false
+          }
+        }
+      );
+    }
+
+    return res.json({
+      success: true,
+      message: "Teacher, students, and their resource requests have been reset successfully"
+    });
+
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Failed to unverify teacher" });
+  }
+};
+
+
 exports.getPendingStudents = async (req, res) => {
   try {
     // Get all students that are pending - either pending on teacher OR pending on admin

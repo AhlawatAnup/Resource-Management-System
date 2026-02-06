@@ -7,6 +7,7 @@ const {
   getPendingTeachers,
   getAllTeachers,
   updateTeacherVerification,
+  unverifyTeacherIfPossible,
   getPendingStudents,
   getAllStudents,
   getRejectedTeachers,
@@ -63,6 +64,7 @@ router.get("/teachers/pending", getPendingTeachers);
 router.get("/teachers/rejected", getRejectedTeachers);
 router.get("/teacher_data/:teacher_id", teacher_data);
 router.put("/verify_teacher/:teacher_id", updateTeacherVerification);
+router.put("/unverify_teacher/:teacher_id", unverifyTeacherIfPossible);
 
 // Student management routes
 router.get("/students", getAllStudents);

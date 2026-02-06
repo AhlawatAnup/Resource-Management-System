@@ -10,6 +10,7 @@ import {
 
 let resourceRequests = [];
 let filteredRequests = [];
+let teacherVerificationStatus = { is_verified: false };
 
 // Fetch resource requests from teacher dashboard data
 async function loadResourceRequests() {
@@ -27,6 +28,19 @@ async function loadResourceRequests() {
 
     const data = await response.json();
     // console.log("Teacher Dashboard Data:", data);
+
+    // Store teacher verification status
+    teacherVerificationStatus = {
+      is_verified: data.is_verified,
+      verification_completed: data.verification_completed
+    };
+
+    // Don't show requests if teacher is not verified
+    if (!teacherVerificationStatus.is_verified) {
+      document.getElementById("requestsTableBody").innerHTML =
+        '<tr><td colspan="7" class="loading">Your account must be verified by admin to view resource requests</td></tr>';
+      return;
+    }
 
     // Extract resource requests from the dashboard data
     resourceRequests = data.resourceRequests || [];
@@ -146,6 +160,12 @@ function getActionButtons(request) {
 
 // Update resource request verification status
 async function updateRequestVerification(requestId, isVerified) {
+  // Check if teacher is verified
+  if (!teacherVerificationStatus.is_verified) {
+    showNotification('You must be verified by admin before approving resource requests', 'error');
+    return;
+  }
+
   try {
     const action = isVerified ? 'approve' : 'decline';
     const result_confirmation = await Swal.fire({

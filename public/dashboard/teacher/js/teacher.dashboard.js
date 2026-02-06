@@ -2,6 +2,7 @@
 import { renderDashboardHeader, getInitials, getRandomNamedColor, formatDate } from '../../common/js/commons.js';
 
 const student_data = [];
+let teacherVerificationStatus = { is_verified: false };
 async function getTeacherDashboardData() {
   try {
     const response = await fetch("/dashboard/teacher/data", {
@@ -18,10 +19,22 @@ async function getTeacherDashboardData() {
     const data = await response.json();
     // console.log("Dashboard Data:", data);
 
+    // Store teacher verification status
+    teacherVerificationStatus = {
+      is_verified: data.is_verified,
+      verification_completed: data.verification_completed
+    };
+
     renderDashboardHeader(data);
     renderTeacherProfile(data);
 
-    //   GET STUDENT DATA
+    //   GET STUDENT DATA - only if teacher is verified
+    if (!teacherVerificationStatus.is_verified) {
+      document.getElementById("contactTableBody").innerHTML =
+        '<tr><td colspan="5" class="loading">Your account must be verified by admin to view students</td></tr>';
+      return;
+    }
+
     if (!data.students.length) {
       document.getElementById("contactTableBody").innerHTML =
         '<tr><td colspan="5" class="loading">No student registered with you</td></tr>';
@@ -349,6 +362,12 @@ function filter_student(searchTerm) {
 
 // Function to update student verification status
 async function updateStudentVerification(studentId, isVerified) {
+  // Check if teacher is verified
+  if (!teacherVerificationStatus.is_verified) {
+    showNotification('You must be verified by admin before approving students', 'error');
+    return;
+  }
+
   try {
     const action = isVerified ? 'approve' : 'decline';
     const result_confirmation = await Swal.fire({

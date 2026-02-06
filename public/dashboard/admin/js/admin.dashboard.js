@@ -277,6 +277,13 @@ function renderAllTeacherRow(teacher) {
         <i class="fas fa-times"></i> Reject
       </button>
     `;
+  } else if (teacher.is_verified) {
+    // Show unverify button for verified teachers
+    actionButtons = `
+      <button class="btn-reject" onclick="unverifyTeacher('${teacher._id}')" title="Unverify">
+        <i class="fas fa-undo"></i> Unverify
+      </button>
+    `;
   } else {
     actionButtons = `<span class="action-completed">Action Completed</span>`;
   }
@@ -601,6 +608,65 @@ async function verifyStudent(studentId, isVerified) {
   }
 }
 
+// Unverify teacher function
+async function unverifyTeacher(teacherId) {
+  // Show confirmation dialog
+  const result = await Swal.fire({
+    title: 'Are you sure?',
+    text: 'This will unverify the teacher and all their students. This action can only be performed if no student under this teacher has an allotted resource.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Yes, unverify',
+    cancelButtonText: 'Cancel',
+    draggable: true
+  });
+  
+  if (!result.isConfirmed) {
+    return; // User cancelled the action
+  }
+  
+  try {
+    const response = await fetch(`/dashboard/admin/unverify_teacher/${teacherId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      // Reload current view
+      await loadCurrentView();
+      
+      // Show success message with SweetAlert2
+      Swal.fire({
+        title: 'Success!',
+        text: data.message || 'Teacher and students unverified successfully!',
+        icon: 'success',
+        draggable: true
+      });
+    } else {
+      const errorData = await response.json();
+      Swal.fire({
+        title: 'Cannot Unverify!',
+        text: errorData.error || 'Failed to unverify teacher',
+        icon: 'error',
+        draggable: true
+      });
+    }
+  } catch (error) {
+    console.error('Error unverifying teacher:', error);
+    Swal.fire({
+      title: 'Error!',
+      text: 'Error unverifying teacher',
+      icon: 'error',
+      draggable: true
+    });
+  }
+}
+
 // Search functionality
 document.getElementById('searchInput').addEventListener('input', (e) => {
   const searchTerm = e.target.value.toLowerCase();
@@ -633,6 +699,7 @@ document.getElementById('searchInput').addEventListener('input', (e) => {
 // Make functions globally available
 window.verifyTeacher = verifyTeacher;
 window.verifyStudent = verifyStudent;
+window.unverifyTeacher = unverifyTeacher;
 
 // Initialize dashboard when page loads
 document.addEventListener('DOMContentLoaded', function() {
@@ -643,5 +710,6 @@ document.addEventListener('DOMContentLoaded', function() {
 window.adminDashboard = {
   loadCurrentView,
   verifyTeacher,
-  verifyStudent
+  verifyStudent,
+  unverifyTeacher
 };
