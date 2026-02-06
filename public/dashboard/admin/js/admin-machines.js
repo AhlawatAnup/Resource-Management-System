@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Basic client-side check
     if (!file.name.toLowerCase().endsWith('.csv')) {
-      alert('Please select a CSV file');
+      Toastify({text: "Please select a CSV file", duration: 3000, gravity: "top", position: "center", backgroundColor: "#ff6b6b"}).showToast();
       return;
     }
 
@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const json = await resp.json();
       if (!resp.ok) {
-        alert('Import failed: ' + (json.error || resp.statusText));
+        Toastify({text: 'Import failed: ' + (json.error || resp.statusText), duration: 3000, gravity: "top", position: "center", backgroundColor: "#ff6b6b"}).showToast();
       } else {
         const msg = `Imported: ${json.imported} / ${json.total}`;
         if (json.skipped && json.skipped.length) {
@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     } catch (err) {
       console.error(err);
-      alert('Upload error: ' + err.message);
+      Toastify({text: 'Upload error: ' + err.message, duration: 3000, gravity: "top", position: "center", backgroundColor: "#ff6b6b"}).showToast();
     } finally {
       importBtn.disabled = false;
       importBtn.textContent = 'Import CSV';
@@ -295,7 +295,7 @@ document.addEventListener('DOMContentLoaded', () => {
               });
               if (!resp.ok) {
                 const txt = await resp.text().catch(() => null);
-                alert('Revoke failed: ' + (txt || resp.statusText));
+                Toastify({text: 'Revoke failed: ' + (txt || resp.statusText), duration: 3000, gravity: "top", position: "center", backgroundColor: "#ff6b6b"}).showToast();
                 return;
               }
             }
@@ -309,7 +309,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
           } catch (err) {
             console.error('Failed to revoke assignment', err);
-            alert('Failed to revoke assignment. See console for details.');
+            Toastify({text: 'Failed to revoke assignment. See console for details.', duration: 3000, gravity: "top", position: "center", backgroundColor: "#ff6b6b"}).showToast();
           }
         });
         actionTd.appendChild(revokeBtn);
@@ -389,7 +389,7 @@ function ensureEditModal() {
     const gpu = gpuRaw === '' ? null : Number(gpuRaw);
 
     if (gpu !== null && (Number.isNaN(gpu) || gpu < 0)) {
-      alert('GPU RAM must be a non-negative number');
+      Toastify({text: 'GPU RAM must be a non-negative number', duration: 3000, gravity: "top", position: "center", backgroundColor: "#ff6b6b"}).showToast();
 
       saveBtn.disabled = false;
       saveBtn.style.opacity = '1';
@@ -407,7 +407,7 @@ function ensureEditModal() {
         });
         if (!resp.ok) {
           const txt = await resp.text();
-          alert('Update failed: ' + (txt || resp.statusText));
+          Toastify({text: 'Update failed: ' + (txt || resp.statusText), duration: 3000, gravity: "top", position: "center", backgroundColor: "#ff6b6b"}).showToast();
           return;
         }
       }
@@ -434,7 +434,7 @@ function ensureEditModal() {
       });
     } catch (err) {
       console.error('Failed to update machine', err);
-      alert('Failed to update machine. See console for details.');
+      Toastify({text: 'Failed to update machine', duration: 3000, gravity: "top", position: "center", backgroundColor: "#ff6b6b"}).showToast();
     } finally {
       // Re-enable save button for next use
       saveBtn.disabled = false;
