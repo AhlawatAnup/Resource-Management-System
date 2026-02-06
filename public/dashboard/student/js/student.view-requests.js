@@ -236,11 +236,11 @@ function displayAllRequests(requests) {
                                 </div>` : ''}
 
                                 <!-- Optional MIG ID -->
-                                ${request.vmCredentials.migId ? `
+                                ${(request.machineId && request.machineId.MIGID) ? `
                                 <div class="credential-item" style="display:flex; align-items:center; gap:10px; max-width:100%;">
                                     <strong style="width:80px;">MIG ID:</strong>
                                     <span id="migid-${request._id}" style="border:1px solid #c3e6c3; border-radius:6px; padding:6px 10px; background:#f0fff0; flex:1;">
-                                        ${request.vmCredentials.migId}
+                                        ${request.machineId.MIGID}
                                     </span>
                                     <button type="button" class="copy-btn" data-copytarget="migid-${request._id}" style="background:none; border:none; cursor:pointer; padding:0 6px; flex-shrink:0;">
                                         <span class="copy-label"><i class="fas fa-copy"></i></span>

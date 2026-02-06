@@ -204,6 +204,7 @@ exports.getStudentResourceRequests = async (req, res) => {
 
     // Get all resource requests for this student, sorted by creation date (newest first)
     const resourceRequests = await ResourceRequest.find({ studentId })
+      .populate('machineId', 'MIGID') // Populate machine to get MIGID
       .sort({ createdAt: -1 })
       .limit(50); // Limit to last 50 requests to avoid performance issues
 
