@@ -126,15 +126,23 @@ exports.unverifyTeacherIfPossible = async (req, res) => {
 
     // 1️⃣ Block if any student has allotted resource
     if (studentIds.length > 0) {
-      const allottedRequest = await ResourceRequest.findOne({
+      const allottedRequests = await ResourceRequest.find({
         studentId: { $in: studentIds },
         is_verified: true
-      }).select('_id studentId');
+      }).populate('studentId', 'rollNo name').select('studentId');
 
-      if (allottedRequest) {
+      if (allottedRequests && allottedRequests.length > 0) {
+        // Extract roll numbers of students with allocated resources
+        const studentsWithResources = allottedRequests
+          .filter(req => req.studentId) // Filter out any null references
+          .map(req => ({
+            rollNo: req.studentId.rollNo,
+            name: req.studentId.name
+          }));
+
         return res.status(400).json({
-          error: "Unverify blocked: one or more students have allotted resources",
-          studentId: allottedRequest.studentId
+          error: "Some students have allocated resources",
+          studentsWithResources: studentsWithResources
         });
       }
     }

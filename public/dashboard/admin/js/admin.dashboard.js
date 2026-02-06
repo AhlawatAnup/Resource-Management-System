@@ -380,8 +380,10 @@ function renderAllStudentRow(student) {
         <i class="fas fa-times"></i> Reject
       </button>
     `;
-  } else {
+  } else if (student.admin_action) {
     actionButtons = `<span class="action-completed">Action Completed</span>`;
+  } else {
+    actionButtons = ``;
   }
   
   return `
@@ -649,12 +651,34 @@ async function unverifyTeacher(teacherId) {
       });
     } else {
       const errorData = await response.json();
-      Swal.fire({
-        title: 'Cannot Unverify!',
-        text: errorData.error || 'Failed to unverify teacher',
-        icon: 'error',
-        draggable: true
-      });
+      
+      // Check if there are students with allocated resources
+      if (errorData.studentsWithResources && errorData.studentsWithResources.length > 0) {
+        const studentList = errorData.studentsWithResources
+          .map(s => `• ${s.rollNo} - ${s.name}`)
+          .join('\n');
+        
+        Swal.fire({
+          title: 'Cannot Unverify!',
+          html: `
+            <p>${errorData.error}</p>
+            <br>
+            <pre style="font-size: 0.8em; text-align: left; background: #f5f5f5; padding: 10px; border-radius: 5px; max-height: 200px; overflow-y: auto;">${studentList}</pre>
+            <br>
+            <p style="font-size: 0.8em; color: #666;">Please revoke their machine allocations before unverifying this teacher.</p>
+          `,
+          icon: 'error',
+          draggable: true,
+          width: '600px'
+        });
+      } else {
+        Swal.fire({
+          title: 'Cannot Unverify!',
+          text: errorData.error || 'Failed to unverify teacher',
+          icon: 'error',
+          draggable: true
+        });
+      }
     }
   } catch (error) {
     console.error('Error unverifying teacher:', error);
