@@ -371,7 +371,7 @@ function renderAllStudentRow(student) {
   
   // Show approval/rejection buttons only for students pending admin approval in "all" view
   let actionButtons = '';
-  if (currentStatus === 'all' && student.teacher_verified && student.teacher_action && !student.admin_action) {
+  if (currentStatus === 'all' && !student.admin_action) {
     actionButtons = `
       <button class="btn-approve" onclick="verifyStudent('${student._id}', true)" title="Approve">
         <i class="fas fa-check"></i> Approve
