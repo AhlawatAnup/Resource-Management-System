@@ -435,6 +435,10 @@ function ensureEditModal() {
     } catch (err) {
       console.error('Failed to update machine', err);
       alert('Failed to update machine. See console for details.');
+    } finally {
+      // Re-enable save button for next use
+      saveBtn.disabled = false;
+      saveBtn.style.opacity = '1';
     }
   });
 
@@ -595,4 +599,7 @@ function closeEditModal() {
   modal.style.display = 'none';
   delete modal.dataset.machineId;
   delete modal.dataset.rowSelector;
+  // Reset form for next use
+  const form = modal.querySelector('#machineEditForm');
+  if (form) form.reset();
 }
