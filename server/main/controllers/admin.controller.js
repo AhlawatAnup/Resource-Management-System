@@ -190,6 +190,59 @@ exports.unverifyTeacherIfPossible = async (req, res) => {
   }
 };
 
+exports.unverifyStudentIfPossible = async (req, res) => {
+  const { student_id } = req.params;
+
+  try {
+    const student = await Student.findById(student_id);
+    if (!student) {
+      return res.status(404).json({ error: "Student not found" });
+    }
+
+    // 1️⃣ Block if student has any allotted resource
+    const allottedRequests = await ResourceRequest.find({
+      studentId: student_id,
+      is_verified: true
+    });
+
+    if (allottedRequests && allottedRequests.length > 0) {
+      return res.status(400).json({
+        error: "Student has allocated resources. Cannot unverify."
+      });
+    }
+
+    // 2️⃣ Delete ALL resource requests of this student
+    await ResourceRequest.deleteMany({
+      studentId: student_id
+    });
+
+    // 3️⃣ Unverify student and clear resourceRequests array
+    await Student.findByIdAndUpdate(
+      student_id,
+      {
+        $set: {
+          teacher_verified: false,
+          teacher_action: false,
+          admin_verified: false,
+          admin_action: false,
+          is_verified: false,
+          resourceRequests: []
+        }
+      }
+    );
+
+    return res.status(200).json({
+      message: "Student unverified successfully"
+    });
+
+  } catch (error) {
+    console.error("Error unverifying student:", error);
+    res.status(500).json({
+      error: "Failed to unverify student"
+    });
+  }
+};
+
 
 exports.getPendingStudents = async (req, res) => {
   try {

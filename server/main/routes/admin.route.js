@@ -22,6 +22,7 @@ const {
   deleteMachine,
   deleteResourceRequestByMig,
   UpdateAdminProfile,
+  unverifyStudentIfPossible,
 } = require("../controllers/admin.controller.js");
 
 const {
@@ -74,6 +75,7 @@ router.get("/student_data/:student_id", student_data);
 router.put("/verify_student/:student_id", updateStudentVerification);
 router.put("/edit_request/:request_id", editResourceRequest);
 router.delete("/delete_student/:studentId", deleteStudentAndResources); // Delete student and their resource requests (admin)
+router.put("/unverify_student/:student_id", unverifyStudentIfPossible);
 
 // Resource request management routes
 router.get("/resource-requests", getAllResourceRequests);

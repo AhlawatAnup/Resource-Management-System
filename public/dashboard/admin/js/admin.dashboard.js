@@ -369,7 +369,7 @@ function renderAllStudentRow(student) {
 
   const status = getStudentStatus();
   
-  // Show approval/rejection buttons only for students pending admin approval in "all" view
+  // Show approval/rejection buttons for students pending admin action
   let actionButtons = '';
   if (currentStatus === 'all' && !student.admin_action) {
     actionButtons = `
@@ -378,6 +378,13 @@ function renderAllStudentRow(student) {
       </button>
       <button class="btn-reject" onclick="verifyStudent('${student._id}', false)" title="Reject">
         <i class="fas fa-times"></i> Reject
+      </button>
+    `;
+  } else if (student.admin_verified && student.admin_action && student.is_verified) {
+    // Show unverify button for verified students
+    actionButtons = `
+      <button class="btn-reject" onclick="unverifyStudent('${student._id}')" title="Unverify">
+        <i class="fas fa-undo"></i> Unverify
       </button>
     `;
   } else if (student.admin_action) {
@@ -610,6 +617,66 @@ async function verifyStudent(studentId, isVerified) {
   }
 }
 
+// Unverify student function
+async function unverifyStudent(studentId) {
+  // Show confirmation dialog
+  const result = await Swal.fire({
+    title: 'Are you sure?',
+    text: 'This will unverify the student. This action can only be performed if the student has no allotted resources.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Yes, unverify',
+    cancelButtonText: 'Cancel',
+    draggable: true
+  });
+  
+  if (!result.isConfirmed) {
+    return; // User cancelled the action
+  }
+  
+  try {
+    const response = await fetch(`/dashboard/admin/unverify_student/${studentId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      // Reload current view
+      await loadCurrentView();
+      
+      // Show success message with SweetAlert2
+      Swal.fire({
+        title: 'Success!',
+        text: data.message || 'Student unverified successfully!',
+        icon: 'success',
+        draggable: true
+      });
+    } else {
+      const errorData = await response.json();
+      // Show error message with SweetAlert2
+      Swal.fire({
+        title: 'Error!',
+        text: errorData.error || 'Failed to unverify student',
+        icon: 'error',
+        draggable: true
+      });
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    Swal.fire({
+      title: 'Error!',
+      text: 'An error occurred while unverifying student',
+      icon: 'error',
+      draggable: true
+    });
+  }
+}
+
 // Unverify teacher function
 async function unverifyTeacher(teacherId) {
   // Show confirmation dialog
@@ -724,6 +791,7 @@ document.getElementById('searchInput').addEventListener('input', (e) => {
 window.verifyTeacher = verifyTeacher;
 window.verifyStudent = verifyStudent;
 window.unverifyTeacher = unverifyTeacher;
+window.unverifyStudent = unverifyStudent;
 
 // Initialize dashboard when page loads
 document.addEventListener('DOMContentLoaded', function() {
@@ -735,5 +803,6 @@ window.adminDashboard = {
   loadCurrentView,
   verifyTeacher,
   verifyStudent,
-  unverifyTeacher
+  unverifyTeacher,
+  unverifyStudent
 };
