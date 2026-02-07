@@ -229,6 +229,14 @@ exports.register = async (req, res) => {
           // Don't fail the registration if email fails
         }
 
+        // Notify admin about new teacher registration
+        try {
+          const { sendAdminTeacherRegistrationEmail } = require('../utils/email/emails.service');
+          await sendAdminTeacherRegistrationEmail(name, req.session.email, branch);
+        } catch (emailError) {
+          console.error('Error sending admin notification email:', emailError);
+        }
+
         return res.json({ message: "Teacher registered successfully" });
       } else {
         return res.status(500).json({ error: "Failed to save teacher" });

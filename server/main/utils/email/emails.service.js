@@ -8,5 +8,7 @@ module.exports = {
 
   ...require('./teacher/registration.email'),
   ...require('./teacher/profile.email'),
-  ...require('./teacher/notification.email')
+  ...require('./teacher/notification.email'),
+
+  ...require('./admin/notification.email')
 };

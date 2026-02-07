@@ -256,11 +256,52 @@ const sendTeacherResourceRequestRejectedByAdminEmail = async (teacherEmail, teac
   });
 };
 
+// 7. Notify teacher when admin revokes student resource allocation
+const sendTeacherResourceRequestRevokedByAdminEmail = async (teacherEmail, teacherName, studentName, resourceTitle) => {
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #f44336;">⚠️ Resource Allocation Revoked</h2>
+
+      <p>Dear <strong>${teacherName}</strong>,</p>
+
+      <p>
+        The administrator has revoked a resource allocation for one of your students.
+      </p>
+
+      <div style="background-color: #ffebee; border: 1px solid #f44336; padding: 20px; border-radius: 8px;">
+        <p><strong>Student Name:</strong> ${studentName}</p>
+        <p><strong>Resource Title:</strong> ${resourceTitle}</p>
+        <p><strong>Status:</strong> Allocation Revoked ⚠️</p>
+      </div>
+
+      <div style="background-color: #fff3e0; border: 1px solid #ffb74d; padding: 15px; border-radius: 5px; margin-top: 20px;">
+        <strong>📝 Information:</strong>
+        <p>The resources have been deallocated and the student has been notified. The student may submit a new resource request if needed.</p>
+      </div>
+
+      <p>Best regards,<br>
+      <strong>UIET Cluster Resource Management System</strong></p>
+
+      <hr>
+      <p style="font-size: 12px; color: #666;">
+        This is an automated email. Please do not reply.
+      </p>
+    </div>
+  `;
+
+  return sendEmail({
+    to: teacherEmail,
+    subject: 'Student Resource Allocation Revoked by Admin',
+    html
+  });
+};
+
 module.exports = {
   sendTeacherStudentRegisteredEmail,
   sendTeacherStudentResourceRequestEmail,
   sendTeacherStudentVerifiedByAdminEmail,
   sendTeacherStudentRejectedByAdminEmail,
   sendTeacherResourceRequestVerifiedByAdminEmail,
-  sendTeacherResourceRequestRejectedByAdminEmail
+  sendTeacherResourceRequestRejectedByAdminEmail,
+  sendTeacherResourceRequestRevokedByAdminEmail
 };

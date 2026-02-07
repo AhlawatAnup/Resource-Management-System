@@ -545,29 +545,35 @@ exports.updateMachine = async (req, res) => {
         const resourceRequestId = currentMachine.assignedStudent.resourceRequestId;
         const studentId = currentMachine.assignedStudent.studentId;
 
-        // Notify student before revocation cleanup
-       try {
-          Student.findById(studentId).then(student => {
-            if (!student) return;
-
-            ResourceRequest.findById(resourceRequestId).then(resourceRequest => {
-              if (!resourceRequest) return;
-
-              emailService
-                .sendResourceRequestRevokedByAdminEmail(
-                  student.email,
+        // Notify student and teacher before revocation cleanup (async, non-blocking)
+        Student.findById(studentId).then(student => {
+          if (!student) return;
+          
+          ResourceRequest.findById(resourceRequestId).then(resourceRequest => {
+            if (!resourceRequest) return;
+            
+            // Send student notification email
+            emailService
+              .sendResourceRequestRevokedByAdminEmail(
+              student.email,
+              student.name,
+              resourceRequest.title,
+              currentMachine.MIGID
+            ).catch(err => console.error('Error sending student revocation email:', err));
+            
+            // Send teacher notification email
+            Teacher.findById(student.teacher).then(teacher => {
+              if (teacher) {
+                emailService.sendTeacherResourceRequestRevokedByAdminEmail(
+                  teacher.email,
+                  teacher.name,
                   student.name,
-                  resourceRequest.title,
-                  currentMachine.MIGID
-                )
-                .catch(err => {
-                  console.error("Error sending revocation email:", err);
-                });
-            });
-          });
-        } catch (err) {
-          console.error(err);
-        }
+                  resourceRequest.title
+                ).catch(err => console.error('Error sending teacher notification email:', err));
+              }
+            }).catch(err => console.error('Error finding teacher:', err));
+          }).catch(err => console.error('Error finding resource request:', err));
+        }).catch(err => console.error('Error finding student:', err));
 
         // Delete the resource request and clean up references
         await deleteResourceRequestAndCleanup(resourceRequestId, studentId);

@@ -297,6 +297,13 @@ document.addEventListener('DOMContentLoaded', () => {
           });
           if (!result.isConfirmed) return;
 
+          // Show processing state
+          revokeBtn.disabled = true;
+          const originalText = revokeBtn.textContent;
+          revokeBtn.textContent = 'Processing...';
+          revokeBtn.style.opacity = '0.6';
+          revokeBtn.style.cursor = 'not-allowed';
+
           try {
             // Revoke assignment
             if (m._id) {
@@ -308,6 +315,11 @@ document.addEventListener('DOMContentLoaded', () => {
               });
               if (!resp.ok) {
                 const txt = await resp.text().catch(() => null);
+                // Reset button state on error
+                revokeBtn.disabled = false;
+                revokeBtn.textContent = originalText;
+                revokeBtn.style.opacity = '1';
+                revokeBtn.style.cursor = 'pointer';
                 Toastify({text: 'Revoke failed: ' + (txt || resp.statusText), duration: 3000, gravity: "top", position: "center", backgroundColor: "#ff6b6b"}).showToast();
                 return;
               }
@@ -322,6 +334,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
           } catch (err) {
             console.error('Failed to revoke assignment', err);
+            // Reset button state on error
+            revokeBtn.disabled = false;
+            revokeBtn.textContent = originalText;
+            revokeBtn.style.opacity = '1';
+            revokeBtn.style.cursor = 'pointer';
             Toastify({text: 'Failed to revoke assignment. See console for details.', duration: 3000, gravity: "top", position: "center", backgroundColor: "#ff6b6b"}).showToast();
           }
         });

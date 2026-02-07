@@ -84,8 +84,12 @@ exports.updateStudentVerification = async (req, res) => {
       } else {
         // Teacher rejects → delete the student account and all related resources
         
+        // Get teacher name for rejection email
+        const teacher = await Teacher.findById(req.session.user.id);
+        const teacherName = teacher ? teacher.name : 'your teacher';
+        
         // Send rejection email before deleting
-        emailService.sendStudentProfileRejectedByTeacherEmail(student.email, student.name, req.session.user.name)
+        emailService.sendStudentProfileRejectedByTeacherEmail(student.email, student.name, teacherName)
           .then(result => console.log("Email sent for student profile rejected by teacher:", result))
           .catch(error => console.error("Error sending rejection email:", error));
         
@@ -146,13 +150,23 @@ exports.updateStudentVerification = async (req, res) => {
       // Send emails asynchronously without waiting
       if (userRole === "teacher") {
         if (is_verified) {
-          emailService.sendStudentProfileVerifiedByTeacherEmail(updatedStudent.email, updatedStudent.name, req.session.user.name)
+          // Get teacher details for emails
+          const teacher = await Teacher.findById(req.session.user.id);
+          const teacherName = teacher ? teacher.name : 'Teacher';
+          
+          emailService.sendStudentProfileVerifiedByTeacherEmail(updatedStudent.email, updatedStudent.name, teacherName)
             .then(result => console.log("Email sent for student profile verified by teacher:", result))
             .catch(error => console.error("Error sending verification email:", error));
-        } else {
-          emailService.sendStudentProfileRejectedByTeacherEmail(updatedStudent.email, updatedStudent.name, req.session.user.name)
-            .then(result => console.log("Email sent for student profile rejected by teacher:", result))
-            .catch(error => console.error("Error sending rejection email:", error));
+          
+          // Notify admins that student verification is pending
+          emailService.sendAdminStudentVerificationPendingEmail(
+            updatedStudent.name,
+            updatedStudent.email,
+            updatedStudent.rollNo,
+            teacherName
+          )
+            .then(result => console.log("Admin notification sent:", result))
+            .catch(error => console.error("Error sending admin notification:", error));
         }
       } else if (userRole === "admin") {
         if (is_verified) {
@@ -346,6 +360,17 @@ exports.updateResourceRequestVerification = async (req, res) => {
           emailService.sendResourceRequestVerifiedByTeacherEmail(student.email, student.name, updatedRequest.title, teacher.name)
             .then(result => console.log("Teacher resource request verification email sent:", result))
             .catch(error => console.error("Error sending teacher verification email:", error));
+          
+          // Notify admin that resource request is pending
+          emailService.sendAdminResourceRequestPendingEmail(
+            student.name,
+            student.email,
+            updatedRequest.title,
+            teacher.name,
+            updatedRequest.gpuRam
+          )
+            .then(result => console.log("Admin notification sent:", result))
+            .catch(error => console.error("Error sending admin notification:", error));
         } else {
           // Rejected by teacher
           emailService.sendResourceRequestRejectedByTeacherEmail(student.email, student.name, updatedRequest.title, teacher.name)
