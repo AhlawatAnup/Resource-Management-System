@@ -201,7 +201,14 @@ document.addEventListener('DOMContentLoaded', () => {
       editBtn.type = 'button';
       editBtn.className = 'btn btn-edit';
       editBtn.textContent = 'Edit';
-      editBtn.addEventListener('click', () => openEditModal(m, tr, assignedTd));
+      editBtn.addEventListener('click', () => {
+        // Prevent editing if machine is assigned
+        if (_isAssigned) {
+          Toastify({text: "Cannot edit machine that is assigned to a student. Revoke assignment first.", duration: 3000, gravity: "top", position: "center", backgroundColor: "#ff6b6b"}).showToast();
+          return;
+        }
+        openEditModal(m, tr, assignedTd);
+      });
       actionTd.appendChild(editBtn);
 
       const deleteBtn = document.createElement('button');
@@ -210,6 +217,12 @@ document.addEventListener('DOMContentLoaded', () => {
       deleteBtn.textContent = 'Delete';
       deleteBtn.style.marginLeft = '8px';
       deleteBtn.addEventListener('click', async () => {
+        // Prevent deletion if machine is assigned
+        if (_isAssigned) {
+          Toastify({text: "Cannot delete machine that is assigned to a student. Revoke assignment first.", duration: 3000, gravity: "top", position: "center", backgroundColor: "#ff6b6b"}).showToast();
+          return;
+        }
+        
         if (!await machineConfirmDelete(m)) return;
         try {
           if (m._id) {
