@@ -3,6 +3,7 @@ const Student = require("../database/studentModel");
 const Admin = require("../database/adminModel");
 const Machine = require('../database/machineModel');
 const ResourceRequest = require("../database/resourceRequestModel");
+const emailService = require("../utils/email/emails.service.js");
 const bcrypt = require('bcrypt');
 
 exports.admin_dashboard_data = async (req, res) => {
@@ -72,7 +73,7 @@ exports.updateTeacherVerification = async (req, res) => {
     }
 
     // Email notification for teacher profile verification/rejection
-    const emailService = require("../utils/emailService.js");
+
     if (is_verified) {
       // Approve: Update teacher verification status
       const updatedTeacher = await Teacher.findByIdAndUpdate(
@@ -543,7 +544,31 @@ exports.updateMachine = async (req, res) => {
       if (currentMachine && currentMachine.assignedStudent && currentMachine.assignedStudent.resourceRequestId) {
         const resourceRequestId = currentMachine.assignedStudent.resourceRequestId;
         const studentId = currentMachine.assignedStudent.studentId;
-        
+
+        // Notify student before revocation cleanup
+       try {
+          Student.findById(studentId).then(student => {
+            if (!student) return;
+
+            ResourceRequest.findById(resourceRequestId).then(resourceRequest => {
+              if (!resourceRequest) return;
+
+              emailService
+                .sendResourceRequestRevokedByAdminEmail(
+                  student.email,
+                  student.name,
+                  resourceRequest.title,
+                  currentMachine.MIGID
+                )
+                .catch(err => {
+                  console.error("Error sending revocation email:", err);
+                });
+            });
+          });
+        } catch (err) {
+          console.error(err);
+        }
+
         // Delete the resource request and clean up references
         await deleteResourceRequestAndCleanup(resourceRequestId, studentId);
       }

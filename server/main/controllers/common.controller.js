@@ -6,7 +6,7 @@ const ResourceRequest = require("../database/resourceRequestModel");
 const Machine = require('../database/machineModel');
 const path = require("path");
 const publicPath = path.join(__dirname, "../../../public");
-const emailService = require("../utils/emailService.js");
+const emailService = require("../utils/email/emails.service.js");
 
 exports.roleBasedDashboard = (req, res) => {
   if (!req.session.user) {
@@ -113,6 +113,17 @@ exports.updateStudentVerification = async (req, res) => {
           .then(result => console.log("Email sent for student profile rejected by admin:", result))
           .catch(error => console.error("Error sending rejection email:", error));
         
+        // Notify teacher about admin's rejection
+        Teacher.findById(student.teacher)
+          .then(teacher => {
+            if (teacher) {
+              emailService.sendTeacherStudentRejectedByAdminEmail(teacher.email, teacher.name, student.name)
+                .then(result => console.log("Teacher notification email sent:", result))
+                .catch(error => console.error("Error sending teacher notification:", error));
+            }
+          })
+          .catch(error => console.error("Error finding teacher:", error));
+        
         // Delete the student (cascade delete will handle resource requests)
         await Student.findByIdAndDelete(studentId);
         
@@ -148,6 +159,17 @@ exports.updateStudentVerification = async (req, res) => {
           emailService.sendStudentProfileVerifiedByAdminEmail(updatedStudent.email, updatedStudent.name)
             .then(result => console.log("Email sent for student profile verified by admin:", result))
             .catch(error => console.error("Error sending verification email:", error));
+          
+          // Notify teacher about admin's verification
+          Teacher.findById(updatedStudent.teacher)
+            .then(teacher => {
+              if (teacher) {
+                emailService.sendTeacherStudentVerifiedByAdminEmail(teacher.email, teacher.name, updatedStudent.name)
+                  .then(result => console.log("Teacher notification email sent:", result))
+                  .catch(error => console.error("Error sending teacher notification:", error));
+              }
+            })
+            .catch(error => console.error("Error finding teacher:", error));
         }
       }
     }
@@ -315,7 +337,6 @@ exports.updateResourceRequestVerification = async (req, res) => {
       }
 
       const student = await Student.findById(updatedRequest.studentId);
-      const emailService = require("../utils/emailService.js");
       
       // Send emails asynchronously without waiting
       if (userRole === "teacher") {
@@ -334,14 +355,36 @@ exports.updateResourceRequestVerification = async (req, res) => {
       } else if (userRole === "admin") {
         if (is_verified) {
           // Approved by admin
-          emailService.sendResourceRequestVerifiedByAdminEmail(student.email, student.name, updatedRequest.title, updatedRequest.vmCredentials)
+          emailService.sendResourceRequestVerifiedByAdminEmail(student.email, student.name, updatedRequest.title, updatedRequest.vmCredentials, updatedRequest.username)
             .then(result => console.log("Admin resource request verification email sent:", result))
             .catch(error => console.error("Error sending admin verification email:", error));
+          
+          // Notify teacher about admin's approval
+          Teacher.findById(student.teacher)
+            .then(teacher => {
+              if (teacher) {
+                emailService.sendTeacherResourceRequestVerifiedByAdminEmail(teacher.email, teacher.name, student.name, updatedRequest.title)
+                  .then(result => console.log("Teacher notification email sent:", result))
+                  .catch(error => console.error("Error sending teacher notification:", error));
+              }
+            })
+            .catch(error => console.error("Error finding teacher:", error));
         } else {
           // Rejected by admin
           emailService.sendResourceRequestRejectedByAdminEmail(student.email, student.name, updatedRequest.title)
             .then(result => console.log("Admin resource request rejection email sent:", result))
             .catch(error => console.error("Error sending admin rejection email:", error));
+          
+          // Notify teacher about admin's rejection
+          Teacher.findById(student.teacher)
+            .then(teacher => {
+              if (teacher) {
+                emailService.sendTeacherResourceRequestRejectedByAdminEmail(teacher.email, teacher.name, student.name, updatedRequest.title)
+                  .then(result => console.log("Teacher notification email sent:", result))
+                  .catch(error => console.error("Error sending teacher notification:", error));
+              }
+            })
+            .catch(error => console.error("Error finding teacher:", error));
         }
       }
     }

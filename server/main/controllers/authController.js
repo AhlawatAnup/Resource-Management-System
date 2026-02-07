@@ -1,7 +1,7 @@
 const Student = require("../database/studentModel");
 const Teacher = require("../database/teacherModel");
 const Admin = require("../database/adminModel");
-const { sendStudentRegistrationSuccessEmail, sendTeacherRegistrationSuccessEmail, sendOTPEmail } = require("../utils/emailService");
+const { sendOTPEmail, sendStudentRegistrationSuccessEmail, sendTeacherStudentRegisteredEmail, sendTeacherRegistrationSuccessEmail } = require("../utils/email/emails.service");
 const bcrypt = require("bcrypt");
 
 const otpStore = {};
@@ -191,6 +191,13 @@ exports.register = async (req, res) => {
         } catch (emailError) {
           console.error('Error sending student registration email:', emailError);
           // Don't fail the registration if email fails
+        }
+
+        // Notify teacher about new student registration
+        try {
+          await sendTeacherStudentRegisteredEmail(teacher.email, teacher.name, name, rollNo);
+        } catch (emailError) {
+          console.error('Error sending teacher notification email:', emailError);
         }
 
         return res.json({ message: "Student registered successfully" });

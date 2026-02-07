@@ -1,7 +1,7 @@
 const ResourceRequest = require("../database/resourceRequestModel");
 const Student = require("../database/studentModel");
 const Admin = require("../database/adminModel");
-const { sendExpiringResourceEmail } = require("../utils/emailService");
+const { sendExpiringResourceEmail } = require("../utils/email/emails.service");
 
 
 // Notification days before expiry

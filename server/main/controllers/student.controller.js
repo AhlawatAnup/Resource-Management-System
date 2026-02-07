@@ -142,12 +142,24 @@ exports.submitResourceRequest = async (req, res) => {
       await addResourceRequestToStudent(studentId, savedRequest._id);
       // console.log(`New resource request submitted by student ${studentId}:`, savedRequest._id);
       // Send email to student after successful request
-      const { sendResourceRequestSubmittedEmail } = require('../utils/emailService');
+      const { sendResourceRequestSubmittedEmail, sendTeacherStudentResourceRequestEmail } = require('../utils/email/emails.service');
       try {
         await sendResourceRequestSubmittedEmail(student.email, student.name, savedRequest.title);
         // console.log(`Resource request email sent to ${student.email}`);
       } catch (emailErr) {
         console.error('Error sending resource request email:', emailErr);
+      }
+
+      // Notify teacher about student's resource request
+      try {
+        const Teacher = require('../database/teacherModel');
+        const teacher = await Teacher.findById(student.teacher);
+        if (teacher) {
+          await sendTeacherStudentResourceRequestEmail(teacher.email, teacher.name, student.name, savedRequest.title);
+          // console.log(`Teacher notification email sent to ${teacher.email}`);
+        }
+      } catch (emailErr) {
+        console.error('Error sending teacher notification email:', emailErr);
       }
     }
 
