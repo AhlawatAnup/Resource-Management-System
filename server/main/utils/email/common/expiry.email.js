@@ -29,7 +29,7 @@ const sendExpiringResourceEmail = async ({
 
   return sendEmail({
     to: [studentEmail, adminEmail].filter(Boolean).join(','),
-    subject: 'Resource Request Expiry Notice - Action Required',
+    subject: '[URGENT] Resource Request Expiry Notice - Action Required',
     html
   });
 };

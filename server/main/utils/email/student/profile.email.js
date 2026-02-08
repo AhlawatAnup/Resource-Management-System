@@ -31,7 +31,7 @@ const sendStudentProfileRejectedByTeacherEmail = async (studentEmail, studentNam
 
   return sendEmail({
     to: studentEmail,
-    subject: 'Profile Verification Update - Teacher Review Required',
+    subject: '[REJECTED] Profile Verification Update - Teacher Review Required',
     html
   });
 };
@@ -49,7 +49,7 @@ const sendStudentProfileVerifiedByAdminEmail = async (studentEmail, studentName)
 
   return sendEmail({
     to: studentEmail,
-    subject: 'Profile Fully Verified - Access Granted!',
+    subject: '[VERIFIED] Profile Fully Verified - Access Granted!',
     html
   });
 };
@@ -67,7 +67,7 @@ const sendStudentProfileRejectedByAdminEmail = async (studentEmail, studentName)
 
   return sendEmail({
     to: studentEmail,
-    subject: 'Profile Verification Update - Admin Review',
+    subject: '[REJECTED] Profile Verification Update - Admin Review',
     html
   });
 };
@@ -86,7 +86,7 @@ const sendStudentAccountDeletedDueToTeacherDeletionEmail = async (studentEmail, 
 
   return sendEmail({
     to: studentEmail,
-    subject: 'Account Deleted - Teacher Account Removed',
+    subject: '[ATTENTION] Account Deleted - Teacher Account Removed',
     html
   });
 };
@@ -116,7 +116,7 @@ const sendStudentProfileUnverifiedByAdminEmail = async (studentEmail, studentNam
 
   return sendEmail({
     to: studentEmail,
-    subject: 'Profile Verification Reset - Action Required',
+    subject: '[ACTION REQUIRED] Profile Verification Reset - Action Required',
     html
   });
 };
@@ -146,7 +146,7 @@ const sendStudentUnverifiedDueToTeacherUnverificationEmail = async (studentEmail
 
   return sendEmail({
     to: studentEmail,
-    subject: 'Profile Verification Reset - Teacher Status Changed',
+    subject: '[ATTENTION] Profile Verification Reset - Teacher Status Changed',
     html
   });
 };

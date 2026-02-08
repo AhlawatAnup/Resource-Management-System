@@ -30,7 +30,7 @@ const sendOTPEmail = async (email, otp, role) => {
 
   return sendEmail({
     to: email,
-    subject: 'Verify Your Email - UIET Cluster Resource Sharing',
+    subject: '[ACTION REQUIRED] Verify Your Email - UIET Cluster Resource Sharing',
     html
   });
 };

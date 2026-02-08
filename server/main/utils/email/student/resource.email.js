@@ -82,7 +82,7 @@ const sendResourceRequestRejectedByTeacherEmail = async (
 ) => {
   return sendEmail({
     to: studentEmail,
-    subject: 'Resource Request Update - Teacher Review Required',
+    subject: '[REJECTED] Resource Request Update - Teacher Review Required',
     html: `
       <div style="font-family: Arial, sans-serif; max-width:600px; margin:auto;">
         <h3 style="color:#f44336;">❌ Request Rejected by Teacher</h3>
@@ -119,7 +119,7 @@ const sendResourceRequestVerifiedByAdminEmail = async (
 ) => {
   return sendEmail({
     to: studentEmail,
-    subject: 'Resource Request Approved - VM Access Granted',
+    subject: '[VERIFIED] Resource Request Approved - VM Access Granted',
     html: `
       <div style="font-family: Arial, sans-serif; max-width:600px; margin:auto;">
         <h3 style="color:#4CAF50;">🎉 Resource Request Approved</h3>
@@ -163,7 +163,7 @@ const sendResourceRequestRejectedByAdminEmail = async (
 ) => {
   return sendEmail({
     to: studentEmail,
-    subject: 'Resource Request Update - Admin Review',
+    subject: '[REJECTED] Resource Request Update - Admin Review',
     html: `
       <div style="font-family: Arial, sans-serif; max-width:600px; margin:auto;">
         <h3 style="color:#f44336;">❌ Request Rejected by Admin</h3>
@@ -200,7 +200,7 @@ const sendResourceRequestRevokedByAdminEmail = async (
 
   return sendEmail({
     to: studentEmail,
-    subject: 'Resource Allocation Revoked - Access Removed',
+    subject: '[ATTENTION] Resource Allocation Revoked - Access Removed',
     html: `
       <div style="font-family: Arial, sans-serif; max-width:600px; margin:auto;">
         <h3 style="color:#f44336;">⚠️ Resource Allocation Revoked</h3>

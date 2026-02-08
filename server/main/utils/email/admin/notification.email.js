@@ -61,7 +61,7 @@ const sendAdminTeacherRegistrationEmail = async (teacherName, teacherEmail, teac
     </div>
   `;
 
-  return sendToAdmin('New Teacher Registration - Verification Required', html);
+  return sendToAdmin('[ACTION REQUIRED] New Teacher Registration - Verification Required', html);
 };
 
 // 2. Notify admin when student verification is approved by teacher (pending admin approval)
@@ -99,7 +99,7 @@ const sendAdminStudentVerificationPendingEmail = async (studentName, studentEmai
     </div>
   `;
 
-  return sendToAdmin('Student Verification Pending - Admin Approval Required', html);
+  return sendToAdmin('[ACTION REQUIRED] Student Verification Pending - Admin Approval Required', html);
 };
 
 // 3. Notify admin when resource request is approved by teacher (pending admin approval)
@@ -152,7 +152,7 @@ const sendAdminResourceRequestPendingEmail = async (
     </div>
   `;
 
-  return sendToAdmin('Resource Request Pending - Admin Allocation Required', html);
+  return sendToAdmin('[ACTION REQUIRED] Resource Request Pending - Admin Allocation Required', html);
 };
 
 // 4. Notify admin when their username is changed
@@ -197,7 +197,7 @@ const sendAdminUsernameChangeEmail = async (username, changedAtTime) => {
     </div>
   `;
 
-  return sendToAdmin('Username Change Notification', html);
+  return sendToAdmin('[ATTENTION] Username Change Notification', html);
 };
 
 // 5. Send security alert to old email when admin email is changed
@@ -233,7 +233,7 @@ const sendAdminEmailChangeSecurityAlertEmail = async (oldEmail, newEmail) => {
 
   return sendEmail({
     to: oldEmail,
-    subject: 'Your account email was updated',
+    subject: '[ATTENTION] Your account email was updated',
     html
   });
 };

@@ -40,7 +40,7 @@ const sendTeacherStudentRegisteredEmail = async (teacherEmail, teacherName, stud
 
   return sendEmail({
     to: teacherEmail,
-    subject: 'New Student Registration - Verification Required',
+    subject: '[ACTION REQUIRED] New Student Registration - Verification Required',
     html
   });
 };
@@ -85,7 +85,7 @@ const sendTeacherStudentResourceRequestEmail = async (teacherEmail, teacherName,
 
   return sendEmail({
     to: teacherEmail,
-    subject: 'New Resource Request - Student Verification Required',
+    subject: '[ACTION REQUIRED] New Resource Request - Student Verification Required',
     html
   });
 };
@@ -211,7 +211,7 @@ const sendTeacherResourceRequestVerifiedByAdminEmail = async (teacherEmail, teac
 
   return sendEmail({
     to: teacherEmail,
-    subject: 'Student Resource Request Approved by Admin',
+    subject: '[VERIFIED] Student Resource Request Approved by Admin',
     html
   });
 };
@@ -251,7 +251,7 @@ const sendTeacherResourceRequestRejectedByAdminEmail = async (teacherEmail, teac
 
   return sendEmail({
     to: teacherEmail,
-    subject: 'Student Resource Request Rejected by Admin',
+    subject: '[INFO] Student Resource Request Rejected by Admin',
     html
   });
 };
@@ -291,7 +291,7 @@ const sendTeacherResourceRequestRevokedByAdminEmail = async (teacherEmail, teach
 
   return sendEmail({
     to: teacherEmail,
-    subject: 'Student Resource Allocation Revoked by Admin',
+    subject: '[ATTENTION] Student Resource Allocation Revoked by Admin',
     html
   });
 };
