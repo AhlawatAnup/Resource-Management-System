@@ -78,6 +78,14 @@ function displayStudentDetails(student) {
                         <span class="value" style="color: #333; font-size: 1.1em;">${student.branch}</span>
                     </div>
                     <div class="detail-row" style="margin-bottom: 15px;">
+                        <span class="label" style="font-weight: 600; color: #555; display: block;">Institute Name:</span>
+                        <span class="value" style="color: #333; font-size: 1.1em;">${student.instituteName || 'N/A'}</span>
+                    </div>
+                    <div class="detail-row" style="margin-bottom: 15px;">
+                        <span class="label" style="font-weight: 600; color: #555; display: block;">Institute Address:</span>
+                        <span class="value" style="color: #333; font-size: 1.1em;">${student.instituteAddress || 'N/A'}</span>
+                    </div>
+                    <div class="detail-row" style="margin-bottom: 15px;">
                         <span class="label" style="font-weight: 600; color: #555; display: block;">Teacher:</span>
                         <span class="value" style="color: #333; font-size: 1.1em;">${student.teacher?.name || 'Not assigned'}</span>
                     </div>
