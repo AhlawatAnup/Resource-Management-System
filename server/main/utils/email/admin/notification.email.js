@@ -200,9 +200,92 @@ const sendAdminUsernameChangeEmail = async (username, changedAtTime) => {
   return sendToAdmin('Username Change Notification', html);
 };
 
+// 5. Send security alert to old email when admin email is changed
+const sendAdminEmailChangeSecurityAlertEmail = async (oldEmail, newEmail) => {
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
+      <h3 style="color: #1976D2;">Account Email Updated</h3>
+
+      <p>Hello,</p>
+
+      <p>
+        This is to inform you that the email address linked to your
+        <strong>UIET Cluster Resource Management System</strong> account was updated.
+      </p>
+
+      <p><strong>New email:</strong> ${newEmail}<br>
+         <strong>Date:</strong> ${new Date().toLocaleString()}</p>
+
+      <p>
+        If you made this change, no action is required.<br>
+        If not, please contact your system administrator or IT support.
+      </p>
+
+      <p style="margin-top: 16px;">
+        — UIET Cluster Resource Management System
+      </p>
+
+      <p style="font-size: 12px; color: #777;">
+        This is an automated notification. Do not reply.
+      </p>
+    </div>
+  `;
+
+  return sendEmail({
+    to: oldEmail,
+    subject: 'Your account email was updated',
+    html
+  });
+};
+
+
+// 6. Send confirmation email to new email when admin email is changed
+const sendAdminEmailChangeConfirmationEmail = async (newEmail, changedAtTime) => {
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #4CAF50;">✓ Email Change Confirmation</h2>
+
+      <p>Dear Administrator,</p>
+
+      <p>
+        This email confirms that your account email has been successfully updated to this address in the UIET Cluster Resource Management System.
+      </p>
+
+      <div style="background-color: #e8f5e9; border: 1px solid #4CAF50; padding: 20px; border-radius: 8px;">
+        <p><strong>New Email:</strong> ${newEmail}</p>
+        <p><strong>Changed At:</strong> ${changedAtTime}</p>
+      </div>
+
+      <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin-top: 20px;">
+        <p><strong>📌 What's Next?</strong></p>
+        <ul>
+          <li>You will receive future notifications at this email address</li>
+          <li>If you need further changes, log in to your dashboard</li>
+        </ul>
+      </div>
+
+      <p style="margin-top: 20px;">Best regards,<br>
+      <strong>UIET Cluster Resource Management System</strong></p>
+
+      <hr>
+      <p style="font-size: 12px; color: #666;">
+        This is an automated email. Please do not reply.
+      </p>
+    </div>
+  `;
+
+  return sendEmail({
+    to: newEmail,
+    subject: 'Email Change Confirmation',
+    html
+  });
+};
+
 module.exports = {
   sendAdminTeacherRegistrationEmail,
   sendAdminStudentVerificationPendingEmail,
   sendAdminResourceRequestPendingEmail,
-  sendAdminUsernameChangeEmail
+  sendAdminUsernameChangeEmail,
+  sendAdminEmailChangeSecurityAlertEmail,
+  sendAdminEmailChangeConfirmationEmail
 };

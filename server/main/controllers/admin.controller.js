@@ -426,6 +426,8 @@ exports.UpdateAdminProfile = async (req, res) => {
   try {
     const admin = await Admin.findById(req.session.user.id).select("username email");
     if (!admin) return res.status(404).json({ error: "Admin not found" });
+    // Store original email for security alert notification
+    const oldEmail = admin.email;
 
     const changes = {};
 
@@ -463,6 +465,21 @@ exports.UpdateAdminProfile = async (req, res) => {
       emailService.sendAdminUsernameChangeEmail(changes.username, changedAtTime)
         .then(result => console.log("Username change notification sent to admin:", result))
         .catch(error => console.error("Error sending username change email:", error));
+    }
+
+    // Send email notifications if email was changed
+    if (changes.email) {
+      const changedAtTime = new Date().toLocaleString();
+      
+      // Send security alert to old email
+      emailService.sendAdminEmailChangeSecurityAlertEmail(oldEmail, changes.email)
+        .then(result => console.log("Security alert sent to old email:", result))
+        .catch(error => console.error("Error sending security alert email:", error));
+      
+      // Send confirmation to new email
+      emailService.sendAdminEmailChangeConfirmationEmail(changes.email, changedAtTime)
+        .then(result => console.log("Confirmation sent to new email:", result))
+        .catch(error => console.error("Error sending confirmation email:", error));
     }
 
     return res.json({ success: true, message: "Admin identity updated.", changes });
