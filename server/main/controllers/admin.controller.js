@@ -457,6 +457,14 @@ exports.UpdateAdminProfile = async (req, res) => {
       if (changes.email) req.session.user.email = changes.email;
     }
 
+    // Send email notification if username was changed
+    if (changes.username) {
+      const changedAtTime = new Date().toLocaleString();
+      emailService.sendAdminUsernameChangeEmail(changes.username, changedAtTime)
+        .then(result => console.log("Username change notification sent to admin:", result))
+        .catch(error => console.error("Error sending username change email:", error));
+    }
+
     return res.json({ success: true, message: "Admin identity updated.", changes });
   } catch (err) {
     console.error(err);
