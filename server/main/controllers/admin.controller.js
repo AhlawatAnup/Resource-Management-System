@@ -156,16 +156,28 @@ exports.unverifyTeacherIfPossible = async (req, res) => {
     }
 
     // 3️⃣ Unverify teacher
-    await Teacher.findByIdAndUpdate(
+    const updatedTeacher = await Teacher.findByIdAndUpdate(
       teacher_id,
       {
         is_verified: false,
         verification_completed: false
-      }
+      },
+      { new: true }
     );
 
-    // 4️⃣ Unverify all students
+    // Send email to teacher about unverification
+    if (updatedTeacher) {
+      emailService.sendTeacherProfileUnverifiedByAdminEmail(updatedTeacher.email, updatedTeacher.name)
+        .then(result => console.log("Teacher unverification email sent:", result))
+        .catch(error => console.error("Error sending teacher unverification email:", error));
+    }
+
+    // 4️⃣ Unverify all students and send them emails
     if (studentIds.length > 0) {
+      // Fetch student details before updating
+      const students = await Student.find({ _id: { $in: studentIds } }).select('email name');
+      
+      // Update all students
       await Student.updateMany(
         { _id: { $in: studentIds } },
         {
@@ -178,6 +190,17 @@ exports.unverifyTeacherIfPossible = async (req, res) => {
           }
         }
       );
+      
+      // Send emails to all affected students
+      students.forEach(student => {
+        emailService.sendStudentUnverifiedDueToTeacherUnverificationEmail(
+          student.email,
+          student.name,
+          updatedTeacher?.name || teacher.name
+        )
+        .then(result => console.log(`Student unverification email sent to ${student.name}:`, result))
+        .catch(error => console.error(`Error sending email to ${student.name}:`, error));
+      });
     }
 
     return res.json({
@@ -218,7 +241,7 @@ exports.unverifyStudentIfPossible = async (req, res) => {
     });
 
     // 3️⃣ Unverify student and clear resourceRequests array
-    await Student.findByIdAndUpdate(
+    const updatedStudent = await Student.findByIdAndUpdate(
       student_id,
       {
         $set: {
@@ -229,8 +252,16 @@ exports.unverifyStudentIfPossible = async (req, res) => {
           is_verified: false,
           resourceRequests: []
         }
-      }
+      },
+      { new: true }
     );
+
+    // Send email to student about unverification
+    if (updatedStudent) {
+      emailService.sendStudentProfileUnverifiedByAdminEmail(updatedStudent.email, updatedStudent.name)
+        .then(result => console.log("Student unverification email sent:", result))
+        .catch(error => console.error("Error sending student unverification email:", error));
+    }
 
     return res.status(200).json({
       message: "Student unverified successfully"

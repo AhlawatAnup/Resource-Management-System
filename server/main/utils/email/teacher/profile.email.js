@@ -76,7 +76,46 @@ const sendTeacherProfileRejectedByAdminEmail = async (teacherEmail, teacherName)
   });
 };
 
+// Teacher unverified by admin
+const sendTeacherProfileUnverifiedByAdminEmail = async (teacherEmail, teacherName) => {
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width:600px; margin:auto;">
+      <h2 style="color:#ff9800;">⚠️ Profile Verification Reset</h2>
+
+      <p>Dear <strong>${teacherName}</strong>,</p>
+
+      <p>Your teacher profile has been <strong>unverified by the administrator</strong>.</p>
+
+      <div style="background:#fff3e0; padding:15px; border-radius:6px; border:1px solid #ffe0b2;">
+        <p><strong>Important:</strong></p>
+        <ul>
+          <li>Your verification status has been reset to unverified</li>
+          <li>All your students have also been unverified</li>
+          <li>All pending resource requests have been removed</li>
+        </ul>
+      </div>
+
+      <p>Your account is now in pending verification status. You will need to wait for admin re-verification to regain access.</p>
+
+      <p>Best regards,<br>
+      UIET Cluster Resource Management System</p>
+
+      <hr>
+      <p style="font-size:12px;color:#777;">
+        This is an automated email. Please do not reply.
+      </p>
+    </div>
+  `;
+
+  return sendEmail({
+    to: teacherEmail,
+    subject: 'Profile Verification Reset - Action Required',
+    html
+  });
+};
+
 module.exports = {
   sendTeacherProfileVerifiedByAdminEmail,
-  sendTeacherProfileRejectedByAdminEmail
+  sendTeacherProfileRejectedByAdminEmail,
+  sendTeacherProfileUnverifiedByAdminEmail
 };
