@@ -264,6 +264,12 @@ async function handleResourceRequest(event) {
         if (!isValidUsername(formData.username)) {
             throw new Error('Username can only contain letters, numbers, hyphens (-), and underscores (_), with no spaces or special characters');
         }
+
+        // Username length check
+        if (formData.username.length <= 5 || formData.username.length >= 50) {
+            throw new Error('Username must be greater than 5 and less than 50 characters');
+        }
+
         // Title max length check
         if (formData.title.length > 50) {
             throw new Error('Title must not exceed 50 characters');
@@ -276,6 +282,10 @@ async function handleResourceRequest(event) {
 
         if (formData.purpose.length < 100) {
             throw new Error('Purpose must be at least 100 characters long');
+        }
+
+        if (formData.purpose.length > 2000) {
+            throw new Error('Purpose must not exceed 2000 characters');
         }
                 
         // if (formData.cpuCores < 1 || formData.cpuRam < 1) {
