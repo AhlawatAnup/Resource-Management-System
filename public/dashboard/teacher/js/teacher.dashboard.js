@@ -31,13 +31,13 @@ async function getTeacherDashboardData() {
     //   GET STUDENT DATA - only if teacher is verified
     if (!teacherVerificationStatus.is_verified) {
       document.getElementById("contactTableBody").innerHTML =
-        '<tr><td colspan="5" class="loading">Your account must be verified by admin to view students</td></tr>';
+        '<tr><td colspan="6" class="loading">Your account must be verified by admin to view students</td></tr>';
       return;
     }
 
     if (!data.students.length) {
       document.getElementById("contactTableBody").innerHTML =
-        '<tr><td colspan="5" class="loading">No student registered with you</td></tr>';
+        '<tr><td colspan="6" class="loading">No student registered with you</td></tr>';
       return;
     }
 
@@ -289,6 +289,12 @@ function render_students_table(student) {
                         </div>
                     </td>
                     <td>
+                      <div class="contact-details">
+                        <h5>${student.instituteName || 'N/A'}</h5>
+                        <div class="contact-time">${student.instituteAddress || 'N/A'}</div>
+                      </div>
+                    </td>
+                    <td>
                         <span class="badge ${statusClass}">${verificationStatus}</span>
                     </td>
                     <td>
@@ -337,7 +343,7 @@ let filtered_student = [];
 function filter_student(searchTerm) {
   if (!student_data.length) {
     document.getElementById("contactTableBody").innerHTML =
-      '<tr><td colspan="5" class="loading">No student registered with you</td></tr>';
+      '<tr><td colspan="6" class="loading">No student registered with you</td></tr>';
     return;
   }
 
