@@ -167,13 +167,13 @@ function updateTableHeaders() {
     }
   } else {
     if (currentStatus === 'unverified') {
-      headers = ['Name', 'Email', 'Phone', 'Branch', 'Roll No', 'Teacher', 'Status', 'Actions'];
+      headers = ['Name', 'Email', 'Phone', 'Branch', 'Roll No', 'Teacher', 'Institute', 'Status', 'Actions'];
     } else if (currentStatus === 'verified') {
-      headers = ['Name', 'Email', 'Phone', 'Branch', 'Roll No', 'Teacher', 'Status', 'Actions'];
+      headers = ['Name', 'Email', 'Phone', 'Branch', 'Roll No', 'Teacher', 'Institute', 'Status', 'Actions'];
     } else if (currentStatus === 'rejected') {
-      headers = ['Name', 'Email', 'Phone', 'Branch', 'Roll No', 'Teacher', 'Status', 'Actions'];
+      headers = ['Name', 'Email', 'Phone', 'Branch', 'Roll No', 'Teacher', 'Institute', 'Status', 'Actions'];
     } else if (currentStatus === 'all') {
-      headers = ['Name', 'Email', 'Phone', 'Branch', 'Roll No', 'Teacher', 'Status', 'Actions'];
+      headers = ['Name', 'Email', 'Phone', 'Branch', 'Roll No', 'Teacher', 'Institute', 'Status', 'Actions'];
     }
   }
   
@@ -343,6 +343,12 @@ function renderUnverifiedStudentRow(student) {
     <td>${student.branch || 'N/A'}</td>
     <td>${student.rollNo || 'N/A'}</td>
     <td>${student.teacher?.name || 'N/A'}</td>
+    <td>
+      <div class="institute-info">
+        <div>${student.instituteName || 'N/A'}</div>
+        <div class="contact-time">${student.instituteAddress || 'N/A'}</div>
+      </div>
+    </td>
     <td><span class="badge ${status.class}">${status.text}</span></td>
     <td>
       <div class="admin-actions">
@@ -410,6 +416,12 @@ function renderAllStudentRow(student) {
     <td>${student.branch || 'N/A'}</td>
     <td>${student.rollNo || 'N/A'}</td>
     <td>${student.teacher?.name || 'N/A'}</td>
+    <td>
+      <div class="institute-info">
+        <div>${student.instituteName || 'N/A'}</div>
+        <div class="contact-time">${student.instituteAddress || 'N/A'}</div>
+      </div>
+    </td>
     <td><span class="badge ${status.class}">${status.text}</span></td>
     <td>
       <div class="admin-actions">
@@ -483,6 +495,12 @@ function renderRejectedStudentRow(student) {
     <td>${student.branch || 'N/A'}</td>
     <td>${student.rollNo || 'N/A'}</td>
     <td>${student.teacher?.name || 'N/A'}</td>
+    <td>
+      <div class="institute-info">
+        <div>${student.instituteName || 'N/A'}</div>
+        <div class="contact-time">${student.instituteAddress || 'N/A'}</div>
+      </div>
+    </td>
     <td><span class="badge ${status.class}">${status.text}</span></td>
     <td>
       <div class="admin-actions">
@@ -495,7 +513,7 @@ function renderRejectedStudentRow(student) {
 // Show empty state message
 function showEmptyState(message) {
   const tbody = document.getElementById('dataTableBody');
-  tbody.innerHTML = `<tr><td colspan="8" class="loading">${message}</td></tr>`;
+  tbody.innerHTML = `<tr><td colspan="9" class="loading">${message}</td></tr>`;
 }
 
 // Verify teacher function
