@@ -35,4 +35,13 @@ studentSchema.pre("findOneAndDelete", async function(next) {
   next();
 });
 
+
+studentSchema.pre("findByIdAndDelete", async function (next) {
+  const student = await this.model.findById(this.getFilter()._id);
+  if (student) {
+    await ResourceRequest.deleteMany({ _id: { $in: student.resourceRequests } });
+  }
+  next();
+});
+
 module.exports = mongoose.model("Student", studentSchema);

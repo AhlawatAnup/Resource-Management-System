@@ -61,17 +61,33 @@ if (!role) {
 }
 
 // Configure form based on role
+function setStudentFieldState(isStudent) {
+  const studentInputs = studentFields.querySelectorAll("input, select");
+  studentInputs.forEach((el) => {
+    if (isStudent) {
+      el.disabled = false;
+      if (el.id === "assignedTeacher" || el.id === "rollNumber" || el.id === "instituteName" || el.id === "instituteAddress") {
+        el.required = true;
+      }
+    } else {
+      el.required = false;
+      el.disabled = true;
+    }
+  });
+}
+
 if (role === "student") {
   studentFields.style.display = "block";
-  teacherSelect.required = true;
-  rollNumberInput.required = true;
+  setStudentFieldState(true);
   container.style.display = "flex";
   loadTeachers();
 } else if (role === "teacher") {
   studentFields.style.display = "none";
+  setStudentFieldState(false);
   container.style.display = "flex";
 } else {
   studentFields.style.display = "none";
+  setStudentFieldState(false);
   window.location.replace("/");
 }
 
@@ -151,7 +167,7 @@ document
         instituteName: instituteName,
         instituteAddress: instituteAddress,
       };
-    } else if (role === "teacher") {``
+    } else if (role === "teacher") {
       payload.name = document.getElementById("name").value;
       payload.branch = document.getElementById("branch").value;
       payload.phone = phone;

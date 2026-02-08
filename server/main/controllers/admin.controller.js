@@ -334,20 +334,24 @@ exports.getAllResourceRequests = async (req, res) => {
     // console.log(`Found ${resourceRequests.length} total resource requests for admin`);
 
     // Format the data to include teacher info in the response
-    const formattedRequests = resourceRequests.map(request => ({
-      ...request._doc,
-      studentInfo: {
-        _id: request.studentId._id,
-        name: request.studentId.name,
-        rollNo: request.studentId.rollNo,
-        email: request.studentId.email,
-        branch: request.studentId.branch
-      },
-      teacherInfo: {
-        _id: request.studentId.teacher._id,
-        name: request.studentId.teacher.name
-      }
-    }));
+    const formattedRequests = resourceRequests
+      .filter(request => request.studentId)
+      .map(request => {
+        const teacher = request.studentId.teacher || null;
+        return {
+          ...request._doc,
+          studentInfo: {
+            _id: request.studentId._id,
+            name: request.studentId.name,
+            rollNo: request.studentId.rollNo,
+            email: request.studentId.email,
+            branch: request.studentId.branch
+          },
+          teacherInfo: teacher
+            ? { _id: teacher._id, name: teacher.name }
+            : { _id: null, name: "Unknown" }
+        };
+      });
 
     return res.json({
       success: true,
