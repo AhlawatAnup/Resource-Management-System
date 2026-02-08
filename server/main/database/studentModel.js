@@ -8,6 +8,8 @@ const studentSchema = new mongoose.Schema({
   phone: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
   branch: { type: String }, // e.g., ["Physics", "Mathematics"]
+  instituteName: { type: String, required: true },
+  instituteAddress: { type: String, required: true },
   teacher: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Teacher",

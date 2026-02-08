@@ -105,7 +105,8 @@ document
 
     const name = document.getElementById("name").value.trim();
     const phone = document.getElementById("phone").value.trim();
-
+    const instituteName = document.getElementById("instituteName").value.trim();
+    const instituteAddress = document.getElementById("instituteAddress").value.trim();
     if (!/^[A-Za-z\s]+$/.test(name)) {
       Toastify({text: "Name should only contain letters and spaces.", duration: 3000, gravity: "top", position: "center", backgroundColor: "#ff6b6b"}).showToast();
       submitBtn.disabled = false;
@@ -147,6 +148,8 @@ document
         teacher_id: selectedTeacher,
         branch: document.getElementById("branch").value,
         phone: phone,
+        instituteName: instituteName,
+        instituteAddress: instituteAddress,
       };
     } else if (role === "teacher") {``
       payload.name = document.getElementById("name").value;

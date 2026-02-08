@@ -172,8 +172,8 @@ exports.register = async (req, res) => {
         });
       }
 
-      const { name, rollNo, branch, teacher_id, phone } = req.body;
-      if (!name || !rollNo || !branch || !teacher_id || !phone) {
+      const { name, rollNo, branch, teacher_id, phone, instituteName, instituteAddress } = req.body;
+      if (!name || !rollNo || !branch || !teacher_id || !phone || !instituteName || !instituteAddress) {
         return res.status(400).json({ error: "All student fields required" });
       }
       const student = new Student({
@@ -183,6 +183,8 @@ exports.register = async (req, res) => {
         branch,
         teacher: teacher_id,
         phone,
+        instituteName,
+        instituteAddress,
       });
 
       const savedStudent = await student.save();
