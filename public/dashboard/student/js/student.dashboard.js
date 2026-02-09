@@ -1,3 +1,7 @@
+// Import utility functions
+import { formatDate } from '/dashboard/common/js/commons.js';
+import { getLoggedInStudentId, showLoadingState, showErrorMessage } from './student.utils.js';
+
 document.addEventListener('DOMContentLoaded', function() {
     // Get student details when page loads
     loadStudentDetails();
@@ -36,30 +40,8 @@ async function loadStudentDetails() {
     }
 }
 
-async function getLoggedInStudentId() {
-    try {
-        const response = await fetch('/dashboard/current-user-id', {
-            method: 'GET',
-            credentials: 'include'
-        });
-        
-        if (response.ok) {
-            const data = await response.json();
-            if (data.id) {
-                // Store for future use
-                localStorage.setItem('studentId', data.id);
-                return data.id;
-            }
-        }
-    } catch (error) {
-        console.error('Error fetching user ID from session:', error);
-    }
-    
-    return null;
-}
-
 function displayStudentDetails(student) {
-    console.log('Displaying student details:', student); // Debug log
+    // console.log('Displaying student details:', student); // Debug log
     
     // Determine verification status based on new schema
     const verificationStatus = getStudentVerificationStatus(student);
@@ -82,7 +64,6 @@ function displayStudentDetails(student) {
                     </div>
                     <div class="profile-info">
                         <h2 style="margin: 0 0 8px 0; color: #333; font-size: 2em;">${student.name}</h2>
-                        <p style="margin: 5px 0; color: #666; font-size: 1.1em;">Student ID: ${student._id}</p>
                         <p style="margin: 5px 0; color: #666; font-size: 1.1em;">Roll No: ${student.rollNo}</p>
                         <span class="verification-badge ${statusClass}" style="display: inline-block; padding: 8px 16px; border-radius: 20px; font-size: 0.9em; font-weight: bold;">${verificationStatus}</span>
                     </div>
@@ -90,19 +71,27 @@ function displayStudentDetails(student) {
                 <div class="profile-details" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 600px;">
                     <div class="detail-row" style="margin-bottom: 15px;">
                         <span class="label" style="font-weight: 600; color: #555; display: block;">Email:</span>
-                        <span class="value" style="color: #333; font-size: 1.1em;">${student.email}</span>
+                        <span class="value" style="color: #333; font-size: 1em;">${student.email}</span>
                     </div>
                     <div class="detail-row" style="margin-bottom: 15px;">
                         <span class="label" style="font-weight: 600; color: #555; display: block;">Branch:</span>
-                        <span class="value" style="color: #333; font-size: 1.1em;">${student.branch}</span>
+                        <span class="value" style="color: #333; font-size: 1em;">${student.branch}</span>
+                    </div>
+                    <div class="detail-row" style="margin-bottom: 15px;">
+                        <span class="label" style="font-weight: 600; color: #555; display: block;">Institute Name:</span>
+                        <span class="value" style="color: #333; font-size: 1em;">${student.instituteName || 'N/A'}</span>
+                    </div>
+                    <div class="detail-row" style="margin-bottom: 15px;">
+                        <span class="label" style="font-weight: 600; color: #555; display: block;">Institute Address:</span>
+                        <span class="value" style="color: #333; font-size: 1em;">${student.instituteAddress || 'N/A'}</span>
                     </div>
                     <div class="detail-row" style="margin-bottom: 15px;">
                         <span class="label" style="font-weight: 600; color: #555; display: block;">Teacher:</span>
-                        <span class="value" style="color: #333; font-size: 1.1em;">${student.teacher?.name || 'Not assigned'}</span>
+                        <span class="value" style="color: #333; font-size: 1em;">${student.teacher?.name || 'Not assigned'}</span>
                     </div>
                     <div class="detail-row" style="margin-bottom: 15px;">
                         <span class="label" style="font-weight: 600; color: #555; display: block;">Created:</span>
-                        <span class="value" style="color: #333; font-size: 1.1em;">${formatDate(student.createdAt)}</span>
+                        <span class="value" style="color: #333; font-size: 1em;">${formatDate(student.createdAt)}</span>
                     </div>
                 </div>
             </div>
@@ -123,50 +112,16 @@ function updateDashboardElements(student) {
     });
 }
 
-function showLoadingState() {
-    const profileSection = document.getElementById('student-profile');
-    if (profileSection) {
-        profileSection.innerHTML = `
-            <div class="loading-spinner">
-                <div class="spinner"></div>
-                <p>Loading student details...</p>
-            </div>
-        `;
-    }
-}
-
-function showErrorMessage(message) {
-    const profileSection = document.getElementById('student-profile');
-    if (profileSection) {
-        profileSection.innerHTML = `
-            <div class="error-message">
-                <i class="fas fa-exclamation-triangle"></i>
-                <p>${message}</p>
-                <button onclick="loadStudentDetails()" class="retry-btn">Retry</button>
-            </div>
-        `;
-    }
-}
-
-function formatDate(dateString) {
-    if (!dateString) return 'Not available';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    });
-}
 
 // Function to determine student verification status based on new schema
 function getStudentVerificationStatus(student) {
-    console.log('Student verification fields:', {
-        teacher_verified: student.teacher_verified,
-        admin_verified: student.admin_verified,
-        teacher_action: student.teacher_action,
-        admin_action: student.admin_action,
-        is_verified: student.is_verified
-    });
+    // console.log('Student verification fields:', {
+    //     teacher_verified: student.teacher_verified,
+    //     admin_verified: student.admin_verified,
+    //     teacher_action: student.teacher_action,
+    //     admin_action: student.admin_action,
+    //     is_verified: student.is_verified
+    // });
 
     // If both teacher and admin have verified
     if (student.teacher_verified && student.admin_verified) {

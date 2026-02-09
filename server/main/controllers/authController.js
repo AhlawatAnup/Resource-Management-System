@@ -1,6 +1,7 @@
 const Student = require("../database/studentModel");
 const Teacher = require("../database/teacherModel");
 const Admin = require("../database/adminModel");
+const { sendOTPEmail, sendStudentRegistrationSuccessEmail, sendTeacherStudentRegisteredEmail, sendTeacherRegistrationSuccessEmail, sendAdminTeacherRegistrationEmail } = require("../utils/email/emails.service");
 const bcrypt = require("bcrypt");
 
 const otpStore = {};
@@ -9,18 +10,57 @@ function generateOtp() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-exports.sendOtp = (req, res) => {
+exports.sendOtp = async (req, res) => {
   const { email, role } = req.body;
   if (!email || !role)
     return res.status(400).json({ error: "Email and role required" });
 
-  const otp = generateOtp();
-  const expires = Date.now() + 5 * 60 * 1000;
+  if (role === "teacher" && !email.endsWith("@pu.ac.in")) {
+    return res.status(403).json({
+      error: "Only @pu.ac.in emails are allowed for teachers"
+    });
+  }
 
-  otpStore[email] = { otp, expires, role };
-  console.log(`📧 OTP for ${email} (${role}): ${otp}`);
+  try {    
+    const otp = generateOtp();
+    const expires = Date.now() + 5 * 60 * 1000;
 
-  res.json({ message: "OTP generated and logged in console" });
+    otpStore[email] = { otp, expires, role };
+
+    // console.log(`Generated OTP ${otp}`);
+
+    // Send OTP via email
+    const emailResult = await sendOTPEmail(email, otp, role);
+    
+    if (emailResult.success) {
+      // console.log(`📧 ${otp} OTP  email sent successfully to ${email} for ${role} registration `);
+      res.json({ 
+        message: "OTP sent to your email address",
+        messageId: emailResult.messageId 
+      });
+    } else {
+      console.error(`❌ Failed to send OTP email to ${email}:`, emailResult.error);
+      // Fallback: still allow OTP generation but notify about email failure
+      // console.log(`📧 Fallback - OTP for ${email} (${role}): ${otp}`);
+      res.json({ 
+        message: "OTP generated successfully (email service temporarily unavailable)",
+        fallback: true 
+      });
+    }
+  } catch (error) {
+    console.error('Error in sendOtp:', error);
+    
+    // Emergency fallback: still generate OTP and show in console
+    const otp = generateOtp();
+    const expires = Date.now() + 5 * 60 * 1000;
+    otpStore[email] = { otp, expires, role };
+    // console.log(`📧 Emergency fallback (Failed to send OTP on email) - OTP for ${email} (${role}): ${otp}`);
+    
+    res.json({ 
+      message: "OTP generated (email service error, check console for testing)",
+      fallback: true 
+    });
+  }
 };
 
 exports.verifyOtp = async (req, res) => {
@@ -122,50 +162,111 @@ exports.register = async (req, res) => {
 
   try {
     if (role === "student") {
-      const { name, rollNo, branch, teacher_id, phone } = req.body;
-      if (!name || !rollNo || !branch || !teacher_id || !phone) {
+      const email = req.session.email.toLowerCase().trim();
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({
+          error: "Invalid email format"
+        });
+      }
+
+      const { name, rollNo, branch, teacher_id, phone, instituteName, instituteAddress } = req.body;
+      if (!name || !rollNo || !branch || !teacher_id || !phone || !instituteName || !instituteAddress) {
         return res.status(400).json({ error: "All student fields required" });
       }
       const student = new Student({
-        email: req.session.email,
+        email,
         name,
         rollNo,
         branch,
         teacher: teacher_id,
         phone,
+        instituteName,
+        instituteAddress,
       });
 
       const savedStudent = await student.save();
 
-      //   ADD THIS STUDENT TO THE TEACHER DB AS WELL
-      const teacher = await Teacher.findById(teacher_id);
-      teacher.students.push(savedStudent._id);
-      await teacher.save();
+      if (savedStudent) {
+        //   ADD THIS STUDENT TO THE TEACHER DB AS WELL
+        const teacher = await Teacher.findById(teacher_id);
+        if (!teacher) {
+          return res.status(404).json({ error: "Teacher not found" });
+        }
+        teacher.students.push(savedStudent._id);
+        await teacher.save();
 
-      // Attach session
-      req.session.user = {
-        email: req.session.email,
-        role: req.session.role,
-        id: savedStudent._id,
-      };
+        // Attach session
+        req.session.user = {
+          email,
+          role: req.session.role,
+          id: savedStudent._id,
+        };
 
-      return res.json({ message: "Student registered successfully" });
+        // Send registration success email to student
+        sendStudentRegistrationSuccessEmail(email, name)
+        .catch(err => {
+          console.error("Error sending student registration email:", err);
+        });
+
+
+        // Notify teacher about new student registration
+        sendTeacherStudentRegisteredEmail(
+          teacher.email,
+          teacher.name,
+          name,
+          rollNo
+        ).catch(err => {
+          console.error("Error sending teacher notification email:", err);
+        });
+
+
+        return res.json({ message: "Student registered successfully" });
+      } else {
+        return res.status(500).json({ error: "Failed to save student" });
+      }
     }
 
     if (role === "teacher") {
+      const email = req.session.email.toLowerCase().trim();
+      if (!email.endsWith("@pu.ac.in")) {
+        return res.status(403).json({
+          error: "Only @pu.ac.in emails are allowed for teachers"
+        });
+      }
       const { name, branch, phone } = req.body;
       if (!name || !branch || !phone)
         return res.status(400).json({ error: "Invalid Data" });
-      const teacher = new Teacher({ email: req.session.email, name, branch, phone });
+      const teacher = new Teacher({ email, name, branch, phone });
       const teacher_id = await teacher.save();
-      // Attach session
-      req.session.user = {
-        email: req.session.email,
-        role: req.session.role,
-        id: teacher_id._id,
-      };
+      if (teacher_id) {
+        // Attach session
+        req.session.user = {
+          email,
+          role: req.session.role,
+          id: teacher_id._id,
+        };
 
-      return res.json({ message: "Teacher registered successfully" });
+        // Send registration success email to teacher
+        sendTeacherRegistrationSuccessEmail(email, name)
+        .catch(err => {
+          console.error("Error sending teacher registration email:", err);
+        });
+
+
+        // Notify admin about new teacher registration
+        sendAdminTeacherRegistrationEmail(name, email, branch)
+        .catch(err => {
+          console.error("Error sending admin notification email:", err);
+        });
+
+
+        return res.json({ message: "Teacher registered successfully" });
+      } else {
+        return res.status(500).json({ error: "Failed to save teacher" });
+      }
     }
 
     if (role === "admin") {
@@ -175,14 +276,40 @@ exports.register = async (req, res) => {
     return res.status(400).json({ error: "Invalid role" });
   } catch (err) {
     console.error(err);
+
+    // MongoDB duplicate key error
+    if (err.code === 11000) {
+      if (err.keyPattern?.rollNo) {
+        return res.status(409).json({
+          error: "Roll number already exists",
+        });
+      }
+
+      if (err.keyPattern?.email) {
+        return res.status(409).json({
+          error: "Email already registered",
+        });
+      }
+
+      return res.status(409).json({
+        error: "Duplicate value exists",
+      });
+    }
+
+    // Mongoose validation error
+    if (err.name === "ValidationError") {
+      return res.status(400).json({
+        error: err.message,
+      });
+    }
+
     res.status(500).json({ error: "Registration failed" });
   }
 };
 
 exports.getVerifiedTeachers = async (req, res) => {
   try {
-    // Only return verified teachers for student registration
-    const teachers = await Teacher.find({ is_verified: true });
+    const teachers = await Teacher.find({ is_verified: true }, '_id name');
     res.json({ teachers });
   } catch (err) {
     console.error(err);

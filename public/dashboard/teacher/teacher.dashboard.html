@@ -12,42 +12,36 @@
       src="https://kit.fontawesome.com/e05e3e1522.js"
       crossorigin="anonymous"
     ></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
   </head>
   <link rel="stylesheet" href="/dashboard/teacher/style/teacher.dashboard.css" />
   <body>
     <div class="sidebar">
       <div class="logo">
         <div class="logo-icon">
-          <i class="fas fa-layer-group"></i>
+          <img src="../../assets/images/UIET-logo.png" alt="Logo" />
         </div>
         U.I.E.T
       </div>
 
       <nav class="nav-menu">
-        <a href="#" class="nav-item active">
+        <a href="#" class="nav-item active" id="home-nav">
           <i class="fas fa-home"></i>
           Home
         </a>
-        <!-- <a href="#" class="nav-item">
-          <i class="fas fa-folder"></i>
-          Projects
+        <a href="/dashboard/teacher/view-requests" class="nav-item" id="view-requests-nav">
+          <i class="fas fa-eye"></i>
+          View Resource Requests
         </a>
-        <a href="#" class="nav-item">
-          <i class="fas fa-tasks"></i>
-          Tasks
+        <a href="/dashboard/teacher/about-us" class="nav-item">
+          <i class="fas fa-info-circle"></i>
+          About Us
         </a>
-        <a href="#" class="nav-item">
-          <i class="fas fa-users"></i>
-          Team
-        </a>
-        <a href="#" class="nav-item">
-          <i class="fas fa-cog"></i>
-          Settings
-        </a> -->
       </nav>
 
       <div style="padding: 20px">
-        <a href="/logout" class="nav-item">
+        <a href="#" onclick="handleLogout(event)" class="nav-item">
           <i class="fas fa-sign-out-alt"></i>
           Log out
         </a>
@@ -92,6 +86,7 @@
               <tr>
                 <th class="sortable" data-sort="name">Student Name</th>
                 <th class="sortable" data-sort="contact">Contact</th>
+                <th class="sortable" data-sort="institute">Institute</th>
                 <th class="sortable" data-sort="status">Approval Status</th>
                 <th class="sortable" data-sort="branch">Branch</th>
                 <th class="sortable">Action</th>

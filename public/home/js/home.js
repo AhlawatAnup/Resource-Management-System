@@ -1,11 +1,5 @@
 let is_request_otp = true;
 
-// Function to validate teacher email format
-function validateTeacherEmail(email) {
-  const teacherEmailRegex = /^[a-zA-Z0-9._%+-]+@pu\.ac\.in$/;
-  return teacherEmailRegex.test(email);
-}
-
 // Role selector functionality
 document.querySelectorAll(".role-option").forEach((option) => {
   option.addEventListener("click", function () {
@@ -15,7 +9,7 @@ document.querySelectorAll(".role-option").forEach((option) => {
     this.classList.add("active");
 
     const role = this.dataset.role;
-    console.log("Selected role:", role);
+    // console.log("Selected role:", role);
     updateFormForRole(role);
   });
 });
@@ -123,7 +117,7 @@ function checkOTPComplete() {
     .map((input) => input.value)
     .join("");
   if (otp.length === 6) {
-    console.log("OTP Complete:", otp);
+    // console.log("OTP Complete:", otp);
   }
 }
 
@@ -161,11 +155,17 @@ updateFormForRole("student");
 async function adminLogin() {
   const username = document.getElementById("username").value;
   const password = document.getElementById("password").value;
+  const sendOtpBtn = document.getElementById("sendOtpBtn");
 
   if (!username || !password) {
-    alert("Please enter both username and password");
+    Toastify({text: "Please enter both username and password", duration: 3000, gravity: "top", position: "right", backgroundColor: "#ff6b6b"}).showToast();
     return;
   }
+
+  // Disable button and show loading state
+  sendOtpBtn.disabled = true;
+  const originalText = sendOtpBtn.innerHTML;
+  sendOtpBtn.innerHTML = "Logging in...";
 
   try {
     const res = await fetch("/auth/admin-login", {
@@ -178,11 +178,17 @@ async function adminLogin() {
     if (res.ok) {
       window.location.href = data.redirect; // redirect to dashboard
     } else {
-      alert(data.error || "Login failed");
+      // Re-enable button on error
+      sendOtpBtn.disabled = false;
+      sendOtpBtn.innerHTML = originalText;
+      Toastify({text: data.error || "Login failed", duration: 3000, gravity: "top", position: "right", backgroundColor: "#ff6b6b"}).showToast();
     }
   } catch (err) {
     console.error("Error:", err);
-    alert("Something went wrong");
+    // Re-enable button on error
+    sendOtpBtn.disabled = false;
+    sendOtpBtn.innerHTML = originalText;
+    Toastify({text: "Something went wrong", duration: 3000, gravity: "top", position: "right", backgroundColor: "#ff6b6b"}).showToast();
   }
 }
 
@@ -190,19 +196,31 @@ async function adminLogin() {
 async function sendOtp() {
   const activeDiv = document.querySelector(".role-option.active");
   const role = activeDiv.getAttribute("data-role");
-  console.log(role);
+  // console.log(role);
   const email = document.getElementById("email").value;
+  const sendOtpBtn = document.getElementById("sendOtpBtn");
 
   if (!email) {
-    alert("Please enter your email address");
+    Toastify({text: "Please enter your email address", duration: 3000, gravity: "top", position: "right", backgroundColor: "#ff6b6b"}).showToast();
+    return;
+  }
+
+  // Validate student email format
+  if (role === "student" && !validateStudentEmail(email)) {
+    Toastify({text: "Please enter a valid email address (e.g., example@domain.com)", duration: 3000, gravity: "top", position: "right", backgroundColor: "#ff6b6b"}).showToast();
     return;
   }
 
   // Validate teacher email format
   if (role === "teacher" && !validateTeacherEmail(email)) {
-    alert("Teachers must use email addresses with pu.ac.in domain (e.g., example@pu.ac.in)");
+    Toastify({text: "Teachers must use email addresses with pu.ac.in domain (e.g., example@pu.ac.in)", duration: 3000, gravity: "top", position: "right", backgroundColor: "#ff6b6b"}).showToast();
     return;
   }
+
+  // Disable button and show loading state
+  sendOtpBtn.disabled = true;
+  const originalText = sendOtpBtn.innerHTML;
+  sendOtpBtn.innerHTML = "Sending OTP...";
 
   try {
     const res = await fetch("/auth/send-otp", {
@@ -215,14 +233,21 @@ async function sendOtp() {
     if (res.ok) {
       document.getElementById("otp-field").style.display = "unset";
       document.getElementById("email-wrapper").style.display = "none";
-      document.getElementById("sendOtpBtn").innerHTML = "Verify OTP";
+      sendOtpBtn.innerHTML = "Verify OTP";
+      sendOtpBtn.disabled = false; // Re-enable for OTP verification
       is_request_otp = false;
     } else {
-      alert(data.error || "Failed to send OTP");
+      // Re-enable button on error
+      sendOtpBtn.disabled = false;
+      sendOtpBtn.innerHTML = originalText;
+      Toastify({text: data.error || "Failed to send OTP", duration: 3000, gravity: "top", position: "right", backgroundColor: "#ff6b6b"}).showToast();
     }
   } catch (err) {
     console.error("Error:", err);
-    alert("Something went wrong");
+    // Re-enable button on error
+    sendOtpBtn.disabled = false;
+    sendOtpBtn.innerHTML = originalText;
+    Toastify({text: "Something went wrong", duration: 3000, gravity: "top", position: "right", backgroundColor: "#ff6b6b"}).showToast();
   }
 }
 
@@ -231,11 +256,17 @@ async function verifyOtp() {
   const otp = Array.from(otpInputs)
     .map((input) => input.value)
     .join("");
+  const sendOtpBtn = document.getElementById("sendOtpBtn");
 
   if (!otp) {
-    alert("Enter OTP");
+    Toastify({text: "Enter OTP", duration: 3000, gravity: "top", position: "right", backgroundColor: "#ff6b6b"}).showToast();
     return;
   }
+
+  // Disable button and show loading state
+  sendOtpBtn.disabled = true;
+  const originalText = sendOtpBtn.innerHTML;
+  sendOtpBtn.innerHTML = "Verifying...";
 
   try {
     const res = await fetch("/auth/verify-otp", {
@@ -249,11 +280,17 @@ async function verifyOtp() {
       //   alert("✅ Login successful!");
       window.location.href = data.redirect; // redirect to dashboard
     } else {
-      alert(data.error || "Invalid OTP");
+      // Re-enable button on error
+      sendOtpBtn.disabled = false;
+      sendOtpBtn.innerHTML = originalText;
+      Toastify({text: data.error || "Invalid OTP", duration: 3000, gravity: "top", position: "right", backgroundColor: "#ff6b6b"}).showToast();
     }
   } catch (err) {
     console.error("Error:", err);
-    alert("Something went wrong");
+    // Re-enable button on error
+    sendOtpBtn.disabled = false;
+    sendOtpBtn.innerHTML = originalText;
+    Toastify({text: "Something went wrong", duration: 3000, gravity: "top", position: "right", backgroundColor: "#ff6b6b"}).showToast();
   }
 }
 
@@ -271,3 +308,18 @@ sendOtpBtn.addEventListener("click", () => {
     verifyOtp();
   }
 });
+
+// Function to validate teacher email format
+function validateTeacherEmail(email) {
+  const teacherEmailRegex = /^[a-zA-Z0-9._%+-]+@pu\.ac\.in$/;
+  return teacherEmailRegex.test(email);
+  // const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+  // return gmailRegex.test(email);
+  // return true;
+}
+
+// Function to validate student email format
+function validateStudentEmail(email) {
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  return emailRegex.test(email);
+}

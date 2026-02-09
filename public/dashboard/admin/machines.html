@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>U.I.E.T Resource Sharing - Machines</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script
+      src="https://kit.fontawesome.com/e05e3e1522.js"
+      crossorigin="anonymous"
+    ></script>
+    <link rel="stylesheet" href="../common/style/dashboard-common.css" />
+  <link rel="stylesheet" href="/dashboard/admin/style/admin.table.css" />
+  <link rel="stylesheet" href="/dashboard/admin/style/machines.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="logo">
+        <div class="logo-icon">
+          <img src="../../assets/images/UIET-logo.png" alt="Logo" />
+        </div>
+        U.I.E.T
+      </div>
+      <nav class="nav-menu">
+        <a href="/dashboard" class="nav-item" id="dashboard-nav">
+          <i class="fas fa-home"></i>
+          Dashboard
+        </a>
+        <a href="/dashboard/admin/view-requests" class="nav-item" id="view-requests-nav">
+          <i class="fas fa-list"></i>
+          View Resource Requests
+        </a>
+        <a href="#" class="nav-item active" id="machines-nav">
+          <i class="fas fa-desktop"></i>
+          Machines
+        </a>
+        <a href="/dashboard/admin/profile" class="nav-item" id="profile-nav">
+          <i class="fas fa-user"></i>
+          Profile
+        </a>
+      </nav>
+      <div style="padding: 20px">
+        <a href="#" onclick="handleLogout(event)" class="nav-item">
+          <i class="fas fa-sign-out-alt"></i>
+          Log out
+        </a>
+      </div>
+    </div>
+    <!-- Sidebar Ends-->
+    <!-- Header -->
+    <div class="main-wrapper">
+      <nav class="top-nav">
+        <div class="nav-brand">
+          <h2>Machines</h2>
+        </div>
+        <div class="nav-actions">
+          <div class="admin-info">
+            <span class="admin-name">Hello, Admin</span>
+          </div>
+        </div>
+      </nav>
+      <!-- Page actions below header (right-aligned) -->
+      <div class="page-actions machines-page-actions">
+        <!-- Filters (UI-only) placed to the left of the import button -->
+        <div class="machines-filters" aria-label="Machine filters">
+          <div class="nav-group">
+            <button class="status-btn active" data-filter="all" type="button">
+              <i class="fas fa-list"></i>
+              All
+            </button>
+            <button class="status-btn" data-filter="free" type="button">
+              <i class="fas fa-circle-notch"></i>
+              Free resources
+            </button>
+            <button class="status-btn" data-filter="assigned" type="button">
+              <i class="fas fa-user"></i>
+              Assigned resources
+            </button>
+          </div>
+        </div>
+        <div class="import-csv-wrapper">
+          <button id="addMachineBtn" class="add-machine-btn" type="button" aria-label="Add a machine">Add</button>
+          <button id="importCsvBtn" class="import-csv-btn" type="button" aria-label="Import machines from CSV">Import CSV</button>
+          <input id="importCsvInput" type="file" accept=".csv,text/csv" style="display:none" />
+        </div>
+      </div>
+    </div>
+    <!-- Header Ends-->
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script type="module" src="/dashboard/common/js/commons.js"></script>
+    <script src="/dashboard/admin/js/admin-machines.js"></script>
+  </body>
+</html>

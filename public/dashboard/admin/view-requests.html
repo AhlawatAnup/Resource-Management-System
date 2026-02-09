@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>U.I.E.T Resource Sharing - Admin View Requests</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script
+      src="https://kit.fontawesome.com/e05e3e1522.js"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+  </head>
+  <link rel="stylesheet" href="/dashboard/admin/style/admin.dashboard.css" />
+  <link rel="stylesheet" href="/dashboard/admin/style/admin.table.css" />
+  <link rel="stylesheet" href="/dashboard/common/style/purpose-panel.css" />
+  <body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="logo">
+        <div class="logo-icon">
+          <img src="../../assets/images/UIET-logo.png" alt="Logo" />
+        </div>
+        U.I.E.T
+      </div>
+
+      <nav class="nav-menu">
+        <a href="/dashboard" class="nav-item" id="dashboard-nav">
+          <i class="fas fa-home"></i>
+          Dashboard
+        </a>
+        <a href="#" class="nav-item active" id="view-requests-nav">
+          <i class="fas fa-list"></i>
+          View Resource Requests
+        </a>
+        <a href="/dashboard/admin/machines-page" class="nav-item" id="view-requests-nav">
+          <i class="fas fa-desktop"></i>
+          Machines
+        </a>
+        <a href="/dashboard/admin/profile" class="nav-item" id="view-requests-nav">
+          <i class="fas fa-user"></i>
+          Profile
+        </a>
+      </nav>
+
+      <div style="padding: 20px">
+        <a href="#" onclick="handleLogout(event)" class="nav-item">
+          <i class="fas fa-sign-out-alt"></i>
+          Log out
+        </a>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-wrapper">
+      <nav class="top-nav">
+        <div class="nav-brand">
+          <h2>Resource Requests Management</h2>
+        </div>
+        
+        <div class="nav-actions">
+          <div class="admin-info">
+            <span class="admin-name">Hello, Admin</span>
+          </div>
+        </div>
+      </nav>
+
+      <main class="main-content">
+        <header class="page-header">
+          <div class="header-info">
+            <h1>View Resource Requests</h1>
+            <p>Review and manage all student resource requests</p>
+          </div>
+        </header>
+
+        <div class="container">
+          <div class="header">
+            <div class="search-container">
+              <svg class="search-icon" viewBox="0 0 20 20" fill="currentColor">
+                <path
+                  fill-rule="evenodd"
+                  d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              <input
+                type="text"
+                class="search-input"
+                placeholder="Search Requests"
+                id="searchInput"
+              />
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th class="sortable" data-sort="student">Student</th>
+                  <th class="sortable" data-sort="teacher">Teacher</th>
+                  <th class="sortable" data-sort="title">Request Title</th>
+                  <th class="sortable" data-sort="purpose">Purpose</th>
+                  <th class="sortable" data-sort="resources">Resources</th>
+                  <th class="sortable" data-sort="expiry">Expiry Date</th>
+                  <th class="sortable" data-sort="status">Status</th>
+                  <th class="sortable">Action</th>
+                </tr>
+              </thead>
+              <tbody id="requestsTableBody">
+                <tr>
+                  <td colspan="8" class="loading">Loading resource requests...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Verification Modal -->
+    <div id="verificationModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3><i class="fas fa-check-circle"></i> Approve Resource Request</h3>
+          <button class="close-btn" onclick="closeVerificationModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="modal-layout">
+            <!-- Left Column: Request Info -->
+            <div class="request-info-column">
+              <div class="request-info" id="modalRequestInfo">
+                <!-- Request details will be populated here -->
+              </div>
+            </div>
+            
+            <!-- Right Column: Credentials Form -->
+            <div class="credentials-column">
+              <div class="credentials-section">
+                <h4><i class="fas fa-key"></i> VM Access Credentials</h4>
+                
+                <form id="verificationForm">
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label for="vmMigId">MIG ID:</label>
+                      <div class="input-with-button">
+                        <select id="vmMigId" name="migId" class="form-control" required>
+                          <option value="" disabled selected>Loading available machines...</option>
+                        </select>
+                        <button type="button" class="copy-btn" data-target="vmMigId" title="Copy MIG ID">
+                          <i class="fas fa-copy"></i>
+                        </button>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label for="vmUsername">Username:</label>
+                      <div class="input-with-button">
+                        <input type="text" id="vmUsername" name="username" class="form-control" required 
+                               placeholder="VM username (min 3 chars)" minlength="3">
+                        <button type="button" class="copy-btn" data-target="vmUsername" title="Copy username">
+                          <i class="fas fa-copy"></i>
+                        </button>
+                      </div>
+                    </div>
+                    
+                    <div class="form-group">
+                      <label for="vmPassword">Password:</label>
+                      <div class="input-with-button">
+                        <input type="text" id="vmPassword" name="password" class="form-control" required 
+                               placeholder="VM password (min 6 chars)" minlength="6">
+                        <button type="button" class="copy-btn" data-target="vmPassword" title="Copy password">
+                          <i class="fas fa-copy"></i>
+                        </button>
+                        <!-- Generate password button -->
+                        <button type="button" id="generateVmPasswordBtn" class="icon-btn" title="Generate password">
+                          <i class="fas fa-random"></i>
+                        </button>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label for="vmIp">IP Address:</label>
+                      <div class="input-with-button">
+                        <input type="text" id="vmIp" name="ip" class="form-control" required 
+                              placeholder="VM IP Address">
+                        <button type="button" class="copy-btn" data-target="vmIp" title="Copy IP Address">
+                          <i class="fas fa-copy"></i>
+                        </button>
+                      </div>
+                    </div>
+
+                   
+                  </div>
+                  
+                  <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeVerificationModal()">
+                      <i class="fas fa-times"></i> Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                      <i class="fas fa-check"></i> Approve
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Resource Request Modal (Admin) -->
+    <div id="editRequestModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3><i class="fas fa-pen-to-square"></i> Edit Resource Request</h3>
+          <button class="close-btn" onclick="closeEditModal()">&times;</button>
+        </div>
+        <form id="editRequestForm">
+          <input type="hidden" id="editRequestId" />
+          <div class="modal-body">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="editTitle">Title:</label>
+                <input type="text" id="editTitle" name="title" class="form-control" required />
+                <div id="edit-title-error" style="color: red; font-size: 0.9em; margin-top: 2px;"></div>
+              </div>
+              <div class="form-group">
+                <label for="editPurpose">Purpose:</label>
+                <input type="text" id="editPurpose" name="purpose" class="form-control" required />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="editExpiryDate">Expiry Date:</label>
+                <input type="date" id="editExpiryDate" name="expiryDate" class="form-control" required />
+              </div>
+            </div>
+            <div class="form-row">
+              <!-- <div class="form-group">
+                <label for="editCpuCores">CPU Cores:</label>
+                <input type="number" id="editCpuCores" name="cpuCores" class="form-control" min="1" required />
+              </div>
+              <div class="form-group">
+                <label for="editCpuRam">CPU RAM (GB):</label>
+                <input type="number" id="editCpuRam" name="cpuRam" class="form-control" min="1" required />
+              </div> -->
+            </div>
+            <div class="form-row">
+              <!-- <div class="form-group">
+                <label for="editGpuCount">GPU Count:</label>
+                <input type="number" id="editGpuCount" name="gpuCount" class="form-control" min="0" required />
+              </div> -->
+              <div class="form-group">
+                <label for="editGpuRam">GPU RAM (GB):</label>
+                <input type="number" id="editGpuRam" name="gpuRam" class="form-control" min="0" required />
+              </div>
+              <div class="form-group">
+                <label for="editUsername">Username:</label>
+                <input type="text" id="editUsername" name="username" class="form-control" minlength="3" />
+                <div id="edit-username-error" style="color: red; font-size: 0.9em; margin-top: 2px;"></div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Purpose View Panel -->
+    <div id="purposePanel" class="purpose-panel">
+      <div class="purpose-panel-header">
+        <span class="purpose-panel-title">Request Purpose</span>
+        <button class="purpose-panel-close" onclick="closePurposePanel()">&times;</button>
+      </div>
+      <div class="purpose-panel-body">
+        <textarea id="purposeText" readonly></textarea>
+      </div>
+    </div>
+
+    <script type="module" src="/dashboard/admin/js/admin-view-requests.js"></script>
+  </body>
+</html>

@@ -1,5 +1,5 @@
 // Import only the functions we need from commons.js
-import { renderDashboardHeader, getInitials, getRandomNamedColor } from '../../Common/js/commons.js';
+import { renderDashboardHeader, getInitials, getRandomNamedColor, formatDate } from '../../common/js/commons.js';
 
 // Data storage
 let currentData = [];
@@ -8,7 +8,7 @@ let currentStatus = 'unverified'; // all, verified or unverified
 
 // Initialize admin dashboard
 function initializeAdminDashboard() {
-  console.log('Admin Dashboard Initialized');
+  // console.log('Admin Dashboard Initialized');
   
   // Set up navigation
   setupNavigation();
@@ -60,6 +60,8 @@ async function loadCurrentView() {
         endpoint = '/dashboard/admin/teachers/pending';
       } else if (currentStatus === 'verified') {
         endpoint = '/dashboard/admin/teachers';
+      } else if (currentStatus === 'rejected') {
+        endpoint = '/dashboard/admin/teachers/rejected';
       } else if (currentStatus === 'all') {
         endpoint = '/dashboard/admin/teachers';
       }
@@ -69,6 +71,8 @@ async function loadCurrentView() {
         endpoint = '/dashboard/admin/students/pending';
       } else if (currentStatus === 'verified') {
         endpoint = '/dashboard/admin/students';
+      } else if (currentStatus === 'rejected') {
+        endpoint = '/dashboard/admin/students/rejected';
       } else if (currentStatus === 'all') {
         endpoint = '/dashboard/admin/students';
       }
@@ -84,6 +88,9 @@ async function loadCurrentView() {
         } else if (currentStatus === 'verified') {
           // Filter only verified teachers
           currentData = (data.teachers || []).filter(t => t.is_verified);
+        } else if (currentStatus === 'rejected') {
+          // For rejected, we'll get data from the rejected endpoint
+          currentData = data.teachers || [];
         } else if (currentStatus === 'all') {
           // Show all teachers regardless of verification status
           currentData = data.teachers || [];
@@ -94,6 +101,9 @@ async function loadCurrentView() {
         } else if (currentStatus === 'verified') {
           // Filter only verified students
           currentData = (data.students || []).filter(s => s.is_verified);
+        } else if (currentStatus === 'rejected') {
+          // For rejected, we'll get data from the rejected endpoint
+          currentData = data.students || [];
         } else if (currentStatus === 'all') {
           // Show all students regardless of verification status
           currentData = data.students || [];
@@ -127,6 +137,9 @@ function updatePageHeader() {
   } else if (currentStatus === 'unverified') {
     statusText = 'Unverified';
     subtitleText = `Manage ${currentType} verification requests`;
+  } else if (currentStatus === 'rejected') {
+    statusText = 'Rejected';
+    subtitleText = `View ${currentType}s rejected by admin or teacher`;
   } else {
     statusText = 'Verified';
     subtitleText = `Manage verified ${currentType} records`;
@@ -144,19 +157,23 @@ function updateTableHeaders() {
   let headers = [];
   if (currentType === 'teacher') {
     if (currentStatus === 'unverified') {
-      headers = ['Name', 'Email', 'Phone', 'Branch', 'Join Date', 'Actions'];
+      headers = ['Name', 'Email', 'Phone', 'Branch', 'Actions'];
     } else if (currentStatus === 'verified') {
-      headers = ['Name', 'Email', 'Status', 'Students', 'Join Date', 'Actions'];
+      headers = ['Name', 'Email', 'Phone', 'Branch', 'Students', 'Status', 'Actions'];
+    } else if (currentStatus === 'rejected') {
+      headers = ['Name', 'Email', 'Phone', 'Branch', 'Students', 'Status', 'Actions'];
     } else if (currentStatus === 'all') {
-      headers = ['Name', 'Email', 'Status', 'Students', 'Join Date', 'Actions'];
+      headers = ['Name', 'Email', 'Phone', 'Branch', 'Students', 'Status', 'Actions'];
     }
   } else {
     if (currentStatus === 'unverified') {
-      headers = ['Name', 'Email', 'Roll No', 'Teacher', 'Branch', 'Actions'];
+      headers = ['Name', 'Email', 'Phone', 'Branch', 'Roll No', 'Teacher', 'Institute', 'Status', 'Actions'];
     } else if (currentStatus === 'verified') {
-      headers = ['Name', 'Email', 'Roll No', 'Teacher', 'Status', 'Actions'];
+      headers = ['Name', 'Email', 'Phone', 'Branch', 'Roll No', 'Teacher', 'Institute', 'Status', 'Actions'];
+    } else if (currentStatus === 'rejected') {
+      headers = ['Name', 'Email', 'Phone', 'Branch', 'Roll No', 'Teacher', 'Institute', 'Status', 'Actions'];
     } else if (currentStatus === 'all') {
-      headers = ['Name', 'Email', 'Roll No', 'Teacher', 'Status', 'Actions'];
+      headers = ['Name', 'Email', 'Phone', 'Branch', 'Roll No', 'Teacher', 'Institute', 'Status', 'Actions'];
     }
   }
   
@@ -177,6 +194,8 @@ function renderCurrentData() {
       message = `No ${currentType}s found`;
     } else if (currentStatus === 'unverified') {
       message = `No pending ${currentType} verifications`;
+    } else if (currentStatus === 'rejected') {
+      message = `No rejected ${currentType}s found`;
     } else {
       message = `No verified ${currentType}s found`;
     }
@@ -192,12 +211,16 @@ function renderCurrentData() {
     if (currentType === 'teacher') {
       if (currentStatus === 'unverified') {
         tr.innerHTML = renderUnverifiedTeacherRow(item);
+      } else if (currentStatus === 'rejected') {
+        tr.innerHTML = renderRejectedTeacherRow(item);
       } else if (currentStatus === 'verified' || currentStatus === 'all') {
         tr.innerHTML = renderAllTeacherRow(item);
       }
     } else {
       if (currentStatus === 'unverified') {
         tr.innerHTML = renderUnverifiedStudentRow(item);
+      } else if (currentStatus === 'rejected') {
+        tr.innerHTML = renderRejectedStudentRow(item);
       } else if (currentStatus === 'verified' || currentStatus === 'all') {
         tr.innerHTML = renderAllStudentRow(item);
       }
@@ -215,13 +238,16 @@ function renderUnverifiedTeacherRow(teacher) {
         <div class="avatar ${getRandomNamedColor()}">${getInitials(teacher.name || 'Teacher')}</div>
         <div class="contact-details">
           <h4>${teacher.name || 'Unknown'}</h4>
+          <div class="contact-time">
+            ${formatDate(teacher.createdAt)}
+          </div>
+
         </div>
       </div>
     </td>
     <td>${teacher.email || 'N/A'}</td>
     <td>${teacher.phone || 'N/A'}</td>
     <td>${teacher.branch || 'N/A'}</td>
-    <td>${new Date(teacher.createdAt).toLocaleDateString()}</td>
     <td>
       <div class="admin-actions">
         <button class="btn-approve" onclick="verifyTeacher('${teacher._id}', true)" title="Approve">
@@ -251,12 +277,15 @@ function renderAllTeacherRow(teacher) {
         <i class="fas fa-times"></i> Reject
       </button>
     `;
-  } else {
+  } else if (teacher.is_verified) {
+    // Show unverify button for verified teachers
     actionButtons = `
-      <button class="icon-btn view-btn" onclick="viewTeacherDetails('${teacher._id}')" title="View Details">
-        <i class="fas fa-eye"></i>
+      <button class="btn-reject" onclick="unverifyTeacher('${teacher._id}')" title="Unverify">
+        <i class="fas fa-undo"></i> Unverify
       </button>
     `;
+  } else {
+    actionButtons = `<span class="action-completed">Action Completed</span>`;
   }
   
   return `
@@ -265,13 +294,17 @@ function renderAllTeacherRow(teacher) {
         <div class="avatar ${getRandomNamedColor()}">${getInitials(teacher.name || 'Teacher')}</div>
         <div class="contact-details">
           <h4>${teacher.name || 'Unknown'}</h4>
+          <div class="contact-time">
+            ${formatDate(teacher.createdAt)}
+          </div>
         </div>
       </div>
     </td>
     <td>${teacher.email || 'N/A'}</td>
+    <td>${teacher.phone || 'N/A'}</td>
+    <td>${teacher.branch || 'N/A'}</td>
+    <td>${teacher.students ? teacher.students.length : 0}</td>
     <td><span class="badge ${statusClass}">${statusText}</span></td>
-    <td>${teacher.students ? teacher.students.length : 0} students</td>
-    <td>${new Date(teacher.createdAt).toLocaleDateString()}</td>
     <td>
       <div class="admin-actions">
         ${actionButtons}
@@ -282,19 +315,41 @@ function renderAllTeacherRow(teacher) {
 
 // Render unverified student row (students pending admin approval)
 function renderUnverifiedStudentRow(student) {
+  // Get student status like in the All Students view
+  const getStudentStatus = () => {
+    if (!student.teacher_action) return { text: 'Pending on Teacher', class: 'pending' };
+    if (!student.teacher_verified) return { text: 'Rejected by Teacher', class: 'rejected' };
+    if (!student.admin_action) return { text: 'Pending on Admin', class: 'pending' };
+    if (!student.admin_verified) return { text: 'Rejected by Admin', class: 'rejected' };
+    return { text: 'Verified', class: 'verified' };
+  };
+
+  const status = getStudentStatus();
+
   return `
     <td>
       <div class="contact-info">
         <div class="avatar ${getRandomNamedColor()}">${getInitials(student.name || 'Student')}</div>
         <div class="contact-details">
           <h4>${student.name || 'Unknown'}</h4>
+          <div class="contact-time">
+            ${formatDate(student.createdAt)}
+          </div>
         </div>
       </div>
     </td>
     <td>${student.email || 'N/A'}</td>
+    <td>${student.phone || 'N/A'}</td>
+    <td>${student.branch || 'N/A'}</td>
     <td>${student.rollNo || 'N/A'}</td>
     <td>${student.teacher?.name || 'N/A'}</td>
-    <td>${student.branch || 'N/A'}</td>
+    <td>
+      <div class="institute-info">
+        <div>${student.instituteName || 'N/A'}</div>
+        <div class="contact-time">${student.instituteAddress || 'N/A'}</div>
+      </div>
+    </td>
+    <td><span class="badge ${status.class}">${status.text}</span></td>
     <td>
       <div class="admin-actions">
         <button class="btn-approve" onclick="verifyStudent('${student._id}', true)" title="Approve">
@@ -320,9 +375,9 @@ function renderAllStudentRow(student) {
 
   const status = getStudentStatus();
   
-  // Show approval/rejection buttons only for students pending admin approval in "all" view
+  // Show approval/rejection buttons for students pending admin action
   let actionButtons = '';
-  if (currentStatus === 'all' && student.teacher_verified && student.teacher_action && !student.admin_action) {
+  if (currentStatus === 'all' && !student.admin_action) {
     actionButtons = `
       <button class="btn-approve" onclick="verifyStudent('${student._id}', true)" title="Approve">
         <i class="fas fa-check"></i> Approve
@@ -331,12 +386,17 @@ function renderAllStudentRow(student) {
         <i class="fas fa-times"></i> Reject
       </button>
     `;
-  } else {
+  } else if (student.admin_verified && student.admin_action && student.is_verified) {
+    // Show unverify button for verified students
     actionButtons = `
-      <button class="icon-btn view-btn" onclick="viewStudentDetails('${student._id}')" title="View Details">
-        <i class="fas fa-eye"></i>
+      <button class="btn-reject" onclick="unverifyStudent('${student._id}')" title="Unverify">
+        <i class="fas fa-undo"></i> Unverify
       </button>
     `;
+  } else if (student.admin_action) {
+    actionButtons = `<span class="action-completed">Action Completed</span>`;
+  } else {
+    actionButtons = ``;
   }
   
   return `
@@ -345,12 +405,23 @@ function renderAllStudentRow(student) {
         <div class="avatar ${getRandomNamedColor()}">${getInitials(student.name || 'Student')}</div>
         <div class="contact-details">
           <h4>${student.name || 'Unknown'}</h4>
+          <div class="contact-time">
+            ${formatDate(student.createdAt)}
+          </div>
         </div>
       </div>
     </td>
     <td>${student.email || 'N/A'}</td>
+    <td>${student.phone || 'N/A'}</td>
+    <td>${student.branch || 'N/A'}</td>
     <td>${student.rollNo || 'N/A'}</td>
     <td>${student.teacher?.name || 'N/A'}</td>
+    <td>
+      <div class="institute-info">
+        <div>${student.instituteName || 'N/A'}</div>
+        <div class="contact-time">${student.instituteAddress || 'N/A'}</div>
+      </div>
+    </td>
     <td><span class="badge ${status.class}">${status.text}</span></td>
     <td>
       <div class="admin-actions">
@@ -365,14 +436,106 @@ function renderStudentRow(student) {
   return renderAllStudentRow(student);
 }
 
+// Render rejected teacher row
+function renderRejectedTeacherRow(teacher) {
+  const statusText = teacher.is_verified ? 'Verified' : (teacher.verification_completed ? 'Rejected by Admin' : 'Pending');
+  
+  return `
+    <td>
+      <div class="contact-info">
+        <div class="avatar ${getRandomNamedColor()}">${getInitials(teacher.name || 'Teacher')}</div>
+        <div class="contact-details">
+          <h4>${teacher.name || 'Unknown'}</h4>
+          <div class="contact-time">
+            ${formatDate(teacher.createdAt)}
+          </div>
+        </div>
+      </div>
+    </td>
+    <td>${teacher.email || 'N/A'}</td>
+    <td>${teacher.phone || 'N/A'}</td>
+    <td>${teacher.branch || 'N/A'}</td>
+    <td>${teacher.students ? teacher.students.length : 0} students</td>
+    <td><span class="badge rejected">${statusText}</span></td>
+    <td>
+      <div class="admin-actions">
+        <span class="action-completed">Action Completed</span>
+      </div>
+    </td>
+  `;
+}
+
+// Render rejected student row
+function renderRejectedStudentRow(student) {
+  // Get student status like in the All Students view
+  const getStudentStatus = () => {
+    if (!student.teacher_action) return { text: 'Pending on Teacher', class: 'pending' };
+    if (!student.teacher_verified) return { text: 'Rejected by Teacher', class: 'rejected' };
+    if (!student.admin_action) return { text: 'Pending on Admin', class: 'pending' };
+    if (!student.admin_verified) return { text: 'Rejected by Admin', class: 'rejected' };
+    return { text: 'Verified', class: 'verified' };
+  };
+
+  const status = getStudentStatus();
+
+  return `
+    <td>
+      <div class="contact-info">
+        <div class="avatar ${getRandomNamedColor()}">${getInitials(student.name || 'Student')}</div>
+        <div class="contact-details">
+          <h4>${student.name || 'Unknown'}</h4>
+          <div class="contact-time">
+            ${formatDate(student.createdAt)}
+          </div>
+        </div>
+      </div>
+    </td>
+    <td>${student.email || 'N/A'}</td>
+    <td>${student.phone || 'N/A'}</td>
+    <td>${student.branch || 'N/A'}</td>
+    <td>${student.rollNo || 'N/A'}</td>
+    <td>${student.teacher?.name || 'N/A'}</td>
+    <td>
+      <div class="institute-info">
+        <div>${student.instituteName || 'N/A'}</div>
+        <div class="contact-time">${student.instituteAddress || 'N/A'}</div>
+      </div>
+    </td>
+    <td><span class="badge ${status.class}">${status.text}</span></td>
+    <td>
+      <div class="admin-actions">
+        <span class="action-completed">Action Completed</span>
+      </div>
+    </td>
+  `;
+}
+
 // Show empty state message
 function showEmptyState(message) {
   const tbody = document.getElementById('dataTableBody');
-  tbody.innerHTML = `<tr><td colspan="6" class="loading">${message}</td></tr>`;
+  tbody.innerHTML = `<tr><td colspan="9" class="loading">${message}</td></tr>`;
 }
 
 // Verify teacher function
 async function verifyTeacher(teacherId, isVerified) {
+  // Show confirmation dialog
+  const action = isVerified ? 'approve' : 'reject';
+  const result = await Swal.fire({
+    title: 'Are you sure?',
+    text: `Do you want to ${action} this teacher profile?`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: `Yes, ${action}`,
+    cancelButtonText: 'Cancel',
+    draggable: true
+  });
+  
+  if (!result.isConfirmed) {
+    return; // User cancelled the action
+  }
+  
   try {
     const response = await fetch(`/dashboard/admin/verify_teacher/${teacherId}`, {
       method: 'PUT',
@@ -386,19 +549,52 @@ async function verifyTeacher(teacherId, isVerified) {
       // Reload current view
       await loadCurrentView();
       
-      // Show success message
-      alert(`Teacher ${isVerified ? 'approved' : 'rejected'} successfully!`);
+      // Show success message with SweetAlert2
+      Swal.fire({
+        title: 'Success!',
+        text: `Teacher ${isVerified ? 'approved' : 'rejected'} successfully!`,
+        icon: 'success',
+        draggable: true
+      });
     } else {
-      alert('Failed to update teacher verification status');
+      Swal.fire({
+        title: 'Error!',
+        text: 'Failed to update teacher verification status',
+        icon: 'error',
+        draggable: true
+      });
     }
   } catch (error) {
     console.error('Error verifying teacher:', error);
-    alert('Error updating teacher verification status');
+    Swal.fire({
+      title: 'Error!',
+      text: 'Error updating teacher verification status',
+      icon: 'error',
+      draggable: true
+    });
   }
 }
 
 // Verify student function
 async function verifyStudent(studentId, isVerified) {
+  // Show confirmation dialog
+  const action = isVerified ? 'approve' : 'reject';
+  const result = await Swal.fire({
+    title: 'Are you sure?',
+    text: `Do you want to ${action} this student profile?`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: `Yes, ${action}`,
+    cancelButtonText: 'Cancel',
+    draggable: true
+  });
+  
+  if (!result.isConfirmed) {
+    return; // User cancelled the action
+  }
+  
   try {
     const response = await fetch(`/dashboard/admin/verify_student/${studentId}`, {
       method: 'PUT',
@@ -412,26 +608,172 @@ async function verifyStudent(studentId, isVerified) {
       // Reload current view
       await loadCurrentView();
       
-      // Show success message
-      alert(`Student ${isVerified ? 'approved' : 'rejected'} successfully!`);
+      // Show success message with SweetAlert2
+      Swal.fire({
+        title: 'Success!',
+        text: `Student ${isVerified ? 'approved' : 'rejected'} successfully!`,
+        icon: 'success',
+        draggable: true
+      });
     } else {
       const errorData = await response.json();
-      alert(errorData.error || 'Failed to update student verification status');
+      Swal.fire({
+        title: 'Error!',
+        text: errorData.error || 'Failed to update student verification status',
+        icon: 'error',
+        draggable: true
+      });
     }
   } catch (error) {
     console.error('Error verifying student:', error);
-    alert('Error updating student verification status');
+    Swal.fire({
+      title: 'Error!',
+      text: 'Error updating student verification status',
+      icon: 'error',
+      draggable: true
+    });
   }
 }
 
-// View student details (placeholder)
-function viewStudentDetails(studentId) {
-  alert(`Viewing student details for ID: ${studentId}`);
+// Unverify student function
+async function unverifyStudent(studentId) {
+  // Show confirmation dialog
+  const result = await Swal.fire({
+    title: 'Are you sure?',
+    text: 'This will unverify the student. This action can only be performed if the student has no allotted resources.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Yes, unverify',
+    cancelButtonText: 'Cancel',
+    draggable: true
+  });
+  
+  if (!result.isConfirmed) {
+    return; // User cancelled the action
+  }
+  
+  try {
+    const response = await fetch(`/dashboard/admin/unverify_student/${studentId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      // Reload current view
+      await loadCurrentView();
+      
+      // Show success message with SweetAlert2
+      Swal.fire({
+        title: 'Success!',
+        text: data.message || 'Student unverified successfully!',
+        icon: 'success',
+        draggable: true
+      });
+    } else {
+      const errorData = await response.json();
+      // Show error message with SweetAlert2
+      Swal.fire({
+        title: 'Error!',
+        text: errorData.error || 'Failed to unverify student',
+        icon: 'error',
+        draggable: true
+      });
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    Swal.fire({
+      title: 'Error!',
+      text: 'An error occurred while unverifying student',
+      icon: 'error',
+      draggable: true
+    });
+  }
 }
 
-// View teacher details (placeholder) 
-function viewTeacherDetails(teacherId) {
-  alert(`Viewing teacher details for ID: ${teacherId}`);
+// Unverify teacher function
+async function unverifyTeacher(teacherId) {
+  // Show confirmation dialog
+  const result = await Swal.fire({
+    title: 'Are you sure?',
+    text: 'This will unverify the teacher and all their students. This action can only be performed if no student under this teacher has an allotted resource.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Yes, unverify',
+    cancelButtonText: 'Cancel',
+    draggable: true
+  });
+  
+  if (!result.isConfirmed) {
+    return; // User cancelled the action
+  }
+  
+  try {
+    const response = await fetch(`/dashboard/admin/unverify_teacher/${teacherId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      // Reload current view
+      await loadCurrentView();
+      
+      // Show success message with SweetAlert2
+      Swal.fire({
+        title: 'Success!',
+        text: data.message || 'Teacher and students unverified successfully!',
+        icon: 'success',
+        draggable: true
+      });
+    } else {
+      const errorData = await response.json();
+      
+      // Check if there are students with allocated resources
+      if (errorData.studentsWithResources && errorData.studentsWithResources.length > 0) {
+        const studentList = errorData.studentsWithResources
+          .map(s => `• ${s.rollNo} - ${s.name}`)
+          .join('\n');
+        
+        Swal.fire({
+          title: 'Cannot Unverify!',
+          html: `
+            <p>${errorData.error}</p>
+            <br>
+            <pre style="font-size: 0.8em; text-align: left; background: #f5f5f5; padding: 10px; border-radius: 5px; max-height: 200px; overflow-y: auto;">${studentList}</pre>
+            <br>
+            <p style="font-size: 0.8em; color: #666;">Please revoke their machine allocations before unverifying this teacher.</p>
+          `,
+          icon: 'error',
+          draggable: true,
+          width: '600px'
+        });
+      } else {
+        Swal.fire({
+          title: 'Cannot Unverify!',
+          text: errorData.error || 'Failed to unverify teacher',
+          icon: 'error',
+          draggable: true
+        });
+      }
+    }
+  } catch (error) {
+    console.error('Error unverifying teacher:', error);
+    Swal.fire({
+      title: 'Error!',
+      text: 'Error unverifying teacher',
+      icon: 'error',
+      draggable: true
+    });
+  }
 }
 
 // Search functionality
@@ -465,9 +807,9 @@ document.getElementById('searchInput').addEventListener('input', (e) => {
 
 // Make functions globally available
 window.verifyTeacher = verifyTeacher;
-window.viewTeacherDetails = viewTeacherDetails;
 window.verifyStudent = verifyStudent;
-window.viewStudentDetails = viewStudentDetails;
+window.unverifyTeacher = unverifyTeacher;
+window.unverifyStudent = unverifyStudent;
 
 // Initialize dashboard when page loads
 document.addEventListener('DOMContentLoaded', function() {
@@ -478,5 +820,7 @@ document.addEventListener('DOMContentLoaded', function() {
 window.adminDashboard = {
   loadCurrentView,
   verifyTeacher,
-  verifyStudent
+  verifyStudent,
+  unverifyTeacher,
+  unverifyStudent
 };
