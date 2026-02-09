@@ -92,20 +92,28 @@ app.use("/dashboard", noCache, requireAuth, dashboardRoutes);
 // const backupSchedule = "*/2 * * * *"; // every 2 minutes (example)
 const backupSchedule = process.env.BACKUP_SCHEDULE || "0 3 * * *";
 
-schedule.scheduleJob(backupSchedule, () => {
-  const now = new Date();
-  const timeStr = now.toLocaleTimeString(); // e.g., "10:03:00 AM"
-  
-  console.log(`🕒 ${timeStr} — starting MongoDB backup...`);
-  runBackup();
+schedule.scheduleJob(backupSchedule, async () => {
+  try {
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString(); // e.g., "10:03:00 AM"
+    
+    console.log(`🕒 ${timeStr} — starting MongoDB backup...`);
+    await runBackup();
+  } catch (error) {
+    console.error('Scheduled backup failed:', error);
+  }
 });
 
 const expiryNotifySchedule = process.env.EXPIRY_NOTIFY_SCHEDULE || "5 3 * * *";
-schedule.scheduleJob(expiryNotifySchedule, () => {
-  const now = new Date();
-  const timeStr = now.toLocaleTimeString();
-  console.log(`🕒 ${timeStr} — checking for expiring resource requests...`);
-  checkExpiringResourceRequests();
+schedule.scheduleJob(expiryNotifySchedule, async () => {
+  try {
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString();
+    console.log(`🕒 ${timeStr} — checking for expiring resource requests...`);
+    await checkExpiringResourceRequests();
+  } catch (error) {
+    console.error('Scheduled expiry check failed:', error);
+  }
 });
 
 app.listen(PORT, () => {
