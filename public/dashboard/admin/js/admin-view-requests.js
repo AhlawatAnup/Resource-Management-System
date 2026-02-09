@@ -448,6 +448,14 @@ document.addEventListener('DOMContentLoaded', function() {
   initializePurposePanel();
   loadResourceRequests();
 
+  // Initialize Flatpickr calendar for expiry date
+  flatpickr('#editExpiryDate', {
+    mode: 'single',
+    dateFormat: 'Y-m-d',
+    minDate: 'today',
+    enableTime: false,
+  });
+
   // Search functionality
   const searchInput = document.getElementById("searchInput");
   if (searchInput) {

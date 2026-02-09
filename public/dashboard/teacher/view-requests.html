@@ -13,6 +13,8 @@
       crossorigin="anonymous"
     ></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     
   </head>
   <link rel="stylesheet" href="/dashboard/teacher/style/teacher.dashboard.css" />
@@ -120,7 +122,7 @@
                 <div class="form-row">
                   <div class="form-group">
                     <label for="editExpiryDate">Expiry Date:</label>
-                    <input type="date" id="editExpiryDate" name="expiryDate" class="form-control" required />
+                    <input type="text" id="editExpiryDate" name="expiryDate" class="form-control" placeholder="Select date" required />
                   </div>
                 </div>
                 <div class="form-row">

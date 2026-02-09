@@ -93,7 +93,7 @@ function displayResourcesPage(student) {
                             
                             <div class="form-group">
                                 <label for="expiry-date">Required Until (Expiry Date):</label>
-                                <input type="date" id="expiry-date" class="form-control" required>
+                                <input type="text" id="expiry-date" class="form-control" placeholder="Select date" required>
                                 <small style="color: #666; font-size: 0.85em;">Select the date when you no longer need these resources</small>
                             </div>
                             
@@ -141,6 +141,9 @@ function displayResourcesPage(student) {
                 </div>
             `;
             
+            // Initialize calendar after rendering the form
+            initializeExpiryDatePicker();
+
             // Add form submission handler
             const form = document.getElementById('resource-request-form');
             if (form) {
@@ -187,6 +190,34 @@ function displayResourcesPage(student) {
             `;
         }
     }
+}
+
+function initializeExpiryDatePicker() {
+    const expiryDateInput = document.getElementById('expiry-date');
+    if (!expiryDateInput || typeof flatpickr === 'undefined') {
+        return;
+    }
+
+    const today = new Date();
+    const formatDateInput = (date) => date.toISOString().split('T')[0];
+
+    const defaultDate = new Date();
+    defaultDate.setDate(today.getDate() + 7);
+
+    const minDate = new Date();
+    minDate.setDate(today.getDate() + 1);
+
+    const maxDate = new Date();
+    maxDate.setDate(today.getDate() + 30);
+
+    flatpickr(expiryDateInput, {
+        mode: 'single',
+        dateFormat: 'Y-m-d',
+        defaultDate: formatDateInput(defaultDate),
+        minDate: formatDateInput(minDate),
+        maxDate: formatDateInput(maxDate),
+        enableTime: false,
+    });
 }
 
 // Function to determine student verification status based on new schema
