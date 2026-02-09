@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Basic client-side check
     if (!file.name.toLowerCase().endsWith('.csv')) {
-      alert('Please select a CSV file');
+      Toastify({text: "Please select a CSV file", duration: 3000, gravity: "top", position: "center", backgroundColor: "#ff6b6b"}).showToast();
       return;
     }
 
@@ -58,19 +58,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const json = await resp.json();
       if (!resp.ok) {
-        alert('Import failed: ' + (json.error || resp.statusText));
+        Toastify({text: 'Import failed: ' + (json.error || resp.statusText), duration: 3000, gravity: "top", position: "center", backgroundColor: "#ff6b6b"}).showToast();
       } else {
         const msg = `Imported: ${json.imported} / ${json.total}`;
         if (json.skipped && json.skipped.length) {
-          alert(msg + '\nSkipped rows: ' + json.skipped.length + '\nCheck console for details');
+          Swal.fire({
+            icon: 'success',
+            title: 'Import completed',
+            text: `${msg}. Skipped rows: ${json.skipped.length}`
+          });
           // console.log('Skipped rows:', json.skipped);
         } else {
-          alert(msg);
+          Swal.fire({
+            icon: 'success',
+            title: 'Import successful',
+            text: msg
+          });
         }
       }
     } catch (err) {
       console.error(err);
-      alert('Upload error: ' + err.message);
+      Toastify({text: 'Upload error: ' + err.message, duration: 3000, gravity: "top", position: "center", backgroundColor: "#ff6b6b"}).showToast();
     } finally {
       importBtn.disabled = false;
       importBtn.textContent = 'Import CSV';
@@ -193,7 +201,14 @@ document.addEventListener('DOMContentLoaded', () => {
       editBtn.type = 'button';
       editBtn.className = 'btn btn-edit';
       editBtn.textContent = 'Edit';
-      editBtn.addEventListener('click', () => openEditModal(m, tr, assignedTd));
+      editBtn.addEventListener('click', () => {
+        // Prevent editing if machine is assigned
+        if (_isAssigned) {
+          Toastify({text: "Cannot edit machine that is assigned to a student. Revoke assignment first.", duration: 3000, gravity: "top", position: "center", backgroundColor: "#ff6b6b"}).showToast();
+          return;
+        }
+        openEditModal(m, tr, assignedTd);
+      });
       actionTd.appendChild(editBtn);
 
       const deleteBtn = document.createElement('button');
@@ -202,7 +217,13 @@ document.addEventListener('DOMContentLoaded', () => {
       deleteBtn.textContent = 'Delete';
       deleteBtn.style.marginLeft = '8px';
       deleteBtn.addEventListener('click', async () => {
-        if (!machineConfirmDelete(m)) return;
+        // Prevent deletion if machine is assigned
+        if (_isAssigned) {
+          Toastify({text: "Cannot delete machine that is assigned to a student. Revoke assignment first.", duration: 3000, gravity: "top", position: "center", backgroundColor: "#ff6b6b"}).showToast();
+          return;
+        }
+        
+        if (!await machineConfirmDelete(m)) return;
         try {
           if (m._id) {
             const resp = await fetch(`/dashboard/admin/machines/${m._id}`, {
@@ -211,15 +232,40 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             if (!resp.ok) {
               const txt = await resp.text();
-              alert('Delete failed: ' + (txt || resp.statusText));
+              Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'error',
+                title: 'Delete failed: ' + (txt || resp.statusText),
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true
+              });
               return;
             }
           }
           // remove row from DOM
           tr.remove();
+          Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'success',
+            title: 'Machine deleted successfully',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true
+          });
         } catch (err) {
           console.error('Failed to delete machine', err);
-          alert('Failed to delete machine. See console for details.');
+          Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'error',
+            title: 'Failed to delete machine.',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true
+          });
         }
       });
       actionTd.appendChild(deleteBtn);
@@ -236,15 +282,30 @@ document.addEventListener('DOMContentLoaded', () => {
         revokeBtn.style.color = '#fff';
         revokeBtn.addEventListener('click', async () => {
           const idText = m.MIGID ? ` (${m.MIGID})` : '';
-          const input = prompt(`Type CONFIRM to revoke assignment for this machine${idText}, or cancel to abort. The resource request will also be deleted. This Process is irreversible.`);
-          if (input === null) return; // cancelled
-          if (String(input).trim().toUpperCase() !== 'CONFIRM') {
-            alert('Revoke cancelled — confirmation not entered correctly.');
-            return;
-          }
+          const result = await Swal.fire({
+            title: 'Revoke Assignment',
+            html: `Type <strong>CONFIRM</strong> to revoke assignment for this machine${idText}, or cancel to abort.<br><br><em>The resource request will also be deleted. This process is irreversible.</em>`,
+            input: 'text',
+            inputPlaceholder: 'Type CONFIRM',
+            showCancelButton: true,
+            confirmButtonText: 'Revoke',
+            cancelButtonText: 'Cancel',
+            inputValidator: (value) => {
+              if (!value) return 'Please enter a value';
+              if (value.trim().toUpperCase() !== 'CONFIRM') return 'Please type CONFIRM';
+            }
+          });
+          if (!result.isConfirmed) return;
+
+          // Show processing state
+          revokeBtn.disabled = true;
+          const originalText = revokeBtn.textContent;
+          revokeBtn.textContent = 'Processing...';
+          revokeBtn.style.opacity = '0.6';
+          revokeBtn.style.cursor = 'not-allowed';
 
           try {
-            // Step 1: revoke assignment on machine (if we have an id)
+            // Revoke assignment
             if (m._id) {
               const resp = await fetch(`/dashboard/admin/machines/${m._id}`, {
                 method: 'PUT',
@@ -254,24 +315,14 @@ document.addEventListener('DOMContentLoaded', () => {
               });
               if (!resp.ok) {
                 const txt = await resp.text().catch(() => null);
-                alert('Revoke failed: ' + (txt || resp.statusText));
+                // Reset button state on error
+                revokeBtn.disabled = false;
+                revokeBtn.textContent = originalText;
+                revokeBtn.style.opacity = '1';
+                revokeBtn.style.cursor = 'pointer';
+                Toastify({text: 'Revoke failed: ' + (txt || resp.statusText), duration: 3000, gravity: "top", position: "center", backgroundColor: "#ff6b6b"}).showToast();
                 return;
               }
-            }
-
-            // Step 2: delete related resource request(s) by MIGID (if we have a MIGID)
-            if (m.MIGID) {
-              const delResp = await fetch(`/dashboard/admin/machines/requests/${encodeURIComponent(m.MIGID)}`, {
-                method: 'DELETE',
-                credentials: 'include'
-              });
-              if (!delResp.ok) {
-                const txt = await delResp.text().catch(() => null);
-                alert('Revoke succeeded but deleting related resource request(s) failed: ' + (txt || delResp.statusText));
-                return;
-              }
-              const json = await delResp.json().catch(() => null);
-              // console.log('Deleted resource requests by MIGID:', json);
             }
 
             assignedTd.textContent = 'Unassigned';
@@ -279,10 +330,16 @@ document.addEventListener('DOMContentLoaded', () => {
             if (window.reloadMachines) {
               try { await window.reloadMachines(); } catch (e) { /* ignore reload errors */ }
             }
-            alert('Assignment revoked successfully.');
+            Swal.fire('Assignment revoked successfully.', '', 'success');
+
           } catch (err) {
             console.error('Failed to revoke assignment', err);
-            alert('Failed to revoke assignment. See console for details.');
+            // Reset button state on error
+            revokeBtn.disabled = false;
+            revokeBtn.textContent = originalText;
+            revokeBtn.style.opacity = '1';
+            revokeBtn.style.cursor = 'pointer';
+            Toastify({text: 'Failed to revoke assignment. See console for details.', duration: 3000, gravity: "top", position: "center", backgroundColor: "#ff6b6b"}).showToast();
           }
         });
         actionTd.appendChild(revokeBtn);
@@ -300,9 +357,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 // Confirm delete helper
-function machineConfirmDelete(machine) {
+async function machineConfirmDelete(machine) {
   const idText = machine.MIGID ? ` (${machine.MIGID})` : '';
-  return confirm(`Are you sure you want to delete this machine${idText}? This action cannot be undone.`);
+  const result = await Swal.fire({
+    title: 'Delete Machine',
+    text: `Are you sure you want to delete this machine${idText}? This action cannot be undone.`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Delete',
+    cancelButtonText: 'Cancel',
+    confirmButtonColor: '#fa6251ff'
+  });
+  return result.isConfirmed;
 }
 
 // Create modal (singleton) and helpers
@@ -339,12 +405,26 @@ function ensureEditModal() {
   cancel.addEventListener('click', () => closeEditModal());
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
+
+    const saveBtn = modal.querySelector('#machineEditSave');
+    saveBtn.disabled = true;
+    saveBtn.style.opacity = '0.5';
+
     const id = modal.dataset.machineId;
     const rowSelector = modal.dataset.rowSelector;
+
     const MIGID = modal.querySelector('#machineMIGID').value.trim();
+
     const gpuRaw = modal.querySelector('#machineGpu').value.trim();
     const gpu = gpuRaw === '' ? null : Number(gpuRaw);
-    if (gpu !== null && (Number.isNaN(gpu) || gpu < 0)) { alert('GPU RAM must be a non-negative number'); return; }
+
+    if (gpu !== null && (Number.isNaN(gpu) || gpu < 0)) {
+      Toastify({text: 'GPU RAM must be a non-negative number', duration: 3000, gravity: "top", position: "center", backgroundColor: "#ff6b6b"}).showToast();
+
+      saveBtn.disabled = false;
+      saveBtn.style.opacity = '1';
+      return;
+    }
 
     try {
       // call server to update (if id present)
@@ -357,7 +437,7 @@ function ensureEditModal() {
         });
         if (!resp.ok) {
           const txt = await resp.text();
-          alert('Update failed: ' + (txt || resp.statusText));
+          Toastify({text: 'Update failed: ' + (txt || resp.statusText), duration: 3000, gravity: "top", position: "center", backgroundColor: "#ff6b6b"}).showToast();
           return;
         }
       }
@@ -373,9 +453,22 @@ function ensureEditModal() {
       }
 
       closeEditModal();
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'success',
+        title: 'Machine updated successfully',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true
+      });
     } catch (err) {
       console.error('Failed to update machine', err);
-      alert('Failed to update machine. See console for details.');
+      Toastify({text: 'Failed to update machine', duration: 3000, gravity: "top", position: "center", backgroundColor: "#ff6b6b"}).showToast();
+    } finally {
+      // Re-enable save button for next use
+      saveBtn.disabled = false;
+      saveBtn.style.opacity = '1';
     }
   });
 
@@ -421,8 +514,30 @@ function ensureAddModal() {
     const MIGID = modal.querySelector('#addMIGID').value.trim();
     const gpuRaw = modal.querySelector('#addGpuRam').value.trim();
     const gpu = gpuRaw === '' ? null : Number(gpuRaw);
-    if (!MIGID) { alert('MIGID is required'); return; }
-    if (gpu === null || Number.isNaN(gpu) || gpu < 0) { alert('GPU RAM must be a non-negative number'); return; }
+    if (!MIGID) { 
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'error',
+        title: 'MIGID is required',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true
+      });
+      return;
+    }
+    if (gpu === null || Number.isNaN(gpu) || gpu < 0) {
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'error',
+        title: 'GPU RAM isnt valid',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true
+      });
+      return;
+    }
 
     try {
       const resp = await fetch('/dashboard/admin/create-machine', {
@@ -433,15 +548,40 @@ function ensureAddModal() {
       });
       const json = await resp.json();
       if (!resp.ok) {
-        alert('Create failed: ' + (json.error || resp.statusText));
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          icon: 'error',
+          title: 'Create failed: ' + (json.error || resp.statusText),
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true
+        });
         return;
       }
       // success: close and reload list
       closeAddModal();
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'success',
+        title: 'Machine created successfully',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true
+      });
       if (window.reloadMachines) window.reloadMachines(); else location.reload();
     } catch (err) {
       console.error('Failed to create machine', err);
-      alert('Failed to create machine. See console for details.');
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'error',
+        title: 'Failed to create machine. See console for details.',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true
+      });
     }
   });
 
@@ -489,4 +629,7 @@ function closeEditModal() {
   modal.style.display = 'none';
   delete modal.dataset.machineId;
   delete modal.dataset.rowSelector;
+  // Reset form for next use
+  const form = modal.querySelector('#machineEditForm');
+  if (form) form.reset();
 }

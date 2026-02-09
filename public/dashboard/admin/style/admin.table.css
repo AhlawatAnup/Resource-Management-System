@@ -16,7 +16,7 @@ thead {
 }
 
 thead th {
-  padding: 12px 20px;
+  padding: 10px 12px;
   text-align: left;
   font-weight: 600;
   font-size: 12px;
@@ -57,7 +57,7 @@ tbody tr:last-child {
 }
 
 tbody td {
-  padding: 16px 20px;
+  padding: 12px 12px;
   vertical-align: middle;
   font-size: 13px;
 }
@@ -66,19 +66,19 @@ tbody td {
 .contact-info {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
 }
 
 .avatar {
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
   font-weight: 600;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .avatar.blue { background: #3b82f6; }
@@ -89,8 +89,8 @@ tbody td {
 .avatar.red { background: #ef4444; }
 
 .contact-details h4 {
-  margin: 0 0 2px 0;
-  font-size: 15px;
+  margin: 0 0 1px 0;
+  font-size: 14px;
   font-weight: 600;
   color: #111827;
 }

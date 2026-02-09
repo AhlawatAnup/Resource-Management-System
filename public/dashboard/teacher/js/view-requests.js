@@ -6,10 +6,11 @@ import {
   initializePurposePanel,
   createViewMoreButton,
   isValidUsername
-} from '../../Common/js/commons.js';
+} from '../../common/js/commons.js';
 
 let resourceRequests = [];
 let filteredRequests = [];
+let teacherVerificationStatus = { is_verified: false };
 
 // Fetch resource requests from teacher dashboard data
 async function loadResourceRequests() {
@@ -27,6 +28,19 @@ async function loadResourceRequests() {
 
     const data = await response.json();
     // console.log("Teacher Dashboard Data:", data);
+
+    // Store teacher verification status
+    teacherVerificationStatus = {
+      is_verified: data.is_verified,
+      verification_completed: data.verification_completed
+    };
+
+    // Don't show requests if teacher is not verified
+    if (!teacherVerificationStatus.is_verified) {
+      document.getElementById("requestsTableBody").innerHTML =
+        '<tr><td colspan="7" class="loading">Your account must be verified by admin to view resource requests</td></tr>';
+      return;
+    }
 
     // Extract resource requests from the dashboard data
     resourceRequests = data.resourceRequests || [];
@@ -73,7 +87,7 @@ function renderResourceRequests(requests) {
       <td>
         <div class="request-title">
           <small>${request.title}</small>
-          <div class="request-date">Created: ${formatDate(request.createdAt)}</div>
+          <div class="request-date"> ${formatDate(request.createdAt)}</div>
         </div>
       </td>
       <td>
@@ -146,9 +160,29 @@ function getActionButtons(request) {
 
 // Update resource request verification status
 async function updateRequestVerification(requestId, isVerified) {
+  // Check if teacher is verified
+  if (!teacherVerificationStatus.is_verified) {
+    showNotification('You must be verified by admin before approving resource requests', 'error');
+    return;
+  }
+
   try {
     const action = isVerified ? 'approve' : 'decline';
-    if (!confirm(`Are you sure you want to ${action} this resource request?`)) {
+    const result_confirmation = await Swal.fire({
+      title: 'Are you sure?',
+      text: `Do you want to ${action} this resource request?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: `Yes, ${action}`,
+      cancelButtonText: 'Cancel',
+      draggable: true,
+      scrollbarPadding: false,
+      heightAuto: false
+    });
+    
+    if (!result_confirmation.isConfirmed) {
       return;
     }
 
@@ -276,7 +310,8 @@ document.addEventListener('DOMContentLoaded', function() {
   // Modal form submit
   document.getElementById('editRequestForm').onsubmit = async function(e) {
     e.preventDefault();
-    await submitEditRequest();
+    const submitBtn = e.submitter || this.querySelector('button[type="submit"]');
+    await submitEditRequest(submitBtn);
   };
 });
 
@@ -284,6 +319,12 @@ document.addEventListener('DOMContentLoaded', function() {
 function showEditModal(requestId) {
   const req = resourceRequests.find(r => r._id === requestId);
   if (!req) return;
+  const submitBtn = document.querySelector('#editRequestForm button[type="submit"]');
+  if (submitBtn) {
+    submitBtn.disabled = false;
+    submitBtn.style.opacity = '';
+    submitBtn.style.cursor = '';
+  }
   document.getElementById('editRequestId').value = req._id;
   document.getElementById('editTitle').value = req.title;
   document.getElementById('editPurpose').value = req.purpose;
@@ -297,7 +338,7 @@ function showEditModal(requestId) {
 }
 
 // Submit edit request to backend
-async function submitEditRequest() {
+async function submitEditRequest(submitBtn) {
   const requestId = document.getElementById('editRequestId').value;
   const payload = {
     title: document.getElementById('editTitle').value,
@@ -329,6 +370,11 @@ async function submitEditRequest() {
     titleErrorDiv.textContent = '';
   }
   try {
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.style.opacity = '0.6';
+      submitBtn.style.cursor = 'not-allowed';
+    }
     const response = await fetch(`/dashboard/teacher/edit_request/${requestId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -362,5 +408,10 @@ async function submitEditRequest() {
   } catch (err) {
     console.error('Edit request error:', err);
     showNotification(err.message || 'Failed to update resource request.', 'error');
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.style.opacity = '';
+      submitBtn.style.cursor = '';
+    }
   }
 }

@@ -11,7 +11,7 @@ export async function getLoggedInStudentId() {
             const data = await response.json();
             if (data.id) {
                 // Store for future use
-                localStorage.setItem('studentId', data.id);
+                // localStorage.setItem('studentId', data.id);
                 return data.id;
             }
         }
@@ -41,7 +41,7 @@ export function showErrorMessage(message, containerId = 'student-profile') {
             <div class="error-message">
                 <i class="fas fa-exclamation-triangle"></i>
                 <p>${message}</p>
-                <button onclick="location.reload()" class="retry-btn">Retry</button>
+                <button class="retry-btn" onclick="this.disabled=true; location.reload()">Retry</button>
             </div>
         `;
     }

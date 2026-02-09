@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="/dashboard/student/style/student.dashboard.css" />
     <link rel="stylesheet" href="/dashboard/student/style/student.request.css" />
     <link rel="stylesheet" href="/dashboard/student/style/student.table.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   </head>
   <body>
     <div class="sidebar">
@@ -46,7 +47,7 @@
       </nav>
 
       <div style="padding: 20px">
-        <a href="/logout" class="nav-item">
+        <a href="#" onclick="handleLogout(event)" class="nav-item">
           <i class="fas fa-sign-out-alt"></i>
           Log out
         </a>

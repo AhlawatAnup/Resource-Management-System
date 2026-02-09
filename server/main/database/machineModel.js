@@ -23,7 +23,8 @@ const machineSchema = new mongoose.Schema({
     }
     ,
     assignedStudent: {
-        studentId: { type: mongoose.Schema.Types.ObjectId, ref: 'Student', required: false }
+        studentId: { type: mongoose.Schema.Types.ObjectId, ref: 'Student', required: false },
+        resourceRequestId: { type: mongoose.Schema.Types.ObjectId, ref: 'ResourceRequest', required: false }
     }
     ,
     isAssigned: {

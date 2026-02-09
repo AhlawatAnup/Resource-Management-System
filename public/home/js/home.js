@@ -158,7 +158,7 @@ async function adminLogin() {
   const sendOtpBtn = document.getElementById("sendOtpBtn");
 
   if (!username || !password) {
-    alert("Please enter both username and password");
+    Toastify({text: "Please enter both username and password", duration: 3000, gravity: "top", position: "right", backgroundColor: "#ff6b6b"}).showToast();
     return;
   }
 
@@ -181,14 +181,14 @@ async function adminLogin() {
       // Re-enable button on error
       sendOtpBtn.disabled = false;
       sendOtpBtn.innerHTML = originalText;
-      alert(data.error || "Login failed");
+      Toastify({text: data.error || "Login failed", duration: 3000, gravity: "top", position: "right", backgroundColor: "#ff6b6b"}).showToast();
     }
   } catch (err) {
     console.error("Error:", err);
     // Re-enable button on error
     sendOtpBtn.disabled = false;
     sendOtpBtn.innerHTML = originalText;
-    alert("Something went wrong");
+    Toastify({text: "Something went wrong", duration: 3000, gravity: "top", position: "right", backgroundColor: "#ff6b6b"}).showToast();
   }
 }
 
@@ -201,19 +201,19 @@ async function sendOtp() {
   const sendOtpBtn = document.getElementById("sendOtpBtn");
 
   if (!email) {
-    alert("Please enter your email address");
+    Toastify({text: "Please enter your email address", duration: 3000, gravity: "top", position: "right", backgroundColor: "#ff6b6b"}).showToast();
     return;
   }
 
   // Validate student email format
   if (role === "student" && !validateStudentEmail(email)) {
-    alert("Please enter a valid email address (e.g., example@domain.com)");
+    Toastify({text: "Please enter a valid email address (e.g., example@domain.com)", duration: 3000, gravity: "top", position: "right", backgroundColor: "#ff6b6b"}).showToast();
     return;
   }
 
   // Validate teacher email format
   if (role === "teacher" && !validateTeacherEmail(email)) {
-    alert("Teachers must use email addresses with pu.ac.in domain (e.g., example@pu.ac.in)");
+    Toastify({text: "Teachers must use email addresses with pu.ac.in domain (e.g., example@pu.ac.in)", duration: 3000, gravity: "top", position: "right", backgroundColor: "#ff6b6b"}).showToast();
     return;
   }
 
@@ -240,14 +240,14 @@ async function sendOtp() {
       // Re-enable button on error
       sendOtpBtn.disabled = false;
       sendOtpBtn.innerHTML = originalText;
-      alert(data.error || "Failed to send OTP");
+      Toastify({text: data.error || "Failed to send OTP", duration: 3000, gravity: "top", position: "right", backgroundColor: "#ff6b6b"}).showToast();
     }
   } catch (err) {
     console.error("Error:", err);
     // Re-enable button on error
     sendOtpBtn.disabled = false;
     sendOtpBtn.innerHTML = originalText;
-    alert("Something went wrong");
+    Toastify({text: "Something went wrong", duration: 3000, gravity: "top", position: "right", backgroundColor: "#ff6b6b"}).showToast();
   }
 }
 
@@ -259,7 +259,7 @@ async function verifyOtp() {
   const sendOtpBtn = document.getElementById("sendOtpBtn");
 
   if (!otp) {
-    alert("Enter OTP");
+    Toastify({text: "Enter OTP", duration: 3000, gravity: "top", position: "right", backgroundColor: "#ff6b6b"}).showToast();
     return;
   }
 
@@ -283,14 +283,14 @@ async function verifyOtp() {
       // Re-enable button on error
       sendOtpBtn.disabled = false;
       sendOtpBtn.innerHTML = originalText;
-      alert(data.error || "Invalid OTP");
+      Toastify({text: data.error || "Invalid OTP", duration: 3000, gravity: "top", position: "right", backgroundColor: "#ff6b6b"}).showToast();
     }
   } catch (err) {
     console.error("Error:", err);
     // Re-enable button on error
     sendOtpBtn.disabled = false;
     sendOtpBtn.innerHTML = originalText;
-    alert("Something went wrong");
+    Toastify({text: "Something went wrong", duration: 3000, gravity: "top", position: "right", backgroundColor: "#ff6b6b"}).showToast();
   }
 }
 

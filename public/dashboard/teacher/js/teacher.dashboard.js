@@ -1,7 +1,8 @@
 // Import only the functions we need from commons.js
-import { renderDashboardHeader, getInitials, getRandomNamedColor } from '../../Common/js/commons.js';
+import { renderDashboardHeader, getInitials, getRandomNamedColor, formatDate } from '../../common/js/commons.js';
 
 const student_data = [];
+let teacherVerificationStatus = { is_verified: false };
 async function getTeacherDashboardData() {
   try {
     const response = await fetch("/dashboard/teacher/data", {
@@ -18,13 +19,25 @@ async function getTeacherDashboardData() {
     const data = await response.json();
     // console.log("Dashboard Data:", data);
 
+    // Store teacher verification status
+    teacherVerificationStatus = {
+      is_verified: data.is_verified,
+      verification_completed: data.verification_completed
+    };
+
     renderDashboardHeader(data);
     renderTeacherProfile(data);
 
-    //   GET STUDENT DATA
+    //   GET STUDENT DATA - only if teacher is verified
+    if (!teacherVerificationStatus.is_verified) {
+      document.getElementById("contactTableBody").innerHTML =
+        '<tr><td colspan="6" class="loading">Your account must be verified by admin to view students</td></tr>';
+      return;
+    }
+
     if (!data.students.length) {
       document.getElementById("contactTableBody").innerHTML =
-        '<tr><td colspan="5" class="loading">No student registered with you</td></tr>';
+        '<tr><td colspan="6" class="loading">No student registered with you</td></tr>';
       return;
     }
 
@@ -102,8 +115,7 @@ function renderTeacherProfile(teacherData) {
             <div><strong>Branch:</strong> ${teacherData.branch || 'N/A'}</div>
             <div><strong>Phone:</strong> ${teacherData.phone || 'N/A'}</div>
             <div><strong>Students:</strong> ${teacherData.students ? teacherData.students.length : 0}</div>
-            <div><strong>Member Since:</strong> ${formatDate(teacherData.createdAt)}</div>
-            <div><strong>Teacher ID:</strong> ${teacherData._id ? teacherData._id : 'N/A'}</div>
+            <div><strong>Joined:</strong> ${formatDate(teacherData.createdAt)}</div>
           </div>
         </div>
       </div>
@@ -136,17 +148,6 @@ function getStatusClass(teacher) {
 // Function to get status color (deprecated - using CSS classes now)
 function getStatusColor(isVerified) {
   return isVerified ? '#28a745' : '#ffc107';
-}
-
-// Function to format date
-function formatDate(dateString) {
-  if (!dateString) return 'N/A';
-  const date = new Date(dateString);
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  });
 }
 
 // Function to determine student verification status from teacher's perspective
@@ -276,9 +277,7 @@ function render_students_table(student) {
   }</div>
                             <div class="contact-details">
                                 <h4>${student.name}</h4>
-                                <div class="contact-time">${new Date(
-                                  student.createdAt
-                                ).toUTCString()}</div>
+                                <div class="contact-time">${formatDate(student.createdAt)}</div>
                             </div>
                         </div>
                     </td>
@@ -288,6 +287,12 @@ function render_students_table(student) {
                             <div class="phone">${student.phone}</div>
                             <div class="phone">${student.rollNo}</div>
                         </div>
+                    </td>
+                    <td>
+                      <div class="contact-details">
+                        <h5>${student.instituteName || 'N/A'}</h5>
+                        <div class="contact-time">${student.instituteAddress || 'N/A'}</div>
+                      </div>
                     </td>
                     <td>
                         <span class="badge ${statusClass}">${verificationStatus}</span>
@@ -338,7 +343,7 @@ let filtered_student = [];
 function filter_student(searchTerm) {
   if (!student_data.length) {
     document.getElementById("contactTableBody").innerHTML =
-      '<tr><td colspan="5" class="loading">No student registered with you</td></tr>';
+      '<tr><td colspan="6" class="loading">No student registered with you</td></tr>';
     return;
   }
 
@@ -363,9 +368,29 @@ function filter_student(searchTerm) {
 
 // Function to update student verification status
 async function updateStudentVerification(studentId, isVerified) {
+  // Check if teacher is verified
+  if (!teacherVerificationStatus.is_verified) {
+    showNotification('You must be verified by admin before approving students', 'error');
+    return;
+  }
+
   try {
     const action = isVerified ? 'approve' : 'decline';
-    if (!confirm(`Are you sure you want to ${action} this student?`)) {
+    const result_confirmation = await Swal.fire({
+      title: 'Are you sure?',
+      text: `Do you want to ${action} this student?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: `Approve`,
+      cancelButtonText: 'Cancel',
+      draggable: true,
+      scrollbarPadding: false,
+      heightAuto: false
+    });
+    
+    if (!result_confirmation.isConfirmed) {
       return;
     }
 

@@ -46,6 +46,8 @@ document.addEventListener('DOMContentLoaded', function() {
       emailModal.style.display = 'flex';
       newEmailInput.value = adminEmailSpan.textContent;
       emailErrorDiv.textContent = '';
+      submitEmailBtn.disabled = false;
+      submitEmailBtn.style.opacity = '1';
     });
   }
   // Username modal open
@@ -54,6 +56,8 @@ document.addEventListener('DOMContentLoaded', function() {
       usernameModal.style.display = 'flex';
       newUsernameInput.value = adminUsernameSpan.textContent;
       usernameErrorDiv.textContent = '';
+      submitUsernameBtn.disabled = false;
+      submitUsernameBtn.style.opacity = '1';
     });
   }
   if (closeEmailModal && emailModal) {
@@ -81,14 +85,20 @@ document.addEventListener('DOMContentLoaded', function() {
   if (submitEmailBtn) {
     submitEmailBtn.addEventListener('click', function(e) {
       e.preventDefault();
+      submitEmailBtn.disabled = true;
+      submitEmailBtn.style.opacity = '0.6';
       const newEmail = newEmailInput.value.trim();
       emailErrorDiv.textContent = '';
       if (!newEmail) {
         emailErrorDiv.textContent = 'Please enter a new email.';
+        submitEmailBtn.disabled = false;
+        submitEmailBtn.style.opacity = '1';
         return;
       }
       if (!/^\S+@\S+\.\S+$/.test(newEmail)) {
         emailErrorDiv.textContent = 'Please enter a valid email address.';
+        submitEmailBtn.disabled = false;
+        submitEmailBtn.style.opacity = '1';
         return;
       }
       fetch('/dashboard/admin/update-profile', {
@@ -118,11 +128,15 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
           emailErrorDiv.style.color = 'red';
           emailErrorDiv.textContent = data.error || 'Failed to update email.';
+          submitEmailBtn.disabled = false;
+          submitEmailBtn.style.opacity = '1';
         }
       })
       .catch(() => {
         emailErrorDiv.style.color = 'red';
         emailErrorDiv.textContent = 'Failed to update email.';
+        submitEmailBtn.disabled = false;
+        submitEmailBtn.style.opacity = '1';
       });
     });
   }
@@ -131,14 +145,20 @@ document.addEventListener('DOMContentLoaded', function() {
   if (submitUsernameBtn) {
     submitUsernameBtn.addEventListener('click', function(e) {
       e.preventDefault();
+      submitUsernameBtn.disabled = true;
+      submitUsernameBtn.style.opacity = '0.6';
       const newUsername = newUsernameInput.value.trim();
       usernameErrorDiv.textContent = '';
       if (!newUsername) {
         usernameErrorDiv.textContent = 'Please enter a new username.';
+        submitUsernameBtn.disabled = false;
+        submitUsernameBtn.style.opacity = '1';
         return;
       }
       if (!isValidUsername(newUsername)) {
         usernameErrorDiv.textContent = 'Username can only contain letters, numbers, hyphens (-), and underscores (_), with no spaces or special characters';
+        submitUsernameBtn.disabled = false;
+        submitUsernameBtn.style.opacity = '1';
         return;
       }
       fetch('/dashboard/admin/update-profile', {
@@ -167,11 +187,15 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
           usernameErrorDiv.style.color = 'red';
           usernameErrorDiv.textContent = data.error || 'Failed to update username.';
+          submitUsernameBtn.disabled = false;
+          submitUsernameBtn.style.opacity = '1';
         }
       })
       .catch(() => {
         usernameErrorDiv.style.color = 'red';
         usernameErrorDiv.textContent = 'Failed to update username.';
+        submitUsernameBtn.disabled = false;
+        submitUsernameBtn.style.opacity = '1';
       });
     });
   }
@@ -192,6 +216,8 @@ document.addEventListener('DOMContentLoaded', function() {
       newPasswordInput.value = '';
       confirmPasswordInput.value = '';
       passwordErrorDiv.textContent = '';
+      submitPasswordBtn.disabled = false;
+      submitPasswordBtn.style.opacity = '1';
     });
   }
   if (closePasswordModal && passwordModal) {
@@ -208,19 +234,27 @@ document.addEventListener('DOMContentLoaded', function() {
   if (submitPasswordBtn) {
     submitPasswordBtn.addEventListener('click', function(e) {
       e.preventDefault();
+      submitPasswordBtn.disabled = true;
+      submitPasswordBtn.style.opacity = '0.6';
       const newPassword = newPasswordInput.value.trim();
       const confirmPassword = confirmPasswordInput.value.trim();
       passwordErrorDiv.textContent = '';
       if (!newPassword || !confirmPassword) {
         passwordErrorDiv.textContent = 'Please fill both password fields.';
+        submitPasswordBtn.disabled = false;
+        submitPasswordBtn.style.opacity = '1';
         return;
       }
       if (newPassword.length < 6) {
         passwordErrorDiv.textContent = 'Password must be at least 6 characters.';
+        submitPasswordBtn.disabled = false;
+        submitPasswordBtn.style.opacity = '1';
         return;
       }
       if (newPassword !== confirmPassword) {
         passwordErrorDiv.textContent = 'Passwords do not match.';
+        submitPasswordBtn.disabled = false;
+        submitPasswordBtn.style.opacity = '1';
         return;
       }
       fetch('/dashboard/admin/change-password', {
@@ -250,11 +284,15 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
           passwordErrorDiv.style.color = 'red';
           passwordErrorDiv.textContent = data.error || 'Failed to change password.';
+          submitPasswordBtn.disabled = false;
+          submitPasswordBtn.style.opacity = '1';
         }
       })
       .catch(() => {
         passwordErrorDiv.style.color = 'red';
         passwordErrorDiv.textContent = 'Failed to change password.';
+        submitPasswordBtn.disabled = false;
+        submitPasswordBtn.style.opacity = '1';
       });
     });
   }

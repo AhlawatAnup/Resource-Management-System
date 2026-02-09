@@ -36,7 +36,7 @@ export function formatDate(dateString) {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
         year: 'numeric',
-        month: 'long',
+        month: 'short',
         day: 'numeric'
     });
 }
@@ -134,3 +134,20 @@ export function createViewMoreButton(requestId, purpose) {
 export function isValidUsername(username) {
   return /^[A-Za-z0-9_-]+$/.test(username);
 }
+
+// Logout with confirmation
+export function handleLogout(e) {
+  e.preventDefault();
+
+  Swal.fire({
+    title: 'Log out?',
+    icon: 'question',
+    showCancelButton: true,
+    scrollbarPadding: false,
+    heightAuto: false
+  }).then(r => r.isConfirmed && (location.href = '/logout'));
+}
+
+
+// Make handleLogout available globally for inline onclick handlers
+window.handleLogout = handleLogout;
