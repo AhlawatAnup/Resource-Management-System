@@ -5,7 +5,8 @@ import {
   formatDate,
   initializePurposePanel,
   createViewMoreButton,
-  isValidUsername
+  isValidUsername,
+  handleLogout
 } from '../../common/js/commons.js';
 
 let resourceRequests = [];
@@ -23,6 +24,11 @@ async function loadResourceRequests() {
     });
 
     if (!response.ok) {
+      // If teacher account not found (404), logout user
+      if (response.status === 404) {
+        handleLogout({ preventDefault: () => {} });
+        return;
+      }
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
@@ -51,8 +57,7 @@ async function loadResourceRequests() {
 
   } catch (error) {
     console.error("Error fetching resource requests:", error);
-    document.getElementById("requestsTableBody").innerHTML =
-      '<tr><td colspan="7" class="loading">Error loading requests. Please refresh the page.</td></tr>';
+    handleLogout({ preventDefault: () => {} });
   }
 }
 
