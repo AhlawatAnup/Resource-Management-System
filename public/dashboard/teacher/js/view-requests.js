@@ -6,7 +6,7 @@ import {
   initializePurposePanel,
   createViewMoreButton,
   isValidUsername,
-  handleLogout
+  logoutDirectly
 } from '../../common/js/commons.js';
 
 let resourceRequests = [];
@@ -26,7 +26,7 @@ async function loadResourceRequests() {
     if (!response.ok) {
       // If teacher account not found (404), logout user
       if (response.status === 404) {
-        handleLogout({ preventDefault: () => {} });
+        logoutDirectly();
         return;
       }
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -57,7 +57,7 @@ async function loadResourceRequests() {
 
   } catch (error) {
     console.error("Error fetching resource requests:", error);
-    handleLogout({ preventDefault: () => {} });
+    logoutDirectly();
   }
 }
 

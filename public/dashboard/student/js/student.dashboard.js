@@ -1,5 +1,5 @@
 // Import utility functions
-import { formatDate, handleLogout } from '/dashboard/common/js/commons.js';
+import { formatDate, logoutDirectly } from '/dashboard/common/js/commons.js';
 import { getLoggedInStudentId, showLoadingState, showErrorMessage } from './student.utils.js';
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -30,7 +30,7 @@ async function loadStudentDetails() {
         if (!response.ok) {
             // If student account not found (404), logout user
             if (response.status === 404) {
-                handleLogout({ preventDefault: () => {} });
+                logoutDirectly();
                 return;
             }
             throw new Error('Failed to fetch student details');
@@ -41,7 +41,7 @@ async function loadStudentDetails() {
         
     } catch (error) {
         console.error('Error loading student details:', error);
-        handleLogout({ preventDefault: () => {} });
+        logoutDirectly();
     }
 }
 

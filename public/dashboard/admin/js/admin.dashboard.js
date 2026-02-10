@@ -1,5 +1,5 @@
 // Import only the functions we need from commons.js
-import { renderDashboardHeader, getInitials, getRandomNamedColor, formatDate, handleLogout } from '../../common/js/commons.js';
+import { renderDashboardHeader, getInitials, getRandomNamedColor, formatDate, logoutDirectly } from '../../common/js/commons.js';
 
 // Data storage
 let currentData = [];
@@ -82,7 +82,7 @@ async function loadCurrentView() {
     if (!response.ok) {
       // If admin account not found (404), logout user
       if (response.status === 404) {
-        handleLogout({ preventDefault: () => {} });
+        logoutDirectly();
         return;
       }
       throw new Error(`Failed to load dashboard data: ${response.status}`);
@@ -121,7 +121,7 @@ async function loadCurrentView() {
       renderCurrentData();
     } catch (error) {
       console.error('Error loading data:', error);
-      handleLogout({ preventDefault: () => {} });
+      logoutDirectly();
     }
 }
 

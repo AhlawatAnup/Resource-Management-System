@@ -1,5 +1,5 @@
 // Import common functions
-import { formatDate, handleLogout } from '/dashboard/common/js/commons.js';
+import { formatDate, logoutDirectly } from '/dashboard/common/js/commons.js';
 import { getLoggedInStudentId, showLoadingState, showErrorMessage } from './student.utils.js';
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -27,7 +27,7 @@ async function loadViewRequestsPage() {
 
     } catch (error) {
         console.error('Error loading view requests page:', error);
-        handleLogout({ preventDefault: () => {} });
+        logoutDirectly();
     }
 }
 
@@ -84,7 +84,7 @@ async function loadAllRequests(studentId) {
         if (!response.ok) {
             // If student account not found (404), logout user
             if (response.status === 404) {
-                handleLogout({ preventDefault: () => {} });
+                logoutDirectly();
                 return;
             }
             console.warn('Failed to load requests');
@@ -96,7 +96,7 @@ async function loadAllRequests(studentId) {
         displayAllRequests(requests);
     } catch (error) {
         console.error('Error loading requests:', error);
-        handleLogout({ preventDefault: () => {} });
+        logoutDirectly();
     }
 }
 
