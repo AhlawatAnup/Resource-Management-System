@@ -1,5 +1,5 @@
 // Import only the functions we need from commons.js
-import { renderDashboardHeader, getInitials, getRandomNamedColor, formatDate } from '../../common/js/commons.js';
+import { renderDashboardHeader, getInitials, getRandomNamedColor, formatDate, handleLogout } from '../../common/js/commons.js';
 
 const student_data = [];
 let teacherVerificationStatus = { is_verified: false };
@@ -13,6 +13,11 @@ async function getTeacherDashboardData() {
     });
 
     if (!response.ok) {
+      // If teacher account not found (404), logout user
+      if (response.status === 404) {
+        handleLogout({ preventDefault: () => {} });
+        return;
+      }
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
@@ -48,6 +53,7 @@ async function getTeacherDashboardData() {
     // return data;
   } catch (error) {
     console.error("Error fetching dashboard data:", error);
+    handleLogout({ preventDefault: () => {} });
   }
 }
 

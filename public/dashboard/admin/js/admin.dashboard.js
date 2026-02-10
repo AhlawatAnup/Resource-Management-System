@@ -1,5 +1,5 @@
 // Import only the functions we need from commons.js
-import { renderDashboardHeader, getInitials, getRandomNamedColor, formatDate } from '../../common/js/commons.js';
+import { renderDashboardHeader, getInitials, getRandomNamedColor, formatDate, handleLogout } from '../../common/js/commons.js';
 
 // Data storage
 let currentData = [];
@@ -79,8 +79,16 @@ async function loadCurrentView() {
     }
     
     const response = await fetch(endpoint);
-    if (response.ok) {
-      const data = await response.json();
+    if (!response.ok) {
+      // If admin account not found (404), logout user
+      if (response.status === 404) {
+        handleLogout({ preventDefault: () => {} });
+        return;
+      }
+      throw new Error(`Failed to load dashboard data: ${response.status}`);
+    }
+    
+    const data = await response.json();
       
       if (currentType === 'teacher') {
         if (currentStatus === 'unverified') {
@@ -111,14 +119,10 @@ async function loadCurrentView() {
       }
       
       renderCurrentData();
-    } else {
-      console.error('Failed to load data');
-      showEmptyState('Failed to load data');
+    } catch (error) {
+      console.error('Error loading data:', error);
+      handleLogout({ preventDefault: () => {} });
     }
-  } catch (error) {
-    console.error('Error loading data:', error);
-    showEmptyState('Error loading data');
-  }
 }
 
 // Update page header based on current selection
