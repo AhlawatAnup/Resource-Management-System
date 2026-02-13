@@ -50,6 +50,12 @@ const resourceRequestSchema = new mongoose.Schema({
   admin_verified: { type: Boolean, default: false },
   is_verified: { type: Boolean, default: false },
 
+  //assinged machine  
+  machineId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Machine"
+  },
+
     // VM access credentials (provided when admin finally verifies)
   vmCredentials: {
     // username: { type: String },
@@ -60,6 +66,9 @@ const resourceRequestSchema = new mongoose.Schema({
 
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
+
+  // Edit tracking
+  isEdited: { type: Boolean, default: false },
 
   // Notification flags for expiry emails (7 and 2 days)
   notified: {

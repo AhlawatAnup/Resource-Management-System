@@ -12,7 +12,7 @@
       src="https://kit.fontawesome.com/e05e3e1522.js"
       crossorigin="anonymous"
     ></script>
-    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   </head>
   <link rel="stylesheet" href="/dashboard/teacher/style/teacher.dashboard.css" />
@@ -41,7 +41,7 @@
       </nav>
 
       <div style="padding: 20px">
-        <a href="/logout" class="nav-item">
+        <a href="#" onclick="handleLogout(event)" class="nav-item">
           <i class="fas fa-sign-out-alt"></i>
           Log out
         </a>
@@ -86,6 +86,7 @@
               <tr>
                 <th class="sortable" data-sort="name">Student Name</th>
                 <th class="sortable" data-sort="contact">Contact</th>
+                <th class="sortable" data-sort="institute">Institute</th>
                 <th class="sortable" data-sort="status">Approval Status</th>
                 <th class="sortable" data-sort="branch">Branch</th>
                 <th class="sortable">Action</th>

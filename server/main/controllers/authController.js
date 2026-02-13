@@ -1,7 +1,7 @@
 const Student = require("../database/studentModel");
 const Teacher = require("../database/teacherModel");
 const Admin = require("../database/adminModel");
-const { sendStudentRegistrationSuccessEmail, sendTeacherRegistrationSuccessEmail, sendOTPEmail } = require("../utils/emailService");
+const { sendOTPEmail, sendStudentRegistrationSuccessEmail, sendTeacherStudentRegisteredEmail, sendTeacherRegistrationSuccessEmail, sendAdminTeacherRegistrationEmail } = require("../utils/email/emails.service");
 const bcrypt = require("bcrypt");
 
 const otpStore = {};
@@ -14,6 +14,12 @@ exports.sendOtp = async (req, res) => {
   const { email, role } = req.body;
   if (!email || !role)
     return res.status(400).json({ error: "Email and role required" });
+
+  if (role === "teacher" && !email.endsWith("@pu.ac.in")) {
+    return res.status(403).json({
+      error: "Only @pu.ac.in emails are allowed for teachers"
+    });
+  }
 
   try {    
     const otp = generateOtp();
@@ -156,17 +162,29 @@ exports.register = async (req, res) => {
 
   try {
     if (role === "student") {
-      const { name, rollNo, branch, teacher_id, phone } = req.body;
-      if (!name || !rollNo || !branch || !teacher_id || !phone) {
+      const email = req.session.email.toLowerCase().trim();
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({
+          error: "Invalid email format"
+        });
+      }
+
+      const { name, rollNo, branch, teacher_id, phone, instituteName, instituteAddress } = req.body;
+      if (!name || !rollNo || !branch || !teacher_id || !phone || !instituteName || !instituteAddress) {
         return res.status(400).json({ error: "All student fields required" });
       }
       const student = new Student({
-        email: req.session.email,
+        email,
         name,
         rollNo,
         branch,
         teacher: teacher_id,
         phone,
+        instituteName,
+        instituteAddress,
       });
 
       const savedStudent = await student.save();
@@ -174,24 +192,36 @@ exports.register = async (req, res) => {
       if (savedStudent) {
         //   ADD THIS STUDENT TO THE TEACHER DB AS WELL
         const teacher = await Teacher.findById(teacher_id);
+        if (!teacher) {
+          return res.status(404).json({ error: "Teacher not found" });
+        }
         teacher.students.push(savedStudent._id);
         await teacher.save();
 
         // Attach session
         req.session.user = {
-          email: req.session.email,
+          email,
           role: req.session.role,
           id: savedStudent._id,
         };
 
         // Send registration success email to student
-        try {
-          await sendStudentRegistrationSuccessEmail(req.session.email, name);
-          // console.log('Student registration success email sent to:', req.session.email);
-        } catch (emailError) {
-          console.error('Error sending student registration email:', emailError);
-          // Don't fail the registration if email fails
-        }
+        sendStudentRegistrationSuccessEmail(email, name)
+        .catch(err => {
+          console.error("Error sending student registration email:", err);
+        });
+
+
+        // Notify teacher about new student registration
+        sendTeacherStudentRegisteredEmail(
+          teacher.email,
+          teacher.name,
+          name,
+          rollNo
+        ).catch(err => {
+          console.error("Error sending teacher notification email:", err);
+        });
+
 
         return res.json({ message: "Student registered successfully" });
       } else {
@@ -200,27 +230,38 @@ exports.register = async (req, res) => {
     }
 
     if (role === "teacher") {
+      const email = req.session.email.toLowerCase().trim();
+      if (!email.endsWith("@pu.ac.in")) {
+        return res.status(403).json({
+          error: "Only @pu.ac.in emails are allowed for teachers"
+        });
+      }
       const { name, branch, phone } = req.body;
       if (!name || !branch || !phone)
         return res.status(400).json({ error: "Invalid Data" });
-      const teacher = new Teacher({ email: req.session.email, name, branch, phone });
+      const teacher = new Teacher({ email, name, branch, phone });
       const teacher_id = await teacher.save();
       if (teacher_id) {
         // Attach session
         req.session.user = {
-          email: req.session.email,
+          email,
           role: req.session.role,
           id: teacher_id._id,
         };
 
         // Send registration success email to teacher
-        try {
-          await sendTeacherRegistrationSuccessEmail(req.session.email, name);
-          // console.log('Teacher registration success email sent to:', req.session.email);
-        } catch (emailError) {
-          console.error('Error sending teacher registration email:', emailError);
-          // Don't fail the registration if email fails
-        }
+        sendTeacherRegistrationSuccessEmail(email, name)
+        .catch(err => {
+          console.error("Error sending teacher registration email:", err);
+        });
+
+
+        // Notify admin about new teacher registration
+        sendAdminTeacherRegistrationEmail(name, email, branch)
+        .catch(err => {
+          console.error("Error sending admin notification email:", err);
+        });
+
 
         return res.json({ message: "Teacher registered successfully" });
       } else {
@@ -235,6 +276,33 @@ exports.register = async (req, res) => {
     return res.status(400).json({ error: "Invalid role" });
   } catch (err) {
     console.error(err);
+
+    // MongoDB duplicate key error
+    if (err.code === 11000) {
+      if (err.keyPattern?.rollNo) {
+        return res.status(409).json({
+          error: "Roll number already exists",
+        });
+      }
+
+      if (err.keyPattern?.email) {
+        return res.status(409).json({
+          error: "Email already registered",
+        });
+      }
+
+      return res.status(409).json({
+        error: "Duplicate value exists",
+      });
+    }
+
+    // Mongoose validation error
+    if (err.name === "ValidationError") {
+      return res.status(400).json({
+        error: err.message,
+      });
+    }
+
     res.status(500).json({ error: "Registration failed" });
   }
 };

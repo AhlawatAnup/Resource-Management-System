@@ -24,6 +24,9 @@ exports.teacher_dashboard_data = async (req, res) => {
 
       // console.log(`Found ${teacher.students.length} students for teacher ${uid}`);
 
+      // Sort students by creation date (most recent first)
+      teacher.students.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
       // Collect all resource requests from all students
       let allResourceRequests = [];
       for (const student of teacher.students) {

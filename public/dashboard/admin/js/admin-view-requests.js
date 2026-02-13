@@ -8,7 +8,7 @@ import {
   initializePurposePanel,
   createViewMoreButton,
   isValidUsername
-} from '../../Common/js/commons.js';
+} from '../../common/js/commons.js';
 
 let resourceRequests = [];
 let filteredRequests = [];
@@ -80,7 +80,7 @@ function renderResourceRequests(requests) {
       <td>
         <div class="request-title">
           <p>${request.title}<p>
-          <div class="request-date"><span class="field-label">Created:</span> ${formatDate(request.createdAt)}</div>
+          <div class="request-date"> ${formatDate(request.createdAt)}</div>
         </div>
       </td>
       <td>
@@ -157,7 +157,21 @@ function getActionButtons(request) {
 async function updateRequestVerification(requestId, isVerified) {
   // For decline, show immediate confirmation
   if (!isVerified) {
-    if (!confirm(`Are you sure you want to decline this resource request?`)) {
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: 'Do you want to decline this resource request?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, decline it!',
+      cancelButtonText: 'Cancel',
+      draggable: true,
+      scrollbarPadding: false,
+      heightAuto: false
+    });
+    
+    if (!result.isConfirmed) {
       return;
     }
     await submitVerification(requestId, isVerified);
@@ -511,7 +525,8 @@ document.addEventListener('DOMContentLoaded', function() {
   // Modal form submit
   document.getElementById('editRequestForm').onsubmit = async function(e) {
     e.preventDefault();
-    await submitEditRequest();
+    const submitBtn = e.submitter || this.querySelector('button[type="submit"]');
+    await submitEditRequest(submitBtn);
   };
 
   // Verification form submission handler
@@ -559,10 +574,20 @@ document.addEventListener('DOMContentLoaded', function() {
       // console.log('Form submission - credentials:', credentials);
       
       try {
-        await submitVerification(requestId, true, credentials);
-        closeVerificationModal();
+        // Show processing indicator with disabled confirm button
+        Swal.fire({
+          width: 250,
+          showConfirmButton: false,
+          allowOutsideClick: false,
+          didOpen: async () => {
+            Swal.showLoading();
+            await submitVerification(requestId, true, credentials);
+            Swal.close();
+            closeVerificationModal();
+          }
+        });
+
       } catch (error) {
-        // Error already handled in submitVerification
         console.error('Form submission error:', error);
       }
     });
@@ -582,6 +607,12 @@ document.addEventListener('DOMContentLoaded', function() {
 function showEditModal(requestId) {
   const req = resourceRequests.find(r => r._id === requestId);
   if (!req) return;
+  const submitBtn = document.querySelector('#editRequestForm button[type="submit"]');
+  if (submitBtn) {
+    submitBtn.disabled = false;
+    submitBtn.style.opacity = '';
+    submitBtn.style.cursor = '';
+  }
   document.getElementById('editRequestId').value = req._id;
   document.getElementById('editTitle').value = req.title;
   document.getElementById('editPurpose').value = req.purpose;
@@ -595,7 +626,7 @@ function showEditModal(requestId) {
 }
 
 // Submit edit request to backend
-async function submitEditRequest() {
+async function submitEditRequest(submitBtn) {
   const requestId = document.getElementById('editRequestId').value;
   const payload = {
     title: document.getElementById('editTitle').value,
@@ -627,6 +658,11 @@ async function submitEditRequest() {
     titleErrorDiv.textContent = '';
   }
   try {
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.style.opacity = '0.6';
+      submitBtn.style.cursor = 'not-allowed';
+    }
     // Use admin endpoint for editing
     const response = await fetch(`/dashboard/admin/edit_request/${requestId}`, {
       method: 'PUT',
@@ -664,6 +700,11 @@ async function submitEditRequest() {
   } catch (err) {
     console.error('Edit request error:', err);
     showNotification(err.message || 'Failed to update resource request.', 'error');
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.style.opacity = '';
+      submitBtn.style.cursor = '';
+    }
   }
 }
 

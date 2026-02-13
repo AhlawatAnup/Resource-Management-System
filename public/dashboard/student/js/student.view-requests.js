@@ -124,6 +124,7 @@ function displayAllRequests(requests) {
         const statusClass = getRequestStatusClass(request);
         const statusIcon = getRequestStatusIcon(request);
         const statusText = getRequestStatusText(request);
+        const editedBadge = request.isEdited ? '<span class="edited-badge" style="margin-left: 8px; color: #ff7a45; font-size: 0.85em; font-weight: 500;">(edited by teacher/admin)</span>' : '';
 
         // Only allow delete if no action by admin/teacher and is_verified is false
         const canDelete = !request.teacher_action && !request.admin_action && !request.is_verified;
@@ -138,7 +139,7 @@ function displayAllRequests(requests) {
                 <div class="request-title">
                     <h3>${request.title}</h3>
                     <span class="status-badge ${statusClass}">
-                        ${statusIcon} ${statusText}
+                        ${statusIcon} ${statusText}${editedBadge}
                     </span>
                 </div>
             </div>
@@ -235,11 +236,11 @@ function displayAllRequests(requests) {
                                 </div>` : ''}
 
                                 <!-- Optional MIG ID -->
-                                ${request.vmCredentials.migId ? `
+                                ${(request.machineId && request.machineId.MIGID) ? `
                                 <div class="credential-item" style="display:flex; align-items:center; gap:10px; max-width:100%;">
                                     <strong style="width:80px;">MIG ID:</strong>
                                     <span id="migid-${request._id}" style="border:1px solid #c3e6c3; border-radius:6px; padding:6px 10px; background:#f0fff0; flex:1;">
-                                        ${request.vmCredentials.migId}
+                                        ${request.machineId.MIGID}
                                     </span>
                                     <button type="button" class="copy-btn" data-copytarget="migid-${request._id}" style="background:none; border:none; cursor:pointer; padding:0 6px; flex-shrink:0;">
                                         <span class="copy-label"><i class="fas fa-copy"></i></span>
@@ -320,7 +321,21 @@ function displayAllRequests(requests) {
         document.querySelectorAll('.delete-request-btn').forEach(btn => {
             btn.addEventListener('click', async function () {
                 const requestId = btn.getAttribute('data-request-id');
-                if (confirm('Are you sure you want to delete this request?')) {
+                const result = await Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'Do you want to delete this request?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Delete',
+                    cancelButtonText: 'Cancel',
+                    draggable: true,
+                    scrollbarPadding: false,
+                    heightAuto: false
+                });
+                
+                if (result.isConfirmed) {
                     try {
                         const response = await fetch(`/dashboard/student/del_requests/${requestId}`, {
                             method: 'DELETE',
@@ -329,13 +344,29 @@ function displayAllRequests(requests) {
                             }
                         });
                         if (response.ok) {
+                            await Swal.fire({
+                                title: 'Deleted!',
+                                text: 'Your request has been deleted.',
+                                icon: 'success',
+                                draggable: true
+                            });
                             // Remove the request from the UI or reload
                             loadViewRequestsPage();
                         } else {
-                            alert('Failed to delete request.');
+                            Swal.fire({
+                                title: 'Error!',
+                                text: 'Failed to delete request.',
+                                icon: 'error',
+                                draggable: true
+                            });
                         }
                     } catch (error) {
-                        alert('Error deleting request.');
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'Error deleting request.',
+                            icon: 'error',
+                            draggable: true
+                        });
                     }
                 }
             });
@@ -439,11 +470,11 @@ function getRequestStatusText(request) {
     }
 
     if (request.teacher_action && request.teacher_verified && !request.admin_action) {
-        return 'Pending Admin Approval';
+        return 'Pending Admin';
     }
 
     if (!request.teacher_action) {
-        return 'Pending Teacher Review';
+        return 'Pending Teacher';
     }
 
     return 'Pending Review';

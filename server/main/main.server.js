@@ -56,9 +56,9 @@ app.use(
     store: MongoStore.create({
       mongoUrl: process.env.MONGO_URI, // Replace with your actual MongoDB URI
       touchAfter: 24 * 3600, // lazy session update
-      ttl: 60 * 60 * 24 // 1 days session expiry
+      ttl: 60 * 60 * 24 * 30 // 30 days 
     }),
-    cookie: { maxAge: 60 * 60 * 1000 * 24 * 30 }, // 30 days
+    cookie: { maxAge: 60 * 60 * 1000 * 24 * 30}, // 30 days
   })
 );
 
@@ -75,7 +75,7 @@ app.get("/logout", requireAuth, (req, res) => {
 });
 
 // Registration page (only accessible after email verification)
-app.get("/registration", preventAuth, requireRegistrationSession, (req, res) => {
+app.get("/registration", noCache, preventAuth, requireRegistrationSession, (req, res) => {
   res.sendFile(
     path.join(__dirname, "../../public/registration/registration.html")
   );

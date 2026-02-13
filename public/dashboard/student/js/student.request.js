@@ -127,8 +127,7 @@ function displayResourcesPage(student) {
                                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">                                   
                                     <div class="form-group">
                                         <label for="gpu-ram">GPU RAM per GPU (GB):</label>
-                                        <input type="number" id="gpu-ram" class="form-control" min="0" max="80" placeholder="e.g., 12" required>
-                                        <small style="color: #666; font-size: 0.85em;">Common: 8-24 GB for deep learning</small>
+                                        <input type="number" id="gpu-ram" class="form-control" min="0" max="20" placeholder="e.g., 12" required>
                                     </div>
                                 </div>
                             </div>
@@ -235,6 +234,15 @@ function getStudentVerificationStatus(student) {
 async function handleResourceRequest(event) {
     event.preventDefault();
     
+    // Disable submit button immediately to prevent double submission
+    const submitBtn = event.target.querySelector('button[type="submit"]');
+    if (submitBtn.disabled) {
+        return; // Already processing a request
+    }
+    const originalText = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+    
     try {
         // Get form data according to ResourceRequestModel schema
         const formData = {
@@ -256,6 +264,12 @@ async function handleResourceRequest(event) {
         if (!isValidUsername(formData.username)) {
             throw new Error('Username can only contain letters, numbers, hyphens (-), and underscores (_), with no spaces or special characters');
         }
+
+        // Username length check
+        if (formData.username.length <= 5 || formData.username.length >= 50) {
+            throw new Error('Username must be greater than 5 and less than 50 characters');
+        }
+
         // Title max length check
         if (formData.title.length > 50) {
             throw new Error('Title must not exceed 50 characters');
@@ -268,6 +282,10 @@ async function handleResourceRequest(event) {
 
         if (formData.purpose.length < 100) {
             throw new Error('Purpose must be at least 100 characters long');
+        }
+
+        if (formData.purpose.length > 2000) {
+            throw new Error('Purpose must not exceed 2000 characters');
         }
                 
         // if (formData.cpuCores < 1 || formData.cpuRam < 1) {
@@ -322,12 +340,6 @@ async function handleResourceRequest(event) {
             throw new Error('Student ID not found. Please login again.');
         }
         
-        // Disable submit button to prevent double submission
-        const submitBtn = event.target.querySelector('button[type="submit"]');
-        const originalText = submitBtn.innerHTML;
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
-        
         // Send request to backend
         const response = await fetch('/dashboard/student/submit-resource-request', {
             method: 'POST',
@@ -349,7 +361,14 @@ async function handleResourceRequest(event) {
             }
             // If backend returned a simple 'Username already exists' message, show inline under username like other field errors
             if (errorData.error && /username already exists/i.test(errorData.error)) {
-                showErrorNotification('Username already taken. Please choose a different username.');
+                Swal.fire({
+                    title: "Error!",
+                    text: "Username already taken. Please choose a different username.",
+                    icon: "error",
+                    draggable: true,
+                    scrollbarPadding: false,
+                    heightAuto: false
+                });
                 return;
             }
 
@@ -358,21 +377,32 @@ async function handleResourceRequest(event) {
         
         const result = await response.json();
         
-        // Show success message
-        showSuccessMessage('Resource request submitted successfully! You will be notified once it is processed.');
+        // Show success message with SweetAlert2
+        await Swal.fire({
+            title: "Success!",
+            text: "Resource request submitted successfully! You will be notified once it is processed.",
+            icon: "success",
+            draggable: true,
+            scrollbarPadding: false,
+            heightAuto: false
+        });
         
-        // Reset form
-        document.getElementById('resource-request-form').reset();
+        // Redirect to view requests page
+        window.location.href = '/dashboard/student/view-requests';
         
     } catch (error) {
         console.error('Error submitting resource request:', error);
-        showErrorNotification('Failed to submit request: ' + error.message);
+        Swal.fire({
+            title: "Error!",
+            text: "Failed to submit request: " + error.message,
+            icon: "error",
+            draggable: true
+        });
     } finally {
         // Re-enable submit button
-        const submitBtn = event.target.querySelector('button[type="submit"]');
         if (submitBtn) {
             submitBtn.disabled = false;
-            submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Resource Request';
+            submitBtn.innerHTML = originalText;
         }
     }
 }

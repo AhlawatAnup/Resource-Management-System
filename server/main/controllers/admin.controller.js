@@ -3,6 +3,7 @@ const Student = require("../database/studentModel");
 const Admin = require("../database/adminModel");
 const Machine = require('../database/machineModel');
 const ResourceRequest = require("../database/resourceRequestModel");
+const emailService = require("../utils/email/emails.service.js");
 const bcrypt = require('bcrypt');
 
 exports.admin_dashboard_data = async (req, res) => {
@@ -41,7 +42,7 @@ exports.admin_dashboard_data = async (req, res) => {
 
 exports.getPendingTeachers = async (req, res) => {
   try {
-    const pendingTeachers = await Teacher.find({ verification_completed: false });
+    const pendingTeachers = await Teacher.find({ verification_completed: false }).sort({ createdAt: -1 });
     return res.json({ teachers: pendingTeachers });
   } catch (err) {
     console.error(err);
@@ -51,7 +52,7 @@ exports.getPendingTeachers = async (req, res) => {
 
 exports.getAllTeachers = async (req, res) => {
   try {
-    const teachers = await Teacher.find().populate('students', 'name rollNo');
+    const teachers = await Teacher.find().populate('students', 'name rollNo').sort({ createdAt: -1 });
     return res.json({ teachers });
   } catch (err) {
     console.error(err);
@@ -66,45 +67,214 @@ exports.updateTeacherVerification = async (req, res) => {
   // console.log("Updating teacher verification", teacher_id, "to", is_verified);
 
   try {
-    const teacher = await Teacher.findByIdAndUpdate(
-      teacher_id,
-      {
-        is_verified: is_verified,
-        verification_completed: true // Mark as completed when admin takes action
-      },
-      { new: true } // Return the updated document
-    );
-
+    const teacher = await Teacher.findById(teacher_id);
     if (!teacher) {
       return res.status(404).json({ error: "Teacher not found" });
     }
 
     // Email notification for teacher profile verification/rejection
-    if (teacher) {
-      const emailService = require("../utils/emailService.js");
-      if (is_verified) {
-        // NON-BLOCKING 
-        emailService.sendTeacherProfileVerifiedByAdminEmail(teacher.email, teacher.name)
-          .then(result => console.log("Email sent for teacher profile verified by admin:", result))
-          .catch(error => console.error("Error sending verification email:", error));
-      } else {
-        // NON-BLOCKING 
-        emailService.sendTeacherProfileRejectedByAdminEmail(teacher.email, teacher.name)
-          .then(result => console.log("Email sent for teacher profile rejected by admin:", result))
-          .catch(error => console.error("Error sending rejection email:", error));
-      }
-    }
 
-    // console.log("Teacher verification updated:", teacher);
-    return res.json({
-      message: "Teacher verification status updated successfully",
-      teacher: { ...teacher._doc }
-    });
+    if (is_verified) {
+      // Approve: Update teacher verification status
+      const updatedTeacher = await Teacher.findByIdAndUpdate(
+        teacher_id,
+        {
+          is_verified: is_verified,
+          verification_completed: true
+        },
+        { new: true }
+      );
+
+      // NON-BLOCKING 
+      emailService.sendTeacherProfileVerifiedByAdminEmail(teacher.email, teacher.name)
+        .then(result => console.log("Email sent for teacher profile verified by admin:", result))
+        .catch(error => console.error("Error sending verification email:", error));
+
+      // console.log("Teacher verification updated:", updatedTeacher);
+      return res.json({
+        message: "Teacher verification status updated successfully",
+        teacher: { ...updatedTeacher._doc }
+      });
+    } else {
+      // Reject: Delete the teacher account
+      // NON-BLOCKING 
+      emailService.sendTeacherProfileRejectedByAdminEmail(teacher.email, teacher.name)
+        .then(result => console.log("Email sent for teacher profile rejected by admin:", result))
+        .catch(error => console.error("Error sending rejection email:", error));
+
+      // Delete the teacher account
+      await Teacher.findByIdAndDelete(teacher_id);
+
+      return res.json({ message: "Teacher account has been deleted successfully" });
+    }
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "Failed to update teacher verification" });
   }
 };
+
+// Teacher unverfication logic
+exports.unverifyTeacherIfPossible = async (req, res) => {
+  const { teacher_id } = req.params;
+
+  try {
+    const teacher = await Teacher.findById(teacher_id).select('students');
+    if (!teacher) {
+      return res.status(404).json({ error: "Teacher not found" });
+    }
+
+    const studentIds = Array.isArray(teacher.students) ? teacher.students : [];
+
+    // 1️⃣ Block if any student has allotted resource
+    if (studentIds.length > 0) {
+      const allottedRequests = await ResourceRequest.find({
+        studentId: { $in: studentIds },
+        is_verified: true
+      }).populate('studentId', 'rollNo name').select('studentId');
+
+      if (allottedRequests && allottedRequests.length > 0) {
+        // Extract roll numbers of students with allocated resources
+        const studentsWithResources = allottedRequests
+          .filter(req => req.studentId) // Filter out any null references
+          .map(req => ({
+            rollNo: req.studentId.rollNo,
+            name: req.studentId.name
+          }));
+
+        return res.status(400).json({
+          error: "Some students have allocated resources",
+          studentsWithResources: studentsWithResources
+        });
+      }
+    }
+
+    // 2️⃣ Delete ALL resource requests of students
+    if (studentIds.length > 0) {
+      await ResourceRequest.deleteMany({
+        studentId: { $in: studentIds }
+      });
+    }
+
+    // 3️⃣ Unverify teacher
+    const updatedTeacher = await Teacher.findByIdAndUpdate(
+      teacher_id,
+      {
+        is_verified: false,
+        verification_completed: false
+      },
+      { new: true }
+    );
+
+    // Send email to teacher about unverification
+    if (updatedTeacher) {
+      emailService.sendTeacherProfileUnverifiedByAdminEmail(updatedTeacher.email, updatedTeacher.name)
+        .then(result => console.log("Teacher unverification email sent:", result))
+        .catch(error => console.error("Error sending teacher unverification email:", error));
+    }
+
+    // 4️⃣ Unverify all students and send them emails
+    if (studentIds.length > 0) {
+      // Fetch student details before updating
+      const students = await Student.find({ _id: { $in: studentIds } }).select('email name');
+      
+      // Update all students
+      await Student.updateMany(
+        { _id: { $in: studentIds } },
+        {
+          $set: {
+            teacher_verified: false,
+            teacher_action: false,
+            admin_verified: false,
+            admin_action: false,
+            is_verified: false
+          }
+        }
+      );
+      
+      // Send emails to all affected students
+      students.forEach(student => {
+        emailService.sendStudentUnverifiedDueToTeacherUnverificationEmail(
+          student.email,
+          student.name,
+          updatedTeacher?.name || teacher.name
+        )
+        .then(result => console.log(`Student unverification email sent to ${student.name}:`, result))
+        .catch(error => console.error(`Error sending email to ${student.name}:`, error));
+      });
+    }
+
+    return res.json({
+      success: true,
+      message: "Teacher, students, and their resource requests have been reset successfully"
+    });
+
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Failed to unverify teacher" });
+  }
+};
+
+exports.unverifyStudentIfPossible = async (req, res) => {
+  const { student_id } = req.params;
+
+  try {
+    const student = await Student.findById(student_id);
+    if (!student) {
+      return res.status(404).json({ error: "Student not found" });
+    }
+
+    // 1️⃣ Block if student has any allotted resource
+    const allottedRequests = await ResourceRequest.find({
+      studentId: student_id,
+      is_verified: true
+    });
+
+    if (allottedRequests && allottedRequests.length > 0) {
+      return res.status(400).json({
+        error: "Student has allocated resources. Cannot unverify."
+      });
+    }
+
+    // 2️⃣ Delete ALL resource requests of this student
+    await ResourceRequest.deleteMany({
+      studentId: student_id
+    });
+
+    // 3️⃣ Unverify student and clear resourceRequests array
+    const updatedStudent = await Student.findByIdAndUpdate(
+      student_id,
+      {
+        $set: {
+          teacher_verified: false,
+          teacher_action: false,
+          admin_verified: false,
+          admin_action: false,
+          is_verified: false,
+          resourceRequests: []
+        }
+      },
+      { new: true }
+    );
+
+    // Send email to student about unverification
+    if (updatedStudent) {
+      emailService.sendStudentProfileUnverifiedByAdminEmail(updatedStudent.email, updatedStudent.name)
+        .then(result => console.log("Student unverification email sent:", result))
+        .catch(error => console.error("Error sending student unverification email:", error));
+    }
+
+    return res.status(200).json({
+      message: "Student unverified successfully"
+    });
+
+  } catch (error) {
+    console.error("Error unverifying student:", error);
+    res.status(500).json({
+      error: "Failed to unverify student"
+    });
+  }
+};
+
 
 exports.getPendingStudents = async (req, res) => {
   try {
@@ -117,7 +287,7 @@ exports.getPendingStudents = async (req, res) => {
         // Case 2: teacher has acted & verified, but admin still pending
         { teacher_action: true, teacher_verified: true, admin_action: false }
       ]
-    }).populate('teacher', 'name');
+    }).populate('teacher', 'name').sort({ createdAt: -1 });
 
     return res.json({ students: pendingStudents });
   } catch (err) {
@@ -128,7 +298,7 @@ exports.getPendingStudents = async (req, res) => {
 
 exports.getAllStudents = async (req, res) => {
   try {
-    const students = await Student.find().populate('teacher', 'name');
+    const students = await Student.find().populate('teacher', 'name').sort({ createdAt: -1 });
     return res.json({ students });
   } catch (err) {
     console.error(err);
@@ -142,7 +312,7 @@ exports.getRejectedTeachers = async (req, res) => {
     const rejectedTeachers = await Teacher.find({
       verification_completed: true,
       is_verified: false
-    });
+    }).sort({ createdAt: -1 });
     return res.json({ teachers: rejectedTeachers });
   } catch (err) {
     console.error(err);
@@ -161,7 +331,7 @@ exports.getRejectedStudents = async (req, res) => {
         // Case 2: admin has taken action and rejected the student (teacher approved but admin rejected)
         { teacher_action: true, teacher_verified: true, admin_action: true, admin_verified: false }
       ]
-    }).populate('teacher', 'name');
+    }).populate('teacher', 'name').sort({ createdAt: -1 });
 
     return res.json({ students: rejectedStudents });
   } catch (err) {
@@ -195,20 +365,24 @@ exports.getAllResourceRequests = async (req, res) => {
     // console.log(`Found ${resourceRequests.length} total resource requests for admin`);
 
     // Format the data to include teacher info in the response
-    const formattedRequests = resourceRequests.map(request => ({
-      ...request._doc,
-      studentInfo: {
-        _id: request.studentId._id,
-        name: request.studentId.name,
-        rollNo: request.studentId.rollNo,
-        email: request.studentId.email,
-        branch: request.studentId.branch
-      },
-      teacherInfo: {
-        _id: request.studentId.teacher._id,
-        name: request.studentId.teacher.name
-      }
-    }));
+    const formattedRequests = resourceRequests
+      .filter(request => request.studentId)
+      .map(request => {
+        const teacher = request.studentId.teacher || null;
+        return {
+          ...request._doc,
+          studentInfo: {
+            _id: request.studentId._id,
+            name: request.studentId.name,
+            rollNo: request.studentId.rollNo,
+            email: request.studentId.email,
+            branch: request.studentId.branch
+          },
+          teacherInfo: teacher
+            ? { _id: teacher._id, name: teacher.name }
+            : { _id: null, name: "Unknown" }
+        };
+      });
 
     return res.json({
       success: true,
@@ -287,6 +461,8 @@ exports.UpdateAdminProfile = async (req, res) => {
   try {
     const admin = await Admin.findById(req.session.user.id).select("username email");
     if (!admin) return res.status(404).json({ error: "Admin not found" });
+    // Store original email for security alert notification
+    const oldEmail = admin.email;
 
     const changes = {};
 
@@ -316,6 +492,29 @@ exports.UpdateAdminProfile = async (req, res) => {
     if (req.session.user) {
       if (changes.username) req.session.user.username = changes.username;
       if (changes.email) req.session.user.email = changes.email;
+    }
+
+    // Send email notification if username was changed
+    if (changes.username) {
+      const changedAtTime = new Date().toLocaleString();
+      emailService.sendAdminUsernameChangeEmail(changes.username, changedAtTime)
+        .then(result => console.log("Username change notification sent to admin:", result))
+        .catch(error => console.error("Error sending username change email:", error));
+    }
+
+    // Send email notifications if email was changed
+    if (changes.email) {
+      const changedAtTime = new Date().toLocaleString();
+      
+      // Send security alert to old email
+      emailService.sendAdminEmailChangeSecurityAlertEmail(oldEmail, changes.email)
+        .then(result => console.log("Security alert sent to old email:", result))
+        .catch(error => console.error("Error sending security alert email:", error));
+      
+      // Send confirmation to new email
+      emailService.sendAdminEmailChangeConfirmationEmail(changes.email, changedAtTime)
+        .then(result => console.log("Confirmation sent to new email:", result))
+        .catch(error => console.error("Error sending confirmation email:", error));
     }
 
     return res.json({ success: true, message: "Admin identity updated.", changes });
@@ -377,7 +576,21 @@ exports.createMachine = async (req, res) => {
   }
 };
 
+// Helper function to delete resource request and clean up references
+async function deleteResourceRequestAndCleanup(resourceRequestId, studentId) {
+  if (!resourceRequestId) return;
+
+  // Remove reference from student's resourceRequests array
+  if (studentId) {
+    await Student.findByIdAndUpdate(studentId, { $pull: { resourceRequests: resourceRequestId } });
+  }
+
+  // Delete the resource request by ObjectId
+  await ResourceRequest.findByIdAndDelete(resourceRequestId);
+}
+
 // Update a machine (MIGID, gpuRam, assignedStudent)
+// When unassigning, also deletes the associated resource request
 exports.updateMachine = async (req, res) => {
   const { id } = req.params;
   const { MIGID, gpuRam, assignedStudent } = req.body;
@@ -385,14 +598,50 @@ exports.updateMachine = async (req, res) => {
     const update = {};
     if (MIGID !== undefined) update.MIGID = MIGID;
     if (gpuRam !== undefined) update.gpuRam = gpuRam;
-    if (assignedStudent !== undefined) {
-      if (assignedStudent === null) {
-        update.assignedStudent = null;
-        update.isAssigned = false;
-      } else {
-        update.assignedStudent = { studentId: assignedStudent };
-        update.isAssigned = true;
+    if (assignedStudent !== undefined && assignedStudent === null) {
+      // Get the current machine to find resourceRequestId
+      const currentMachine = await Machine.findById(id);
+      if (currentMachine && currentMachine.assignedStudent && currentMachine.assignedStudent.resourceRequestId) {
+        const resourceRequestId = currentMachine.assignedStudent.resourceRequestId;
+        const studentId = currentMachine.assignedStudent.studentId;
+
+        // Notify student and teacher before revocation cleanup (async, non-blocking)
+        Student.findById(studentId).then(student => {
+          if (!student) return;
+          
+          ResourceRequest.findById(resourceRequestId).then(resourceRequest => {
+            if (!resourceRequest) return;
+            
+            // Send student notification email
+            emailService
+              .sendResourceRequestRevokedByAdminEmail(
+              student.email,
+              student.name,
+              resourceRequest.title,
+              currentMachine.MIGID
+            ).catch(err => console.error('Error sending student revocation email:', err));
+            
+            // Send teacher notification email
+            Teacher.findById(student.teacher).then(teacher => {
+              if (teacher) {
+                emailService.sendTeacherResourceRequestRevokedByAdminEmail(
+                  teacher.email,
+                  teacher.name,
+                  student.name,
+                  resourceRequest.title
+                ).catch(err => console.error('Error sending teacher notification email:', err));
+              }
+            }).catch(err => console.error('Error finding teacher:', err));
+          }).catch(err => console.error('Error finding resource request:', err));
+        }).catch(err => console.error('Error finding student:', err));
+
+        // Delete the resource request and clean up references
+        await deleteResourceRequestAndCleanup(resourceRequestId, studentId);
       }
+
+      // Clear both studentId and resourceRequestId when unassigning
+      update.assignedStudent = { studentId: null, resourceRequestId: null };
+      update.isAssigned = false;
     }
     const machine = await Machine.findByIdAndUpdate(id, update, { new: true }).lean();
     if (!machine) return res.status(404).json({ error: 'Machine not found' });
@@ -413,30 +662,5 @@ exports.deleteMachine = async (req, res) => {
   } catch (err) {
     console.error('Failed to delete machine', err);
     return res.status(500).json({ error: 'Failed to delete machine' });
-  }
-};
-
-exports.deleteResourceRequestByMig = async (req, res) => {
-  try {
-    const { migId } = req.params;
-    if (!migId) return res.status(400).json({ error: 'MIGID is required' });
-
-    // Find a single resource request that references this MIGID in vmCredentials
-    const request = await ResourceRequest.findOne({ 'vmCredentials.migId': migId });
-    if (!request) {
-      return res.json({ ok: true, deleted: 0 });
-    }
-
-    // remove reference from student's resourceRequests array if present
-    if (request.studentId) {
-      await Student.findByIdAndUpdate(request.studentId, { $pull: { resourceRequests: request._id } });
-    }
-
-    await ResourceRequest.findByIdAndDelete(request._id);
-
-    return res.json({ ok: true, deleted: 1, requestId: request._id });
-  } catch (err) {
-    console.error('Error deleting resource request by MIGID:', err);
-    return res.status(500).json({ error: 'Failed to delete resource request' });
   }
 };
