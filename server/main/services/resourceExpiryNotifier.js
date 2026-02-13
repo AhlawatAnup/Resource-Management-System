@@ -31,22 +31,27 @@ async function checkExpiringResourceRequests() {
       });
 
       for (const req of expiringRequests) {
-        // Get student email
-        const student = await Student.findById(req.studentId || req.student);
-        if (!student || !student.email) continue;
+        try {
+          // Get student email
+          const student = await Student.findById(req.studentId || req.student);
+          if (!student || !student.email) continue;
 
-        // Send email to student and the admin
-        await sendExpiringResourceEmail({
-          studentEmail: student.email,
-          adminEmail,
-          resourceRequest: req,
-          expiryDate: req.expiryDate,
-        });
+          // Send email to student and the admin
+          await sendExpiringResourceEmail({
+            studentEmail: student.email,
+            adminEmail,
+            resourceRequest: req,
+            expiryDate: req.expiryDate,
+          });
 
-        // Mark as notified for this flag
-        req.notified = req.notified || {};
-        req.notified[flag] = true;
-        await req.save();
+          // Mark as notified for this flag
+          req.notified = req.notified || {};
+          req.notified[flag] = true;
+          await req.save();
+        } catch (error) {
+          console.error(`Failed to process expiry notification for request ${req._id}:`, error.message);
+          // Continue with next request instead of crashing
+        }
       }
     }
   } catch (err) {

@@ -30,18 +30,15 @@ exports.sendOtp = async (req, res) => {
     // console.log(`Generated OTP ${otp}`);
 
     // Send OTP via email
-    const emailResult = await sendOTPEmail(email, otp, role);
-    
-    if (emailResult.success) {
-      // console.log(`📧 ${otp} OTP  email sent successfully to ${email} for ${role} registration `);
+    try {
+      const emailResult = await sendOTPEmail(email, otp, role);
+      console.log(`📧 ${otp} OTP email sent successfully to ${email} for ${role} registration`);
       res.json({ 
         message: "OTP sent to your email address",
         messageId: emailResult.messageId 
       });
-    } else {
-      console.error(`❌ Failed to send OTP email to ${email}:`, emailResult.error);
-      // Fallback: still allow OTP generation but notify about email failure
-      // console.log(`📧 Fallback - OTP for ${email} (${role}): ${otp}`);
+    } catch (emailError) {
+      console.error(`❌ Failed to send OTP email to ${email}:`, emailError.message);
       res.json({ 
         message: "OTP generated successfully (email service temporarily unavailable)",
         fallback: true 

@@ -1,5 +1,5 @@
 // Import common functions
-import { formatDate } from '/dashboard/common/js/commons.js';
+import { formatDate, logoutDirectly } from '/dashboard/common/js/commons.js';
 import { getLoggedInStudentId, showLoadingState, showErrorMessage } from './student.utils.js';
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -27,7 +27,7 @@ async function loadViewRequestsPage() {
 
     } catch (error) {
         console.error('Error loading view requests page:', error);
-        showErrorMessage('Failed to load requests. Please try again.', 'requests-content');
+        logoutDirectly();
     }
 }
 
@@ -81,16 +81,22 @@ async function loadAllRequests(studentId) {
             }
         });
 
-        if (response.ok) {
-            const requests = await response.json();
-            displayAllRequests(requests);
-        } else {
+        if (!response.ok) {
+            // If student account not found (404), logout user
+            if (response.status === 404) {
+                logoutDirectly();
+                return;
+            }
             console.warn('Failed to load requests');
             document.getElementById('all-requests-list').innerHTML = '<div class="no-requests"><p>No requests found.</p></div>';
+            return;
         }
+        
+        const requests = await response.json();
+        displayAllRequests(requests);
     } catch (error) {
         console.error('Error loading requests:', error);
-        document.getElementById('all-requests-list').innerHTML = '<div class="error-message"><p>Error loading requests. Please try again.</p></div>';
+        logoutDirectly();
     }
 }
 
