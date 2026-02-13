@@ -24,8 +24,9 @@ function getDateTime() {
 }
 
 function runBackup() {
-  const DATETIME = getDateTime();
-  const BACKUP_DIR = path.join(BACKUP_BASE, DATETIME);
+  try {
+    const DATETIME = getDateTime();
+    const BACKUP_DIR = path.join(BACKUP_BASE, DATETIME);
 
   // Ensure base and backup directory exist
   if (!fs.existsSync(BACKUP_BASE)) fs.mkdirSync(BACKUP_BASE, { recursive: true });
@@ -42,7 +43,7 @@ function runBackup() {
   exec(dumpCmd, (err, stdout, stderr) => {
     if (err) {
       console.error(`❌ Backup failed: ${err.message}`);
-      fs.appendFileSync(LOG_FILE, `${DATETIME} - Backup FAILED\n`);
+      fs.appendFileSync(LOG_FILE, `${DATETIME} - Backup FAILED: ${err.message}\n`);
       return;
     }
 
@@ -54,7 +55,7 @@ function runBackup() {
       exec(uploadCmd, (uploadErr) => {
         if (uploadErr) {
           console.error(`⚠️ Upload failed: ${uploadErr.message}`);
-          fs.appendFileSync(LOG_FILE, `${DATETIME} - Upload FAILED\n`);
+          fs.appendFileSync(LOG_FILE, `${DATETIME} - Upload FAILED: ${uploadErr.message}\n`);
         } else {
           console.log(`☁️  Uploaded to Google Drive: ${REMOTE_PATH}/${DATETIME}`);
           fs.appendFileSync(LOG_FILE, `${DATETIME} - Backup successful\n`);
@@ -65,6 +66,11 @@ function runBackup() {
       fs.appendFileSync(LOG_FILE, `${DATETIME} - Backup local-only (rclone skipped)\n`);
     }
   });
+} catch (error) {
+  console.error(`❌ Critical error in backup:`, error);
+  const DATETIME = getDateTime();
+  fs.appendFileSync(LOG_FILE, `${DATETIME} - Critical FAILED: ${error.message}\n`);
+}
 }
 
 // Run immediately

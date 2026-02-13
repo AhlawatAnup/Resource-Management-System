@@ -148,6 +148,12 @@ export function handleLogout(e) {
   }).then(r => r.isConfirmed && (location.href = '/logout'));
 }
 
+// Logout directly without confirmation (used when user doesn't exist)
+export function logoutDirectly() {
+  location.href = '/logout';
+}
+
 
 // Make handleLogout available globally for inline onclick handlers
 window.handleLogout = handleLogout;
+window.logoutDirectly = logoutDirectly;

@@ -6,9 +6,15 @@ const sendExpiringResourceEmail = async ({
   resourceRequest,
   expiryDate
 }) => {
-  const formattedDate = new Date(expiryDate).toLocaleDateString();
+  try {
+    const recipients = [studentEmail, adminEmail].filter(Boolean);
+    if (recipients.length === 0) {
+      throw new Error('No valid email recipients');
+    }
 
-  const html = `
+    const formattedDate = new Date(expiryDate).toLocaleDateString();
+
+    const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <h2 style="color: #e53935;">⏰ Resource Request Expiry Notice</h2>
 
@@ -27,11 +33,15 @@ const sendExpiringResourceEmail = async ({
     </div>
   `;
 
-  return sendEmail({
-    to: [studentEmail, adminEmail].filter(Boolean).join(','),
-    subject: '[URGENT] Resource Request Expiry Notice - Action Required',
-    html
-  });
+    return await sendEmail({
+      to: recipients.join(','),
+      subject: '[URGENT] Resource Request Expiry Notice - Action Required',
+      html
+    });
+  } catch (error) {
+    console.error('Error sending expiry email:', error.message);
+    throw error;
+  }
 };
 
 module.exports = { sendExpiringResourceEmail };
