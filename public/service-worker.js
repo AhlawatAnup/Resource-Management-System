@@ -1,26 +1,15 @@
-// Basic Service Worker for Push Notifications
-
 self.addEventListener('push', function(event) {
+  console.log("Push received:", event);
+
+  const data = event.data ? event.data.json() : { title: "Notification", body: "You have a new notification." };
+
+  const options = {
+    body: data.body,
+    icon: "/icon.png", // optional
+    badge: "/badge.png" // optional
+  };
+
   event.waitUntil(
-    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function(clientList) {
-      // If any client is focused and visible, do not show notification
-      let isVisible = false;
-      for (const client of clientList) {
-        // Some browsers support client.visibilityState, some don't
-        if (client.focused || client.visibilityState === 'visible') {
-          isVisible = true;
-          break;
-        }
-      }
-      if (!isVisible) {
-        const title = 'Notification';
-        const options = {
-          body: 'You have a new notification.'
-        };
-        return self.registration.showNotification(title, options);
-      }
-      // If visible, do nothing
-      return Promise.resolve();
-    })
+    self.registration.showNotification(data.title, options)
   );
 });
