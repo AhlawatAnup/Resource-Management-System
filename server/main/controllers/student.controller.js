@@ -1,4 +1,5 @@
 const { notifyTeacher } = require('../utils/web-push-notifications/notifyTeacher');
+const Teacher = require('../database/teacherModel');
 // Delete a resource request by ID
 exports.deleteStudentResourceRequest = async (req, res) => {
   try {
@@ -145,7 +146,7 @@ exports.submitResourceRequest = async (req, res) => {
       // Send email to student after successful request
       const { sendResourceRequestSubmittedEmail, sendTeacherStudentResourceRequestEmail } = require('../utils/email/emails.service');
       try {
-        await sendResourceRequestSubmittedEmail(student.email, student.name, savedRequest.title);
+        sendResourceRequestSubmittedEmail(student.email, student.name, savedRequest.title);
         // console.log(`Resource request email sent to ${student.email}`);
       } catch (emailErr) {
         console.error('Error sending resource request email:', emailErr);
@@ -153,10 +154,9 @@ exports.submitResourceRequest = async (req, res) => {
 
       // Notify teacher about student's resource request
       try {
-        const Teacher = require('../database/teacherModel');
         const teacher = await Teacher.findById(student.teacher);
         if (teacher) {
-          await sendTeacherStudentResourceRequestEmail(teacher.email, teacher.name, student.name, savedRequest.title);
+          sendTeacherStudentResourceRequestEmail(teacher.email, teacher.name, student.name, savedRequest.title);
           // console.log(`Teacher notification email sent to ${teacher.email}`);
         }
       } catch (emailErr) {
@@ -166,8 +166,7 @@ exports.submitResourceRequest = async (req, res) => {
 
     // --- Web Push Notification to Teacher ---
     try {
-      
-      await notifyTeacher(student.teacher, {
+      notifyTeacher(student.teacher, {
         title: 'New Resource Request',
         body: `A new resource request was submitted by ${student.name}.`
       });
