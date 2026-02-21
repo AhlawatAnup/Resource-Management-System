@@ -7,6 +7,7 @@ const Machine = require('../database/machineModel');
 const path = require("path");
 const publicPath = path.join(__dirname, "../../../public");
 const emailService = require("../utils/email/emails.service.js");
+const { notifyAdmin } = require('../utils/web-push-notifications/notifyAdmin.js');
 
 exports.roleBasedDashboard = (req, res) => {
   if (!req.session.user) {
@@ -144,10 +145,10 @@ exports.updateStudentVerification = async (req, res) => {
       { new: true }
     );
 
-    // Send email notification after successful update (in background)
+    // Send email notification after successful update
     if (updatedStudent) {
       
-      // Send emails asynchronously without waiting
+      // Send emails 
       if (userRole === "teacher") {
         if (is_verified) {
           // Get teacher details for emails
@@ -158,7 +159,7 @@ exports.updateStudentVerification = async (req, res) => {
             .then(result => console.log("Email sent for student profile verified by teacher:", result))
             .catch(error => console.error("Error sending verification email:", error));
           
-          // Notify admins that student verification is pending
+          // Notify admins that student verification is pending (email)
           emailService.sendAdminStudentVerificationPendingEmail(
             updatedStudent.name,
             updatedStudent.email,
@@ -167,6 +168,14 @@ exports.updateStudentVerification = async (req, res) => {
           )
             .then(result => console.log("Admin notification sent:", result))
             .catch(error => console.error("Error sending admin notification:", error));
+
+          // Notify admin that student verification is pending (web-push)
+          notifyAdmin({
+            title: 'New Student Registered',
+            body: 'Requires admin verification.'
+          }).catch(err => {
+            console.error('Error sending admin web push notification:', err);
+          });
         }
       } else if (userRole === "admin") {
         if (is_verified) {
