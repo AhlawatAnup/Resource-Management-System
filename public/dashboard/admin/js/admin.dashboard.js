@@ -1,6 +1,6 @@
 // Import only the functions we need from commons.js
 import { renderDashboardHeader, getInitials, getRandomNamedColor, formatDate, logoutDirectly } from '../../common/js/commons.js';
-
+import {registerServiceWorkerAndSubscribe} from '../../common/js/notification.js'
 // Data storage
 let currentData = [];
 let currentType = 'teacher'; // teacher or student
@@ -818,6 +818,7 @@ window.unverifyStudent = unverifyStudent;
 // Initialize dashboard when page loads
 document.addEventListener('DOMContentLoaded', function() {
   initializeAdminDashboard();
+  registerServiceWorkerAndSubscribe(); //web-push
 });
 
 // Export functions for potential future use
