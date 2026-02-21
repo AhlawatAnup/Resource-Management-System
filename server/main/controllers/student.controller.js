@@ -1,3 +1,4 @@
+const { notifyTeacher } = require('../utils/web-push-notifications/notifyTeacher');
 // Delete a resource request by ID
 exports.deleteStudentResourceRequest = async (req, res) => {
   try {
@@ -162,6 +163,18 @@ exports.submitResourceRequest = async (req, res) => {
         console.error('Error sending teacher notification email:', emailErr);
       }
     }
+
+    // --- Web Push Notification to Teacher ---
+    try {
+      
+      await notifyTeacher(student.teacher, {
+        title: 'New Resource Request',
+        body: `A new resource request was submitted by ${student.name}.`
+      });
+    } catch (pushErr) {
+      console.error('[WebPush] Error in teacher notification block:', pushErr);
+    }
+    // --- End Web Push ---
 
     return res.status(201).json({
       message: "Resource request submitted successfully",
