@@ -4,7 +4,7 @@ import {registerServiceWorkerAndSubscribe} from '../../common/js/notification.js
 // Data storage
 let currentData = [];
 let currentType = 'teacher'; // teacher or student
-let currentStatus = 'unverified'; // all, verified or unverified
+let currentStatus = 'all'; // all, verified or unverified
 
 // Initialize admin dashboard
 function initializeAdminDashboard() {
