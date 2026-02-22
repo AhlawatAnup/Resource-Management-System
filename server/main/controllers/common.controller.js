@@ -380,6 +380,14 @@ exports.updateResourceRequestVerification = async (req, res) => {
           )
             .then(result => console.log("Admin notification sent:", result))
             .catch(error => console.error("Error sending admin notification:", error));
+
+          notifyAdmin({
+            title: 'New Resource Request by Student',
+            body: 'Requires admin verification.' 
+          }).catch(err => {
+            console.error('Error sending admin web push notification:', err);
+          });
+          
         } else {
           // Rejected by teacher
           emailService.sendResourceRequestRejectedByTeacherEmail(student.email, student.name, updatedRequest.title, teacher.name)
