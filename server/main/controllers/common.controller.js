@@ -8,6 +8,7 @@ const path = require("path");
 const publicPath = path.join(__dirname, "../../../public");
 const emailService = require("../utils/email/emails.service.js");
 const { notifyAdmin } = require('../utils/web-push-notifications/notifyAdmin.js');
+const { notifyTeacher } = require('../utils/web-push-notifications/notifyTeacher.js');
 
 exports.roleBasedDashboard = (req, res) => {
   if (!req.session.user) {
@@ -128,6 +129,14 @@ exports.updateStudentVerification = async (req, res) => {
             }
           })
           .catch(error => console.error("Error finding teacher:", error));
+
+        // Notify teacher about admin's verification (web-push)
+          notifyTeacher(student.teacher, {
+            title: 'Student Verification Rejected by Admin',
+            body: `A student under you has been rejected by the Admin.`
+          }).catch((pushErr) => {
+            console.error('[WebPush] Error in teacher notification block:', pushErr);
+          });
         
         // Delete the student (cascade delete will handle resource requests)
         await Student.findByIdAndDelete(studentId);
@@ -193,6 +202,14 @@ exports.updateStudentVerification = async (req, res) => {
               }
             })
             .catch(error => console.error("Error finding teacher:", error));
+
+          // Notify teacher about admin's verification (web-push)
+          notifyTeacher(student.teacher, {
+            title: 'Student Verification approved by Admin',
+            body: `A student under you has been verified by the Admin.`
+          }).catch((pushErr) => {
+            console.error('[WebPush] Error in teacher notification block:', pushErr);
+          });
         }
       }
     }
@@ -401,7 +418,7 @@ exports.updateResourceRequestVerification = async (req, res) => {
             .then(result => console.log("Admin resource request verification email sent:", result))
             .catch(error => console.error("Error sending admin verification email:", error));
           
-          // Notify teacher about admin's approval
+          // Notify teacher about admin's approval of resource request
           Teacher.findById(student.teacher)
             .then(teacher => {
               if (teacher) {
@@ -411,6 +428,15 @@ exports.updateResourceRequestVerification = async (req, res) => {
               }
             })
             .catch(error => console.error("Error finding teacher:", error));
+
+          // Notify teacher about admin's approval of resource request (web-push)
+          notifyTeacher(student.teacher, {
+            title: 'Student Resource Request Approved by Admin',
+            body: `A resource request of one of your students has been approved by the admin.`
+          }).catch((pushErr) => {
+            console.error('[WebPush] Error in teacher notification block:', pushErr);
+          });
+
         } else {
           // Rejected by admin
           emailService.sendResourceRequestRejectedByAdminEmail(student.email, student.name, updatedRequest.title)
@@ -427,6 +453,15 @@ exports.updateResourceRequestVerification = async (req, res) => {
               }
             })
             .catch(error => console.error("Error finding teacher:", error));
+
+          // Notify teacher about admin's denial of resource request (web-push)
+          notifyTeacher(student.teacher, {
+            title: 'Student Resource Request Rejected by Admin',
+            body: `A resource request of one of your students has been rejected by the admin.`
+          }).catch((pushErr) => {
+            console.error('[WebPush] Error in teacher notification block:', pushErr);
+          });
+          
         }
       }
     }

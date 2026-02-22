@@ -1,3 +1,4 @@
+const { sendResourceRequestSubmittedEmail, sendTeacherStudentResourceRequestEmail } = require('../utils/email/emails.service');
 const { notifyTeacher } = require('../utils/web-push-notifications/notifyTeacher');
 const Teacher = require('../database/teacherModel');
 // Delete a resource request by ID
@@ -142,15 +143,15 @@ exports.submitResourceRequest = async (req, res) => {
     // Add the resource request ID to the student's resourceRequests array
     if (savedRequest) {
       await addResourceRequestToStudent(studentId, savedRequest._id);
-      // console.log(`New resource request submitted by student ${studentId}:`, savedRequest._id);
+
       // Send email to student after successful request
-      const { sendResourceRequestSubmittedEmail, sendTeacherStudentResourceRequestEmail } = require('../utils/email/emails.service');
-      try {
-        sendResourceRequestSubmittedEmail(student.email, student.name, savedRequest.title);
-        // console.log(`Resource request email sent to ${student.email}`);
-      } catch (emailErr) {
-        console.error('Error sending resource request email:', emailErr);
-      }
+      sendResourceRequestSubmittedEmail(
+        student.email,
+        student.name,
+        savedRequest.title
+      ).catch((err) => {
+        console.error('Error sending resource request email:', err);
+      });
 
       // Notify teacher about student's resource request
       try {
@@ -162,18 +163,17 @@ exports.submitResourceRequest = async (req, res) => {
       } catch (emailErr) {
         console.error('Error sending teacher notification email:', emailErr);
       }
-    }
 
-    // --- Web Push Notification to Teacher ---
-    try {
+      // --- Web Push Notification to Teacher ---
       notifyTeacher(student.teacher, {
         title: 'New Resource Request',
-        body: `A new resource request was submitted by ${student.name}.`
+        body: `A new resource request was submitted by a student.`
+      }).catch((pushErr) => {
+        console.error('[WebPush] Error in teacher notification block:', pushErr);
       });
-    } catch (pushErr) {
-      console.error('[WebPush] Error in teacher notification block:', pushErr);
+      // --- End Web Push ---
     }
-    // --- End Web Push ---
+
 
     return res.status(201).json({
       message: "Resource request submitted successfully",

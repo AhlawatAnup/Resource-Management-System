@@ -4,6 +4,7 @@ const Admin = require("../database/adminModel");
 const Machine = require('../database/machineModel');
 const ResourceRequest = require("../database/resourceRequestModel");
 const emailService = require("../utils/email/emails.service.js");
+const {notifyTeacher} = require("../utils/web-push-notifications/notifyTeacher.js")
 const bcrypt = require('bcrypt');
 
 exports.admin_dashboard_data = async (req, res) => {
@@ -578,15 +579,28 @@ exports.createMachine = async (req, res) => {
 
 // Helper function to delete resource request and clean up references
 async function deleteResourceRequestAndCleanup(resourceRequestId, studentId) {
-  if (!resourceRequestId) return;
-
-  // Remove reference from student's resourceRequests array
-  if (studentId) {
-    await Student.findByIdAndUpdate(studentId, { $pull: { resourceRequests: resourceRequestId } });
+  if (!resourceRequestId) {
+    throw new Error("ResourceRequestId is required");
   }
 
-  // Delete the resource request by ObjectId
-  await ResourceRequest.findByIdAndDelete(resourceRequestId);
+  try {
+    if (studentId) {
+      await Student.findByIdAndUpdate(
+        studentId,
+        { $pull: { resourceRequests: resourceRequestId } }
+      );
+    }
+
+    const deleted = await ResourceRequest.findByIdAndDelete(resourceRequestId);
+
+    if (!deleted) {
+      throw new Error("Resource request not found");
+    }
+
+  } catch (error) {
+    console.error("Cleanup failed:", error);
+    throw error; // Let controller decide response
+  }
 }
 
 // Update a machine (MIGID, gpuRam, assignedStudent)
@@ -630,13 +644,30 @@ exports.updateMachine = async (req, res) => {
                   student.name,
                   resourceRequest.title
                 ).catch(err => console.error('Error sending teacher notification email:', err));
+
+                // Notify teacher when admin revokes student resource allocation (web-push)
+                notifyTeacher(student.teacher, {
+                  title: 'Resource Allocation Revoked',
+                  body: `A student resource allocation has been revoked by the admin.`
+                }).catch(err => {
+                  console.error("Error sending teacher web-push notification:", err);
+                });
               }
             }).catch(err => console.error('Error finding teacher:', err));
+
           }).catch(err => console.error('Error finding resource request:', err));
         }).catch(err => console.error('Error finding student:', err));
 
         // Delete the resource request and clean up references
-        await deleteResourceRequestAndCleanup(resourceRequestId, studentId);
+        try {
+          await deleteResourceRequestAndCleanup(resourceRequestId, studentId);
+        } catch (error) {
+          console.error("Deletion failed:", error);
+          return res.status(500).json({
+            success: false,
+            message: "Failed to revoke resource properly. Try again."
+          });
+        }
       }
 
       // Clear both studentId and resourceRequestId when unassigning

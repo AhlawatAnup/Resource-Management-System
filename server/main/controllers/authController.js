@@ -3,6 +3,7 @@ const Teacher = require("../database/teacherModel");
 const Admin = require("../database/adminModel");
 const { sendOTPEmail, sendStudentRegistrationSuccessEmail, sendTeacherStudentRegisteredEmail, sendTeacherRegistrationSuccessEmail, sendAdminTeacherRegistrationEmail } = require("../utils/email/emails.service");
 const { notifyAdmin } = require('../utils/web-push-notifications/notifyAdmin');
+const { notifyTeacher } = require('../utils/web-push-notifications/notifyTeacher');
 const bcrypt = require("bcrypt");
 
 const otpStore = {};
@@ -220,6 +221,13 @@ exports.register = async (req, res) => {
           console.error("Error sending teacher notification email:", err);
         });
 
+        // Notify teacher about new student registration (web-push)
+        notifyTeacher(teacher_id, {
+          title: 'New Student Registered',
+          body: `Requires teacher verification.`
+        }).catch(err => {
+          console.error("Error sending teacher web-push notification:", err);
+        });
 
         return res.json({ message: "Student registered successfully" });
       } else {
