@@ -146,6 +146,11 @@ function getRequestStatus(request) {
 
 // Get action buttons based on request status
 function getActionButtons(request) {
+  // Hide action buttons if admin has already taken action
+  if (request.admin_action) {
+    return '<span style="color: #666; font-style: italic;">Action Completed</span>';
+  }
+  // Hide action buttons if teacher has already taken action
   if (request.teacher_action) {
     return '<span style="color: #666; font-style: italic;">Action Completed</span>';
   }
