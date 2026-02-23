@@ -1,4 +1,5 @@
 const { sendResourceRequestSubmittedEmail, sendTeacherStudentResourceRequestEmail } = require('../utils/email/emails.service');
+const { notifyAdmin } = require('../utils/web-push-notifications/notifyAdmin');
 const { notifyTeacher } = require('../utils/web-push-notifications/notifyTeacher');
 const Teacher = require('../database/teacherModel');
 // Delete a resource request by ID
@@ -170,6 +171,15 @@ exports.submitResourceRequest = async (req, res) => {
         body: `A new resource request was submitted by a student.`
       }).catch((pushErr) => {
         console.error('[WebPush] Error in teacher notification block:', pushErr);
+      });
+      
+      // --- Web Push Notification to Admin ---
+      notifyAdmin({
+        title: 'New Resource Request',
+        body: 'A student has submitted a new resource request.',
+        type: 'ADMIN-RESOURCE_REQUEST_UPDATED'
+      }).catch((adminPushErr) => {
+        console.error('[WebPush] Error in admin notification block:', adminPushErr);
       });
       // --- End Web Push ---
     }
