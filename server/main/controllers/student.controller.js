@@ -36,6 +36,15 @@ exports.deleteStudentResourceRequest = async (req, res) => {
     // Delete the request
     await ResourceRequest.findByIdAndDelete(requestId);
 
+    // Send push notification to admin
+    notifyAdmin({
+      title: 'resReq deleted by student',
+      body: 'UI triggering',
+      type: 'ADMIN-RESOURCE_REQUEST_UPDATED'
+    }).catch((adminPushErr) => {
+      console.error('[WebPush] Error in admin notification block:', adminPushErr);
+    });
+    
     return res.json({ message: "Resource request deleted successfully" });
   } catch (error) {
     console.error("Error deleting resource request:", error);

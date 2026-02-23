@@ -400,7 +400,8 @@ exports.updateResourceRequestVerification = async (req, res) => {
 
           notifyAdmin({
             title: 'New Resource Request by Student',
-            body: 'Requires admin verification.' 
+            body: 'Requires admin verification.', 
+            type: 'ADMIN-RESOURCE_REQUEST_UPDATED'
           }).catch(err => {
             console.error('Error sending admin web push notification:', err);
           });
@@ -410,6 +411,14 @@ exports.updateResourceRequestVerification = async (req, res) => {
           emailService.sendResourceRequestRejectedByTeacherEmail(student.email, student.name, updatedRequest.title, teacher.name)
             .then(result => console.log("Teacher resource request rejection email sent:", result))
             .catch(error => console.error("Error sending teacher rejection email:", error));
+            
+          notifyAdmin({
+            title: 'Rejected Resource Request of a student by teacher',
+            body: 'UI triggering', 
+            type: 'ADMIN-RESOURCE_REQUEST_UPDATED'
+          }).catch(err => {
+            console.error('Error sending admin web push notification:', err);
+          });
         }
       } else if (userRole === "admin") {
         if (is_verified) {
