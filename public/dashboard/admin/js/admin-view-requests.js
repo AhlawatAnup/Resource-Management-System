@@ -10,6 +10,8 @@ import {
   isValidUsername
 } from '../../common/js/commons.js';
 
+import './pushNotifications-refreshUI/admin-refresh.js'; // refresh logic file
+
 let resourceRequests = [];
 let filteredRequests = [];
 
@@ -720,6 +722,8 @@ async function submitEditRequest(submitBtn) {
 function closeEditModal() {
   document.getElementById('editRequestModal').style.display = 'none';
 }
+
+export { loadResourceRequests };
 
 // Make functions globally available for HTML onclick handlers
 window.closeVerificationModal = closeVerificationModal;
