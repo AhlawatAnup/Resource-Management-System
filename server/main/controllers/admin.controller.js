@@ -5,6 +5,7 @@ const Machine = require('../database/machineModel');
 const ResourceRequest = require("../database/resourceRequestModel");
 const emailService = require("../utils/email/emails.service.js");
 const {notifyTeacher} = require("../utils/web-push-notifications/notifyTeacher.js")
+const { notifyStudent } = require('../utils/web-push-notifications/notifyStudent.js');
 const bcrypt = require('bcrypt');
 
 exports.admin_dashboard_data = async (req, res) => {
@@ -220,6 +221,13 @@ exports.unverifyTeacherIfPossible = async (req, res) => {
         )
         .then(result => console.log(`Student unverification email sent to ${student.name}:`, result))
         .catch(error => console.error(`Error sending email to ${student.name}:`, error));
+
+        notifyStudent(student._id, {
+          title: 'Student Profile unverified by Admin',
+          body: `Your profile has unverified due to unverification of your teacher`
+        }).catch(err => {
+          console.error("Error sending student web-push notification:", err);
+        });
       });
     }
 
@@ -281,8 +289,15 @@ exports.unverifyStudentIfPossible = async (req, res) => {
       emailService.sendStudentProfileUnverifiedByAdminEmail(updatedStudent.email, updatedStudent.name)
         .then(result => console.log("Student unverification email sent:", result))
         .catch(error => console.error("Error sending student unverification email:", error));
+        
+      notifyStudent(student_id, {
+        title: 'Student Profile unverified by Admin',
+        body: `Your profile has been unverified by admin.`
+      }).catch(err => {
+        console.error("Error sending student web-push notification:", err);
+      });
     }
-
+        
     return res.status(200).json({
       message: "Student unverified successfully"
     });

@@ -9,6 +9,7 @@ const publicPath = path.join(__dirname, "../../../public");
 const emailService = require("../utils/email/emails.service.js");
 const { notifyAdmin } = require('../utils/web-push-notifications/notifyAdmin.js');
 const { notifyTeacher } = require('../utils/web-push-notifications/notifyTeacher.js');
+const { notifyStudent } = require('../utils/web-push-notifications/notifyStudent.js');
 
 exports.roleBasedDashboard = (req, res) => {
   if (!req.session.user) {
@@ -95,6 +96,13 @@ exports.updateStudentVerification = async (req, res) => {
           .then(result => console.log("Email sent for student profile rejected by teacher:", result))
           .catch(error => console.error("Error sending rejection email:", error));
         
+        notifyStudent(studentId, {
+          title: 'Student Profile Rejected by Teacher',
+          body: `Your profile has been rejected by your teacher.`
+        }).catch(err => {
+          console.error("Error sending student web-push notification:", err);
+        });
+
         // Delete the student (cascade delete will handle resource requests)
         await Student.findByIdAndDelete(studentId);
         
@@ -119,6 +127,13 @@ exports.updateStudentVerification = async (req, res) => {
           .then(result => console.log("Email sent for student profile rejected by admin:", result))
           .catch(error => console.error("Error sending rejection email:", error));
         
+        notifyStudent(studentId, {
+          title: 'Student Profile Rejected by Admin',
+          body: `Your profile has been rejected by admin.`
+        }).catch(err => {
+          console.error("Error sending student web-push notification:", err);
+        });
+
         // Notify teacher about admin's rejection
         Teacher.findById(student.teacher)
           .then(teacher => {
@@ -168,6 +183,13 @@ exports.updateStudentVerification = async (req, res) => {
             .then(result => console.log("Email sent for student profile verified by teacher:", result))
             .catch(error => console.error("Error sending verification email:", error));
           
+          notifyStudent(studentId, {
+            title: 'Student Profile Verified by Teacher',
+            body: `Your profile has been verified by your teacher.`
+          }).catch(err => {
+            console.error("Error sending student web-push notification:", err);
+          });
+
           // Notify admins that student verification is pending (email)
           emailService.sendAdminStudentVerificationPendingEmail(
             updatedStudent.name,
@@ -192,6 +214,13 @@ exports.updateStudentVerification = async (req, res) => {
             .then(result => console.log("Email sent for student profile verified by admin:", result))
             .catch(error => console.error("Error sending verification email:", error));
           
+          notifyStudent(studentId, {
+            title: 'Student Profile Verified by Admin',
+            body: `Your profile has been verified by admin.`
+          }).catch(err => {
+            console.error("Error sending student web-push notification:", err);
+          });
+
           // Notify teacher about admin's verification
           Teacher.findById(updatedStudent.teacher)
             .then(teacher => {
