@@ -268,14 +268,12 @@ exports.register = async (req, res) => {
         });
 
         // Notify admin about new teacher registration (web-push)
-        try {
-          notifyAdmin({
-            title: 'New Teacher Registered',
-            body: `Requires admin verification.`
-          });
-        } catch (err) {
+        notifyAdmin({
+          title: 'New Teacher Registered',
+          body: `Requires admin verification.`
+        }).catch(err => {
           console.error('Error sending admin web push notification:', err);
-        }
+        });
 
         return res.json({ message: "Teacher registered successfully" });
       } else {
