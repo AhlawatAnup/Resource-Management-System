@@ -33,6 +33,7 @@ async function notifyStudent(studentId, payload) {
   }
   console.log('[WebPush] Push subscription:', JSON.stringify(pushSub.subscription));
   try {
+    payload.title = `STUDENT - ${payload.title}`;
     const result = await webpush.sendNotification(pushSub.subscription, JSON.stringify(payload));
     console.log('[WebPush] Notification sent. Result:', result);
     return { email: student.email, status: 'sent' };
