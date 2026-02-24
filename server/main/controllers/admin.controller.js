@@ -86,10 +86,16 @@ exports.updateTeacherVerification = async (req, res) => {
         { new: true }
       );
 
-      // NON-BLOCKING 
       emailService.sendTeacherProfileVerifiedByAdminEmail(teacher.email, teacher.name)
         .then(result => console.log("Email sent for teacher profile verified by admin:", result))
         .catch(error => console.error("Error sending verification email:", error));
+
+      notifyTeacher(teacher_id, {
+        title: 'Teacher-Profile verified by Admin',
+        body: `Congratulations! Your profile has been verified by the admin`
+      }).catch((pushErr) => {
+        console.error('[WebPush] Error in teacher notification block:', pushErr);
+      });
 
       // console.log("Teacher verification updated:", updatedTeacher);
       return res.json({
@@ -97,12 +103,18 @@ exports.updateTeacherVerification = async (req, res) => {
         teacher: { ...updatedTeacher._doc }
       });
     } else {
-      // Reject: Delete the teacher account
-      // NON-BLOCKING 
+      // Reject: Delete the teacher account 
       emailService.sendTeacherProfileRejectedByAdminEmail(teacher.email, teacher.name)
         .then(result => console.log("Email sent for teacher profile rejected by admin:", result))
         .catch(error => console.error("Error sending rejection email:", error));
 
+      notifyTeacher(teacher_id, {
+        title: 'Teacher-Profile rejected by Admin',
+        body: `Your profile was rejected by admin.`
+      }).catch((pushErr) => {
+        console.error('[WebPush] Error in teacher notification block:', pushErr);
+      });
+      
       // Delete the teacher account
       await Teacher.findByIdAndDelete(teacher_id);
 
@@ -172,6 +184,13 @@ exports.unverifyTeacherIfPossible = async (req, res) => {
         .then(result => console.log("Teacher unverification email sent:", result))
         .catch(error => console.error("Error sending teacher unverification email:", error));
     }
+
+      notifyTeacher(teacher_id, {
+        title: 'Teacher-Profile Unverified by admin',
+        body: `Your profile has been unverified by the admin.`
+      }).catch((pushErr) => {
+        console.error('[WebPush] Error in teacher notification block:', pushErr);
+      });
 
     // 4️⃣ Unverify all students and send them emails
     if (studentIds.length > 0) {
