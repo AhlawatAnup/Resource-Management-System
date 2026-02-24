@@ -91,7 +91,7 @@ exports.updateTeacherVerification = async (req, res) => {
         .catch(error => console.error("Error sending verification email:", error));
 
       notifyTeacher(teacher_id, {
-        title: 'Teacher-Profile verified by Admin',
+        title: 'Profile verified by Admin',
         body: `Congratulations! Your profile has been verified by the admin`
       }).catch((pushErr) => {
         console.error('[WebPush] Error in teacher notification block:', pushErr);
@@ -109,7 +109,7 @@ exports.updateTeacherVerification = async (req, res) => {
         .catch(error => console.error("Error sending rejection email:", error));
 
       notifyTeacher(teacher_id, {
-        title: 'Teacher-Profile rejected by Admin',
+        title: 'Profile rejected by Admin',
         body: `Your profile was rejected by admin.`
       }).catch((pushErr) => {
         console.error('[WebPush] Error in teacher notification block:', pushErr);
@@ -186,7 +186,7 @@ exports.unverifyTeacherIfPossible = async (req, res) => {
     }
 
       notifyTeacher(teacher_id, {
-        title: 'Teacher-Profile Unverified by admin',
+        title: 'Profile Unverified by admin',
         body: `Your profile has been unverified by the admin.`
       }).catch((pushErr) => {
         console.error('[WebPush] Error in teacher notification block:', pushErr);

@@ -24,6 +24,7 @@ async function  notifyAdmin(payload) {
     return { email: admin.email, status: 'no-subscription' };
   }
   try {
+    payload.title = `ADMIN - ${payload.title}`;
     await webpush.sendNotification(
       pushSub.subscription,
       JSON.stringify(payload)
