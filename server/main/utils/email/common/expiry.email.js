@@ -12,7 +12,7 @@ const sendExpiringResourceEmail = async ({
       throw new Error('No valid email recipients');
     }
 
-    const formattedDate = new Date(expiryDate).toLocaleDateString();
+    const formattedDate = expiryDate.toDateString();
 
     const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
