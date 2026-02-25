@@ -416,6 +416,13 @@ exports.updateResourceRequestVerification = async (req, res) => {
             .then(result => console.log("Teacher resource request verification email sent:", result))
             .catch(error => console.error("Error sending teacher verification email:", error));
           
+          notifyStudent(updatedRequest.studentId, {
+            title: 'Resource Request Verified by Teacher',
+            body: `Your resource request has been verified by your teacher.`
+          }).catch(err => {
+            console.error("Error sending student web-push notification:", err);
+          });
+
           // Notify admin that resource request is pending
           emailService.sendAdminResourceRequestPendingEmail(
             student.name,
@@ -440,7 +447,14 @@ exports.updateResourceRequestVerification = async (req, res) => {
           emailService.sendResourceRequestRejectedByTeacherEmail(student.email, student.name, updatedRequest.title, teacher.name)
             .then(result => console.log("Teacher resource request rejection email sent:", result))
             .catch(error => console.error("Error sending teacher rejection email:", error));
-            
+
+          notifyStudent(updatedRequest.studentId, {
+            title: 'Resource Request rejected by Teacher',
+            body: `Your resource request has been rejected by your teacher.`
+          }).catch(err => {
+            console.error("Error sending student web-push notification:", err);
+          });
+
           notifyAdmin({
             title: 'Rejected Resource Request of a student by teacher',
             body: 'UI triggering', 
@@ -456,6 +470,13 @@ exports.updateResourceRequestVerification = async (req, res) => {
             .then(result => console.log("Admin resource request verification email sent:", result))
             .catch(error => console.error("Error sending admin verification email:", error));
           
+          notifyStudent(updatedRequest.studentId, {
+            title: 'Resource Request verified by admin',
+            body: `Your resource request has been verified by admin`
+          }).catch(err => {
+            console.error("Error sending student web-push notification:", err);
+          });
+
           // Notify teacher about admin's approval of resource request
           Teacher.findById(student.teacher)
             .then(teacher => {
@@ -463,17 +484,17 @@ exports.updateResourceRequestVerification = async (req, res) => {
                 emailService.sendTeacherResourceRequestVerifiedByAdminEmail(teacher.email, teacher.name, student.name, updatedRequest.title)
                   .then(result => console.log("Teacher notification email sent:", result))
                   .catch(error => console.error("Error sending teacher notification:", error));
+
+                notifyTeacher(student.teacher, {
+                  title: 'Student Resource Request Approved by Admin',
+                  body: `A resource request of one of your students has been approved by the admin.`
+                }).catch((pushErr) => {
+                  console.error('[WebPush] Error in teacher notification block:', pushErr);
+                });
               }
             })
             .catch(error => console.error("Error finding teacher:", error));
 
-          // Notify teacher about admin's approval of resource request (web-push)
-          notifyTeacher(student.teacher, {
-            title: 'Student Resource Request Approved by Admin',
-            body: `A resource request of one of your students has been approved by the admin.`
-          }).catch((pushErr) => {
-            console.error('[WebPush] Error in teacher notification block:', pushErr);
-          });
 
         } else {
           // Rejected by admin
@@ -488,6 +509,13 @@ exports.updateResourceRequestVerification = async (req, res) => {
                 emailService.sendTeacherResourceRequestRejectedByAdminEmail(teacher.email, teacher.name, student.name, updatedRequest.title)
                   .then(result => console.log("Teacher notification email sent:", result))
                   .catch(error => console.error("Error sending teacher notification:", error));
+
+                notifyStudent(updatedRequest.studentId, {
+                  title: 'Resource Request Rejected by admin',
+                  body: `Your resource request has been rejected by admin`
+                }).catch(err => {
+                  console.error("Error sending student web-push notification:", err);
+                });
               }
             })
             .catch(error => console.error("Error finding teacher:", error));

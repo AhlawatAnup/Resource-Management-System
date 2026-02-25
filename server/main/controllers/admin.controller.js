@@ -668,6 +668,13 @@ exports.updateMachine = async (req, res) => {
               resourceRequest.title,
               currentMachine.MIGID
             ).catch(err => console.error('Error sending student revocation email:', err));
+
+            notifyStudent(studentId, {
+              title: 'Resource Revoked by admin',
+              body: `Your resource has been revoked by admin`
+            }).catch(err => {
+              console.error("Error sending student web-push notification:", err);
+            });
             
             // Send teacher notification email
             Teacher.findById(student.teacher).then(teacher => {
