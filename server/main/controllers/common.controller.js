@@ -311,6 +311,10 @@ exports.updateResourceRequestVerification = async (req, res) => {
     } else if (userRole === "admin") {
       // Admin verification logic
       if (is_verified) {
+        if (isDateInPast(resourceRequest.expiryDate)) {
+          return res.status(400).json({ error: "Cannot verify this request because the expiry date is in the past." });
+        }
+
         // For approvals, VM credentials must include password/ip/migId
         if (!vmCredentials || !vmCredentials.password || !vmCredentials.ip || !vmCredentials.migId) {
           return res.status(400).json({ error: "Password, IP, and MIG ID are required for VM credentials" });
@@ -593,3 +597,12 @@ exports.deleteStudentAndResources = async (req, res) => {
     res.status(500).json({ message: "Error deleting student.", error: error.message || error });
   }
 };
+
+// Utility: Check if a date is in the past (date-only, ignores time)
+function isDateInPast(date) {
+  const d = new Date(date);
+  const now = new Date();
+  d.setHours(0,0,0,0);
+  now.setHours(0,0,0,0);
+  return d < now;
+}

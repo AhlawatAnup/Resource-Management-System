@@ -157,31 +157,56 @@ function getActionButtons(request) {
 
 // Update resource request verification status
 async function updateRequestVerification(requestId, isVerified) {
-  // For decline, show immediate confirmation
-  if (!isVerified) {
-    const result = await Swal.fire({
-      title: 'Are you sure?',
-      text: 'Do you want to decline this resource request?',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Yes, decline it!',
-      cancelButtonText: 'Cancel',
-      draggable: true,
-      scrollbarPadding: false,
-      heightAuto: false
-    });
-    
-    if (!result.isConfirmed) {
-      return;
-    }
-    await submitVerification(requestId, isVerified);
+  // Find the request object
+  const request = resourceRequests.find(r => r._id === requestId);
+  if (!request) {
+    showNotification('Request not found.', 'error');
     return;
   }
 
-  // For approve, show the modal with credentials form
-  showVerificationModal(requestId);
+  // Check if the expiry date is in the past when verifying (approving)
+  if (isVerified) {
+    if (isDateInPast(request.expiryDate)) {
+      await Swal.fire({
+        icon: 'error',
+        title: 'Invalid Request',
+        text: 'Cannot verify this request because the expiry date is in the past. You may edit the date if you wish to proceed with the assignment.',
+        confirmButtonColor: '#d33',
+      });
+      return;
+    }
+    // For approve, show the modal with credentials form
+    showVerificationModal(requestId);
+    return;
+  }
+
+  // For decline, show immediate confirmation
+  const result = await Swal.fire({
+    title: 'Are you sure?',
+    text: 'Do you want to decline this resource request?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Yes, decline it!',
+    cancelButtonText: 'Cancel',
+    draggable: true,
+    scrollbarPadding: false,
+    heightAuto: false
+  });
+  if (!result.isConfirmed) {
+    return;
+  }
+  await submitVerification(requestId, isVerified);
+}
+
+// Utility: Check if a date is in the past (date-only, ignores time)
+function isDateInPast(date) {
+  const d = new Date(date);
+  const now = new Date();
+  d.setHours(0,0,0,0);
+  now.setHours(0,0,0,0);
+  return d < now;
 }
 
 // Show verification modal for approval
