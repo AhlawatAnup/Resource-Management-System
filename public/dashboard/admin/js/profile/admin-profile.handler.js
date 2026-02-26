@@ -1,15 +1,15 @@
 // profile.handler.js
-import { showError, showSuccess, toggleLoading } from './profile.ui.js';
+import { showError, showSuccess, toggleLoading } from './admin-profile.ui.js';
 import {
   updateEmail,
   updateUsername,
   changePassword
-} from './profile.service.js';
+} from './admin-profile.service.js';
 import {
   validateEmail,
   validateUsername,
   validatePassword
-} from '../shared/admin.util.js';
+} from './admin-profile.util.js';
 
 export async function onEmailSubmit(newEmail, { displayEl, errorEl, modalEl, submitBtn }) {
   const error = validateEmail(newEmail);

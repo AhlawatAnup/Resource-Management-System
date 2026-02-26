@@ -1,11 +1,11 @@
 // profile.main.js
-import { initProfileUI, showError } from './profile.ui.js';
-import { fetchAdminProfile } from './profile.service.js';
+import { initProfileUI, showError } from './admin-profile.ui.js';
+import { fetchAdminProfile } from './admin-profile.service.js';
 import {
   onEmailSubmit,
   onUsernameSubmit,
   onPasswordSubmit
-} from './profile.handler.js';
+} from './admin-profile.handler.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
   // Initialize UI and pass callbacks
