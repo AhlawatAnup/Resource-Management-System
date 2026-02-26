@@ -1,229 +1,129 @@
 // ui/profileUI.js
+function $(id) { return document.getElementById(id); }
 
-import {
-  fetchAdminProfile,
-  updateEmail,
-  updateUsername,
-  changePassword
-} from './profile.service.js';
+export function initProfileUI({
+  onEmailSubmit,
+  onUsernameSubmit,
+  onPasswordSubmit
+}) {
+  // ------------------ EMAIL ------------------
+  const emailModal = $('edit-email-modal');
+  const emailOpenBtn = $('edit-email-btn');
+  const emailCloseBtn = $('close-email-modal');
+  const emailCancelBtn = $('cancel-email-btn');
+  const emailSubmitBtn = $('submit-email-btn');
+  const emailInput = $('new-email-input');
+  const emailErrorDiv = $('email-error');
+  const emailDisplay = $('admin-email');
 
-import {
-  validateEmail,
-  validateUsername,
-  validatePassword
-} from '../shared/admin.util.js';
+  emailOpenBtn.addEventListener('click', () => {
+    emailModal.style.display = 'flex';
+    emailInput.value = emailDisplay.textContent;
+    emailErrorDiv.textContent = '';
+    resetButton(emailSubmitBtn);
+  });
 
-function $(id) {
-  return document.getElementById(id);
-}
+  emailCloseBtn.addEventListener('click', () => (emailModal.style.display = 'none'));
+  emailCancelBtn.addEventListener('click', () => (emailModal.style.display = 'none'));
 
-export function initProfileUI() {
-  loadProfile();
-  setupEmail();
-  setupUsername();
-  setupPassword();
-}
-
-// ------------------ PROFILE ------------------
-
-async function loadProfile() {
-  try {
-    const data = await fetchAdminProfile();
-
-    if (data.username) {
-      $('admin-username').textContent = data.username;
-      $('admin-email').textContent = data.email;
-    } else {
-      $('profile-error').textContent =
-        data.error || 'Unable to fetch admin details.';
-    }
-  } catch {
-    $('profile-error').textContent = 'Unable to fetch admin details.';
-  }
-}
-
-// ------------------ EMAIL ------------------
-
-function setupEmail() {
-  const modal = $('edit-email-modal');
-  const openBtn = $('edit-email-btn');
-  const closeBtn = $('close-email-modal');
-  const cancelBtn = $('cancel-email-btn');
-  const submitBtn = $('submit-email-btn');
-  const input = $('new-email-input');
-  const errorDiv = $('email-error');
-  const display = $('admin-email');
-
-  openBtn.onclick = () => {
-    modal.style.display = 'flex';
-    input.value = display.textContent;
-    errorDiv.textContent = '';
-    resetButton(submitBtn);
-  };
-
-  closeBtn.onclick = cancelBtn.onclick = () => {
-    modal.style.display = 'none';
-  };
-
-  submitBtn.onclick = async (e) => {
+  emailSubmitBtn.addEventListener('click', (e) => {
     e.preventDefault();
-    toggleLoading(submitBtn, true);
+    onEmailSubmit?.(emailInput.value.trim(), {
+      displayEl: emailDisplay,
+      errorEl: emailErrorDiv,
+      modalEl: emailModal,
+      submitBtn: emailSubmitBtn
+    });
+  });
 
-    const email = input.value.trim();
-    const error = validateEmail(email);
+  // ------------------ USERNAME ------------------
+  const usernameModal = $('edit-username-modal');
+  const usernameOpenBtn = $('edit-username-btn');
+  const usernameCloseBtn = $('close-username-modal');
+  const usernameCancelBtn = $('cancel-username-btn');
+  const usernameSubmitBtn = $('submit-username-btn');
+  const usernameInput = $('new-username-input');
+  const usernameErrorDiv = $('username-error');
+  const usernameDisplay = $('admin-username');
 
-    if (error) {
-      showError(errorDiv, error);
-      toggleLoading(submitBtn, false);
-      return;
-    }
+  usernameOpenBtn.addEventListener('click', () => {
+    usernameModal.style.display = 'flex';
+    usernameInput.value = usernameDisplay.textContent;
+    usernameErrorDiv.textContent = '';
+    resetButton(usernameSubmitBtn);
+  });
 
-    try {
-      const data = await updateEmail(email);
+  usernameCloseBtn.addEventListener('click', () => (usernameModal.style.display = 'none'));
+  usernameCancelBtn.addEventListener('click', () => (usernameModal.style.display = 'none'));
 
-      if (data.success) {
-        showSuccess(errorDiv, data.message);
-        display.textContent = data?.changes?.email || email;
-        setTimeout(() => (modal.style.display = 'none'), 1200);
-      } else {
-        showError(errorDiv, data.error || 'Failed');
-        toggleLoading(submitBtn, false);
+  usernameSubmitBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    onUsernameSubmit?.(usernameInput.value.trim(), {
+      displayEl: usernameDisplay,
+      errorEl: usernameErrorDiv,
+      modalEl: usernameModal,
+      submitBtn: usernameSubmitBtn
+    });
+  });
+
+  // ------------------ PASSWORD ------------------
+  const passwordModal = $('change-password-modal');
+  const passwordOpenBtn = $('change-password-btn');
+  const passwordCloseBtn = $('close-password-modal');
+  const passwordCancelBtn = $('cancel-password-btn');
+  const passwordSubmitBtn = $('submit-password-btn');
+  const passwordNewInput = $('new-password');
+  const passwordConfirmInput = $('confirm-password');
+  const passwordErrorDiv = $('password-error');
+
+  passwordOpenBtn.addEventListener('click', () => {
+    passwordModal.style.display = 'flex';
+    passwordNewInput.value = '';
+    passwordConfirmInput.value = '';
+    passwordErrorDiv.textContent = '';
+    resetButton(passwordSubmitBtn);
+  });
+
+  passwordCloseBtn.addEventListener('click', () => (passwordModal.style.display = 'none'));
+  passwordCancelBtn.addEventListener('click', () => (passwordModal.style.display = 'none'));
+
+  passwordSubmitBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    onPasswordSubmit?.(
+      passwordNewInput.value.trim(),
+      passwordConfirmInput.value.trim(),
+      {
+        errorEl: passwordErrorDiv,
+        modalEl: passwordModal,
+        submitBtn: passwordSubmitBtn
       }
-    } catch {
-      showError(errorDiv, 'Failed to update email.');
-      toggleLoading(submitBtn, false);
-    }
-  };
-}
-
-// ------------------ USERNAME ------------------
-
-function setupUsername() {
-  const modal = $('edit-username-modal');
-  const openBtn = $('edit-username-btn');
-  const closeBtn = $('close-username-modal');
-  const cancelBtn = $('cancel-username-btn');
-  const submitBtn = $('submit-username-btn');
-  const input = $('new-username-input');
-  const errorDiv = $('username-error');
-  const display = $('admin-username');
-
-  openBtn.onclick = () => {
-    modal.style.display = 'flex';
-    input.value = display.textContent;
-    errorDiv.textContent = '';
-    resetButton(submitBtn);
-  };
-
-  closeBtn.onclick = cancelBtn.onclick = () => {
-    modal.style.display = 'none';
-  };
-
-  submitBtn.onclick = async (e) => {
-    e.preventDefault();
-    toggleLoading(submitBtn, true);
-
-    const username = input.value.trim();
-    const error = validateUsername(username);
-
-    if (error) {
-      showError(errorDiv, error);
-      toggleLoading(submitBtn, false);
-      return;
-    }
-
-    try {
-      const data = await updateUsername(username);
-
-      if (data.success) {
-        showSuccess(errorDiv, data.message);
-        display.textContent = username;
-        setTimeout(() => (modal.style.display = 'none'), 1200);
-      } else {
-        showError(errorDiv, data.error || 'Failed');
-        toggleLoading(submitBtn, false);
-      }
-    } catch {
-      showError(errorDiv, 'Failed to update username.');
-      toggleLoading(submitBtn, false);
-    }
-  };
-}
-
-// ------------------ PASSWORD ------------------
-
-function setupPassword() {
-  const modal = $('change-password-modal');
-  const openBtn = $('change-password-btn');
-  const closeBtn = $('close-password-modal');
-  const cancelBtn = $('cancel-password-btn');
-  const submitBtn = $('submit-password-btn');
-  const newInput = $('new-password');
-  const confirmInput = $('confirm-password');
-  const errorDiv = $('password-error');
-
-  openBtn.onclick = () => {
-    modal.style.display = 'flex';
-    newInput.value = '';
-    confirmInput.value = '';
-    errorDiv.textContent = '';
-    resetButton(submitBtn);
-  };
-
-  closeBtn.onclick = cancelBtn.onclick = () => {
-    modal.style.display = 'none';
-  };
-
-  submitBtn.onclick = async (e) => {
-    e.preventDefault();
-    toggleLoading(submitBtn, true);
-
-    const error = validatePassword(
-      newInput.value.trim(),
-      confirmInput.value.trim()
     );
+  });
 
-    if (error) {
-      showError(errorDiv, error);
-      toggleLoading(submitBtn, false);
-      return;
-    }
-
-    try {
-      const data = await changePassword(newInput.value.trim());
-
-      if (data.success) {
-        showSuccess(errorDiv, data.message);
-        setTimeout(() => (modal.style.display = 'none'), 1200);
-      } else {
-        showError(errorDiv, data.error || 'Failed');
-        toggleLoading(submitBtn, false);
-      }
-    } catch {
-      showError(errorDiv, 'Failed to change password.');
-      toggleLoading(submitBtn, false);
-    }
+  // Return helpers if you want
+  return {
+    emailDisplay,
+    usernameDisplay
   };
 }
 
 // ------------------ HELPERS ------------------
-
-function toggleLoading(btn, state) {
-  btn.disabled = state;
-  btn.style.opacity = state ? '0.6' : '1';
+function resetButton(btn) {
+  btn.disabled = false;
+  btn.style.opacity = '1';
 }
 
-function showError(el, msg) {
+export function showError(el, msg) {
   el.style.color = 'red';
   el.textContent = msg;
 }
 
-function showSuccess(el, msg) {
+export function showSuccess(el, msg) {
   el.style.color = 'green';
   el.textContent = msg;
 }
 
-function resetButton(btn) {
-  btn.disabled = false;
-  btn.style.opacity = '1';
+export function toggleLoading(btn, state) {
+  btn.disabled = state;
+  btn.style.opacity = state ? '0.6' : '1';
 }
