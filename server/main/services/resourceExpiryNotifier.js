@@ -2,7 +2,7 @@ const ResourceRequest = require("../database/resourceRequestModel");
 const Student = require("../database/studentModel");
 const Admin = require("../database/adminModel");
 const { sendExpiringResourceEmail } = require("../utils/email/emails.service");
-
+const { notifyStudent } = require("../utils/web-push-notifications/notifyStudent");
 
 // Notification days before expiry
 const NOTIFY_DAYS = [7, 2];
@@ -31,22 +31,34 @@ async function checkExpiringResourceRequests() {
       });
 
       for (const req of expiringRequests) {
-        // Get student email
-        const student = await Student.findById(req.studentId || req.student);
-        if (!student || !student.email) continue;
+        try {
+          // Get student email
+          const student = await Student.findById(req.studentId || req.student);
+          if (!student || !student.email) continue;
 
-        // Send email to student and the admin
-        await sendExpiringResourceEmail({
-          studentEmail: student.email,
-          adminEmail,
-          resourceRequest: req,
-          expiryDate: req.expiryDate,
-        });
+          // Send email to student and the admin
+          await sendExpiringResourceEmail({
+            studentEmail: student.email,
+            adminEmail,
+            resourceRequest: req,
+            expiryDate: req.expiryDate,
+          });
 
-        // Mark as notified for this flag
-        req.notified = req.notified || {};
-        req.notified[flag] = true;
-        await req.save();
+          notifyStudent(student._id, {
+            title: "Resource Expiring Soon",
+            body: `Your resource "${req.title}" is expiring on ${req.expiryDate.toDateString()}`
+          }).catch(err => {
+            console.error("Error sending student web-push notification:", err);
+          });
+
+          // Mark as notified for this flag
+          req.notified = req.notified || {};
+          req.notified[flag] = true;
+          await req.save();
+        } catch (error) {
+          console.error(`Failed to process expiry notification for request ${req._id}:`, error.message);
+          // Continue with next request instead of crashing
+        }
       }
     }
   } catch (err) {

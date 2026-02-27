@@ -1,3 +1,7 @@
+const { sendResourceRequestSubmittedEmail, sendTeacherStudentResourceRequestEmail } = require('../utils/email/emails.service');
+const { notifyAdmin } = require('../utils/web-push-notifications/notifyAdmin');
+const { notifyTeacher } = require('../utils/web-push-notifications/notifyTeacher');
+const Teacher = require('../database/teacherModel');
 // Delete a resource request by ID
 exports.deleteStudentResourceRequest = async (req, res) => {
   try {
@@ -32,6 +36,15 @@ exports.deleteStudentResourceRequest = async (req, res) => {
     // Delete the request
     await ResourceRequest.findByIdAndDelete(requestId);
 
+    // Send push notification to admin
+    notifyAdmin({
+      title: 'resReq deleted by student',
+      body: 'UI triggering',
+      type: 'ADMIN-RESOURCE_REQUEST_UPDATED'
+    }).catch((adminPushErr) => {
+      console.error('[WebPush] Error in admin notification block:', adminPushErr);
+    });
+    
     return res.json({ message: "Resource request deleted successfully" });
   } catch (error) {
     console.error("Error deleting resource request:", error);
@@ -140,28 +153,46 @@ exports.submitResourceRequest = async (req, res) => {
     // Add the resource request ID to the student's resourceRequests array
     if (savedRequest) {
       await addResourceRequestToStudent(studentId, savedRequest._id);
-      // console.log(`New resource request submitted by student ${studentId}:`, savedRequest._id);
+
       // Send email to student after successful request
-      const { sendResourceRequestSubmittedEmail, sendTeacherStudentResourceRequestEmail } = require('../utils/email/emails.service');
-      try {
-        await sendResourceRequestSubmittedEmail(student.email, student.name, savedRequest.title);
-        // console.log(`Resource request email sent to ${student.email}`);
-      } catch (emailErr) {
-        console.error('Error sending resource request email:', emailErr);
-      }
+      sendResourceRequestSubmittedEmail(
+        student.email,
+        student.name,
+        savedRequest.title
+      ).catch((err) => {
+        console.error('Error sending resource request email:', err);
+      });
 
       // Notify teacher about student's resource request
       try {
-        const Teacher = require('../database/teacherModel');
         const teacher = await Teacher.findById(student.teacher);
         if (teacher) {
-          await sendTeacherStudentResourceRequestEmail(teacher.email, teacher.name, student.name, savedRequest.title);
+          sendTeacherStudentResourceRequestEmail(teacher.email, teacher.name, student.name, savedRequest.title);
           // console.log(`Teacher notification email sent to ${teacher.email}`);
         }
       } catch (emailErr) {
         console.error('Error sending teacher notification email:', emailErr);
       }
+
+      // --- Web Push Notification to Teacher ---
+      notifyTeacher(student.teacher, {
+        title: 'New Resource Request',
+        body: `A new resource request was submitted by a student.`
+      }).catch((pushErr) => {
+        console.error('[WebPush] Error in teacher notification block:', pushErr);
+      });
+      
+      // --- Web Push Notification to Admin ---
+      notifyAdmin({
+        title: 'New Resource Request',
+        body: 'A student has submitted a new resource request.',
+        type: 'ADMIN-RESOURCE_REQUEST_UPDATED'
+      }).catch((adminPushErr) => {
+        console.error('[WebPush] Error in admin notification block:', adminPushErr);
+      });
+      // --- End Web Push ---
     }
+
 
     return res.status(201).json({
       message: "Resource request submitted successfully",

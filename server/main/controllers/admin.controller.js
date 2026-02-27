@@ -4,6 +4,8 @@ const Admin = require("../database/adminModel");
 const Machine = require('../database/machineModel');
 const ResourceRequest = require("../database/resourceRequestModel");
 const emailService = require("../utils/email/emails.service.js");
+const {notifyTeacher} = require("../utils/web-push-notifications/notifyTeacher.js")
+const { notifyStudent } = require('../utils/web-push-notifications/notifyStudent.js');
 const bcrypt = require('bcrypt');
 
 exports.admin_dashboard_data = async (req, res) => {
@@ -85,10 +87,16 @@ exports.updateTeacherVerification = async (req, res) => {
         { new: true }
       );
 
-      // NON-BLOCKING 
       emailService.sendTeacherProfileVerifiedByAdminEmail(teacher.email, teacher.name)
         .then(result => console.log("Email sent for teacher profile verified by admin:", result))
         .catch(error => console.error("Error sending verification email:", error));
+
+      notifyTeacher(teacher_id, {
+        title: 'Profile verified by Admin',
+        body: `Congratulations! Your profile has been verified by the admin`
+      }).catch((pushErr) => {
+        console.error('[WebPush] Error in teacher notification block:', pushErr);
+      });
 
       // console.log("Teacher verification updated:", updatedTeacher);
       return res.json({
@@ -96,12 +104,18 @@ exports.updateTeacherVerification = async (req, res) => {
         teacher: { ...updatedTeacher._doc }
       });
     } else {
-      // Reject: Delete the teacher account
-      // NON-BLOCKING 
+      // Reject: Delete the teacher account 
       emailService.sendTeacherProfileRejectedByAdminEmail(teacher.email, teacher.name)
         .then(result => console.log("Email sent for teacher profile rejected by admin:", result))
         .catch(error => console.error("Error sending rejection email:", error));
 
+      notifyTeacher(teacher_id, {
+        title: 'Profile rejected by Admin',
+        body: `Your profile was rejected by admin.`
+      }).catch((pushErr) => {
+        console.error('[WebPush] Error in teacher notification block:', pushErr);
+      });
+      
       // Delete the teacher account
       await Teacher.findByIdAndDelete(teacher_id);
 
@@ -172,6 +186,13 @@ exports.unverifyTeacherIfPossible = async (req, res) => {
         .catch(error => console.error("Error sending teacher unverification email:", error));
     }
 
+      notifyTeacher(teacher_id, {
+        title: 'Profile Unverified by admin',
+        body: `Your profile has been unverified by the admin.`
+      }).catch((pushErr) => {
+        console.error('[WebPush] Error in teacher notification block:', pushErr);
+      });
+
     // 4️⃣ Unverify all students and send them emails
     if (studentIds.length > 0) {
       // Fetch student details before updating
@@ -200,6 +221,13 @@ exports.unverifyTeacherIfPossible = async (req, res) => {
         )
         .then(result => console.log(`Student unverification email sent to ${student.name}:`, result))
         .catch(error => console.error(`Error sending email to ${student.name}:`, error));
+
+        notifyStudent(student._id, {
+          title: 'Student Profile unverified by Admin',
+          body: `Your profile has unverified due to unverification of your teacher`
+        }).catch(err => {
+          console.error("Error sending student web-push notification:", err);
+        });
       });
     }
 
@@ -261,8 +289,15 @@ exports.unverifyStudentIfPossible = async (req, res) => {
       emailService.sendStudentProfileUnverifiedByAdminEmail(updatedStudent.email, updatedStudent.name)
         .then(result => console.log("Student unverification email sent:", result))
         .catch(error => console.error("Error sending student unverification email:", error));
+        
+      notifyStudent(student_id, {
+        title: 'Student Profile unverified by Admin',
+        body: `Your profile has been unverified by admin.`
+      }).catch(err => {
+        console.error("Error sending student web-push notification:", err);
+      });
     }
-
+        
     return res.status(200).json({
       message: "Student unverified successfully"
     });
@@ -578,15 +613,28 @@ exports.createMachine = async (req, res) => {
 
 // Helper function to delete resource request and clean up references
 async function deleteResourceRequestAndCleanup(resourceRequestId, studentId) {
-  if (!resourceRequestId) return;
-
-  // Remove reference from student's resourceRequests array
-  if (studentId) {
-    await Student.findByIdAndUpdate(studentId, { $pull: { resourceRequests: resourceRequestId } });
+  if (!resourceRequestId) {
+    throw new Error("ResourceRequestId is required");
   }
 
-  // Delete the resource request by ObjectId
-  await ResourceRequest.findByIdAndDelete(resourceRequestId);
+  try {
+    if (studentId) {
+      await Student.findByIdAndUpdate(
+        studentId,
+        { $pull: { resourceRequests: resourceRequestId } }
+      );
+    }
+
+    const deleted = await ResourceRequest.findByIdAndDelete(resourceRequestId);
+
+    if (!deleted) {
+      throw new Error("Resource request not found");
+    }
+
+  } catch (error) {
+    console.error("Cleanup failed:", error);
+    throw error; // Let controller decide response
+  }
 }
 
 // Update a machine (MIGID, gpuRam, assignedStudent)
@@ -620,6 +668,13 @@ exports.updateMachine = async (req, res) => {
               resourceRequest.title,
               currentMachine.MIGID
             ).catch(err => console.error('Error sending student revocation email:', err));
+
+            notifyStudent(studentId, {
+              title: 'Resource Revoked by admin',
+              body: `Your resource has been revoked by admin`
+            }).catch(err => {
+              console.error("Error sending student web-push notification:", err);
+            });
             
             // Send teacher notification email
             Teacher.findById(student.teacher).then(teacher => {
@@ -630,13 +685,30 @@ exports.updateMachine = async (req, res) => {
                   student.name,
                   resourceRequest.title
                 ).catch(err => console.error('Error sending teacher notification email:', err));
+
+                // Notify teacher when admin revokes student resource allocation (web-push)
+                notifyTeacher(student.teacher, {
+                  title: 'Resource Allocation Revoked',
+                  body: `A student resource allocation has been revoked by the admin.`
+                }).catch(err => {
+                  console.error("Error sending teacher web-push notification:", err);
+                });
               }
             }).catch(err => console.error('Error finding teacher:', err));
+
           }).catch(err => console.error('Error finding resource request:', err));
         }).catch(err => console.error('Error finding student:', err));
 
         // Delete the resource request and clean up references
-        await deleteResourceRequestAndCleanup(resourceRequestId, studentId);
+        try {
+          await deleteResourceRequestAndCleanup(resourceRequestId, studentId);
+        } catch (error) {
+          console.error("Deletion failed:", error);
+          return res.status(500).json({
+            success: false,
+            message: "Failed to revoke resource properly. Try again."
+          });
+        }
       }
 
       // Clear both studentId and resourceRequestId when unassigning

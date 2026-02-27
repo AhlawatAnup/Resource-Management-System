@@ -7,6 +7,9 @@ const Machine = require('../database/machineModel');
 const path = require("path");
 const publicPath = path.join(__dirname, "../../../public");
 const emailService = require("../utils/email/emails.service.js");
+const { notifyAdmin } = require('../utils/web-push-notifications/notifyAdmin.js');
+const { notifyTeacher } = require('../utils/web-push-notifications/notifyTeacher.js');
+const { notifyStudent } = require('../utils/web-push-notifications/notifyStudent.js');
 
 exports.roleBasedDashboard = (req, res) => {
   if (!req.session.user) {
@@ -93,6 +96,13 @@ exports.updateStudentVerification = async (req, res) => {
           .then(result => console.log("Email sent for student profile rejected by teacher:", result))
           .catch(error => console.error("Error sending rejection email:", error));
         
+        notifyStudent(studentId, {
+          title: 'Student Profile Rejected by Teacher',
+          body: `Your profile has been rejected by your teacher.`
+        }).catch(err => {
+          console.error("Error sending student web-push notification:", err);
+        });
+
         // Delete the student (cascade delete will handle resource requests)
         await Student.findByIdAndDelete(studentId);
         
@@ -117,6 +127,13 @@ exports.updateStudentVerification = async (req, res) => {
           .then(result => console.log("Email sent for student profile rejected by admin:", result))
           .catch(error => console.error("Error sending rejection email:", error));
         
+        notifyStudent(studentId, {
+          title: 'Student Profile Rejected by Admin',
+          body: `Your profile has been rejected by admin.`
+        }).catch(err => {
+          console.error("Error sending student web-push notification:", err);
+        });
+
         // Notify teacher about admin's rejection
         Teacher.findById(student.teacher)
           .then(teacher => {
@@ -127,6 +144,14 @@ exports.updateStudentVerification = async (req, res) => {
             }
           })
           .catch(error => console.error("Error finding teacher:", error));
+
+        // Notify teacher about admin's verification (web-push)
+          notifyTeacher(student.teacher, {
+            title: 'Student Verification Rejected by Admin',
+            body: `A student under you has been rejected by the Admin.`
+          }).catch((pushErr) => {
+            console.error('[WebPush] Error in teacher notification block:', pushErr);
+          });
         
         // Delete the student (cascade delete will handle resource requests)
         await Student.findByIdAndDelete(studentId);
@@ -144,10 +169,10 @@ exports.updateStudentVerification = async (req, res) => {
       { new: true }
     );
 
-    // Send email notification after successful update (in background)
+    // Send email notification after successful update
     if (updatedStudent) {
       
-      // Send emails asynchronously without waiting
+      // Send emails 
       if (userRole === "teacher") {
         if (is_verified) {
           // Get teacher details for emails
@@ -158,7 +183,14 @@ exports.updateStudentVerification = async (req, res) => {
             .then(result => console.log("Email sent for student profile verified by teacher:", result))
             .catch(error => console.error("Error sending verification email:", error));
           
-          // Notify admins that student verification is pending
+          notifyStudent(studentId, {
+            title: 'Student Profile Verified by Teacher',
+            body: `Your profile has been verified by your teacher.`
+          }).catch(err => {
+            console.error("Error sending student web-push notification:", err);
+          });
+
+          // Notify admins that student verification is pending (email)
           emailService.sendAdminStudentVerificationPendingEmail(
             updatedStudent.name,
             updatedStudent.email,
@@ -167,6 +199,14 @@ exports.updateStudentVerification = async (req, res) => {
           )
             .then(result => console.log("Admin notification sent:", result))
             .catch(error => console.error("Error sending admin notification:", error));
+
+          // Notify admin that student verification is pending (web-push)
+          notifyAdmin({
+            title: 'New Student Registered',
+            body: 'Requires admin verification.'
+          }).catch(err => {
+            console.error('Error sending admin web push notification:', err);
+          });
         }
       } else if (userRole === "admin") {
         if (is_verified) {
@@ -174,6 +214,13 @@ exports.updateStudentVerification = async (req, res) => {
             .then(result => console.log("Email sent for student profile verified by admin:", result))
             .catch(error => console.error("Error sending verification email:", error));
           
+          notifyStudent(studentId, {
+            title: 'Student Profile Verified by Admin',
+            body: `Your profile has been verified by admin.`
+          }).catch(err => {
+            console.error("Error sending student web-push notification:", err);
+          });
+
           // Notify teacher about admin's verification
           Teacher.findById(updatedStudent.teacher)
             .then(teacher => {
@@ -184,6 +231,14 @@ exports.updateStudentVerification = async (req, res) => {
               }
             })
             .catch(error => console.error("Error finding teacher:", error));
+
+          // Notify teacher about admin's verification (web-push)
+          notifyTeacher(student.teacher, {
+            title: 'Student Verification approved by Admin',
+            body: `A student under you has been verified by the Admin.`
+          }).catch((pushErr) => {
+            console.error('[WebPush] Error in teacher notification block:', pushErr);
+          });
         }
       }
     }
@@ -256,6 +311,10 @@ exports.updateResourceRequestVerification = async (req, res) => {
     } else if (userRole === "admin") {
       // Admin verification logic
       if (is_verified) {
+        if (isDateInPast(resourceRequest.expiryDate)) {
+          return res.status(400).json({ error: "Cannot verify this request because the expiry date is in the past." });
+        }
+
         // For approvals, VM credentials must include password/ip/migId
         if (!vmCredentials || !vmCredentials.password || !vmCredentials.ip || !vmCredentials.migId) {
           return res.status(400).json({ error: "Password, IP, and MIG ID are required for VM credentials" });
@@ -361,6 +420,13 @@ exports.updateResourceRequestVerification = async (req, res) => {
             .then(result => console.log("Teacher resource request verification email sent:", result))
             .catch(error => console.error("Error sending teacher verification email:", error));
           
+          notifyStudent(updatedRequest.studentId, {
+            title: 'Resource Request Verified by Teacher',
+            body: `Your resource request has been verified by your teacher.`
+          }).catch(err => {
+            console.error("Error sending student web-push notification:", err);
+          });
+
           // Notify admin that resource request is pending
           emailService.sendAdminResourceRequestPendingEmail(
             student.name,
@@ -371,11 +437,35 @@ exports.updateResourceRequestVerification = async (req, res) => {
           )
             .then(result => console.log("Admin notification sent:", result))
             .catch(error => console.error("Error sending admin notification:", error));
+
+          notifyAdmin({
+            title: 'New Resource Request by Student',
+            body: 'Requires admin verification.', 
+            type: 'ADMIN-RESOURCE_REQUEST_UPDATED'
+          }).catch(err => {
+            console.error('Error sending admin web push notification:', err);
+          });
+          
         } else {
           // Rejected by teacher
           emailService.sendResourceRequestRejectedByTeacherEmail(student.email, student.name, updatedRequest.title, teacher.name)
             .then(result => console.log("Teacher resource request rejection email sent:", result))
             .catch(error => console.error("Error sending teacher rejection email:", error));
+
+          notifyStudent(updatedRequest.studentId, {
+            title: 'Resource Request rejected by Teacher',
+            body: `Your resource request has been rejected by your teacher.`
+          }).catch(err => {
+            console.error("Error sending student web-push notification:", err);
+          });
+
+          notifyAdmin({
+            title: 'Rejected Resource Request of a student by teacher',
+            body: 'UI triggering', 
+            type: 'ADMIN-RESOURCE_REQUEST_UPDATED'
+          }).catch(err => {
+            console.error('Error sending admin web push notification:', err);
+          });
         }
       } else if (userRole === "admin") {
         if (is_verified) {
@@ -384,16 +474,32 @@ exports.updateResourceRequestVerification = async (req, res) => {
             .then(result => console.log("Admin resource request verification email sent:", result))
             .catch(error => console.error("Error sending admin verification email:", error));
           
-          // Notify teacher about admin's approval
+          notifyStudent(updatedRequest.studentId, {
+            title: 'Resource Request verified by admin',
+            body: `Your resource request has been verified by admin`
+          }).catch(err => {
+            console.error("Error sending student web-push notification:", err);
+          });
+
+          // Notify teacher about admin's approval of resource request
           Teacher.findById(student.teacher)
             .then(teacher => {
               if (teacher) {
                 emailService.sendTeacherResourceRequestVerifiedByAdminEmail(teacher.email, teacher.name, student.name, updatedRequest.title)
                   .then(result => console.log("Teacher notification email sent:", result))
                   .catch(error => console.error("Error sending teacher notification:", error));
+
+                notifyTeacher(student.teacher, {
+                  title: 'Student Resource Request Approved by Admin',
+                  body: `A resource request of one of your students has been approved by the admin.`
+                }).catch((pushErr) => {
+                  console.error('[WebPush] Error in teacher notification block:', pushErr);
+                });
               }
             })
             .catch(error => console.error("Error finding teacher:", error));
+
+
         } else {
           // Rejected by admin
           emailService.sendResourceRequestRejectedByAdminEmail(student.email, student.name, updatedRequest.title)
@@ -407,9 +513,25 @@ exports.updateResourceRequestVerification = async (req, res) => {
                 emailService.sendTeacherResourceRequestRejectedByAdminEmail(teacher.email, teacher.name, student.name, updatedRequest.title)
                   .then(result => console.log("Teacher notification email sent:", result))
                   .catch(error => console.error("Error sending teacher notification:", error));
+
+                notifyStudent(updatedRequest.studentId, {
+                  title: 'Resource Request Rejected by admin',
+                  body: `Your resource request has been rejected by admin`
+                }).catch(err => {
+                  console.error("Error sending student web-push notification:", err);
+                });
               }
             })
             .catch(error => console.error("Error finding teacher:", error));
+
+          // Notify teacher about admin's denial of resource request (web-push)
+          notifyTeacher(student.teacher, {
+            title: 'Student Resource Request Rejected by Admin',
+            body: `A resource request of one of your students has been rejected by the admin.`
+          }).catch((pushErr) => {
+            console.error('[WebPush] Error in teacher notification block:', pushErr);
+          });
+          
         }
       }
     }
@@ -475,3 +597,12 @@ exports.deleteStudentAndResources = async (req, res) => {
     res.status(500).json({ message: "Error deleting student.", error: error.message || error });
   }
 };
+
+// Utility: Check if a date is in the past (date-only, ignores time)
+function isDateInPast(date) {
+  const d = new Date(date);
+  const now = new Date();
+  d.setHours(0,0,0,0);
+  now.setHours(0,0,0,0);
+  return d < now;
+}

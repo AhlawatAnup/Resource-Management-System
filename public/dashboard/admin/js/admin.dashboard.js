@@ -1,10 +1,10 @@
 // Import only the functions we need from commons.js
-import { renderDashboardHeader, getInitials, getRandomNamedColor, formatDate } from '../../common/js/commons.js';
-
+import { renderDashboardHeader, getInitials, getRandomNamedColor, formatDate, logoutDirectly } from '../../common/js/commons.js';
+import {registerServiceWorkerAndSubscribe} from '../../common/js/notification.js'
 // Data storage
 let currentData = [];
 let currentType = 'teacher'; // teacher or student
-let currentStatus = 'unverified'; // all, verified or unverified
+let currentStatus = 'all'; // all, verified or unverified
 
 // Initialize admin dashboard
 function initializeAdminDashboard() {
@@ -79,8 +79,16 @@ async function loadCurrentView() {
     }
     
     const response = await fetch(endpoint);
-    if (response.ok) {
-      const data = await response.json();
+    if (!response.ok) {
+      // If admin account not found (404), logout user
+      if (response.status === 404) {
+        logoutDirectly();
+        return;
+      }
+      throw new Error(`Failed to load dashboard data: ${response.status}`);
+    }
+    
+    const data = await response.json();
       
       if (currentType === 'teacher') {
         if (currentStatus === 'unverified') {
@@ -111,14 +119,10 @@ async function loadCurrentView() {
       }
       
       renderCurrentData();
-    } else {
-      console.error('Failed to load data');
-      showEmptyState('Failed to load data');
+    } catch (error) {
+      console.error('Error loading data:', error);
+      logoutDirectly();
     }
-  } catch (error) {
-    console.error('Error loading data:', error);
-    showEmptyState('Error loading data');
-  }
 }
 
 // Update page header based on current selection
@@ -814,6 +818,7 @@ window.unverifyStudent = unverifyStudent;
 // Initialize dashboard when page loads
 document.addEventListener('DOMContentLoaded', function() {
   initializeAdminDashboard();
+  registerServiceWorkerAndSubscribe(); //web-push
 });
 
 // Export functions for potential future use

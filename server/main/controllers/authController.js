@@ -2,6 +2,8 @@ const Student = require("../database/studentModel");
 const Teacher = require("../database/teacherModel");
 const Admin = require("../database/adminModel");
 const { sendOTPEmail, sendStudentRegistrationSuccessEmail, sendTeacherStudentRegisteredEmail, sendTeacherRegistrationSuccessEmail, sendAdminTeacherRegistrationEmail } = require("../utils/email/emails.service");
+const { notifyAdmin } = require('../utils/web-push-notifications/notifyAdmin');
+const { notifyTeacher } = require('../utils/web-push-notifications/notifyTeacher');
 const bcrypt = require("bcrypt");
 
 const otpStore = {};
@@ -30,18 +32,15 @@ exports.sendOtp = async (req, res) => {
     // console.log(`Generated OTP ${otp}`);
 
     // Send OTP via email
-    const emailResult = await sendOTPEmail(email, otp, role);
-    
-    if (emailResult.success) {
-      // console.log(`📧 ${otp} OTP  email sent successfully to ${email} for ${role} registration `);
+    try {
+      const emailResult = await sendOTPEmail(email, otp, role);
+      console.log(`📧 ${otp} OTP email sent successfully to ${email} for ${role} registration`);
       res.json({ 
         message: "OTP sent to your email address",
         messageId: emailResult.messageId 
       });
-    } else {
-      console.error(`❌ Failed to send OTP email to ${email}:`, emailResult.error);
-      // Fallback: still allow OTP generation but notify about email failure
-      // console.log(`📧 Fallback - OTP for ${email} (${role}): ${otp}`);
+    } catch (emailError) {
+      console.error(`❌ Failed to send OTP email to ${email}:`, emailError.message);
       res.json({ 
         message: "OTP generated successfully (email service temporarily unavailable)",
         fallback: true 
@@ -222,6 +221,13 @@ exports.register = async (req, res) => {
           console.error("Error sending teacher notification email:", err);
         });
 
+        // Notify teacher about new student registration (web-push)
+        notifyTeacher(teacher_id, {
+          title: 'New Student Registered',
+          body: `Requires teacher verification.`
+        }).catch(err => {
+          console.error("Error sending teacher web-push notification:", err);
+        });
 
         return res.json({ message: "Student registered successfully" });
       } else {
@@ -255,13 +261,19 @@ exports.register = async (req, res) => {
           console.error("Error sending teacher registration email:", err);
         });
 
-
-        // Notify admin about new teacher registration
+        // Notify admin about new teacher registration (email)
         sendAdminTeacherRegistrationEmail(name, email, branch)
         .catch(err => {
           console.error("Error sending admin notification email:", err);
         });
 
+        // Notify admin about new teacher registration (web-push)
+        notifyAdmin({
+          title: 'New Teacher Registered',
+          body: `Requires admin verification.`
+        }).catch(err => {
+          console.error('Error sending admin web push notification:', err);
+        });
 
         return res.json({ message: "Teacher registered successfully" });
       } else {

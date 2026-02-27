@@ -5,7 +5,8 @@ import {
   formatDate,
   initializePurposePanel,
   createViewMoreButton,
-  isValidUsername
+  isValidUsername,
+  logoutDirectly
 } from '../../common/js/commons.js';
 
 let resourceRequests = [];
@@ -23,6 +24,11 @@ async function loadResourceRequests() {
     });
 
     if (!response.ok) {
+      // If teacher account not found (404), logout user
+      if (response.status === 404) {
+        logoutDirectly();
+        return;
+      }
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
@@ -51,8 +57,7 @@ async function loadResourceRequests() {
 
   } catch (error) {
     console.error("Error fetching resource requests:", error);
-    document.getElementById("requestsTableBody").innerHTML =
-      '<tr><td colspan="7" class="loading">Error loading requests. Please refresh the page.</td></tr>';
+    logoutDirectly();
   }
 }
 
@@ -141,6 +146,11 @@ function getRequestStatus(request) {
 
 // Get action buttons based on request status
 function getActionButtons(request) {
+  // Hide action buttons if admin has already taken action
+  if (request.admin_action) {
+    return '<span style="color: #666; font-style: italic;">Action Completed</span>';
+  }
+  // Hide action buttons if teacher has already taken action
   if (request.teacher_action) {
     return '<span style="color: #666; font-style: italic;">Action Completed</span>';
   }
@@ -278,6 +288,14 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Load resource requests when page loads
   loadResourceRequests();
+
+  // Initialize Flatpickr calendar for expiry date
+  flatpickr('#editExpiryDate', {
+    mode: 'single',
+    dateFormat: 'Y-m-d',
+    minDate: 'today',
+    enableTime: false,
+  });
 
   // Search functionality
   const searchInput = document.getElementById("searchInput");
