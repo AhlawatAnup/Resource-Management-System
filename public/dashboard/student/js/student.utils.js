@@ -46,3 +46,63 @@ export function showErrorMessage(message, containerId = 'student-profile') {
         `;
     }
 }
+
+// utils.js
+
+// Function to determine student verification status based on schema
+export function getStudentVerificationStatus(student) {
+    if (student.teacher_verified && student.admin_verified) {
+        return "✓ Verified";
+    }
+    
+    if (student.teacher_action && !student.admin_action) {
+        if (student.teacher_verified) {
+            return "⏳ Pending on Admin";
+        } else {
+            return "❌ Rejected by Teacher";
+        }
+    }
+    
+    if (!student.teacher_action) {
+        return "⏳ Pending on Teacher";
+    }
+    
+    if (student.admin_action) {
+        if (student.admin_verified) {
+            return "✓ Verified";
+        } else {
+            return "❌ Rejected by Admin";
+        }
+    }
+    
+    return "⏳ Pending Verification";
+}
+
+// Function to get CSS class for student verification status
+export function getStudentStatusClass(student) {
+    if (student.teacher_verified && student.admin_verified) {
+        return "status-verified";
+    }
+    
+    if (student.teacher_action && !student.admin_action) {
+        if (student.teacher_verified) {
+            return "status-pending-admin";
+        } else {
+            return "status-rejected";
+        }
+    }
+    
+    if (!student.teacher_action) {
+        return "status-pending-teacher";
+    }
+    
+    if (student.admin_action) {
+        if (student.admin_verified) {
+            return "status-verified";
+        } else {
+            return "status-rejected";
+        }
+    }
+    
+    return "status-pending";
+}
