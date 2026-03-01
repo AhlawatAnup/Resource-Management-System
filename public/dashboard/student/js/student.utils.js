@@ -135,3 +135,95 @@ export function validateExpiryDate(expiryDateValue, minDays = 1, maxDays = 30) {
 
     return expiryDate;
 }
+
+export function getRequestStatus(request) {
+    if (request.teacher_verified && request.admin_verified && request.is_verified) {
+        return 'approved';
+    }
+
+    if (
+        (request.teacher_action && !request.teacher_verified) ||
+        (request.admin_action && !request.admin_verified)
+    ) {
+        return 'rejected';
+    }
+
+    return 'pending';
+}
+
+export function getRequestStatusClass(request) {
+    if (request.teacher_verified && request.admin_verified && request.is_verified) {
+        return 'status-approved';
+    }
+
+    if (request.teacher_action && !request.teacher_verified) {
+        return 'status-rejected';
+    }
+
+    if (request.admin_action && !request.admin_verified) {
+        return 'status-rejected';
+    }
+
+    if (request.teacher_action && request.teacher_verified && !request.admin_action) {
+        return 'status-in-progress';
+    }
+
+    return 'status-pending';
+}
+
+export function getRequestStatusIcon(request) {
+    if (request.teacher_verified && request.admin_verified && request.is_verified) {
+        return '✓';
+    }
+
+    if (
+        (request.teacher_action && !request.teacher_verified) ||
+        (request.admin_action && !request.admin_verified)
+    ) {
+        return '✗';
+    }
+
+    if (request.teacher_action && request.teacher_verified && !request.admin_action) {
+        return '⏳';
+    }
+
+    return '⏳';
+}
+
+export function getRequestStatusText(request) {
+    if (request.teacher_verified && request.admin_verified && request.is_verified) {
+        return 'Approved';
+    }
+
+    if (request.teacher_action && !request.teacher_verified) {
+        return 'Rejected by Teacher';
+    }
+
+    if (request.admin_action && !request.admin_verified) {
+        return 'Rejected by Admin';
+    }
+
+    if (request.teacher_action && request.teacher_verified && !request.admin_action) {
+        return 'Pending Admin';
+    }
+
+    if (!request.teacher_action) {
+        return 'Pending Teacher';
+    }
+
+    return 'Pending Review';
+}
+
+// ==============================
+// Pure Helpers
+// ==============================
+
+export function sortRequestsByDate(requests) {
+    return [...requests].sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+    );
+}
+
+export function canDeleteRequest(request) {
+    return !request.teacher_action && !request.admin_action && !request.is_verified;
+}
