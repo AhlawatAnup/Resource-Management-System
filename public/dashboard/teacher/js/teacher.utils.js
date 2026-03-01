@@ -82,3 +82,64 @@ export function getStudentStatusClassForTeacher(student) {
 
   return "pending";
 }
+
+// Get request status information
+export function getRequestStatus(request) {
+  if (request.teacher_verified && request.admin_verified) {
+    return { text: "Approved", class: "verified" };
+  } else if (request.teacher_action && !request.teacher_verified) {
+    return { text: "Declined by Teacher", class: "declined" };
+  } else if (request.admin_action && !request.admin_verified) {
+    return { text: "Declined by Admin", class: "declined" };
+  } else if (request.teacher_verified && !request.admin_action) {
+    return { text: "Pending Admin", class: "pending-admin" };
+  } else if (!request.teacher_action) {
+    return { text: "Pending Teacher", class: "pending-teacher" };
+  } else {
+    return { text: "Pending", class: "pending" };
+  }
+}
+
+// Get action buttons HTML
+export function getActionButtons(request) {
+  // Hide action buttons if admin has already taken action
+  if (request.admin_action) {
+    return '<span style="color: #666; font-style: italic;">Action Completed</span>';
+  }
+
+  // Hide action buttons if teacher has already taken action
+  if (request.teacher_action) {
+    return '<span style="color: #666; font-style: italic;">Action Completed</span>';
+  }
+
+  return `
+    <button class="icon-btn approve-btn" title="Approve Request" data-request-id="${request._id}" data-action="approve">
+      <i class="fa-solid fa-check"></i>
+    </button>
+    <button class="icon-btn decline-btn" title="Decline Request" data-request-id="${request._id}" data-action="decline">
+      <i class="fa-solid fa-times"></i>
+    </button>
+    <button class="icon-btn edit-btn" title="Edit Request" data-request-id="${request._id}" data-action="edit">
+      <i class="fa-solid fa-pen-to-square"></i>
+    </button>
+  `;
+}
+
+// Filter requests (pure function version)
+export function filterRequestsList(resourceRequests, searchTerm) {
+  if (!resourceRequests.length) return [];
+
+  if (!searchTerm.trim()) {
+    return [...resourceRequests];
+  }
+
+  const term = searchTerm.toLowerCase();
+
+  return resourceRequests.filter(
+    (request) =>
+      request.studentInfo.name.toLowerCase().includes(term) ||
+      request.studentInfo.rollNo.toLowerCase().includes(term) ||
+      request.title.toLowerCase().includes(term) ||
+      request.purpose.toLowerCase().includes(term)
+  );
+}
