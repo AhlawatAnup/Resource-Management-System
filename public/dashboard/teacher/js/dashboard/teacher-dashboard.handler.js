@@ -13,15 +13,14 @@ import {
 import {
   getInitials,
   getRandomNamedColor,
-  renderDashboardHeader
+  renderDashboardHeader,
+  logoutDirectly
 } from '../../../common/js/commons.js';
 
 import {
   getStudentVerificationStatusForTeacher,
   getStudentStatusClassForTeacher
 } from '../teacher.utils.js';
-
-import { logoutDirectly } from '../../../common/js/commons.js';
 
 // Local state (kept here instead of main)
 const student_data = [];
