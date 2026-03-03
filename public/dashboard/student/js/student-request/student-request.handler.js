@@ -3,7 +3,6 @@
 // Utils
 import {
     getLoggedInStudentId,
-    showLoadingState,
     showErrorMessage,
     getStudentVerificationStatus,
     validateExpiryDate
@@ -26,8 +25,6 @@ import { isValidUsername, logoutDirectly } from '../../../common/js/commons.js';
 
 export async function handleLoadRequestResources() {
     try {
-        showLoadingState('request-content');
-
         const studentId = await getLoggedInStudentId();
 
         if (!studentId) {
