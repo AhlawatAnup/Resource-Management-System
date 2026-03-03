@@ -105,7 +105,7 @@ export async function verifyHandler(requestId, isVerified) {
       await Swal.fire({
         icon: 'error',
         title: 'Invalid Request',
-        text: 'Expiry date is in the past.'
+        text: 'The expiry date is in the past. Please update the expiry date to proceed'
       });
       return;
     }
