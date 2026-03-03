@@ -38,9 +38,8 @@
     color: #555;
     line-height: 1.7;
     overflow-y: auto;
-    max-height: 60vh;
+    max-height: 70vh;
     padding-right: 10px;
-    margin-bottom: 20px;
 }
 
 .confirmation-popup__content h4 {
@@ -72,7 +71,9 @@
     display: flex;
     gap: 12px;
     justify-content: center;
-    flex-shrink: 0;
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid #e9ecef;
 }
 
 .confirmation-popup__btn {

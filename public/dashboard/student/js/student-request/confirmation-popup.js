@@ -58,7 +58,7 @@ export function showConfirmationPopup(onSubmitHandler, originalEvent, student = 
                         <span class="confirmation-popup__detail-value">${student.branch || 'N/A'}</span>
                     </div>
                     <div class="confirmation-popup__detail-row">
-                        <span class="confirmation-popup__detail-label">Institute Name:</span>
+                        <span class="confirmation-popup__detail-label">Institute:</span>
                         <span class="confirmation-popup__detail-value">${student.instituteName || 'N/A'}</span>
                     </div>
                     <div class="confirmation-popup__detail-row">
@@ -79,10 +79,11 @@ export function showConfirmationPopup(onSubmitHandler, originalEvent, student = 
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="confirmation-popup__buttons">
-            <button id="popup-cancel-btn" class="confirmation-popup__btn confirmation-popup__btn--cancel">Cancel</button>
-            <button id="popup-submit-btn" class="confirmation-popup__btn confirmation-popup__btn--submit">I Agree & Submit</button>
+
+            <div class="confirmation-popup__buttons">
+                <button id="popup-cancel-btn" class="confirmation-popup__btn confirmation-popup__btn--cancel">Cancel</button>
+                <button id="popup-submit-btn" class="confirmation-popup__btn confirmation-popup__btn--submit">I Agree & Submit</button>
+            </div>
         </div>
     `;
 
