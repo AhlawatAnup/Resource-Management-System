@@ -65,16 +65,7 @@ export async function loadRequestsHandler() {
 function render() {
   renderResourceRequests(filteredRequests, {
     getRequestStatus,
-    getActionButtons: (r) => {
-      if (r.admin_action) {
-        return '<span style="color: #666; font-style: italic;">Action Completed</span>';
-      }
-      return `
-        <button class="icon-btn approve-btn" data-request-id="${r._id}" data-action="approve"></button>
-        <button class="icon-btn decline-btn" data-request-id="${r._id}" data-action="decline"></button>
-        <button class="icon-btn edit-btn" data-request-id="${r._id}" data-action="edit"></button>
-      `;
-    },
+    getActionButtons,
     getInitials,
     getRandomNamedColor,
     formatDate,
@@ -254,4 +245,19 @@ export async function copyHandler(targetId) {
   } catch {
     showNotification('Copy failed', 'error');
   }
+}
+
+
+function getActionButtons(r) {
+  if (r.admin_action) {
+    return `
+      <button class="icon-btn edit-btn" data-request-id="${r._id}" data-action="edit"></button>
+    `;
+  }
+
+  return `
+    <button class="icon-btn approve-btn" data-request-id="${r._id}" data-action="approve"></button>
+    <button class="icon-btn decline-btn" data-request-id="${r._id}" data-action="decline"></button>
+    <button class="icon-btn edit-btn" data-request-id="${r._id}" data-action="edit"></button>
+  `;
 }

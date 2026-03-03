@@ -185,6 +185,20 @@ export function populateMachinesSelectUI(machines) {
 
 // ===== EDIT MODAL =====
 
+// Configure edit form fields for approved requests (only expiry date editable)
+function setEditFormApprovedState(isApproved) {
+  const fieldsToDisable = ['editTitle', 'editPurpose', 'editGpuRam', 'editUsername'];
+  const opacity = isApproved ? '0.6' : '';
+
+  fieldsToDisable.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.disabled = isApproved;
+      el.style.opacity = opacity;
+    }
+  });
+}
+
 export function showEditModalUI(request) {
   const submitBtn = document.querySelector('#editRequestForm button[type="submit"]');
 
@@ -202,6 +216,8 @@ export function showEditModalUI(request) {
 
   document.getElementById('editGpuRam').value = request.gpuRam;
   document.getElementById('editUsername').value = request.username;
+
+  setEditFormApprovedState(request.admin_action === true);
 
   document.getElementById('editRequestModal').style.display = 'block';
 }
