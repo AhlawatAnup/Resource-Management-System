@@ -10,14 +10,14 @@ import {
 import {
     fetchStudentRequests,
     deleteStudentRequest
-} from './view-request.service.js';
+} from './student-view-request.service.js';
 
 // UI
 import {
     renderRequestsPageStructure,
     renderAllRequests,
     filterRequests
-} from './student-request.ui.js';
+} from './student-view-request.ui.js';
 
 // External
 import { logoutDirectly } from '../../../common/js/commons.js';
