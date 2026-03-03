@@ -1,5 +1,7 @@
 // ui.js
 
+import { showConfirmationPopup } from './confirmation-popup.js';
+
 export function renderResourcesPage(student, verificationStatus, onSubmitHandler, initializeDatePicker) {
     const isVerified = student.teacher_verified && student.admin_verified;
 
@@ -19,10 +21,15 @@ export function renderResourcesPage(student, verificationStatus, onSubmitHandler
         // Initialize date picker
         initializeDatePicker();
 
-        // Attach submit handler
+        // Attach submit handler - show confirmation popup first
         const form = document.getElementById('resource-request-form');
         if (form) {
-            form.addEventListener('submit', onSubmitHandler);
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const purposeField = document.getElementById('purpose');
+                const purpose = purposeField ? purposeField.value : '';
+                showConfirmationPopup(onSubmitHandler, e, student, purpose);
+            });
         }
 
     } else {
