@@ -175,7 +175,20 @@ exports.submitResourceRequest = async (req, res) => {
       try {
         const teacher = await Teacher.findById(student.teacher);
         if (teacher) {
-          sendTeacherStudentResourceRequestEmail(teacher.email, teacher.name, student.name, savedRequest.title);
+          sendTeacherStudentResourceRequestEmail(
+            teacher.email,
+            teacher.name,
+            student.name,
+            savedRequest.title,
+            {
+              name: student.name,
+              rollNo: student.rollNo,
+              branch: student.branch,
+              instituteName: student.instituteName,
+              instituteAddress: student.instituteAddress
+            },
+            savedRequest.purpose
+          );
           // console.log(`Teacher notification email sent to ${teacher.email}`);
         }
       } catch (emailErr) {

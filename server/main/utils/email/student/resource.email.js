@@ -1,5 +1,5 @@
 const sendEmail = require('../sendEmail');
-const { generateUndertakingPDF } = require('./undertakingPdfGenerator');
+const { generateUndertakingPDF } = require('../common/undertakingPdfGenerator');
 
 // Submitted
 const sendResourceRequestSubmittedEmail = async (studentEmail, studentName, requestTitle, studentData = {}, purpose = '') => {
