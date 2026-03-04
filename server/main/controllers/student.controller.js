@@ -154,11 +154,19 @@ exports.submitResourceRequest = async (req, res) => {
     if (savedRequest) {
       await addResourceRequestToStudent(studentId, savedRequest._id);
 
-      // Send email to student after successful request
+      // Send email to student after successful request (with undertaking PDF)
       sendResourceRequestSubmittedEmail(
         student.email,
         student.name,
-        savedRequest.title
+        savedRequest.title,
+        {
+          name: student.name,
+          rollNo: student.rollNo,
+          branch: student.branch,
+          instituteName: student.instituteName,
+          instituteAddress: student.instituteAddress
+        },
+        savedRequest.purpose
       ).catch((err) => {
         console.error('Error sending resource request email:', err);
       });
