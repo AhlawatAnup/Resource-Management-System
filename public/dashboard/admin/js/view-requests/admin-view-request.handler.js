@@ -37,6 +37,8 @@ import {
   isValidUsername
 } from '../../../common/js/commons.js';
 
+import {initAdminRefresh} from'../pushNotifications-refreshUI/admin-refresh.js'
+
 // ===== STATE =====
 let resourceRequests = [];
 let filteredRequests = [];
@@ -261,3 +263,5 @@ function getActionButtons(r) {
     <button class="icon-btn edit-btn" data-request-id="${r._id}" data-action="edit"></button>
   `;
 }
+
+initAdminRefresh(loadRequestsHandler);
