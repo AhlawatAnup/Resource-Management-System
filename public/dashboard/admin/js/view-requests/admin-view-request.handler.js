@@ -37,7 +37,7 @@ import {
   isValidUsername
 } from '../../../common/js/commons.js';
 
-import {initAdminRefresh} from'../pushNotifications-refreshUI/admin-refresh.js'
+// import {initAdminRefresh} from'../pushNotifications-refreshUI/admin-refresh.js'
 
 // ===== STATE =====
 let resourceRequests = [];
@@ -264,4 +264,4 @@ function getActionButtons(r) {
   `;
 }
 
-initAdminRefresh(loadRequestsHandler);
+// initAdminRefresh(loadRequestsHandler);

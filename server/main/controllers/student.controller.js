@@ -37,13 +37,13 @@ exports.deleteStudentResourceRequest = async (req, res) => {
     await ResourceRequest.findByIdAndDelete(requestId);
 
     // Send push notification to admin
-    notifyAdmin({
-      title: 'resReq deleted by student',
-      body: 'UI triggering',
-      type: 'ADMIN_RESOURCE_REQUEST_UPDATED'
-    }).catch((adminPushErr) => {
-      console.error('[WebPush] Error in admin notification block:', adminPushErr);
-    });
+    // notifyAdmin({
+    //   title: 'resReq deleted by student',
+    //   body: 'UI triggering',
+    //   // type: 'ADMIN_RESOURCE_REQUEST_UPDATED'
+    // }).catch((adminPushErr) => {
+    //   console.error('[WebPush] Error in admin notification block:', adminPushErr);
+    // });
     
     return res.json({ message: "Resource request deleted successfully" });
   } catch (error) {
@@ -204,13 +204,13 @@ exports.submitResourceRequest = async (req, res) => {
       });
       
       // --- Web Push Notification to Admin ---
-      notifyAdmin({
-        title: 'New Resource Request',
-        body: 'A student has submitted a new resource request.',
-        type: 'ADMIN_RESOURCE_REQUEST_UPDATED'
-      }).catch((adminPushErr) => {
-        console.error('[WebPush] Error in admin notification block:', adminPushErr);
-      });
+      // notifyAdmin({
+      //   title: 'New Resource Request',
+      //   body: 'A student has submitted a new resource request.',
+      //   // type: 'ADMIN_RESOURCE_REQUEST_UPDATED'
+      // }).catch((adminPushErr) => {
+      //   console.error('[WebPush] Error in admin notification block:', adminPushErr);
+      // });
       // --- End Web Push ---
     }
 
