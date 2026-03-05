@@ -441,7 +441,7 @@ exports.updateResourceRequestVerification = async (req, res) => {
           notifyAdmin({
             title: 'New Resource Request by Student',
             body: 'Requires admin verification.', 
-            type: 'ADMIN-RESOURCE_REQUEST_UPDATED'
+            type: 'ADMIN_RESOURCE_REQUEST_UPDATED'
           }).catch(err => {
             console.error('Error sending admin web push notification:', err);
           });
@@ -462,7 +462,7 @@ exports.updateResourceRequestVerification = async (req, res) => {
           notifyAdmin({
             title: 'Rejected Resource Request of a student by teacher',
             body: 'UI triggering', 
-            type: 'ADMIN-RESOURCE_REQUEST_UPDATED'
+            type: 'ADMIN_RESOURCE_REQUEST_UPDATED'
           }).catch(err => {
             console.error('Error sending admin web push notification:', err);
           });

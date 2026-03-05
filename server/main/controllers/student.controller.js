@@ -40,7 +40,7 @@ exports.deleteStudentResourceRequest = async (req, res) => {
     notifyAdmin({
       title: 'resReq deleted by student',
       body: 'UI triggering',
-      type: 'ADMIN-RESOURCE_REQUEST_UPDATED'
+      type: 'ADMIN_RESOURCE_REQUEST_UPDATED'
     }).catch((adminPushErr) => {
       console.error('[WebPush] Error in admin notification block:', adminPushErr);
     });
@@ -207,7 +207,7 @@ exports.submitResourceRequest = async (req, res) => {
       notifyAdmin({
         title: 'New Resource Request',
         body: 'A student has submitted a new resource request.',
-        type: 'ADMIN-RESOURCE_REQUEST_UPDATED'
+        type: 'ADMIN_RESOURCE_REQUEST_UPDATED'
       }).catch((adminPushErr) => {
         console.error('[WebPush] Error in admin notification block:', adminPushErr);
       });
