@@ -574,6 +574,18 @@ exports.editResourceRequest = async (req, res) => {
     if (!updatedRequest) {
       return res.status(404).json({ error: "Resource request not found" });
     }
+
+    // Notify admin when teacher edits a student's resource request
+    if (role === "teacher") {
+      notifyAdmin({
+        title: 'Teacher edited resource request',
+        body: 'UI triggering',
+        type: 'ADMIN_RESOURCE_REQUEST_UPDATED'
+      }).catch(err => {
+        console.error('Error sending admin web push notification:', err);
+      });
+    }
+
     return res.json({ success: true, resourceRequest: updatedRequest });
   } catch (err) {
     console.error(err);
