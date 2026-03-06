@@ -1,5 +1,5 @@
-// Import only the functions we need from commons.js
 import { renderDashboardHeader, getInitials, getRandomNamedColor, formatDate, logoutDirectly } from '../../common/js/commons.js';
+import { registerServiceWorkerAndSubscribe } from '../../common/js/notification.js';
 
 const student_data = [];
 let teacherVerificationStatus = { is_verified: false };
@@ -57,8 +57,10 @@ async function getTeacherDashboardData() {
   }
 }
 
-// call the function
-getTeacherDashboardData();
+document.addEventListener('DOMContentLoaded', function() {
+  getTeacherDashboardData();
+  registerServiceWorkerAndSubscribe(); //web-push
+});
 
 // Function to render teacher profile information
 function renderTeacherProfile(teacherData) {

@@ -1,10 +1,12 @@
 // Import utility functions
 import { formatDate, logoutDirectly } from '/dashboard/common/js/commons.js';
 import { getLoggedInStudentId, showLoadingState, showErrorMessage } from './student.utils.js';
+import { registerServiceWorkerAndSubscribe } from '../../common/js/notification.js';
 
 document.addEventListener('DOMContentLoaded', function() {
     // Get student details when page loads
     loadStudentDetails();
+    registerServiceWorkerAndSubscribe();
 });
 
 async function loadStudentDetails() {
