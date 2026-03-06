@@ -18,6 +18,37 @@ export function showConfirmationPopup(onSubmitHandler, originalEvent, student = 
     popup.innerHTML = `
         <h3 class="confirmation-popup__title">Undertaking for Use of AI Data Centre Facilities at Panjab University, Chandigarh</h3>
         <div class="confirmation-popup__content">
+
+            <div class="confirmation-popup__user-details">
+                <h4>User Details</h4>
+                <div class="confirmation-popup__details-grid">
+                    <div class="confirmation-popup__detail-row">
+                        <span class="confirmation-popup__detail-label">Name:</span>
+                        <span class="confirmation-popup__detail-value">${student.name || 'N/A'}</span>
+                    </div>
+                    <div class="confirmation-popup__detail-row">
+                        <span class="confirmation-popup__detail-label">Roll Number:</span>
+                        <span class="confirmation-popup__detail-value">${student.rollNo || 'N/A'}</span>
+                    </div>
+                    <div class="confirmation-popup__detail-row">
+                        <span class="confirmation-popup__detail-label">Branch:</span>
+                        <span class="confirmation-popup__detail-value">${student.branch || 'N/A'}</span>
+                    </div>
+                    <div class="confirmation-popup__detail-row">
+                        <span class="confirmation-popup__detail-label">Institute:</span>
+                        <span class="confirmation-popup__detail-value">${student.instituteName || 'N/A'}</span>
+                    </div>
+                    <div class="confirmation-popup__detail-row">
+                        <span class="confirmation-popup__detail-label">Address:</span>
+                        <span class="confirmation-popup__detail-value">${student.instituteAddress || 'N/A'}</span>
+                    </div>
+                    <div class="confirmation-popup__detail-row">
+                        <span class="confirmation-popup__detail-label">Purpose of Use:</span>
+                        <span class="confirmation-popup__detail-value">${purpose || 'N/A'}</span>
+                    </div>
+                </div>
+            </div>
+
             <p>I, the undersigned, understand and agree to the following terms and conditions for using the equipment and facilities of AI Data Centre established by DIC, PU, Chandigarh.</p>
 
             <h4>1. Acknowledgment of Funding</h4>
