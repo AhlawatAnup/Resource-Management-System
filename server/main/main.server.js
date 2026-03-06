@@ -8,6 +8,7 @@ const MongoStore = require("connect-mongo");
 const connectDB = require("./database/db");
 const schedule = require("node-schedule");
 const { runBackup } = require("./services/backup");
+const pushSubscriptionRoutes = require("./routes/pushSubscription.route.js");
 const { checkExpiringResourceRequests } = require("./services/resourceExpiryNotifier");
 
 // ✅ Connect to DB
@@ -88,6 +89,9 @@ app.use("/auth", preventAuth, authRoutes);
 // DASHBOARD ROUTES (protected)
 const dashboardRoutes = require("./routes/dashboard.route.js");
 app.use("/dashboard", noCache, requireAuth, dashboardRoutes);
+
+// Push Subscription API
+app.use("/push-subscription", requireAuth, pushSubscriptionRoutes);
 
 // const backupSchedule = "*/2 * * * *"; // every 2 minutes (example)
 const backupSchedule = process.env.BACKUP_SCHEDULE || "0 3 * * *";

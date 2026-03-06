@@ -2,7 +2,7 @@ const ResourceRequest = require("../database/resourceRequestModel");
 const Student = require("../database/studentModel");
 const Admin = require("../database/adminModel");
 const { sendExpiringResourceEmail } = require("../utils/email/emails.service");
-
+const { notifyStudent } = require("../utils/web-push-notifications/notifyStudent");
 
 // Notification days before expiry
 const NOTIFY_DAYS = [7, 2];
@@ -42,6 +42,13 @@ async function checkExpiringResourceRequests() {
             adminEmail,
             resourceRequest: req,
             expiryDate: req.expiryDate,
+          });
+
+          notifyStudent(student._id, {
+            title: "Resource Expiring Soon",
+            body: `Your resource "${req.title}" is expiring on ${req.expiryDate.toDateString()}`
+          }).catch(err => {
+            console.error("Error sending student web-push notification:", err);
           });
 
           // Mark as notified for this flag
