@@ -1,4 +1,5 @@
 const sendEmail = require('../sendEmail');
+const { generateUndertakingPDF } = require('../common/undertakingPdfGenerator');
 
 // 1. Notify teacher when a student registers under them
 const sendTeacherStudentRegisteredEmail = async (teacherEmail, teacherName, studentName, studentRollNo) => {
@@ -46,7 +47,22 @@ const sendTeacherStudentRegisteredEmail = async (teacherEmail, teacherName, stud
 };
 
 // 2. Notify teacher when a student under them raises a resource request
-const sendTeacherStudentResourceRequestEmail = async (teacherEmail, teacherName, studentName, resourceTitle) => {
+const sendTeacherStudentResourceRequestEmail = async (teacherEmail, teacherName, studentName, resourceTitle, studentData = {}, purpose = '') => {
+  // Generate undertaking PDF
+  let attachments = [];
+  try {
+    const pdfBuffer = await generateUndertakingPDF(studentData, purpose);
+    attachments = [{
+      filename: 'Undertaking_AI_Data_Centre.pdf',
+      content: pdfBuffer,
+      contentType: 'application/pdf'
+    }];
+  } catch (error) {
+    console.error('Failed to generate undertaking PDF for teacher email:', error.message);
+    // Continue sending email without attachment if PDF generation fails
+  }
+  
+
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <h2 style="color: #FF9800;">🖥️ New Resource Request</h2>
@@ -73,6 +89,10 @@ const sendTeacherStudentResourceRequestEmail = async (teacherEmail, teacherName,
         </ul>
       </div>
 
+      <p style="color:#666; font-size:12px; margin-top:20px;">
+        <em>Please find the student's signed undertaking document attached to this email.</em>
+      </p>
+
       <p>Best regards,<br>
       <strong>UIET Cluster Resource Management System</strong></p>
 
@@ -86,7 +106,8 @@ const sendTeacherStudentResourceRequestEmail = async (teacherEmail, teacherName,
   return sendEmail({
     to: teacherEmail,
     subject: '[ACTION REQUIRED] New Resource Request - Student Verification Required',
-    html
+    html,
+    attachments
   });
 };
 

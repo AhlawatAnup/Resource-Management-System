@@ -1,7 +1,22 @@
 const sendEmail = require('../sendEmail');
+const { generateUndertakingPDF } = require('../common/undertakingPdfGenerator');
 
 // Submitted
-const sendResourceRequestSubmittedEmail = async (studentEmail, studentName, requestTitle) => {
+const sendResourceRequestSubmittedEmail = async (studentEmail, studentName, requestTitle, studentData = {}, purpose = '') => {
+  // Generate undertaking PDF
+  let attachments = [];
+  try {
+    const pdfBuffer = await generateUndertakingPDF(studentData, purpose);
+    attachments = [{
+      filename: 'Undertaking_AI_Data_Centre.pdf',
+      content: pdfBuffer,
+      contentType: 'application/pdf'
+    }];
+  } catch (error) {
+    console.error('Failed to generate undertaking PDF:', error.message);
+    // Continue sending email without attachment if PDF generation fails
+  }
+
   return sendEmail({
     to: studentEmail,
     subject: 'Resource Request Submitted Successfully',
@@ -32,8 +47,13 @@ const sendResourceRequestSubmittedEmail = async (studentEmail, studentName, requ
         <p>
           You can track the status of your request from your dashboard.
         </p>
+
+        <p style="color:#666; font-size:12px; margin-top:20px;">
+          <em>Please find the signed undertaking document attached to this email for your records.</em>
+        </p>
       </div>
-    `
+    `,
+    attachments
   });
 };
 

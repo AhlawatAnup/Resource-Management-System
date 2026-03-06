@@ -37,13 +37,13 @@ exports.deleteStudentResourceRequest = async (req, res) => {
     await ResourceRequest.findByIdAndDelete(requestId);
 
     // Send push notification to admin
-    notifyAdmin({
-      title: 'resReq deleted by student',
-      body: 'UI triggering',
-      type: 'ADMIN-RESOURCE_REQUEST_UPDATED'
-    }).catch((adminPushErr) => {
-      console.error('[WebPush] Error in admin notification block:', adminPushErr);
-    });
+    // notifyAdmin({
+    //   title: 'resReq deleted by student',
+    //   body: 'UI triggering',
+    //   // type: 'ADMIN_RESOURCE_REQUEST_UPDATED'
+    // }).catch((adminPushErr) => {
+    //   console.error('[WebPush] Error in admin notification block:', adminPushErr);
+    // });
     
     return res.json({ message: "Resource request deleted successfully" });
   } catch (error) {
@@ -154,11 +154,19 @@ exports.submitResourceRequest = async (req, res) => {
     if (savedRequest) {
       await addResourceRequestToStudent(studentId, savedRequest._id);
 
-      // Send email to student after successful request
+      // Send email to student after successful request (with undertaking PDF)
       sendResourceRequestSubmittedEmail(
         student.email,
         student.name,
-        savedRequest.title
+        savedRequest.title,
+        {
+          name: student.name,
+          rollNo: student.rollNo,
+          branch: student.branch,
+          instituteName: student.instituteName,
+          instituteAddress: student.instituteAddress
+        },
+        savedRequest.purpose
       ).catch((err) => {
         console.error('Error sending resource request email:', err);
       });
@@ -167,7 +175,20 @@ exports.submitResourceRequest = async (req, res) => {
       try {
         const teacher = await Teacher.findById(student.teacher);
         if (teacher) {
-          sendTeacherStudentResourceRequestEmail(teacher.email, teacher.name, student.name, savedRequest.title);
+          sendTeacherStudentResourceRequestEmail(
+            teacher.email,
+            teacher.name,
+            student.name,
+            savedRequest.title,
+            {
+              name: student.name,
+              rollNo: student.rollNo,
+              branch: student.branch,
+              instituteName: student.instituteName,
+              instituteAddress: student.instituteAddress
+            },
+            savedRequest.purpose
+          );
           // console.log(`Teacher notification email sent to ${teacher.email}`);
         }
       } catch (emailErr) {
@@ -183,13 +204,13 @@ exports.submitResourceRequest = async (req, res) => {
       });
       
       // --- Web Push Notification to Admin ---
-      notifyAdmin({
-        title: 'New Resource Request',
-        body: 'A student has submitted a new resource request.',
-        type: 'ADMIN-RESOURCE_REQUEST_UPDATED'
-      }).catch((adminPushErr) => {
-        console.error('[WebPush] Error in admin notification block:', adminPushErr);
-      });
+      // notifyAdmin({
+      //   title: 'New Resource Request',
+      //   body: 'A student has submitted a new resource request.',
+      //   // type: 'ADMIN_RESOURCE_REQUEST_UPDATED'
+      // }).catch((adminPushErr) => {
+      //   console.error('[WebPush] Error in admin notification block:', adminPushErr);
+      // });
       // --- End Web Push ---
     }
 

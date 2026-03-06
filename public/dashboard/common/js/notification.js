@@ -7,7 +7,6 @@ export async function registerServiceWorkerAndSubscribe() {
 
   try {
     const registration = await navigator.serviceWorker.register('/service-worker.js');
-    console.log('Service Worker registered:', registration);
 
     // Request notification permission
     const permission = await Notification.requestPermission();
@@ -21,7 +20,6 @@ export async function registerServiceWorkerAndSubscribe() {
       userVisibleOnly: true,
       applicationServerKey: urlBase64ToUint8Array('BDaDC0DBxruD0yNCe49qjuD0Yl9sFopryzeHRK9NFQsALGM45XGTOGINI0Ni--Qu2cHh3Vgjw_OnJdC3rd6F04o')
     });
-    console.log('Push subscription:', subscription);
 
     // Send subscription to backend
     await fetch('/push-subscription/subscribe', {
@@ -29,7 +27,6 @@ export async function registerServiceWorkerAndSubscribe() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({subscription})
     });
-    console.log('Subscription sent to backend');
   } catch (err) {
     console.error('Service Worker/Push setup failed:', err);
   }
