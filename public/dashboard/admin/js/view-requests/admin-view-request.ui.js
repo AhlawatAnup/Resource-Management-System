@@ -211,12 +211,6 @@ export function showEditModalUI(request) {
   document.getElementById('editRequestId').value = request._id;
   document.getElementById('editTitle').value = request.title;
   document.getElementById('editPurpose').value = request.purpose;
-  document.getElementById('editExpiryDate').value =
-    request.expiryDate ? request.expiryDate.split('T')[0] : '';
-
-  document.getElementById('editGpuRam').value = request.gpuRam;
-  document.getElementById('editUsername').value = request.username;
-
   setEditFormApprovedState(request.admin_action === true);
 
   document.getElementById('editRequestModal').style.display = 'block';
@@ -234,9 +228,6 @@ export function getEditFormData() {
     formValues: {
       title: document.getElementById('editTitle').value,
       purpose: document.getElementById('editPurpose').value,
-      expiryDate: document.getElementById('editExpiryDate').value,
-      gpuRam: document.getElementById('editGpuRam').value,
-      username: document.getElementById('editUsername').value
     }
   };
 }
