@@ -130,6 +130,11 @@ export function createViewMoreButton(requestId, purpose) {
   return `<button class="view-more-btn" onclick="showPurposePanel(event, '${requestId}', \`${escapedPurpose}\`)">View More</button>`;
 }
 
+// Username validation utility
+export function isValidUsername(username) {
+  return /^[A-Za-z0-9_-]+$/.test(username);
+}
+
 // Logout with confirmation
 export function handleLogout(e) {
   e.preventDefault();
