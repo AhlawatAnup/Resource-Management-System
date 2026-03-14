@@ -53,14 +53,6 @@ export function renderResourceRequests(requests, deps) {
         </div>
       </td>
       <td>
-        <div class="resource-specs">
-          <div><span class="field-label">GPU:</span> ${request.gpuRam}GB</div>
-        </div>
-      </td>
-      <td>
-        <div class="expiry-date">${formatDate(request.expiryDate)}</div>
-      </td>
-      <td>
         <span class="badge ${statusInfo.class}">${statusInfo.text}</span>
       </td>
       <td>
