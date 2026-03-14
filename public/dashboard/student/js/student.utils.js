@@ -107,35 +107,6 @@ export function getStudentStatusClass(student) {
     return "status-pending";
 }
 
-// Validate expiry date for resource requests
-export function validateExpiryDate(expiryDateValue, minDays = 1, maxDays = 30) {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const minDate = new Date();
-    minDate.setDate(today.getDate() + minDays);
-    minDate.setHours(0, 0, 0, 0);
-
-    const maxDate = new Date();
-    maxDate.setDate(today.getDate() + maxDays);
-    maxDate.setHours(0, 0, 0, 0);
-
-    const expiryDate = new Date(expiryDateValue);
-    expiryDate.setHours(0, 0, 0, 0);
-
-    if (expiryDate <= today) {
-        throw new Error('Expiry date must be in the future');
-    }
-    if (expiryDate < minDate) {
-        throw new Error(`Expiry date must be at least ${minDays} day(s) ahead`);
-    }
-    if (expiryDate > maxDate) {
-        throw new Error(`Expiry date cannot be more than ${maxDays} days ahead`);
-    }
-
-    return expiryDate;
-}
-
 export function getRequestStatus(request) {
     if (request.teacher_verified && request.admin_verified && request.is_verified) {
         return 'approved';

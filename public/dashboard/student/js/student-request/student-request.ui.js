@@ -2,7 +2,7 @@
 
 import { showConfirmationPopup } from './confirmation-popup.js';
 
-export function renderResourcesPage(student, verificationStatus, onSubmitHandler, initializeDatePicker) {
+export function renderResourcesPage(student, verificationStatus, onSubmitHandler) {
     const isVerified = student.teacher_verified && student.admin_verified;
 
     const loadingSection = document.getElementById('loading-section');
@@ -17,9 +17,6 @@ export function renderResourcesPage(student, verificationStatus, onSubmitHandler
     if (isVerified) {
         verifiedSection.style.display = 'block';
         unverifiedSection.style.display = 'none';
-
-        // Initialize date picker
-        initializeDatePicker();
 
         // Attach submit handler - show confirmation popup first
         const form = document.getElementById('resource-request-form');
@@ -44,34 +41,6 @@ export function renderResourcesPage(student, verificationStatus, onSubmitHandler
     }
 }
 
-// Date picker initializer (kept UI-side since it's DOM dependent)
-export function initializeExpiryDatePicker() {
-    const expiryDateInput = document.getElementById('expiry-date');
-    if (!expiryDateInput || typeof flatpickr === 'undefined') {
-        return;
-    }
-
-    const today = new Date();
-    const formatDateInput = (date) => date.toISOString().split('T')[0];
-
-    const defaultDate = new Date();
-    defaultDate.setDate(today.getDate() + 7);
-
-    const minDate = new Date();
-    minDate.setDate(today.getDate() + 1);
-
-    const maxDate = new Date();
-    maxDate.setDate(today.getDate() + 30);
-
-    flatpickr(expiryDateInput, {
-        mode: 'single',
-        dateFormat: 'Y-m-d',
-        defaultDate: formatDateInput(defaultDate),
-        minDate: formatDateInput(minDate),
-        maxDate: formatDateInput(maxDate),
-        enableTime: false,
-    });
-}
 
 // Notifications (UI only)
 export function showErrorNotification(message) {

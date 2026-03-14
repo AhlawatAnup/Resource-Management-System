@@ -63,8 +63,8 @@ exports.submitResourceRequest = async (req, res) => {
       return res.status(401).json({ error: "Not authenticated" });
     }
 
-    // const { title, purpose, expiryDate, cpuCores, cpuRam, gpuRam, studentId } = req.body;
-  const { title, purpose, expiryDate, studentId } = req.body;
+    // const { title, purpose, studentId } = req.body;
+  const { title, purpose, studentId } = req.body;
     
     // Security check: ensure the student can only submit requests for themselves
     if (req.session.user.id !== studentId) {
@@ -72,20 +72,11 @@ exports.submitResourceRequest = async (req, res) => {
     }
 
     // Validate required fields
-    if (!title || !purpose || !expiryDate || !studentId) {
+    if (!title || !purpose || !studentId) {
       return res.status(400).json({ 
         error: "Missing required fields",
-        required: ["title", "purpose", "expiryDate", "studentId"]
+        required: ["title", "purpose", "studentId"]
       });
-    }
-
-    // Validate expiry date is in the future
-    const expiry = new Date(expiryDate);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    
-    if (expiry <= today) {
-      return res.status(400).json({ error: "Expiry date must be in the future" });
     }
 
     // Check if student exists and is verified
@@ -122,7 +113,6 @@ exports.submitResourceRequest = async (req, res) => {
       studentId,
       title: title.trim(),
       purpose: purpose.trim(),
-      expiryDate: expiry,
     });
 
     // Save to database

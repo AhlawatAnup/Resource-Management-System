@@ -14,10 +14,6 @@ const resourceRequestSchema = new mongoose.Schema({
     type: String, 
     required: true 
   },
-  expiryDate: { 
-    type: Date, 
-    required: true 
-  },
 
   // Status tracking
   teacher_action: { type: Boolean, default: false },

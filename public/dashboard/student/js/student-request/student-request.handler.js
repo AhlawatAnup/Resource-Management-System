@@ -5,7 +5,6 @@ import {
     getLoggedInStudentId,
     showErrorMessage,
     getStudentVerificationStatus,
-    validateExpiryDate
 } from '../student.utils.js';
 
 // Services
@@ -17,7 +16,6 @@ import {
 // UI
 import {
     renderResourcesPage,
-    initializeExpiryDatePicker
 } from './student-request.ui.js';
 
 // External
@@ -49,7 +47,6 @@ export async function handleLoadRequestResources() {
             studentData,
             verificationStatus,
             handleResourceRequest,
-            initializeExpiryDatePicker
         );
 
     } catch (error) {
@@ -72,10 +69,9 @@ export async function handleResourceRequest(event) {
         const formData = {
             title: document.getElementById('title').value.trim(),
             purpose: document.getElementById('purpose').value.trim(),
-            expiryDate: document.getElementById('expiry-date').value,
         };
 
-        if (!formData.title || !formData.purpose || !formData.expiryDate) {
+        if (!formData.title || !formData.purpose) {
             throw new Error('Please fill in all required fields');
         }
 
@@ -90,8 +86,6 @@ export async function handleResourceRequest(event) {
         if (formData.purpose.length > 2000) {
             throw new Error('Purpose must not exceed 2000 characters');
         }
-
-        validateExpiryDate(formData.expiryDate);
 
         const studentId = await getLoggedInStudentId();
         if (!studentId) {
