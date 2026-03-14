@@ -21,7 +21,7 @@ import {
 } from './student-request.ui.js';
 
 // External
-import { isValidUsername, logoutDirectly } from '../../../common/js/commons.js';
+import { logoutDirectly } from '../../../common/js/commons.js';
 
 export async function handleLoadRequestResources() {
     try {
@@ -70,28 +70,19 @@ export async function handleResourceRequest(event) {
 
     try {
         const formData = {
-            username: document.getElementById('username').value.trim(),
             title: document.getElementById('title').value.trim(),
             purpose: document.getElementById('purpose').value.trim(),
             expiryDate: document.getElementById('expiry-date').value,
         };
 
-        if (!formData.username || !formData.title || !formData.purpose || !formData.expiryDate) {
+        if (!formData.title || !formData.purpose || !formData.expiryDate) {
             throw new Error('Please fill in all required fields');
-        }
-
-        if (!isValidUsername(formData.username)) {
-            throw new Error('Username can only contain letters, numbers, hyphens (-), and underscores (_), with no spaces or special characters');
-        }
-
-        if (formData.username.length <= 5 || formData.username.length >= 50) {
-            throw new Error('Username must be greater than 5 and less than 50 characters');
         }
 
         if (formData.title.length > 50) {
             throw new Error('Title must not exceed 50 characters');
         }
-        
+
         if (formData.purpose.length < 100) {
             throw new Error('Purpose must be at least 100 characters long');
         }
@@ -120,18 +111,6 @@ export async function handleResourceRequest(event) {
                     'You already have a pending request. Please wait for it to be processed or delete it if no action has been taken by teacher/admin.',
                     'request-content'
                 );
-                return;
-            }
-
-            if (errorData.error && /username already exists/i.test(errorData.error)) {
-                Swal.fire({
-                    title: "Error!",
-                    text: "Username already taken. Please choose a different username.",
-                    icon: "error",
-                    draggable: true,
-                    scrollbarPadding: false,
-                    heightAuto: false
-                });
                 return;
             }
 

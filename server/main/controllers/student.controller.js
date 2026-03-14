@@ -64,7 +64,7 @@ exports.submitResourceRequest = async (req, res) => {
     }
 
     // const { title, purpose, expiryDate, cpuCores, cpuRam, gpuRam, studentId } = req.body;
-  const { title, purpose, expiryDate, studentId, username } = req.body;
+  const { title, purpose, expiryDate, studentId } = req.body;
     
     // Security check: ensure the student can only submit requests for themselves
     if (req.session.user.id !== studentId) {
@@ -72,15 +72,11 @@ exports.submitResourceRequest = async (req, res) => {
     }
 
     // Validate required fields
-    if (!title || !purpose || !expiryDate || !studentId || !username) {
+    if (!title || !purpose || !expiryDate || !studentId) {
       return res.status(400).json({ 
         error: "Missing required fields",
-        required: ["title", "purpose", "expiryDate", "studentId", "username"]
+        required: ["title", "purpose", "expiryDate", "studentId"]
       });
-    }
-    
-    if (!/^[A-Za-z0-9_-]+$/.test(username)) {
-      return res.status(400).json({ error: "Username can only contain letters, numbers, hyphens (-), and underscores (_), with no spaces or special characters" });
     }
 
     // Validate expiry date is in the future
@@ -121,24 +117,12 @@ exports.submitResourceRequest = async (req, res) => {
       });
     }
 
-    // Check if requested username already exists in other resource requests
-    const usernameTrim = username ? String(username).trim() : '';
-    if (usernameTrim) {
-      const usernameExists = await ResourceRequest.findOne({ username: usernameTrim });
-      if (usernameExists) {
-        return res.status(400).json({ error: 'Username already exists' });
-      }
-    }
-
     // Create new resource request
     const resourceRequest = new ResourceRequest({
       studentId,
       title: title.trim(),
       purpose: purpose.trim(),
       expiryDate: expiry,
-      username: username ? String(username).trim() : undefined,
-      // gpuCount: parseInt(gpuCount),
-      // gpuRam: parseInt(gpuRam, 10)
     });
 
     // Save to database
