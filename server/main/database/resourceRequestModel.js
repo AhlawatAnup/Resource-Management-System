@@ -18,23 +18,6 @@ const resourceRequestSchema = new mongoose.Schema({
     type: Date, 
     required: true 
   },
-  // cpuCores: { 
-  //   type: Number, 
-  //   required: true 
-  // },
-  // cpuRam: { 
-  //   type: Number, // in GB
-  //   required: true 
-  // },
-  // gpuCount: { 
-  //   type: Number, 
-  //   required: true 
-  // },
-  gpuRam: { 
-    type: Number, // per GPU in GB
-    required: true 
-  },
-
   // Username set by student at request time (VM username they want)
   username: {
     type: String,

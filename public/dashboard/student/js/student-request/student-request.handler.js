@@ -74,10 +74,9 @@ export async function handleResourceRequest(event) {
             title: document.getElementById('title').value.trim(),
             purpose: document.getElementById('purpose').value.trim(),
             expiryDate: document.getElementById('expiry-date').value,
-            gpuRam: parseInt(document.getElementById('gpu-ram').value)
         };
 
-        if (!formData.username || !formData.title || !formData.purpose || !formData.expiryDate || formData.gpuRam === undefined || formData.gpuRam === null) {
+        if (!formData.username || !formData.title || !formData.purpose || !formData.expiryDate) {
             throw new Error('Please fill in all required fields');
         }
 
@@ -92,11 +91,7 @@ export async function handleResourceRequest(event) {
         if (formData.title.length > 50) {
             throw new Error('Title must not exceed 50 characters');
         }
-
-        if (!Number.isFinite(formData.gpuRam) || formData.gpuRam < 0) {
-            throw new Error('GPU RAM must be a non-negative number');
-        }
-
+        
         if (formData.purpose.length < 100) {
             throw new Error('Purpose must be at least 100 characters long');
         }

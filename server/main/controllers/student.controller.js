@@ -64,7 +64,7 @@ exports.submitResourceRequest = async (req, res) => {
     }
 
     // const { title, purpose, expiryDate, cpuCores, cpuRam, gpuRam, studentId } = req.body;
-  const { title, purpose, expiryDate, gpuRam, studentId, username } = req.body;
+  const { title, purpose, expiryDate, studentId, username } = req.body;
     
     // Security check: ensure the student can only submit requests for themselves
     if (req.session.user.id !== studentId) {
@@ -72,21 +72,15 @@ exports.submitResourceRequest = async (req, res) => {
     }
 
     // Validate required fields
-    if (!title || !purpose || !expiryDate || gpuRam === undefined || !studentId || !username) {
+    if (!title || !purpose || !expiryDate || !studentId || !username) {
       return res.status(400).json({ 
         error: "Missing required fields",
-        required: ["title", "purpose", "expiryDate", "gpuRam", "studentId", "username"]
+        required: ["title", "purpose", "expiryDate", "studentId", "username"]
       });
     }
     
     if (!/^[A-Za-z0-9_-]+$/.test(username)) {
       return res.status(400).json({ error: "Username can only contain letters, numbers, hyphens (-), and underscores (_), with no spaces or special characters" });
-    }
-
-    // Validate data types and ranges for gpuRam
-    const gpuRamNum = Number(gpuRam);
-    if (!Number.isFinite(gpuRamNum) || gpuRamNum < 0) {
-      return res.status(400).json({ error: "gpuRam must be a non-negative number" });
     }
 
     // Validate expiry date is in the future
@@ -144,7 +138,7 @@ exports.submitResourceRequest = async (req, res) => {
       expiryDate: expiry,
       username: username ? String(username).trim() : undefined,
       // gpuCount: parseInt(gpuCount),
-      gpuRam: parseInt(gpuRam, 10)
+      // gpuRam: parseInt(gpuRam, 10)
     });
 
     // Save to database
