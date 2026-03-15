@@ -96,6 +96,10 @@ export async function handleResourceRequest(event) {
             throw new Error('Duration must be a whole number between 1 and 30 days');
         }
 
+        if (!formData.machineId) {
+            throw new Error('Please select one available machine before submitting');
+        }
+
         const studentId = await getLoggedInStudentId();
         if (!studentId) {
             throw new Error('Student ID not found. Please login again.');

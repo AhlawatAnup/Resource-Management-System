@@ -78,11 +78,15 @@ exports.submitResourceRequest = async (req, res) => {
     // Validate required fields
     const parsedDuration = Number(duration);
 
-    if (!title || !purpose || !studentId || !machineId || !isValidDuration(parsedDuration)) {
+    if (!title || !purpose || !studentId || !machineId || !parsedDuration) {
       return res.status(400).json({ 
-        error: "Missing or invalid required fields",
-        required: ["title", "purpose", "studentId", "duration", "machineId"]
+        error: "Missing required fields",
+        required: ["title", "purpose", "studentId", "machineId", "duration"]
       });
+    }
+
+    if (!isValidDuration(parsedDuration)) {
+      return res.status(400).json({ error: "Invalid duration. Allowed range is 1 to 30 days." });
     }
 
     if (!mongoose.Types.ObjectId.isValid(machineId)) {
