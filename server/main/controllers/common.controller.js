@@ -11,6 +11,7 @@ const emailService = require("../utils/email/emails.service.js");
 const { notifyAdmin } = require('../utils/web-push-notifications/notifyAdmin.js');
 const { notifyTeacher } = require('../utils/web-push-notifications/notifyTeacher.js');
 const { notifyStudent } = require('../utils/web-push-notifications/notifyStudent.js');
+const { fetchMachineById } = require("../utils/common.utils.js");
 
 exports.roleBasedDashboard = (req, res) => {
   if (!req.session.user) {
@@ -620,10 +621,12 @@ function isDateInPast(date) {
   return d < now;
 }
 
-// Return all machines that are not currently assigned
-exports.getAvailableMachines = async (req, res) => {
+exports.getAllMachines = async (req, res) => {
   try {
-    const machines = await Machine.find().lean();
+    const machines = await Machine.find()
+      .select("_id MIGID gpuRam")
+      .lean();
+
     if (!machines.length) {
       return res.status(404).json({ message: "No machines found" });
     }
@@ -634,38 +637,28 @@ exports.getAvailableMachines = async (req, res) => {
   }
 };
 
-exports.getMachineWiseAllotments = async (req, res) => {
+exports.getMachineWiseActiveAllotments = async (req, res) => {
   try {
-    const allotments = await MachineAllotment.find()
-      .populate("machineId", "MIGID gpuRam")
-      .lean();
+    const { machineId } = req.params;
 
-    if (!allotments.length) {
-      return res.status(404).json({ message: "No allotments found" });
+    const machine = await fetchMachineById(machineId);
+    if (!machine) {
+      return res.status(404).json({ message: "Machine not found or invalid ID" });
     }
 
-    const grouped = {};
+    const allotments = await MachineAllotment.find({
+      machineId,
+      status: "active" 
+    })
+      .select("resourceRequestId startTime endTime status")
+      .lean();
 
-    allotments.forEach((a) => {
-      const machineId = a.machineId._id;
+    const response = { machine, allotments };
+    if (!allotments.length) {
+      response.message = "No active allotments found for this machine";
+    }
 
-      if (!grouped[machineId]) {
-        grouped[machineId] = {
-          machine: a.machineId,
-          allotments: []
-        };
-      }
-
-      grouped[machineId].allotments.push({
-        resourceRequestId: a.resourceRequestId,
-        startTime: a.startTime,
-        endTime: a.endTime,
-        status: a.status
-      });
-    });
-
-    res.status(200).json(Object.values(grouped));
-
+    res.status(200).json(response);
   } catch (error) {
     console.error("Error fetching machine-wise allotments:", error);
     res.status(500).json({ error: "Failed to fetch allotments" });

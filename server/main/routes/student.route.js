@@ -4,8 +4,9 @@ const { logRequest, isStudent } = require("../middleware/authMiddleware.js");
 
 const {
   student_data,
-  getAvailableMachines,
-  getMachineWiseAllotments
+  getAllMachines,
+  getMachineWiseActiveAllotments,
+  getMachineById
 } = require("../controllers/common.controller.js");
 
 const {
@@ -50,7 +51,7 @@ router.post("/submit-resource-request", submitResourceRequest);
 router.get("/resource-requests/:studentId", getStudentResourceRequests);
 
 //machines
-router.get("/get_machines", getAvailableMachines);
-router.get("/get_allotments", getMachineWiseAllotments);
+router.get("/get_machines", getAllMachines);
+router.get("/allotments/:machineId", getMachineWiseActiveAllotments);
 
 module.exports = router;

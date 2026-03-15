@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>PAGE_TITLE - U.I.E.T Resource Sharing</title>
+    <title>Allotments - U.I.E.T Resource Sharing</title>
 
     <!-- Icons -->
     <link
@@ -17,8 +17,11 @@
 
     <!-- Common styles -->
     <link rel="stylesheet" href="/dashboard/student/style/student.dashboard.css" />
-    <!-- Page-specific styles -->
-    <link rel="stylesheet" href="/dashboard/student/style/PAGE_STYLE.css" />
+    <link rel="stylesheet" href="/dashboard/student/style/student.request.css" />
+    <link rel="stylesheet" href="/dashboard/student/style/student.table.css" />
+    <link rel="stylesheet" href="/dashboard/student/style/machines-flexbar.css" />
+    <link rel="stylesheet" href="/dashboard/student/style/student.allotments.css" />
+
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   </head>
@@ -65,20 +68,36 @@
     <main class="main-content">
       <header class="header">
         <div class="welcome-section">
-          <h1 id="page-title">PAGE_HEADING</h1>
-          <p>PAGE_SUBTITLE</p>
+          <h1 id="page-title">Allotments</h1>
+          <p>Machine-wise allotments.</p>
         </div>
       </header>
 
-      <div class="container">
-        <!-- Put page content here -->
-        <div id="page-content">
-          <p>Demo content...</p>
+      <div class="container" style="background: none; box-shadow: none; padding: 0;">
+        <div class="allotments-page-layout">
+          <!-- Left: Machines flex bar -->
+          <div class="machines-side-panel">
+            <div class="machines-bar-section">
+              <h3><i class="fas fa-server"></i> Machines</h3>
+              <div id="machines-flexbar" class="machines-flexbar">
+                <span class="machine-bar-loading">Loading...</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Allotments content -->
+          <div class="allotments-main-panel">
+            <div class="allotments-card">
+              <div id="allotments-content">
+                <p class="allotments-placeholder"><i class="fas fa-arrow-left"></i> Select a machine to view its allotments.</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </main>
 
     <!-- Page-specific script -->
-    <script type="module" src="/dashboard/student/js/PAGE_FOLDER/PAGE_MAIN.js"></script>
+    <script type="module" src="/dashboard/student/js/allotments/student-allotments.main.js"></script>
   </body>
 </html>
