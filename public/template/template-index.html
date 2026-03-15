@@ -3,7 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>U.I.E.T Resource Sharing</title>
+    <title>PAGE_TITLE - U.I.E.T Resource Sharing</title>
+
+    <!-- Icons -->
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
       rel="stylesheet"
@@ -12,12 +14,16 @@
       src="https://kit.fontawesome.com/e05e3e1522.js"
       crossorigin="anonymous"
     ></script>
+
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Common styles -->
+    <link rel="stylesheet" href="/dashboard/student/style/student.dashboard.css" />
+    <!-- Page-specific styles -->
+    <link rel="stylesheet" href="/dashboard/student/style/PAGE_STYLE.css" />
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    
-
   </head>
-  <link rel="stylesheet" href="/dashboard/student/style/student.dashboard.css" />
   <body>
     <div class="sidebar">
       <div class="logo">
@@ -28,7 +34,7 @@
       </div>
 
       <nav class="nav-menu">
-        <a href="#" class="nav-item active">
+        <a href="/dashboard" class="nav-item">
           <i class="fas fa-home"></i>
           Home
         </a>
@@ -40,7 +46,7 @@
           <i class="fas fa-list"></i>
           View Resource Requests
         </a>
-        <a href="/dashboard/student/allotments" class="nav-item">
+        <a href="/dashboard/student/allotments" class="nav-item active">
           <i class="fas fa-network-wired"></i>
           Allotments
         </a>
@@ -61,20 +67,20 @@
     <main class="main-content">
       <header class="header">
         <div class="welcome-section">
-          <h1 id="student-welcome">Hello, Student</h1>
+          <h1 id="page-title">PAGE_HEADING</h1>
+          <p>PAGE_SUBTITLE</p>
         </div>
       </header>
 
       <div class="container">
-        <!-- Student Profile Section -->
-        <div id="student-profile">
-          <!-- Profile will be loaded here by JavaScript -->
+        <!-- Put page content here -->
+        <div id="page-content">
+          <p>Demo content...</p>
         </div>
       </div>
     </main>
 
-    <!-- <script type="module" src="/dashboard/student/js/student.dashboard.js"></script> -->
-    <script type="module" src="/dashboard/student/js/dashboard/student-dashboard.main.js"></script>
-    <!-- <script src="/dashboard/teacher/js/table.js"></script> -->
+    <!-- Page-specific script -->
+    <script type="module" src="/dashboard/student/js/PAGE_FOLDER/PAGE_MAIN.js"></script>
   </body>
 </html>
