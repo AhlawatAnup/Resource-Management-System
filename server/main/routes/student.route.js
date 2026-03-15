@@ -4,7 +4,8 @@ const { logRequest, isStudent } = require("../middleware/authMiddleware.js");
 
 const {
   student_data,
-  getAvailableMachines
+  getAvailableMachines,
+  getMachineWiseAllotments
 } = require("../controllers/common.controller.js");
 
 const {
@@ -33,6 +34,11 @@ router.get("/view-requests", (req, res) => {
   res.sendFile(path.join(publicPath, "dashboard", "student", "view-requests.html"));
 });
 
+// Route: Allotments
+router.get("/allotments", (req, res) => {
+  res.sendFile(path.join(publicPath, "dashboard", "student", "allotments.html"));
+});
+
 // Route: About Us
 router.get("/about-us", (req, res) => {
   res.sendFile(path.join(publicPath, "dashboard", "student", "about-us.html"));
@@ -45,5 +51,6 @@ router.get("/resource-requests/:studentId", getStudentResourceRequests);
 
 //machines
 router.get("/get_machines", getAvailableMachines);
+router.get("/get_allotments", getMachineWiseAllotments);
 
 module.exports = router;

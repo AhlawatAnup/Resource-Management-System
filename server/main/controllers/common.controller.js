@@ -4,6 +4,7 @@ const Teacher = require("../database/teacherModel");
 const Admin = require("../database/adminModel");
 const ResourceRequest = require("../database/resourceRequestModel");
 const Machine = require('../database/machineModel');
+const MachineAllotment = require("../database/machineAllotmentModel.js.js");
 const path = require("path");
 const publicPath = path.join(__dirname, "../../../public");
 const emailService = require("../utils/email/emails.service.js");
@@ -630,5 +631,43 @@ exports.getAvailableMachines = async (req, res) => {
   } catch (error) {
     console.error("Error fetching machines:", error);
     res.status(500).json({ error: "Failed to fetch machines" });
+  }
+};
+
+exports.getMachineWiseAllotments = async (req, res) => {
+  try {
+    const allotments = await MachineAllotment.find()
+      .populate("machineId", "MIGID gpuRam")
+      .lean();
+
+    if (!allotments.length) {
+      return res.status(404).json({ message: "No allotments found" });
+    }
+
+    const grouped = {};
+
+    allotments.forEach((a) => {
+      const machineId = a.machineId._id;
+
+      if (!grouped[machineId]) {
+        grouped[machineId] = {
+          machine: a.machineId,
+          allotments: []
+        };
+      }
+
+      grouped[machineId].allotments.push({
+        resourceRequestId: a.resourceRequestId,
+        startTime: a.startTime,
+        endTime: a.endTime,
+        status: a.status
+      });
+    });
+
+    res.status(200).json(Object.values(grouped));
+
+  } catch (error) {
+    console.error("Error fetching machine-wise allotments:", error);
+    res.status(500).json({ error: "Failed to fetch allotments" });
   }
 };
