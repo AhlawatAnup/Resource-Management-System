@@ -15,6 +15,7 @@
     
     <link rel="stylesheet" href="/dashboard/student/style/student.dashboard.css" />
     <link rel="stylesheet" href="/dashboard/student/style/student.request.css" />
+    <link rel="stylesheet" href="/dashboard/student/style/machines-flexbar.css" />
     <link rel="stylesheet" href="/dashboard/student/style/confirmation-popup.css" />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
@@ -105,6 +106,15 @@
                   <label for="purpose">Purpose/Description:</label>
                   <textarea id="purpose" class="form-control textarea" rows="4" placeholder="Please describe the purpose of your resource request and what you plan to accomplish..." required></textarea>
                 </div>
+
+                <div class="machines-bar-section">
+                  <h3><i class="fas fa-server"></i> Select desired machine</h3>
+                  <div id="machines-flexbar" class="machines-flexbar">
+                    <span class="machine-bar-loading">Loading machines...</span>
+                  </div>
+                </div>
+
+                <input type="hidden" id="selected-machine-id" name="machineId" value="">
 
                 <div class="form-group">
                   <label for="duration">Requested Duration (in days):</label>

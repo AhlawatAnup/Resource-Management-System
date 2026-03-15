@@ -3,7 +3,8 @@ const path = require("path");
 const { logRequest, isStudent } = require("../middleware/authMiddleware.js");
 
 const {
-  student_data
+  student_data,
+  getAvailableMachines
 } = require("../controllers/common.controller.js");
 
 const {
@@ -41,5 +42,8 @@ router.get("/about-us", (req, res) => {
 router.delete("/del_requests/:requestId", deleteStudentResourceRequest);
 router.post("/submit-resource-request", submitResourceRequest);
 router.get("/resource-requests/:studentId", getStudentResourceRequests);
+
+//machines
+router.get("/get_machines", getAvailableMachines);
 
 module.exports = router;

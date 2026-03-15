@@ -49,7 +49,9 @@ export async function handleLoadRequestResources() {
             verificationStatus,
             handleResourceRequest,
         );
-
+        
+        await loadAvailableMachines();
+        
     } catch (error) {
         console.error('Error loading student details for resources:', error);
         logoutDirectly();
@@ -71,6 +73,7 @@ export async function handleResourceRequest(event) {
             title: document.getElementById('title').value.trim(),
             purpose: document.getElementById('purpose').value.trim(),
             duration: Number(document.getElementById('duration').value),
+            machineId: document.getElementById('selected-machine-id')?.value,
         };
 
         if (!formData.title || !formData.purpose || !formData.duration) {
@@ -141,5 +144,39 @@ export async function handleResourceRequest(event) {
             submitBtn.disabled = false;
             submitBtn.innerHTML = originalText;
         }
+    }
+}
+
+export async function loadAvailableMachines() {
+    const container = document.getElementById('machines-flexbar');
+    if (!container) return;
+    try {
+        const res = await fetch('/dashboard/student/get_machines');
+        if (!res.ok) throw new Error('Failed to fetch machines');
+        const machines = await res.json();
+        if (!machines.length) {
+            container.innerHTML = '<span class="machine-bar-empty">No machines currently available.</span>';
+            return;
+        }
+        container.innerHTML = machines
+            .map(m => `<div class="machine-bar-item" data-machine-id="${m._id}"><span class="migid">${m.MIGID}</span><span class="gpuram">${m.gpuRam} GB</span></div>`)
+            .join('');
+
+        container.addEventListener('click', (e) => {
+            const item = e.target.closest('.machine-bar-item');
+            if (!item) return;
+            const isAlreadySelected = item.classList.contains('selected');
+            container.querySelectorAll('.machine-bar-item').forEach(el => el.classList.remove('selected'));
+            const hiddenInput = document.getElementById('selected-machine-id');
+            if (isAlreadySelected) {
+                if (hiddenInput) hiddenInput.value = '';
+            } else {
+                item.classList.add('selected');
+                if (hiddenInput) hiddenInput.value = item.dataset.machineId;
+            }
+        });
+    } catch (err) {
+        console.error('Error loading available machines:', err);
+        container.innerHTML = '<span class="machine-bar-empty">Could not load machines.</span>';
     }
 }

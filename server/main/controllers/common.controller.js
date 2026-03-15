@@ -618,3 +618,17 @@ function isDateInPast(date) {
   now.setHours(0,0,0,0);
   return d < now;
 }
+
+// Return all machines that are not currently assigned
+exports.getAvailableMachines = async (req, res) => {
+  try {
+    const machines = await Machine.find().lean();
+    if (!machines.length) {
+      return res.status(404).json({ message: "No machines found" });
+    }
+    res.status(200).json(machines);
+  } catch (error) {
+    console.error("Error fetching machines:", error);
+    res.status(500).json({ error: "Failed to fetch machines" });
+  }
+};

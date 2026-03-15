@@ -3,8 +3,10 @@ const { notifyAdmin } = require('../utils/web-push-notifications/notifyAdmin');
 const { notifyTeacher } = require('../utils/web-push-notifications/notifyTeacher');
 const ResourceRequest = require("../database/resourceRequestModel");
 const Student = require("../database/studentModel");
+const Machine = require("../database/machineModel");
 const { addResourceRequestToStudent } = require("../utils/studentResourceUtils");
 const { isValidDuration } = require('../utils/common.utils');
+const mongoose = require('mongoose');
 
 const Teacher = require('../database/teacherModel');
 // Delete a resource request by ID
@@ -66,7 +68,7 @@ exports.submitResourceRequest = async (req, res) => {
       return res.status(401).json({ error: "Not authenticated" });
     }
 
-    const { title, purpose, studentId, duration } = req.body;
+    const { title, purpose, studentId, duration, machineId } = req.body;
     
     // Security check: ensure the student can only submit requests for themselves
     if (req.session.user.id !== studentId) {
@@ -76,11 +78,15 @@ exports.submitResourceRequest = async (req, res) => {
     // Validate required fields
     const parsedDuration = Number(duration);
 
-    if (!title || !purpose || !studentId || !isValidDuration(parsedDuration)) {
+    if (!title || !purpose || !studentId || !machineId || !isValidDuration(parsedDuration)) {
       return res.status(400).json({ 
         error: "Missing or invalid required fields",
-        required: ["title", "purpose", "studentId", "duration"]
+        required: ["title", "purpose", "studentId", "duration", "machineId"]
       });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(machineId)) {
+      return res.status(400).json({ error: "Invalid machineId" });
     }
 
     // Check if student exists and is verified
@@ -94,6 +100,11 @@ exports.submitResourceRequest = async (req, res) => {
       return res.status(403).json({ 
         error: "Student must be verified by both teacher and admin before submitting resource requests" 
       });
+    }
+
+    const machine = await Machine.findById(machineId);
+    if (!machine) {
+      return res.status(404).json({ error: "Selected machine not found" });
     }
 
     // Check for existing pending request
@@ -117,6 +128,7 @@ exports.submitResourceRequest = async (req, res) => {
       studentId,
       title: title.trim(),
       purpose: purpose.trim(),
+      machineId,
       duration: parsedDuration,
     });
 
