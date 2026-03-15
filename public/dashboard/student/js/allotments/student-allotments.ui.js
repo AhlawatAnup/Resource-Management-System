@@ -1,4 +1,35 @@
 import { formatDateTime } from '../student.utils.js';
+import { mountAllotmentsCalendar } from './student-allotments-calendar.ui.js';
+
+function buildTableHTML(allotments) {
+    const rows = allotments.map(a => {
+        const start = formatDateTime(a.startTime);
+        const end   = formatDateTime(a.endTime);
+        const badgeClass = a.status === 'active' ? 'active' : 'expired';
+        return `
+            <tr>
+                <td>${a.resourceRequestId}</td>
+                <td>${start}</td>
+                <td>${end}</td>
+                <td><span class="status-badge ${badgeClass}">${a.status}</span></td>
+            </tr>`;
+    }).join('');
+
+    return `
+        <table class="allotments-table">
+            <thead>
+                <tr>
+                    <th>Request ID</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+        </table>`;
+}
+
+// ---- Exported render functions ----
 
 export function renderMachines(container, machines) {
     if (!machines.length) {
@@ -21,32 +52,15 @@ export function renderAllotments(content, { machine, allotments, message }) {
         return;
     }
 
-    const rows = allotments.map(a => {
-        const start = formatDateTime(a.startTime);
-        const end = formatDateTime(a.endTime);
-        const badgeClass = a.status === 'active' ? 'active' : 'expired';
-        return `
-            <tr>
-                <td>${a.resourceRequestId}</td>
-                <td>${start}</td>
-                <td>${end}</td>
-                <td><span class="status-badge ${badgeClass}">${a.status}</span></td>
-            </tr>`;
-    }).join('');
+    const firstDate = new Date(allotments[0].startTime);
 
     content.innerHTML = `
         ${title}
-        <table class="allotments-table">
-            <thead>
-                <tr>
-                    <th>Request ID</th>
-                    <th>Start Time</th>
-                    <th>End Time</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>${rows}</tbody>
-        </table>`;
+        <div class="allotments-calendar-host"></div>
+        ${buildTableHTML(allotments)}`;
+
+    const calendarHost = content.querySelector('.allotments-calendar-host');
+    mountAllotmentsCalendar(calendarHost, allotments, firstDate);
 }
 
 export function showLoadingAllotments(content) {
