@@ -1,36 +1,39 @@
-// Machine model for cluster resource sharing
-// Fields: MIGID, number of CPU cores, CPU RAM, GPU RAM
-
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 
 const machineSchema = new mongoose.Schema({
-    MIGID: {
-        type: String,
-        required: true,
-        unique: true
-    },
-    // cpuCores: {
-    //     type: Number,
-    //     required: true
-    // },
-    // cpuRam: {
-    //     type: Number,
-    //     required: true // in GB
-    // },
-    gpuRam: {
-        type: Number,
-        required: true // in GB
-    }
-    ,
-    assignedStudent: {
-        studentId: { type: mongoose.Schema.Types.ObjectId, ref: 'Student', required: false },
-        resourceRequestId: { type: mongoose.Schema.Types.ObjectId, ref: 'ResourceRequest', required: false }
-    }
-    ,
-    isAssigned: {
-        type: Boolean,
-        default: false
-    }
-});
+  MIGID: {
+    type: String,
+    required: true,
+    unique: true
+  },
+
+  gpuRam: {
+    type: Number,
+    required: true // in GB
+  },
+
+  ip: {
+    type: String,
+    required: true
+  },
+
+  port: {
+    type: Number,
+    default: 22
+  },
+
+  username: {
+    type: String,
+    required: true
+  },
+
+  sshPassword: {
+    type: String,
+    required: true
+  }
+
+}, { timestamps: true });
+
 
 module.exports = mongoose.model('Machine', machineSchema);
