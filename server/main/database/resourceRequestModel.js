@@ -14,6 +14,17 @@ const resourceRequestSchema = new mongoose.Schema({
     type: String, 
     required: true 
   },
+  duration: {
+    type: Number,
+    required: true,
+    min: 1,
+    max: 30
+  },
+  version: {
+    type: Number,
+    required: true,
+    default: 2
+  },
 
   // Status tracking
   teacher_action: { type: Boolean, default: false },

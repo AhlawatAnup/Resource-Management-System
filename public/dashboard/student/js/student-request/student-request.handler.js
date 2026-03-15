@@ -5,6 +5,7 @@ import {
     getLoggedInStudentId,
     showErrorMessage,
     getStudentVerificationStatus,
+    isValidDuration,
 } from '../student.utils.js';
 
 // Services
@@ -69,9 +70,10 @@ export async function handleResourceRequest(event) {
         const formData = {
             title: document.getElementById('title').value.trim(),
             purpose: document.getElementById('purpose').value.trim(),
+            duration: Number(document.getElementById('duration').value),
         };
 
-        if (!formData.title || !formData.purpose) {
+        if (!formData.title || !formData.purpose || !formData.duration) {
             throw new Error('Please fill in all required fields');
         }
 
@@ -85,6 +87,10 @@ export async function handleResourceRequest(event) {
 
         if (formData.purpose.length > 2000) {
             throw new Error('Purpose must not exceed 2000 characters');
+        }
+
+        if (!isValidDuration(formData.duration)) {
+            throw new Error('Duration must be a whole number between 1 and 30 days');
         }
 
         const studentId = await getLoggedInStudentId();

@@ -198,3 +198,8 @@ export function sortRequestsByDate(requests) {
 export function canDeleteRequest(request) {
     return !request.teacher_action && !request.admin_action && !request.is_verified;
 }
+
+export function isValidDuration(duration) {
+    return Number.isInteger(duration) && duration >= 1 && duration <= 30;
+}
+

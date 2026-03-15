@@ -1,6 +1,11 @@
 const { sendResourceRequestSubmittedEmail, sendTeacherStudentResourceRequestEmail } = require('../utils/email/emails.service');
 const { notifyAdmin } = require('../utils/web-push-notifications/notifyAdmin');
 const { notifyTeacher } = require('../utils/web-push-notifications/notifyTeacher');
+const ResourceRequest = require("../database/resourceRequestModel");
+const Student = require("../database/studentModel");
+const { addResourceRequestToStudent } = require("../utils/studentResourceUtils");
+const { isValidDuration } = require('../utils/common.utils');
+
 const Teacher = require('../database/teacherModel');
 // Delete a resource request by ID
 exports.deleteStudentResourceRequest = async (req, res) => {
@@ -51,9 +56,7 @@ exports.deleteStudentResourceRequest = async (req, res) => {
     return res.status(500).json({ error: "Failed to delete resource request" });
   }
 };
-const ResourceRequest = require("../database/resourceRequestModel");
-const Student = require("../database/studentModel");
-const { addResourceRequestToStudent } = require("../utils/studentResourceUtils");
+
 
 // Submit a new resource request
 exports.submitResourceRequest = async (req, res) => {
@@ -63,8 +66,7 @@ exports.submitResourceRequest = async (req, res) => {
       return res.status(401).json({ error: "Not authenticated" });
     }
 
-    // const { title, purpose, studentId } = req.body;
-  const { title, purpose, studentId } = req.body;
+    const { title, purpose, studentId, duration } = req.body;
     
     // Security check: ensure the student can only submit requests for themselves
     if (req.session.user.id !== studentId) {
@@ -72,10 +74,12 @@ exports.submitResourceRequest = async (req, res) => {
     }
 
     // Validate required fields
-    if (!title || !purpose || !studentId) {
+    const parsedDuration = Number(duration);
+
+    if (!title || !purpose || !studentId || !isValidDuration(parsedDuration)) {
       return res.status(400).json({ 
-        error: "Missing required fields",
-        required: ["title", "purpose", "studentId"]
+        error: "Missing or invalid required fields",
+        required: ["title", "purpose", "studentId", "duration"]
       });
     }
 
@@ -113,6 +117,7 @@ exports.submitResourceRequest = async (req, res) => {
       studentId,
       title: title.trim(),
       purpose: purpose.trim(),
+      duration: parsedDuration,
     });
 
     // Save to database
