@@ -203,3 +203,6 @@ export function isValidDuration(duration) {
     return Number.isInteger(duration) && duration >= 1 && duration <= 30;
 }
 
+export function formatDateTime(dateStr) {
+    return new Date(dateStr).toLocaleString();
+}
