@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Machine = require("../database/machineModel");
 
-exports.isValidDuration = function (duration) {
+const isValidDuration = function (duration) {
   return Number.isInteger(duration) && duration >= 1 && duration <= 30;
 };
 
@@ -12,4 +12,4 @@ const fetchMachineById = async (machineId) => {
     .lean();
 };
 
-module.exports = { fetchMachineById };
+module.exports = { fetchMachineById, isValidDuration };
