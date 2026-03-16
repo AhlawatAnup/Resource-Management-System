@@ -1,76 +1,43 @@
-import { formatDateTime } from '../student.utils.js';
-import { mountAllotmentsCalendar } from './student-allotments-calendar.ui.js';
+export const PageUI = {
+  renderMachineList(machines, onSelect) {
+    const flexbar = document.getElementById('machines-flexbar');
+    flexbar.innerHTML = ''; 
 
-function buildTableHTML(allotments) {
-    const rows = allotments.map(a => {
-        const start = formatDateTime(a.startTime);
-        const end   = formatDateTime(a.endTime);
-        const badgeClass = a.status === 'active' ? 'active' : 'expired';
-        return `
-            <tr>
-                <td>${a.resourceRequestId}</td>
-                <td>${start}</td>
-                <td>${end}</td>
-                <td><span class="status-badge ${badgeClass}">${a.status}</span></td>
-            </tr>`;
-    }).join('');
+    machines.forEach((machine, index) => {
+      const btn = document.createElement('div');
+      btn.className = 'machine-item-card'; 
+      btn.innerHTML = `
+        <div class="machine-info">
+          <strong style="display:block; font-size:0.8rem; line-height:1.05; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+            ${machine.MIGID} (${machine.gpuRam} GB)
+          </strong>
+        </div>
+      `;
 
-    return `
-        <table class="allotments-table">
-            <thead>
-                <tr>
-                    <th>Request ID</th>
-                    <th>Start Time</th>
-                    <th>End Time</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>${rows}</tbody>
-        </table>`;
-}
+      btn.onclick = () => {
+        this.highlightMachine(btn);
+        onSelect(machine);
+      };
 
-// ---- Exported render functions ----
+      flexbar.appendChild(btn);
 
-export function renderMachines(container, machines) {
-    if (!machines.length) {
-        container.innerHTML = '<span class="machine-bar-empty">No machines available.</span>';
-        return;
-    }
+      // Auto-click the first machine on initial load
+      if (index === 0) {
+        btn.click();
+      }
+    });
+  },
 
-    container.innerHTML = machines
-        .map(m => `<div class="machine-bar-item" data-machine-id="${m._id}">
-            <span class="migid">${m.MIGID}</span>
-            <span class="gpuram">(${m.gpuRam} GB)</span>
-        </div>`).join('');
-}
+  highlightMachine(selectedButton) {
+    document.querySelectorAll('#machines-flexbar .machine-item-card').forEach(button => {
+      button.classList.remove('selected');
+    });
+    selectedButton.classList.add('selected');
+  },
 
-export function renderAllotments(content, { machine, allotments, message }) {
-    const title = `<h2><i class="fas fa-network-wired"></i> ${machine.MIGID} &mdash; ${machine.gpuRam} GB GPU</h2>`;
-
-    if (!allotments || !allotments.length) {
-        content.innerHTML = `${title}<p class="allotments-empty">${message || 'No allotments found for this machine.'}</p>`;
-        return;
-    }
-
-    const firstDate = new Date(allotments[0].startTime);
-
-    content.innerHTML = `
-        ${title}
-        <div class="allotments-calendar-host"></div>
-        ${buildTableHTML(allotments)}`;
-
-    const calendarHost = content.querySelector('.allotments-calendar-host');
-    mountAllotmentsCalendar(calendarHost, allotments, firstDate);
-}
-
-export function showLoadingAllotments(content) {
-    content.innerHTML = '<p class="allotments-placeholder"><i class="fas fa-spinner fa-spin"></i> Loading allotments...</p>';
-}
-
-export function showEmptyAllotments(content) {
-    content.innerHTML = '<p class="allotments-placeholder"><i class="fas fa-arrow-left"></i> Select a machine to view its allotments.</p>';
-}
-
-export function showError(container, message) {
-    container.innerHTML = `<span class="machine-bar-empty">${message}</span>`;
-}
+  updateView(machineName) {
+    document.getElementById('placeholder-text').style.display = 'none';
+    document.getElementById('calendar-view').style.display = 'flex';
+    document.getElementById('selected-machine-name').innerText = `Schedule: ${machineName}`;
+  }
+};

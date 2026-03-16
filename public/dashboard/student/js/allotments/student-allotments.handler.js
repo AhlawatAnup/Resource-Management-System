@@ -1,44 +1,30 @@
-import * as service from './student-allotments.service.js';
-import * as ui from './student-allotments.ui.js';
+import { MachineService } from './student-allotments.service.js';
+import { DataUtils } from '../student.utils.js';
+import { PageUI } from './student-allotments.ui.js';
+import { CalendarUI } from './student-allotments-calendar.ui.js';
 
-export async function handleLoadMachines(container, content) {
+export const AllotmentsHandler = {
+  async init() {
     try {
-        const machines = await service.fetchMachines();
-        ui.renderMachines(container, machines);
-
-        const firstItem = container.querySelector('.machine-bar-item');
-        if (firstItem) {
-            firstItem.classList.add('selected');
-            await handleLoadAllotments(firstItem.dataset.machineId, content);
-        }
-
-        container.addEventListener('click', async (e) => {
-            const item = e.target.closest('.machine-bar-item');
-            if (!item) return;
-
-            const alreadySelected = item.classList.contains('selected');
-            container.querySelectorAll('.machine-bar-item').forEach(el => el.classList.remove('selected'));
-
-            if (!alreadySelected) {
-                item.classList.add('selected');
-                await handleLoadAllotments(item.dataset.machineId, content);
-            } else {
-                ui.showEmptyAllotments(content);
-            }
-        });
-    } catch (err) {
-        console.error('Error loading machines:', err);
-        ui.showError(container, 'Could not load machines.');
+      const machines = await MachineService.getMachines();
+      PageUI.renderMachineList(machines, (machine) => this.loadMachineSchedule(machine));
+    } catch (error) {
+      console.error("App Init Error:", error);
     }
-}
+  },
 
-export async function handleLoadAllotments(machineId, content) {
-    ui.showLoadingAllotments(content);
+  async loadMachineSchedule(machine) {
+    PageUI.updateView(machine.MIGID);
+    
     try {
-        const data = await service.fetchMachineAllotments(machineId);
-        ui.renderAllotments(content, data);
-    } catch (err) {
-        console.error('Error loading allotments:', err);
-        ui.showError(content, 'Could not load allotments.');
+      const data = await MachineService.getAllotments(machine._id);
+      const disabledDates = DataUtils.formatAllotments(data.allotments);
+      
+      // Initialize the separate Calendar UI
+      CalendarUI.init("#inline-calendar-anchor", disabledDates);
+    } catch (error) {
+      console.error("Schedule Load Error:", error);
+      Swal.fire('Error', 'Unable to fetch machine schedule', 'error');
     }
-}
+  }
+};

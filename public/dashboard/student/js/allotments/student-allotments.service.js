@@ -1,11 +1,13 @@
-export async function fetchMachines() {
-    const res = await fetch('/dashboard/student/get_machines');
-    if (!res.ok) throw new Error('Failed to fetch machines');
-    return res.json();
-}
+export const MachineService = {
+  async getMachines() {
+    const response = await fetch('/dashboard/student/get_machines');
+    if (!response.ok) throw new Error("Failed to fetch machines");
+    return await response.json();
+  },
 
-export async function fetchMachineAllotments(machineId) {
-    const res = await fetch(`/dashboard/student/allotments/${machineId}`);
-    if (!res.ok) throw new Error('Failed to fetch allotments');
-    return res.json();
-}
+  async getAllotments(machineId) {
+    const response = await fetch(`/dashboard/student/allotments/${machineId}`);
+    if (!response.ok) throw new Error("Failed to fetch allotments");
+    return await response.json();
+  }
+};

@@ -206,3 +206,12 @@ export function isValidDuration(duration) {
 export function formatDateTime(dateStr) {
     return new Date(dateStr).toLocaleString();
 }
+
+export const DataUtils = {
+  formatAllotments(allotments = []) {
+    return allotments.map(entry => ({
+      from: new Date(entry.startTime?.$date || entry.startTime),
+      to: new Date(entry.endTime?.$date || entry.endTime)
+    }));
+  }
+};
