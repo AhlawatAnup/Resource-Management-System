@@ -1,186 +1,140 @@
-/* Two-column layout: machines on left, calendar on right */
+/* --- 1. Variables (Centralized Theme) --- */
+:root {
+    --color-bg: #ffffff;
+    --color-border: #e5e7eb;
+    --color-text: #1f2937;
+    --color-muted: #6b7280;
+    
+    --color-available-bg: #f0fdf4;
+    --color-available-text: #2f6b3b;
+    --color-available-border: #bbf7d0;
+    
+    --color-booked-bg: #fff1f2;
+    --color-booked-text: #b45359;
+    --color-booked-border: #fecdd3;
+    
+    --radius-main: 12px;
+    --transition-fast: 0.2s ease;
+}
+
+/* --- 2. Layout & Containers --- */
 .allotments-page-layout {
     display: flex;
     align-items: flex-start;
-    gap: 20px;
+    gap: 24px;
 }
 
 .machines-side-panel {
     flex: 0 0 300px;
-    max-width: 300px;
 }
 
 .allotments-main-panel {
     flex: 1;
     min-width: 0;
-}
-
-.allotments-page-layout .machines-flexbar {
-    flex-direction: column;
-    flex-wrap: nowrap;
-    gap: 4px;
-    align-items: flex-start;
-    max-height: min(70vh, 560px);
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding-right: 6px;
-}
-
-.allotments-page-layout .machines-flexbar::-webkit-scrollbar {
-    width: 8px;
-}
-
-.allotments-page-layout .machines-flexbar::-webkit-scrollbar-thumb {
-    background: #d1d5db;
-    border-radius: 999px;
-}
-
-.allotments-page-layout .machines-flexbar::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-.allotments-page-layout .machine-item-card {
-    width: 70%;
-    max-width: 70%;
-}
-
-/* Container and Layout */
-.allotments-main-panel {
     padding: 20px;
 }
 
+/* --- 3. Machine List --- */
+.machines-flexbar {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: 8px;
+    max-height: calc(100vh - 240px);
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+#machines-flexbar {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+}
+
+.machine-item-card {
+    cursor: pointer;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: var(--color-bg);
+    transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.machine-item-card.selected {
+    background: #f9fafb;
+    border-color: #d1d5db;
+}
+
+/* --- 4. Calendar View (The Overrides) --- */
 #calendar-view {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
-    gap: 14px;
-    animation: fadeIn 0.3s ease-in-out;
+    animation: fadeIn 0.4s ease-out;
+}
+
+/* We use the ID #inline-calendar-anchor to increase specificity 
+   so we don't need !important to beat Flatpickr's defaults */
+#inline-calendar-anchor {
+    pointer-events: none;
+    user-select: none;
+}
+
+#inline-calendar-anchor .flatpickr-calendar {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-main);
+    box-shadow: none;
+}
+
+/* Day Styling: Available */
+#inline-calendar-anchor .flatpickr-day:not(.flatpickr-disabled):not(.prevMonthDay):not(.nextMonthDay) {
+    color: var(--color-available-text);
+    background: var(--color-available-bg);
+    border-color: var(--color-available-border);
+    font-weight: 600;
+}
+
+/* Day Styling: Booked/Disabled */
+#inline-calendar-anchor .flatpickr-day.flatpickr-disabled {
+    background: var(--color-booked-bg);
+    color: var(--color-booked-text);
+    border-color: var(--color-booked-border);
+    cursor: default;
+}
+
+/* Day Styling: Past Dates */
+#inline-calendar-anchor .flatpickr-day.past-date {
+    background: #f3f4f6;
+    color: #9ca3af;
+    border-color: transparent;
+}
+
+/* Reset selection styling for read-only mode */
+#inline-calendar-anchor .flatpickr-day.selected {
+    background: none;
+    border-color: transparent;
+}
+
+/* --- 5. Responsive Design --- */
+@media (max-width: 980px) {
+    .allotments-page-layout {
+        flex-direction: column;
+    }
+    
+    .machines-side-panel {
+        width: 100%;
+    }
+    
+    .machines-flexbar {
+        max-height: min(45vh, 420px);
+        overflow-y: auto;
+    }
 }
 
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
 }
-
-/* Strict Read-Only: Disable all clicks on the calendar */
-#inline-calendar-anchor {
-    display: inline-block;
-    margin: 0 auto;
-    pointer-events: none; /* User cannot click or select anything */
-    user-select: none;
-}
-
-#inline-calendar-anchor .flatpickr-calendar {
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    box-shadow: none;
-}
-
-#inline-calendar-anchor .flatpickr-months {
-    background: transparent;
-}
-
-#inline-calendar-anchor .flatpickr-current-month,
-#inline-calendar-anchor .flatpickr-monthDropdown-months,
-#inline-calendar-anchor .numInputWrapper {
-    color: #1f2937;
-}
-
-#inline-calendar-anchor .flatpickr-weekdays,
-#inline-calendar-anchor span.flatpickr-weekday {
-    background: transparent;
-}
-
-#inline-calendar-anchor span.flatpickr-weekday {
-    color: #6b7280;
-    font-weight: 600;
-}
-
-#inline-calendar-anchor .flatpickr-prev-month svg,
-#inline-calendar-anchor .flatpickr-next-month svg {
-    fill: #6b7280;
-}
-
-/* ALLOTTED SLOTS: Greyed out and struck through */
-.flatpickr-day.flatpickr-disabled, 
-.flatpickr-day.flatpickr-disabled:hover {
-    background: #fff1f2 !important;
-    color: #b45359 !important;
-    cursor: default !important;
-    text-decoration: none;
-    border-color: #fecdd3 !important;
-}
-
-/* FREE SLOTS: Clean Green Bold look */
-.flatpickr-day:not(.flatpickr-disabled):not(.prevMonthDay):not(.nextMonthDay) {
-    color: #2f6b3b !important;
-    font-weight: 600;
-    background: #f0fdf4;
-    border: 1px solid #bbf7d0 !important;
-}
-
-.flatpickr-day {
-    border-radius: 999px;
-}
-
-.flatpickr-day.today {
-    border-color: #9ca3af !important;
-}
-
-/* Calendar Header Styling */
-.flatpickr-months .flatpickr-month {
-    background: transparent;
-    color: #1f2937;
-    fill: #1f2937;
-}
-
-.flatpickr-current-month .flatpickr-monthDropdown-months {
-    font-weight: 700;
-}
-
-/* Hide the blue selection circle since it's read-only */
-.flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange {
-    background: transparent !important;
-    border-color: transparent !important;
-    color: inherit !important;
-}
-
-.machine-item-card {
-    cursor: pointer;
-    width: 100%;
-    max-width: 70%;
-    box-sizing: border-box;
-    padding: 14px 10px;
-    margin-bottom: 0;
-    border-radius: 6px;
-    border: 1px solid #eee;
-    background: #fff;
-    transition: all 0.2s;
-}
-
-.machine-item-card.selected {
-    background: #f9fafb !important;
-    border: 1px solid #d1d5db !important;
-    box-shadow: inset 0 0 5px rgba(0,0,0,0.02);
-}
-
-@media (max-width: 980px) {
-    .allotments-page-layout {
-        flex-direction: column;
-    }
-
-    .machines-side-panel {
-        flex: 1 1 auto;
-        max-width: 100%;
-        width: 100%;
-    }
-
-    .allotments-page-layout .machines-flexbar {
-        max-height: none;
-        overflow: visible;
-        padding-right: 0;
-    }
-}
-
