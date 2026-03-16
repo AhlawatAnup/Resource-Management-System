@@ -27,11 +27,22 @@ const FIRST_START_MAX        = 5;   // latest first start: N days from now
 
 const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
+function toSlotStart(date) {
+  const d = new Date(date);
+  d.setHours(0, 30, 0, 0);
+  return d;
+}
+
+function toSlotEnd(date) {
+  const d = new Date(date);
+  d.setHours(23, 30, 0, 0);
+  return d;
+}
+
 function daysFromNow(n) {
   const d = new Date();
-  d.setHours(0, 0, 0, 0);
   d.setDate(d.getDate() + n);
-  return d;
+  return toSlotStart(d);
 }
 
 function addDays(date, n) {
@@ -72,12 +83,12 @@ async function seed() {
       const student = students[randInt(0, students.length - 1)];
 
       const duration  = randInt(MIN_DURATION, MAX_DURATION);
-      const startTime = new Date(machineNextAvailable[machineKey]);
-      const endTime   = addDays(startTime, duration);
+      const startTime = toSlotStart(machineNextAvailable[machineKey]);
+      const endTime   = toSlotEnd(addDays(startTime, duration));
       const gap       = randInt(MIN_GAP, MAX_GAP);
 
       // Advance next available slot for this machine
-      machineNextAvailable[machineKey] = addDays(endTime, gap);
+      machineNextAvailable[machineKey] = toSlotStart(addDays(endTime, gap));
 
       // Resource request timestamp (1-3 days before start)
       const requestedAt = addDays(startTime, -randInt(1, 3));

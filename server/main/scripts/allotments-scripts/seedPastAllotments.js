@@ -23,6 +23,18 @@ const MachineAllotment = require("../../database/machineAllotmentModel.js.js");
 // How many past allotments to seed
 const SEED_COUNT = 5;
 
+function toSlotStart(date) {
+  const d = new Date(date);
+  d.setHours(0, 30, 0, 0);
+  return d;
+}
+
+function toSlotEnd(date) {
+  const d = new Date(date);
+  d.setHours(23, 30, 0, 0);
+  return d;
+}
+
 function daysAgo(n) {
   const d = new Date();
   d.setDate(d.getDate() - n);
@@ -56,8 +68,8 @@ async function seed() {
     // Allotment window: started 20 days ago, lasted 7 days → ended 13 days ago
     const startOffset = 20 + i;   // stagger each record slightly
     const duration    = 7;
-    const startTime   = daysAgo(startOffset);
-    const endTime     = daysAgo(startOffset - duration);
+    const startTime   = toSlotStart(daysAgo(startOffset));
+    const endTime     = toSlotEnd(daysAgo(startOffset - duration));
     const requestedAt = daysAgo(startOffset + 2); // requested 2 days before start
 
     // ── Create a ResourceRequest ───────────────────────────────────────────

@@ -6,28 +6,35 @@ export const CalendarUI = {
       this.instance.destroy();
     }
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const toSlotStart = (date) => {
+      const d = new Date(date);
+      d.setHours(0, 30, 0, 0);
+      return d;
+    };
+
+    const toSlotEnd = (date) => {
+      const d = new Date(date);
+      d.setHours(23, 30, 0, 0);
+      return d;
+    };
+
+    const today = toSlotStart(new Date());
 
     const isPastDate = (date) => {
-      const current = new Date(date);
-      current.setHours(0, 0, 0, 0);
+      const current = toSlotStart(date);
       return current < today;
     };
 
     const isBookedDate = (date) => {
-      const current = new Date(date);
-      current.setHours(0, 0, 0, 0);
+      const current = toSlotStart(date);
 
       return disabledDates.some((entry) => {
         if (!entry || !entry.from || !entry.to) {
           return false;
         }
 
-        const from = new Date(entry.from);
-        const to = new Date(entry.to);
-        from.setHours(0, 0, 0, 0);
-        to.setHours(0, 0, 0, 0);
+        const from = toSlotStart(entry.from);
+        const to = toSlotEnd(entry.to);
 
         return current >= from && current <= to;
       });
