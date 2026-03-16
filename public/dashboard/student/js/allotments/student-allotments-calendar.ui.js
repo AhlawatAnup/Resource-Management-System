@@ -9,13 +9,17 @@ function buildBookedDatesMap(allotments) {
     const map = {};
 
     for (const allotment of allotments) {
-        const start = new Date(allotment.startTime);
-        const end = new Date(allotment.endTime);
-        const day = new Date(start.getFullYear(), start.getMonth(), start.getDate());
-        const lastDay = new Date(end.getFullYear(), end.getMonth(), end.getDate());
+        const start = new Date(allotment.startTime.$date || allotment.startTime);
+        const end = new Date(allotment.endTime.$date || allotment.endTime);
+        let day = new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth(), start.getUTCDate()));
+        const lastDay = new Date(Date.UTC(end.getUTCFullYear(), end.getUTCMonth(), end.getUTCDate()));
 
         while (day <= lastDay) {
-            const key = `${day.getFullYear()}-${String(day.getMonth() + 1).padStart(2, '0')}-${String(day.getDate()).padStart(2, '0')}`;
+            const y = day.getUTCFullYear();
+            const m = String(day.getUTCMonth() + 1).padStart(2, '0');
+            const d = String(day.getUTCDate()).padStart(2, '0');
+            const key = `${y}-${m}-${d}`;
+
             if (!map[key]) {
                 map[key] = { active: false, expired: false };
             }
@@ -26,7 +30,7 @@ function buildBookedDatesMap(allotments) {
                 map[key].expired = true;
             }
 
-            day.setDate(day.getDate() + 1);
+            day.setUTCDate(day.getUTCDate() + 1);
         }
     }
 
@@ -78,16 +82,6 @@ function buildCalendarHTML(year, month, bookedDatesMap) {
                 ${dayCells.join('')}
             </div>
 
-            <div class="booking-calendar__legend">
-                <span class="booking-calendar__legend-item">
-                    <span class="booking-calendar__legend-dot booking-calendar__legend-dot--active"></span>
-                    Active
-                </span>
-                <span class="booking-calendar__legend-item">
-                    <span class="booking-calendar__legend-dot booking-calendar__legend-dot--expired"></span>
-                    Expired
-                </span>
-            </div>
         </div>`;
 }
 

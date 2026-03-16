@@ -6,6 +6,12 @@ export async function handleLoadMachines(container, content) {
         const machines = await service.fetchMachines();
         ui.renderMachines(container, machines);
 
+        const firstItem = container.querySelector('.machine-bar-item');
+        if (firstItem) {
+            firstItem.classList.add('selected');
+            await handleLoadAllotments(firstItem.dataset.machineId, content);
+        }
+
         container.addEventListener('click', async (e) => {
             const item = e.target.closest('.machine-bar-item');
             if (!item) return;
