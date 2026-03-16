@@ -21,10 +21,14 @@ export const AllotmentsHandler = {
       const disabledDates = DataUtils.formatAllotments(data.allotments);
       
       // Initialize the separate Calendar UI
+      // The color logic is now handled internally by CalendarUI.init
       CalendarUI.init("#inline-calendar-anchor", disabledDates);
     } catch (error) {
       console.error("Schedule Load Error:", error);
-      Swal.fire('Error', 'Unable to fetch machine schedule', 'error');
+      // Assuming Swal is available globally as in your original snippet
+      if (typeof Swal !== 'undefined') {
+        Swal.fire('Error', 'Unable to fetch machine schedule', 'error');
+      }
     }
   }
 };

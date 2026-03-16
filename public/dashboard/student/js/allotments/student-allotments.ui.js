@@ -36,8 +36,12 @@ export const PageUI = {
   },
 
   updateView(machineName) {
-    document.getElementById('placeholder-text').style.display = 'none';
-    document.getElementById('calendar-view').style.display = 'flex';
-    document.getElementById('selected-machine-name').innerText = `Schedule: ${machineName}`;
+    const placeholder = document.getElementById('placeholder-text');
+    const calendarView = document.getElementById('calendar-view');
+    const machineTitle = document.getElementById('selected-machine-name');
+
+    if (placeholder) placeholder.style.display = 'none';
+    if (calendarView) calendarView.style.display = 'flex';
+    if (machineTitle) machineTitle.innerText = `Schedule: ${machineName}`;
   }
 };

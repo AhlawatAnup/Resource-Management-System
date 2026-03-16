@@ -1,140 +1,83 @@
 /**
- * seedDenseFutureAllotments.js
+ * generateMachineSlots.js
  *
- * Creates many future allotments for all machines with random durations and gaps.
- * This version ensures every machine gets multiple allotments.
+ * Creates 10 allotment slots for ONE machine.
+ * Each slot lasts 2–5 days.
+ * Some slots are consecutive, some have gaps.
+ *
+ * Usage:
+ * node server/main/scripts/generateMachineSlots.js
  */
 
 const path = require("path");
-require("dotenv").config({ path: path.resolve(__dirname, "../../../../.env") });
+require("dotenv").config({
+  path: path.resolve(__dirname, "../../../../.env"),
+});
 
-const mongoose        = require("mongoose");
-const connectDB       = require("../../database/db.js");
-const Student         = require("../../database/studentModel.js");
-const Machine         = require("../../database/machineModel.js");
-const ResourceRequest = require("../../database/resourceRequestModel.js");
-const MachineAllotment = require("../../database/machineAllotmentModel.js.js");
+const mongoose = require("mongoose");
+const connectDB = require("../../database/db.js");
 
-// ── Config ───────────────────────────────────────────────────────────────
-const ALLOTMENTS_PER_MACHINE = 3;   // how many future allotments per machine
-const MIN_DURATION           = 3;   // days
-const MAX_DURATION           = 14;  // days (max model limit is 30)
-const MIN_GAP                = 1;   // days between consecutive slots
-const MAX_GAP                = 5;
-const FIRST_START_MIN        = 1;   // earliest start: N days from now
-const FIRST_START_MAX        = 5;   // latest first start: N days from now
-// ─────────────────────────────────────────────────────────────────────────
+const MachineAllotment = require("../../database/machineAllotmentModel.js");
 
-const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+const MACHINE_ID = "69b69243dcb39f68ee912f34";
 
-function toSlotStart(date) {
-  const d = new Date(date);
-  d.setHours(0, 30, 0, 0);
-  return d;
+function randomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function toSlotEnd(date) {
-  const d = new Date(date);
-  d.setHours(23, 30, 0, 0);
-  return d;
-}
-
-function daysFromNow(n) {
-  const d = new Date();
-  d.setDate(d.getDate() + n);
-  return toSlotStart(d);
-}
-
-function addDays(date, n) {
-  const d = new Date(date);
-  d.setDate(d.getDate() + n);
-  return d;
-}
-
-async function seed() {
+async function generateSlots() {
   await connectDB();
 
-  const students = await Student.find({ is_verified: true }).lean();
-  const machines  = await Machine.find().lean();
+  const TOTAL_SLOTS = 10;
 
-  if (!students.length) {
-    console.error("❌ No verified students found.");
-    await mongoose.disconnect(); return;
-  }
-  if (!machines.length) {
-    console.error("❌ No machines found.");
-    await mongoose.disconnect(); return;
-  }
+  console.log(`Generating ${TOTAL_SLOTS} allotments...\n`);
 
-  // Track next available start time per machine
-  const machineNextAvailable = {};
-  machines.forEach(m => {
-    machineNextAvailable[m._id.toString()] = daysFromNow(randInt(FIRST_START_MIN, FIRST_START_MAX));
-  });
+  let currentDate = new Date("2026-03-01T09:00:00Z");
 
-  console.log(`Seeding future allotments (dense version)…\n`);
+  for (let i = 0; i < TOTAL_SLOTS; i++) {
+    const duration = randomInt(2, 5); // slot duration
 
-  let allotmentCount = 0;
+    const startTime = new Date(currentDate);
 
-  for (const machine of machines) {
-    const machineKey = machine._id.toString();
+    const endTime = new Date(startTime);
+    endTime.setDate(endTime.getDate() + duration);
 
-    for (let i = 0; i < ALLOTMENTS_PER_MACHINE; i++) {
-      const student = students[randInt(0, students.length - 1)];
+    const status = endTime < new Date() ? "expired" : "active";
 
-      const duration  = randInt(MIN_DURATION, MAX_DURATION);
-      const startTime = toSlotStart(machineNextAvailable[machineKey]);
-      const endTime   = toSlotEnd(addDays(startTime, duration));
-      const gap       = randInt(MIN_GAP, MAX_GAP);
+    const mongoose = require("mongoose");
 
-      // Advance next available slot for this machine
-      machineNextAvailable[machineKey] = toSlotStart(addDays(endTime, gap));
+await MachineAllotment.create({
+  machineId: MACHINE_ID,
+  resourceRequestId: new mongoose.Types.ObjectId(), // dummy request
+  startTime,
+  endTime,
+  status,
+  createdAt: startTime
+});
 
-      // Resource request timestamp (1-3 days before start)
-      const requestedAt = addDays(startTime, -randInt(1, 3));
+    console.log(
+      `Slot ${i + 1}: ${startTime.toISOString().slice(0,10)} → ${endTime
+        .toISOString()
+        .slice(0,10)}`
+    );
 
-      // Create ResourceRequest
-      const request = await ResourceRequest.create({
-        studentId:        student._id,
-        machineId:        machine._id,
-        title:            `[SEED] Dense Future Request ${allotmentCount + 1}`,
-        purpose:          "Seeded dense future allotment for testing",
-        duration,
-        version:          2,
-        teacher_action:   true,
-        teacher_verified: true,
-        admin_action:     true,
-        admin_verified:   true,
-        is_verified:      true,
-        vmCredentials: {
-          ip:    machine.ip,
-          migId: machine.MIGID,
-        },
-        createdAt:  requestedAt,
-        updatedAt:  requestedAt,
-      });
+    /**
+     * Random gap logic
+     * 50% chance consecutive
+     * 50% chance gap of 1–3 days
+     */
+    const gap = Math.random() < 0.5 ? 0 : randomInt(1, 3);
 
-      // Create MachineAllotment
-      const allotment = await MachineAllotment.create({
-        machineId:         machine._id,
-        resourceRequestId: request._id,
-        startTime,
-        endTime,
-        status: "active",
-      });
-
-      console.log(
-        `✅ [${++allotmentCount}] ${student.name ?? student.email} → ${machine.MIGID}  (${machine.ip})  ` +
-        `window: ${startTime.toDateString()} → ${endTime.toDateString()} (${duration}d), gap: ${gap}d`
-      );
-    }
+    currentDate = new Date(endTime);
+    currentDate.setDate(currentDate.getDate() + gap);
   }
 
-  console.log("\nSeeding complete. Total allotments:", allotmentCount);
+  console.log("\n✅ Allotments created successfully.");
+
   await mongoose.disconnect();
 }
 
-seed().catch(err => {
-  console.error("Fatal error:", err);
+generateSlots().catch((err) => {
+  console.error(err);
   process.exit(1);
 });

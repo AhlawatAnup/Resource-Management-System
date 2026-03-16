@@ -68,7 +68,7 @@
     border-color: #d1d5db;
 }
 
-/* --- 4. Calendar View (The Overrides) --- */
+/* --- 4. Calendar View --- */
 #calendar-view {
     display: flex;
     flex-direction: column;
@@ -76,8 +76,6 @@
     animation: fadeIn 0.4s ease-out;
 }
 
-/* We use the ID #inline-calendar-anchor to increase specificity 
-   so we don't need !important to beat Flatpickr's defaults */
 #inline-calendar-anchor {
     pointer-events: none;
     user-select: none;
@@ -89,7 +87,7 @@
     box-shadow: none;
 }
 
-/* Day Styling: Available */
+/* Day Styling: Available (Default) */
 #inline-calendar-anchor .flatpickr-day:not(.flatpickr-disabled):not(.prevMonthDay):not(.nextMonthDay) {
     color: var(--color-available-text);
     background: var(--color-available-bg);
@@ -97,18 +95,12 @@
     font-weight: 600;
 }
 
-/* Day Styling: Booked Dates */
+/* Day Styling: Booked Dates - Removed !important so JS colors win */
 #inline-calendar-anchor .flatpickr-day.booked-date {
-    background: var(--color-booked-bg);
-    color: var(--color-booked-text);
-    border-color: var(--color-booked-border);
     cursor: default;
 }
 
 #inline-calendar-anchor .flatpickr-day.flatpickr-disabled.booked-date {
-    background: var(--color-booked-bg) !important;
-    color: var(--color-booked-text) !important;
-    border-color: var(--color-booked-border) !important;
     opacity: 1 !important;
 }
 
@@ -119,7 +111,7 @@
     opacity: 1 !important;
 }
 
-/* Day Styling: Past Dates */
+/* Day Styling: Past Dates - Keep !important to ensure past dates look "disabled" */
 #inline-calendar-anchor .flatpickr-day.past-date,
 #inline-calendar-anchor .flatpickr-day.flatpickr-disabled.past-date,
 #inline-calendar-anchor .flatpickr-day.booked-date.past-date,
@@ -129,7 +121,7 @@
     border-color: transparent !important;
 }
 
-/* Reset selection styling for read-only mode */
+/* Reset selection styling */
 #inline-calendar-anchor .flatpickr-day.selected {
     background: none;
     border-color: transparent;
