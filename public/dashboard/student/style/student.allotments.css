@@ -20,6 +20,23 @@
     flex-wrap: nowrap;
     gap: 4px;
     align-items: flex-start;
+    max-height: min(70vh, 560px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 6px;
+}
+
+.allotments-page-layout .machines-flexbar::-webkit-scrollbar {
+    width: 8px;
+}
+
+.allotments-page-layout .machines-flexbar::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 999px;
+}
+
+.allotments-page-layout .machines-flexbar::-webkit-scrollbar-track {
+    background: transparent;
 }
 
 .allotments-page-layout .machine-item-card {
@@ -158,6 +175,12 @@
         flex: 1 1 auto;
         max-width: 100%;
         width: 100%;
+    }
+
+    .allotments-page-layout .machines-flexbar {
+        max-height: none;
+        overflow: visible;
+        padding-right: 0;
     }
 }
 
