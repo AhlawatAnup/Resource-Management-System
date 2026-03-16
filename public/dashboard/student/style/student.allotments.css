@@ -5,13 +5,13 @@
     --color-text: #1f2937;
     --color-muted: #6b7280;
     
-    --color-available-bg: #f0fdf4;
-    --color-available-text: #2f6b3b;
-    --color-available-border: #bbf7d0;
+    --color-available-bg: #dcfce7;
+    --color-available-text: #166534;
+    --color-available-border: #86efac;
     
-    --color-booked-bg: #fff1f2;
-    --color-booked-text: #b45359;
-    --color-booked-border: #fecdd3;
+    --color-booked-bg: #fee2e2;
+    --color-booked-text: #991b1b;
+    --color-booked-border: #fca5a5;
     
     --radius-main: 12px;
     --transition-fast: 0.2s ease;
@@ -97,19 +97,36 @@
     font-weight: 600;
 }
 
-/* Day Styling: Booked/Disabled */
-#inline-calendar-anchor .flatpickr-day.flatpickr-disabled {
+/* Day Styling: Booked Dates */
+#inline-calendar-anchor .flatpickr-day.booked-date {
     background: var(--color-booked-bg);
     color: var(--color-booked-text);
     border-color: var(--color-booked-border);
     cursor: default;
 }
 
+#inline-calendar-anchor .flatpickr-day.flatpickr-disabled.booked-date {
+    background: var(--color-booked-bg) !important;
+    color: var(--color-booked-text) !important;
+    border-color: var(--color-booked-border) !important;
+    opacity: 1 !important;
+}
+
+#inline-calendar-anchor .flatpickr-day.free-date {
+    background: var(--color-available-bg) !important;
+    color: var(--color-available-text) !important;
+    border-color: var(--color-available-border) !important;
+    opacity: 1 !important;
+}
+
 /* Day Styling: Past Dates */
-#inline-calendar-anchor .flatpickr-day.past-date {
-    background: #f3f4f6;
-    color: #9ca3af;
-    border-color: transparent;
+#inline-calendar-anchor .flatpickr-day.past-date,
+#inline-calendar-anchor .flatpickr-day.flatpickr-disabled.past-date,
+#inline-calendar-anchor .flatpickr-day.booked-date.past-date,
+#inline-calendar-anchor .flatpickr-day.flatpickr-disabled.booked-date.past-date {
+    background: #f3f4f6 !important;
+    color: #9ca3af !important;
+    border-color: transparent !important;
 }
 
 /* Reset selection styling for read-only mode */
