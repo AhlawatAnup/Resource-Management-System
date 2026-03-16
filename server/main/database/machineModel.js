@@ -31,7 +31,12 @@ const machineSchema = new mongoose.Schema({
   sshPassword: {
     type: String,
     required: true
-  }
+  },
+  version: {
+    type: Number,
+    required: true,
+    default: 2
+  },
 
 }, { timestamps: true });
 
