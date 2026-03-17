@@ -10,9 +10,7 @@
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
-    <link rel="stylesheet" href="/dashboard/student/style/student.dashboard.css" />
-    <link rel="stylesheet" href="/dashboard/student/style/student.request.css" />
-    <link rel="stylesheet" href="/dashboard/student/style/student.table.css" />
+    <link rel="stylesheet" href="/dashboard/admin/style/admin.dashboard.css" />
     <link rel="stylesheet" href="/dashboard/common/style/allotments/machines-flexbar.css" />
     <link rel="stylesheet" href="/dashboard/common/style/allotments/allotments-calendar.css" />
     <link rel="stylesheet" href="/dashboard/common/style/allotments/allotments.css" />
@@ -31,19 +29,19 @@
 
         <nav class="nav-menu">
             <a href="/dashboard" class="nav-item">
-                <i class="fas fa-home"></i> Home
+                <i class="fas fa-home"></i> Dashboard
             </a>
-            <a href="/dashboard/student/request-resources" class="nav-item">
-                <i class="fas fa-plus-circle"></i> Request Resources
-            </a>
-            <a href="/dashboard/student/view-requests" class="nav-item">
+            <a href="/dashboard/admin/view-requests" class="nav-item">
                 <i class="fas fa-list"></i> View Resource Requests
             </a>
-            <a href="/dashboard/student/allotments" class="nav-item active">
+            <a href="/dashboard/admin/allotments" class="nav-item active">
                 <i class="fas fa-network-wired"></i> Allotments
             </a>
-            <a href="/dashboard/student/about-us" class="nav-item">
-                <i class="fas fa-info-circle"></i> About Us
+            <a href="/dashboard/admin/machines-page" class="nav-item">
+                <i class="fas fa-desktop"></i> Machines
+            </a>
+            <a href="/dashboard/admin/profile" class="nav-item">
+                <i class="fas fa-user"></i> Profile
             </a>
         </nav>
 
@@ -54,9 +52,10 @@
         </div>
     </div>
 
-    <main class="main-content">
-        <header class="header">
-            <div class="welcome-section">
+    <div class="main-wrapper">
+    <main class="main-content" style="padding: 24px;">
+        <header class="page-header">
+            <div class="header-info">
                 <h1 id="page-title">Resource Allotments</h1>
                 <p>Select a machine to view its monthly availability.</p>
             </div>
@@ -75,7 +74,7 @@
 
                 <div class="allotments-main-panel">
                     <div class="allotments-card" style="width: 100%; min-height: 500px; display: flex; align-items: center; justify-content: center; background: #fff; border-radius: 12px;">
-                        
+
                         <div id="allotments-content" style="width: 100%;">
                             <div id="placeholder-text" class="allotments-placeholder" style="text-align: center; color: #888;">
                                 <i class="fas fa-calendar-alt" style="font-size: 3rem; margin-bottom: 15px; display: block;"></i>
@@ -84,7 +83,7 @@
 
                             <div id="calendar-view" style="display: none; text-align: center; width: 100%;">
                                 <h2 id="selected-machine-name" style="margin-bottom: 20px; color: #333; font-weight: 600;"></h2>
-                                
+
                                 <div id="inline-calendar-anchor"></div>
 
                                 <div class="calendar-legend" style="margin-top: 25px; display: flex; justify-content: center; gap: 30px; border-top: 1px solid #eee; padding-top: 20px;">
@@ -105,6 +104,7 @@
             </div>
         </div>
     </main>
+    </div>
 
     <script type="module" src="/dashboard/common/js/allotments/allotments.main.js"></script>
 </body>

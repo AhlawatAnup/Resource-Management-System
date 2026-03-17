@@ -1,14 +1,13 @@
 export const CalendarUI = {
   instance: null,
 
-  // Simple hash function to generate a consistent color for an allotment
   getColorForAllotment(entry) {
     const str = `${entry.from}-${entry.to}`;
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
       hash = str.charCodeAt(i) + ((hash << 5) - hash);
     }
-    // Generate HSL for better control over "Pastel" look (High Lightness, Low Saturation)
+
     const h = Math.abs(hash) % 360;
     return {
       bg: `hsl(${h}, 70%, 90%)`,
@@ -41,7 +40,6 @@ export const CalendarUI = {
       return current < today;
     };
 
-    // Modified to return the entry itself so we can get its color
     const getBookedEntry = (date) => {
       const current = toSlotStart(date);
 

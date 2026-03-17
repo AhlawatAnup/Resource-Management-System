@@ -10,7 +10,9 @@ const {
   updateStudentVerification,
   updateResourceRequestVerification,
   editResourceRequest,
-  deleteStudentAndResources
+  deleteStudentAndResources,
+  getAllMachines,
+  getMachineWiseActiveAllotments
 } = require("../controllers/common.controller.js");
 
 
@@ -36,6 +38,11 @@ router.get("/about-us", isTeacher, (req, res) => {
     path.join(publicPath, "dashboard", "teacher", "about-us.html")
   );
 });
+router.get("/allotments", isTeacher, (req, res) => {
+  res.sendFile(
+    path.join(publicPath, "dashboard", "teacher", "allotments.html")
+  );
+});
 
 
 router.get("/student_data/:stu_id", student_data);
@@ -47,5 +54,8 @@ router.put("/edit_request/:request_id", editResourceRequest);
 router.put("/verify_request/:request_id", updateResourceRequestVerification);
 
 router.delete("/delete_student/:studentId", deleteStudentAndResources);  // Delete student and their resource requests (teacher)
+
+router.get("/get_machines", getAllMachines);
+router.get("/allotments/:machineId", getMachineWiseActiveAllotments);
 
 module.exports = router;

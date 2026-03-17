@@ -31,7 +31,9 @@ const {
   updateStudentVerification,
   updateResourceRequestVerification,
   editResourceRequest,
-  deleteStudentAndResources
+  deleteStudentAndResources,
+  getAllMachines,
+  getMachineWiseActiveAllotments
 } = require("../controllers/common.controller.js");
 
 const router = express.Router();
@@ -54,6 +56,9 @@ router.get("/profile", (req, res) => {
 });
 router.get("/machines-page", (req, res) => {
   res.sendFile(path.join(publicPath, "dashboard", "admin", "machines.html"));
+});
+router.get("/allotments", (req, res) => {
+  res.sendFile(path.join(publicPath, "dashboard", "admin", "allotments.html"));
 });
 
 // Admin dashboard data
@@ -105,5 +110,8 @@ router.get('/machines', isAdmin, getMachines);
 router.post('/create-machine', isAdmin, createMachine);
 router.put('/machines/:id', isAdmin, updateMachine);
 router.delete('/machines/:id', isAdmin, deleteMachine);
+
+router.get('/get_machines', isAdmin, getAllMachines);
+router.get('/allotments/:machineId', isAdmin, getMachineWiseActiveAllotments);
 
 module.exports = router;
