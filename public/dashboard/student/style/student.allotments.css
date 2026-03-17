@@ -95,30 +95,28 @@
     font-weight: 600;
 }
 
-/* Day Styling: Booked Dates - Removed !important so JS colors win */
 #inline-calendar-anchor .flatpickr-day.booked-date {
     cursor: default;
 }
 
 #inline-calendar-anchor .flatpickr-day.flatpickr-disabled.booked-date {
-    opacity: 1 !important;
+    opacity: 1;
 }
 
 #inline-calendar-anchor .flatpickr-day.free-date {
-    background: var(--color-available-bg) !important;
-    color: var(--color-available-text) !important;
-    border-color: var(--color-available-border) !important;
-    opacity: 1 !important;
+    background: var(--color-available-bg);
+    color: var(--color-available-text);
+    border-color: var(--color-available-border);
+    opacity: 1;
 }
 
-/* Day Styling: Past Dates - Keep !important to ensure past dates look "disabled" */
 #inline-calendar-anchor .flatpickr-day.past-date,
 #inline-calendar-anchor .flatpickr-day.flatpickr-disabled.past-date,
 #inline-calendar-anchor .flatpickr-day.booked-date.past-date,
 #inline-calendar-anchor .flatpickr-day.flatpickr-disabled.booked-date.past-date {
-    background: #f3f4f6 !important;
-    color: #9ca3af !important;
-    border-color: transparent !important;
+    background: #f3f4f6;
+    color: #9ca3af;
+    border-color: transparent;
 }
 
 /* Reset selection styling */
