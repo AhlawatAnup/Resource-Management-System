@@ -82,6 +82,8 @@ export const CalendarUI = {
           dayElem.style.color = colors.text;
           dayElem.style.borderColor = colors.border;
           dayElem.style.opacity = "1";
+          dayElem.style.textDecoration = "line-through";
+          dayElem.style.textDecorationThickness = "3px";
         }
 
         if (isPastDate(dayElem.dateObj)) {
@@ -93,9 +95,9 @@ export const CalendarUI = {
 
         if (!bookedEntry && !isPastDate(dayElem.dateObj)) {
           dayElem.classList.add("free-date");
-          dayElem.style.backgroundColor = "#dcfce7";
-          dayElem.style.color = "#166534";
-          dayElem.style.borderColor = "#86efac";
+          dayElem.style.backgroundColor = "#a7f3d0";
+          dayElem.style.color = "#065f46";
+          dayElem.style.borderColor = "#02a865";
         }
 
         if (!dayElem.classList.contains("flatpickr-disabled")) {
