@@ -325,12 +325,15 @@ exports.updateResourceRequestVerification = async (req, res) => {
       return res.status(404).json({ error: "Machine not found" });
     }
 
-    // 🔹 Get last allotment
-    const lastAllotment = await MachineAllotment.findOne({ machineId: machine._id })
-      .sort({ endTime: -1 })
-      .select("endTime");
+    // 🔹 Get latest endTime across ALL allotments (true max)
+    const latestEndTimeResult = await MachineAllotment.aggregate([
+      { $match: { machineId: machine._id } },
+      { $group: { _id: null, maxEndTime: { $max: "$endTime" } } }
+    ]);
 
-    const lastAllotmentEndTime = lastAllotment?.endTime || null;
+    const lastAllotmentEndTime = latestEndTimeResult.length > 0
+      ? latestEndTimeResult[0].maxEndTime
+      : null;
 
     // 🔹 Calculate new window (PURE UTC LOGIC)
     const { startTime, endTime } = calculateAllotmentWindow(
