@@ -108,7 +108,7 @@ export function getStudentStatusClass(student) {
 }
 
 export function getRequestStatus(request) {
-    if (request.teacher_verified && request.admin_verified && request.is_verified) {
+    if (request.is_verified) {
         return 'approved';
     }
 
@@ -123,7 +123,7 @@ export function getRequestStatus(request) {
 }
 
 export function getRequestStatusClass(request) {
-    if (request.teacher_verified && request.admin_verified && request.is_verified) {
+    if (request.is_verified) {
         return 'status-approved';
     }
 
@@ -143,7 +143,7 @@ export function getRequestStatusClass(request) {
 }
 
 export function getRequestStatusIcon(request) {
-    if (request.teacher_verified && request.admin_verified && request.is_verified) {
+    if (request.is_verified) {
         return '✓';
     }
 
@@ -162,7 +162,7 @@ export function getRequestStatusIcon(request) {
 }
 
 export function getRequestStatusText(request) {
-    if (request.teacher_verified && request.admin_verified && request.is_verified) {
+    if (request.is_verified) {
         return 'Approved';
     }
 
