@@ -9,7 +9,8 @@ import {
 // Services
 import {
     fetchStudentRequests,
-    deleteStudentRequest
+    deleteStudentRequest,
+    fetchRequestAllotmentTime
 } from './student-view-request.service.js';
 
 // UI
@@ -79,6 +80,8 @@ async function loadRequests(studentId) {
 
         renderAllRequests(allRequests, handleDeleteRequest, reloadPage);
 
+        updateAccessMachineButtons(allRequests);
+
     } catch (error) {
         console.error('Error loading requests:', error);
         document.getElementById('all-requests-list').innerHTML =
@@ -112,6 +115,45 @@ async function handleDeleteRequest(requestId) {
             icon: 'error',
             draggable: true
         });
+    }
+}
+
+async function updateAccessMachineButtons(requests) {
+    for (const request of requests) {
+        if (!request.is_verified) continue;
+
+        const btn = document.querySelector(
+            `.access-machine-btn[data-request-id="${request._id}"]`
+        );
+
+        if (!btn) continue;
+
+        btn.disabled = true;
+        btn.textContent = 'Checking...';
+
+        try {
+            const data = await fetchRequestAllotmentTime(request._id);
+
+            if (data && data.startTime && data.endTime) {
+                const now = Date.now();
+                const start = new Date(data.startTime).getTime();
+                const end = new Date(data.endTime).getTime();
+
+                if (now >= start && now <= end) {
+                    btn.disabled = false;
+                    btn.textContent = 'Access Machine';
+                } else {
+                    btn.disabled = true;
+                    btn.textContent = 'Access Machine (Unavailable)';
+                }
+            } else {
+                btn.disabled = true;
+                btn.textContent = 'Access Machine (No Allotment)';
+            }
+        } catch (err) {
+            btn.disabled = true;
+            btn.textContent = 'Access Machine (Error)';
+        }
     }
 }
 
