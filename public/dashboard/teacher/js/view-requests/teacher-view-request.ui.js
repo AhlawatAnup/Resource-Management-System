@@ -41,6 +41,12 @@ export function renderResourceRequests(requests) {
         </div>
       </td>
       <td>
+        <span>${request.machineId && request.machineId.MIGID ? request.machineId.MIGID : '-'}</span>
+      </td>
+      <td>
+        <span>${request.duration ? request.duration : '-'}</span>
+      </td>
+      <td>
         <span class="badge ${statusInfo.class}">${statusInfo.text}</span>
       </td>
       <td>
