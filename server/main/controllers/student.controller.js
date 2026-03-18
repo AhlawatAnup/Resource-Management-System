@@ -4,6 +4,7 @@ const { notifyTeacher } = require('../utils/web-push-notifications/notifyTeacher
 const ResourceRequest = require("../database/resourceRequestModel");
 const Student = require("../database/studentModel");
 const Machine = require("../database/machineModel");
+const MachineAllotment = require("../database/machineAllotmentModel.js.js");
 const { addResourceRequestToStudent } = require("../utils/studentResourceUtils");
 const { isValidDuration } = require('../utils/common.utils');
 const mongoose = require('mongoose');
@@ -267,5 +268,28 @@ exports.getStudentResourceRequests = async (req, res) => {
   } catch (error) {
     console.error("Error fetching student resource requests:", error);
     return res.status(500).json({ error: "Failed to fetch resource requests" });
+  }
+};
+
+exports.getRequestAllotmentTime = async (req, res) => {
+  try {
+    const { requestId } = req.params;
+    if (!requestId) {
+      return res.status(400).json({ error: "Request ID is required" });
+    }
+
+    // Find the allotment for this request
+    const allotment = await MachineAllotment.findOne({ resourceRequestId: requestId });
+    if (!allotment) {
+      return res.status(404).json({ error: "No allotment found for this request" });
+    }
+
+    return res.json({
+      startTime: allotment.startTime,
+      endTime: allotment.endTime
+    });
+  } catch (error) {
+    console.error("Error fetching allotment time:", error);
+    return res.status(500).json({ error: "Failed to fetch allotment time" });
   }
 };

@@ -12,8 +12,10 @@ const {
 const {
   submitResourceRequest,
   getStudentResourceRequests,
-  deleteStudentResourceRequest
+  deleteStudentResourceRequest,
+  getRequestAllotmentTime,
 } = require("../controllers/student.controller.js");
+
 
 const router = express.Router();
 const publicPath = path.join(__dirname, "../../../public");
@@ -53,5 +55,6 @@ router.get("/resource-requests/:studentId", getStudentResourceRequests);
 //machines
 router.get("/get_machines", getAllMachines);
 router.get("/allotments/:machineId", getMachineWiseActiveAllotments);
+router.get("/allotment-time/:requestId", getRequestAllotmentTime);
 
 module.exports = router;
