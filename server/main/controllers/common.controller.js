@@ -345,7 +345,7 @@ exports.updateResourceRequestVerification = async (req, res) => {
     const updateData = {
       teacher_action: true,
       teacher_verified: is_verified,
-      is_verified: true,
+      is_verified: is_verified, 
       updatedAt: new Date()
     };
 

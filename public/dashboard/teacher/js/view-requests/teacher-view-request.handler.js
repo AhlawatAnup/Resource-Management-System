@@ -76,14 +76,10 @@ export async function updateRequestVerificationHandler(requestId, isVerified) {
     const { ok } = await verifyRequest(requestId, isVerified);
     if (!ok) throw new Error('Failed to update request verification');
 
-    const idx = resourceRequests.findIndex(r => r._id === requestId);
-    if (idx !== -1) {
-      resourceRequests[idx].teacher_verified = isVerified;
-      resourceRequests[idx].teacher_action = true;
-    }
-
-    filterRequestsHandler(document.getElementById('searchInput').value);
     showNotification(`Resource request ${isVerified ? 'approved' : 'declined'} successfully!`, 'success');
+    setTimeout(() => {
+      window.location.reload();
+    }, 1000);
 
   } catch (err) {
     console.error('Error updating request verification:', err);
