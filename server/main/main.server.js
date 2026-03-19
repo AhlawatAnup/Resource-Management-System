@@ -10,6 +10,9 @@ const schedule = require("node-schedule");
 const { runBackup } = require("./services/backup");
 const pushSubscriptionRoutes = require("./routes/pushSubscription.route.js");
 const { checkExpiringResourceRequests } = require("./services/resourceExpiryNotifier");
+const { createProxyMiddleware } = require('http-proxy-middleware');
+const { getMachineByMigid } = require('./controllers/proxy.controller.js');
+
 
 // ✅ Connect to DB
 connectDB();
@@ -119,6 +122,127 @@ schedule.scheduleJob(expiryNotifySchedule, async () => {
     console.error('Scheduled expiry check failed:', error);
   }
 });
+
+
+// app.use(
+//   "/notebook",
+//   requireAuth,
+//   createProxyMiddleware({
+//     target: "http://localhost:8888", // Jupyter server
+//     changeOrigin: true,
+//     ws: true,
+//     pathRewrite: (path) => path, // don't rewrite anything
+//     onProxyReq: (proxyReq, req, res) => {
+//       console.log(`[ProxyReq] ${req.method} ${req.originalUrl}`);
+//     },
+//     onError: (err, req, res) => {
+//       console.error("Proxy error:", err);
+//       res.status(500).send("Proxy failed");
+//     },
+//   })
+// );
+
+// app.use(
+//   "/notebook",
+//   requireAuth,
+//   createProxyMiddleware({
+//     changeOrigin: true,
+//     ws: true,
+//     pathRewrite: (path, req) => '/',
+//     router: async (req) => {
+//       // const migid = req.query.migid;
+//       // console.log("%%Mig_id :", migid);
+//       // if (!migid) throw new Error('MIGID required');
+//       return `http://localhost:8888/notebook`;
+//     },
+//     onProxyReq: (proxyReq, req, res) => {
+//       console.log(`[ProxyReq] ${req.method} ${req.originalUrl}`);
+//     },
+//     onError: (err, req, res) => {
+//       console.error('Proxy error:', er
+// r);
+//       res.status(500).send('Proxy failed');
+//     }
+//   })
+// );
+
+app.use(
+  "/notebook",
+  requireAuth,
+ (req, res, next) => {
+    req.targetConfig = {
+      ip: "127.0.0.1",   // or dynamic
+      port: 8888         // or dynamic
+    };
+
+    next();
+  },
+  createProxyMiddleware({
+    router: (req) => {
+      const { ip, port } = req.targetConfig;
+      console.log(ip, port);
+      return `http://${ip}:${port}/notebook`;
+    },
+    changeOrigin: true,
+    ws: true,
+    pathRewrite: {
+      "^/notebook": ""
+    }
+  })
+);
+
+// app.use(
+//   "/notebook",
+//   requireAuth,
+
+//   // middleware to attach ip & port
+//   (req, res, next) => {
+//     req.targetConfig = {
+//       ip: "127.0.0.1",   // or dynamic
+//       port: 8888         // or dynamic
+//     };
+
+//     next();
+//   },
+
+//   createProxyMiddleware({
+//     changeOrigin: true,
+//     ws: true,
+
+//     // 🔥 dynamic target based on req
+//     router: (req) => {
+//       const { ip, port } = req.targetConfig;
+//       return `http://${ip}:${port}/notebook`;
+//     },
+
+//     pathRewrite: {
+//       "^/notebook": ""
+//     }
+//   })
+// );
+
+
+
+// app.use(
+//   '/notebook',
+//   createProxyMiddleware({
+//     changeOrigin: true,
+//     ws: true,
+//     pathRewrite: (path, req) => path.split('?')[0], // strip query so backend sees clean path
+//     router: async (req) => {
+//       const migid = req.query.migid; // safe: only read and validate here
+//       if (!migid) throw new Error('MIGID required');
+
+//       try {
+//         const machine = await getMachineByMigid(migid); // db lookup
+//         return `http://${machine.ip}:${machine.port || 8888}`;
+//       } catch (err) {
+//         console.error(`Failed to get machine IP for MIGID ${migid}:`, err);
+//         return `http://127.0.0.1:8888`; // fallback
+//       }
+//     },
+//   })
+// );
 
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);

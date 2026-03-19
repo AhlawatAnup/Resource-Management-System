@@ -153,7 +153,12 @@ function createRequestCard(request) {
 
             <!-- Footer -->
             <div class="request-footer" style="display:flex; justify-content:flex-end; gap:12px; margin-top:12px; align-items:center;">
-            ${request.is_verified ? `<button class="access-machine-btn" data-request-id="${request._id}" style="cursor:pointer">Access Machine</button>` : ''}
+                ${request.is_verified 
+                    ? `<button class="access-machine-btn" 
+                            data-request-id="${request._id}" 
+                            data-migid="${request.machineId.MIGID}" 
+                            style="cursor:pointer">Access Machine</button>` 
+                    : ''}
                 <small style="color:#666;">Submitted: ${formatDate(request.createdAt)}</small>
             </div>
         </div>

@@ -80,7 +80,9 @@ async function loadRequests(studentId) {
 
         renderAllRequests(allRequests, handleDeleteRequest, reloadPage);
 
-        updateAccessMachineButtons(allRequests);
+        attachAccessMachineHandlers();
+
+        // updateAccessMachineButtons(allRequests);
 
     } catch (error) {
         console.error('Error loading requests:', error);
@@ -118,44 +120,59 @@ async function handleDeleteRequest(requestId) {
     }
 }
 
-async function updateAccessMachineButtons(requests) {
-    for (const request of requests) {
-        if (!request.is_verified) continue;
+// async function updateAccessMachineButtons(requests) {
+//     for (const request of requests) {
+//         if (!request.is_verified) continue;
 
-        const btn = document.querySelector(
-            `.access-machine-btn[data-request-id="${request._id}"]`
-        );
+//         const btn = document.querySelector(
+//             `.access-machine-btn[data-request-id="${request._id}"]`
+//         );
 
-        if (!btn) continue;
+//         if (!btn) continue;
 
-        btn.disabled = true;
-        btn.textContent = 'Checking...';
+//         btn.disabled = true;
+//         btn.textContent = 'Checking...';
 
-        try {
-            const data = await fetchRequestAllotmentTime(request._id);
+//         try {
+//             const data = await fetchRequestAllotmentTime(request._id);
 
-            if (data && data.startTime && data.endTime) {
-                const now = Date.now();
-                const start = new Date(data.startTime).getTime();
-                const end = new Date(data.endTime).getTime();
+//             if (data && data.startTime && data.endTime) {
+//                 const now = Date.now();
+//                 const start = new Date(data.startTime).getTime();
+//                 const end = new Date(data.endTime).getTime();
 
-                if (now >= start && now <= end) {
-                    btn.disabled = false;
-                    btn.textContent = 'Access Machine';
-                } else {
-                    btn.disabled = true;
-                    btn.textContent = 'Access Machine (Unavailable)';
-                }
-            } else {
-                btn.disabled = true;
-                btn.textContent = 'Access Machine (No Allotment)';
-            }
-        } catch (err) {
-            btn.disabled = true;
-            btn.textContent = 'Access Machine (Error)';
+//                 if (now >= start && now <= end) {
+//                     btn.disabled = false;
+//                     btn.textContent = 'Access Machine';
+//                 } else {
+//                     btn.disabled = true;
+//                     btn.textContent = 'Access Machine (Unavailable)';
+//                 }
+//             } else {
+//                 btn.disabled = true;
+//                 btn.textContent = 'Access Machine (No Allotment)';
+//             }
+//         } catch (err) {
+//             btn.disabled = true;
+//             btn.textContent = 'Access Machine (Error)';
+//         }
+//     }
+// }
+
+function attachAccessMachineHandlers() {
+    document.querySelectorAll('.access-machine-btn').forEach(btn => {
+    btn.addEventListener('click', function () {
+        const migid = this.dataset.migid;
+        console.log(migid);
+        if (migid) {
+            // window.open(`/notebook/?migid=${migid}`, "_blank"); // note the slash after notebook
+            window.open(`/notebook?migid=${(migid)}`, '_blank');
+            // window.open(`/notebook/${migid}`, '_blank');
         }
-    }
+    });
+});
 }
+
 
 // ==============================
 // Filter
