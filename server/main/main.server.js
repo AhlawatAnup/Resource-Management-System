@@ -130,6 +130,7 @@ app.use(
 
     if (urlMigid) {
       try {
+        console.log("####### DB hit")
         const machine = await getMachineByMigid(urlMigid);
         req.session.currentMachineMigid = urlMigid;
         req.session.proxyTarget = `http://${machine.ip}:${machine.port}`;
@@ -148,30 +149,34 @@ app.use(
 
     next();
   },
-  createProxyMiddleware({
-    target: "http://placeholder.invalid",
-    router: (req) => {
-      if (!req.session?.proxyTarget) throw new Error("No proxy target in session");
-      return req.session.proxyTarget;
+createProxyMiddleware({
+  target: "http://127.0.0.1:8888",
+  router: (req) => {
+    // Return placeholder if no session — error handler will catch the failed connection
+    return req.session?.proxyTarget || "http://127.0.0.1:8888";
+  },
+  changeOrigin: true,
+  ws: true,
+  pathRewrite: (path) => {
+    if (path.startsWith('/notebook')) return path;
+    return '/notebook' + path;
+  },
+  logLevel: 'debug',
+  on: {
+    proxyReq: (proxyReq, req) => {
+      console.log("PROXY PATH →", proxyReq.path);
+      console.log("ORIGINAL URL →", req.originalUrl);
     },
-    changeOrigin: true,
-    ws: true,
-    pathRewrite: (path) => {
-      if (path.startsWith('/notebook')) return path;
-      return '/notebook' + path;
-    },
-    logLevel: 'debug',
-    on: {
-      proxyReq: (proxyReq, req) => {
-        console.log("PROXY PATH →", proxyReq.path);
-        console.log("ORIGINAL URL →", req.originalUrl);
-      },
-      error: (err, req, res) => {
-        console.error("Proxy error:", err.message);
+    error: (err, req, res) => {
+      console.error("Proxy error:", err.message);
+      if (res && typeof res.status === 'function') {
         res.status(502).send("Upstream machine unreachable.");
+      } else if (res && typeof res.end === 'function') {
+        res.end();
       }
     }
-  })
+  }
+})
 );
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
