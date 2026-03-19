@@ -128,18 +128,11 @@ app.use(
   async (req, res, next) => {
     const urlMigid = req.query.migid;
 
-    // 1. HANDSHAKE: If a migid is provided, look up the machine and CACHE it
     if (urlMigid) {
       try {
-        console.log(urlMigid);
         const machine = await getMachineByMigid(urlMigid);
-        console.log(machine.ip, machine.port);
-        
-        // Save these to the session so the proxy can use them without another DB call
         req.session.currentMachineMigid = urlMigid;
         req.session.proxyTarget = `http://${machine.ip}:${machine.port}`;
-
-        // Wait for the session to save to the DB before moving to the proxy
         return req.session.save((err) => {
           if (err) return next(err);
           next();
@@ -149,38 +142,37 @@ app.use(
       }
     }
 
-    // 2. CHECK: If no target is in the session, they haven't "launched" a machine yet
-    if (!req.session || !req.session.proxyTarget) {
+    if (!req.session?.proxyTarget) {
       return res.status(401).send("No active session. Please launch a machine from the dashboard.");
     }
 
     next();
   },
-  // 3. THE PROXY: Uses the session data for every request
   createProxyMiddleware({
-  target: "http://127.0.0.1:8888", //fallback 
-  router: (req) => {
-    if (!req.session?.proxyTarget) {
-      throw new Error("No proxy target in session");
-    }
-    return req.session.proxyTarget;
-  },
-  changeOrigin: true,
-  ws: true,
-  pathRewrite: (path) => {
-  if (path.startsWith('/notebook')) return path; // already correct
-  return '/notebook' + path;
-},
-  logLevel: 'debug',
+    target: "http://placeholder.invalid",
+    router: (req) => {
+      if (!req.session?.proxyTarget) throw new Error("No proxy target in session");
+      return req.session.proxyTarget;
+    },
+    changeOrigin: true,
+    ws: true,
+    pathRewrite: (path) => {
+      if (path.startsWith('/notebook')) return path;
+      return '/notebook' + path;
+    },
+    logLevel: 'debug',
     on: {
       proxyReq: (proxyReq, req) => {
         console.log("PROXY PATH →", proxyReq.path);
         console.log("ORIGINAL URL →", req.originalUrl);
+      },
+      error: (err, req, res) => {
+        console.error("Proxy error:", err.message);
+        res.status(502).send("Upstream machine unreachable.");
       }
     }
   })
 );
-
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
 });
