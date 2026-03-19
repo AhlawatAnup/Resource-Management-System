@@ -161,16 +161,14 @@ async function handleDeleteRequest(requestId) {
 
 function attachAccessMachineHandlers() {
     document.querySelectorAll('.access-machine-btn').forEach(btn => {
-    btn.addEventListener('click', function () {
-        const migid = this.dataset.migid;
-        console.log(migid);
-        if (migid) {
-            // window.open(`/notebook/?migid=${migid}`, "_blank"); // note the slash after notebook
-            window.open(`/notebook?migid=${(migid)}`, '_blank');
-            // window.open(`/notebook/${migid}`, '_blank');
-        }
+        btn.addEventListener('click', function () {
+            const migid = this.dataset.migid;
+            if (migid) {
+                // This initial hit sets the session variable on the server
+                window.open(`/notebook?migid=${migid}`, '_blank');
+            }
+        });
     });
-});
 }
 
 

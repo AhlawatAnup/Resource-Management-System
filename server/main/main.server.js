@@ -123,126 +123,63 @@ schedule.scheduleJob(expiryNotifySchedule, async () => {
   }
 });
 
-
-// app.use(
-//   "/notebook",
-//   requireAuth,
-//   createProxyMiddleware({
-//     target: "http://localhost:8888", // Jupyter server
-//     changeOrigin: true,
-//     ws: true,
-//     pathRewrite: (path) => path, // don't rewrite anything
-//     onProxyReq: (proxyReq, req, res) => {
-//       console.log(`[ProxyReq] ${req.method} ${req.originalUrl}`);
-//     },
-//     onError: (err, req, res) => {
-//       console.error("Proxy error:", err);
-//       res.status(500).send("Proxy failed");
-//     },
-//   })
-// );
-
-// app.use(
-//   "/notebook",
-//   requireAuth,
-//   createProxyMiddleware({
-//     changeOrigin: true,
-//     ws: true,
-//     pathRewrite: (path, req) => '/',
-//     router: async (req) => {
-//       // const migid = req.query.migid;
-//       // console.log("%%Mig_id :", migid);
-//       // if (!migid) throw new Error('MIGID required');
-//       return `http://localhost:8888/notebook`;
-//     },
-//     onProxyReq: (proxyReq, req, res) => {
-//       console.log(`[ProxyReq] ${req.method} ${req.originalUrl}`);
-//     },
-//     onError: (err, req, res) => {
-//       console.error('Proxy error:', er
-// r);
-//       res.status(500).send('Proxy failed');
-//     }
-//   })
-// );
-
 app.use(
-  "/notebook",
-  requireAuth,
- (req, res, next) => {
-    req.targetConfig = {
-      ip: "127.0.0.1",   // or dynamic
-      port: 8888         // or dynamic
-    };
+  '/notebook',
+  async (req, res, next) => {
+    const urlMigid = req.query.migid;
+
+    // 1. HANDSHAKE: If a migid is provided, look up the machine and CACHE it
+    if (urlMigid) {
+      try {
+        console.log(urlMigid);
+        const machine = await getMachineByMigid(urlMigid);
+        console.log(machine.ip, machine.port);
+        
+        // Save these to the session so the proxy can use them without another DB call
+        req.session.currentMachineMigid = urlMigid;
+        req.session.proxyTarget = `http://${machine.ip}:${machine.port}`;
+
+        // Wait for the session to save to the DB before moving to the proxy
+        return req.session.save((err) => {
+          if (err) return next(err);
+          next();
+        });
+      } catch (err) {
+        return res.status(404).send("Machine not found.");
+      }
+    }
+
+    // 2. CHECK: If no target is in the session, they haven't "launched" a machine yet
+    if (!req.session || !req.session.proxyTarget) {
+      return res.status(401).send("No active session. Please launch a machine from the dashboard.");
+    }
 
     next();
   },
+  // 3. THE PROXY: Uses the session data for every request
   createProxyMiddleware({
-    router: (req) => {
-      const { ip, port } = req.targetConfig;
-      console.log(ip, port);
-      return `http://${ip}:${port}/notebook`;
-    },
-    changeOrigin: true,
-    ws: true,
-    pathRewrite: {
-      "^/notebook": ""
+  target: "http://127.0.0.1:8888", //fallback 
+  router: (req) => {
+    if (!req.session?.proxyTarget) {
+      throw new Error("No proxy target in session");
+    }
+    return req.session.proxyTarget;
+  },
+  changeOrigin: true,
+  ws: true,
+  pathRewrite: (path) => {
+  if (path.startsWith('/notebook')) return path; // already correct
+  return '/notebook' + path;
+},
+  logLevel: 'debug',
+    on: {
+      proxyReq: (proxyReq, req) => {
+        console.log("PROXY PATH →", proxyReq.path);
+        console.log("ORIGINAL URL →", req.originalUrl);
+      }
     }
   })
 );
-
-// app.use(
-//   "/notebook",
-//   requireAuth,
-
-//   // middleware to attach ip & port
-//   (req, res, next) => {
-//     req.targetConfig = {
-//       ip: "127.0.0.1",   // or dynamic
-//       port: 8888         // or dynamic
-//     };
-
-//     next();
-//   },
-
-//   createProxyMiddleware({
-//     changeOrigin: true,
-//     ws: true,
-
-//     // 🔥 dynamic target based on req
-//     router: (req) => {
-//       const { ip, port } = req.targetConfig;
-//       return `http://${ip}:${port}/notebook`;
-//     },
-
-//     pathRewrite: {
-//       "^/notebook": ""
-//     }
-//   })
-// );
-
-
-
-// app.use(
-//   '/notebook',
-//   createProxyMiddleware({
-//     changeOrigin: true,
-//     ws: true,
-//     pathRewrite: (path, req) => path.split('?')[0], // strip query so backend sees clean path
-//     router: async (req) => {
-//       const migid = req.query.migid; // safe: only read and validate here
-//       if (!migid) throw new Error('MIGID required');
-
-//       try {
-//         const machine = await getMachineByMigid(migid); // db lookup
-//         return `http://${machine.ip}:${machine.port || 8888}`;
-//       } catch (err) {
-//         console.error(`Failed to get machine IP for MIGID ${migid}:`, err);
-//         return `http://127.0.0.1:8888`; // fallback
-//       }
-//     },
-//   })
-// );
 
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
