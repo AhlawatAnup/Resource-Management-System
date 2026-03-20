@@ -13,7 +13,8 @@ const {
   checkExpiringResourceRequests,
 } = require("./services/resourceExpiryNotifier");
 const { createProxyMiddleware } = require("http-proxy-middleware");
-const { getMachineByMigid } = require("./controllers/proxy.controller.js");
+const { getMachineByMigid } = require("./proxy/controllers/proxy.controller.js");
+const proxyRoutes = require("./proxy/routes/proxy.route.js");
 
 // ✅ Connect to DB
 connectDB();
@@ -106,6 +107,8 @@ app.use("/dashboard", noCache, requireAuth, dashboardRoutes);
 // Push Subscription API
 app.use("/push-subscription", requireAuth, pushSubscriptionRoutes);
 
+app.use('/proxy', requireAuth, proxyRoutes);
+
 // const backupSchedule = "*/2 * * * *"; // every 2 minutes (example)
 const backupSchedule = process.env.BACKUP_SCHEDULE || "0 3 * * *";
 
@@ -173,7 +176,7 @@ app.use(
     next();
   },
   createProxyMiddleware({
-    target: "http://172.16.10.24:8908",
+    target: "http://127.0.0.1:8888",
     changeOrigin: true,
     ws: true,
   }),
