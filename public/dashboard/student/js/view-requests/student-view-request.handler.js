@@ -165,7 +165,12 @@ function attachAccessMachineHandlers() {
             const migid = this.dataset.migid;
             if (migid) {
                 // This initial hit sets the session variable on the server
-                window.open(`/lab?migid=${migid}`, '_blank');
+
+                // TO DO : SEND FETCH REQUEST TO SET SESISONS
+                // window.open(`/?migid=${migid}`, '_blank');
+                // window.open(`/${migid}`, '_blank');
+                window.open(`/`, '_blank');
+
             }
         });
     });
