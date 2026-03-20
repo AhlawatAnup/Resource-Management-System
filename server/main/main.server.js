@@ -123,8 +123,66 @@ schedule.scheduleJob(expiryNotifySchedule, async () => {
   }
 });
 
+// app.use(
+//   '/',
+//   async (req, res, next) => {
+//     const urlMigid = req.query.migid;
+
+//     if (urlMigid) {
+//       try {
+//         console.log("####### DB hit")
+//         const machine = await getMachineByMigid(urlMigid);
+//         req.session.currentMachineMigid = urlMigid;
+//         req.session.proxyTarget = `http://${machine.ip}:${machine.port}`;
+//         return req.session.save((err) => {
+//           if (err) return next(err);
+//           next();
+//         });
+//       } catch (err) {
+//         return res.status(404).send("Machine not found.");
+//       }
+//     }
+
+//     if (!req.session?.proxyTarget) {
+//       return res.status(401).send("No active session. Please launch a machine from the dashboard.");
+//     }
+
+//     next();
+//   },
+// createProxyMiddleware({
+//   target: "http://127.0.0.1:8888",
+//   router: (req) => {
+//     // Return placeholder if no session — error handler will catch the failed connection
+//     return req.session?.proxyTarget || "http://127.0.0.1:8888";
+//   },
+//   changeOrigin: true,
+//   ws: true,
+//  pathRewrite: (path) => {
+//   if (path.startsWith('/notebook')) {
+//     return path.replace('/notebook', '');
+//   }
+//   return path;
+// },
+//   logLevel: 'debug',
+//   on: {
+//     proxyReq: (proxyReq, req) => {
+//       console.log("PROXY PATH →", proxyReq.path);
+//       console.log("ORIGINAL URL →", req.originalUrl);
+//     },
+//     error: (err, req, res) => {
+//       console.error("Proxy error:", err.message);
+//       if (res && typeof res.status === 'function') {
+//         res.status(502).send("Upstream machine unreachable.");
+//       } else if (res && typeof res.end === 'function') {
+//         res.end();
+//       }
+//     }
+//   }
+// })
+// );
+
 app.use(
-  '/notebook',
+  '/lab',
   async (req, res, next) => {
     const urlMigid = req.query.migid;
 
@@ -153,13 +211,14 @@ createProxyMiddleware({
   target: "http://127.0.0.1:8888",
   router: (req) => {
     // Return placeholder if no session — error handler will catch the failed connection
-    return req.session?.proxyTarget || "http://127.0.0.1:8888";
+    // return req.session?.proxyTarget || "http://127.0.0.1:8888";
+    return "http://172.16.10.24:8908";
   },
   changeOrigin: true,
   ws: true,
   pathRewrite: (path) => {
-    if (path.startsWith('/notebook')) return path;
-    return '/notebook' + path;
+    if (path.startsWith('/lab')) return path;
+    return '/lab' + path;
   },
   logLevel: 'debug',
   on: {
@@ -178,6 +237,64 @@ createProxyMiddleware({
   }
 })
 );
+
+app.use(
+  '/login',
+  async (req, res, next) => {
+    const urlMigid = req.query.migid;
+
+    if (urlMigid) {
+      try {
+        const machine = await getMachineByMigid(urlMigid);
+        req.session.currentMachineMigid = urlMigid;
+        req.session.proxyTarget = `http://${machine.ip}:${machine.port}`;
+        return req.session.save((err) => {
+          if (err) return next(err);
+          next();
+        });
+      } catch (err) {
+        return res.status(404).send("Machine not found.");
+      }
+    }
+
+    if (!req.session?.proxyTarget) {
+      return res.status(401).send("No active session. Please launch a machine from the dashboard.");
+    }
+
+    next();
+  },
+createProxyMiddleware({
+  target: "http://127.0.0.1:8888",
+  router: (req) => {
+    // Return placeholder if no session — error handler will catch the failed connection
+    return "http://172.16.10.24:8908";
+  
+  },
+  changeOrigin: true,
+  ws: true,
+  pathRewrite: (path) => {
+    if (path.startsWith('/login')) return path;
+    return '/login' + path;
+  },
+  logLevel: 'debug',
+  on: {
+    proxyReq: (proxyReq, req) => {
+      console.log("PROXY PATH →", proxyReq.path);
+      console.log("ORIGINAL URL →", req.originalUrl);
+    },
+    error: (err, req, res) => {
+      console.error("Proxy error:", err.message);
+      if (res && typeof res.status === 'function') {
+        res.status(502).send("Upstream machine unreachable.");
+      } else if (res && typeof res.end === 'function') {
+        res.end();
+      }
+    }
+  }
+})
+);
+
+
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
 });
