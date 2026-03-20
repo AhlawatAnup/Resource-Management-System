@@ -20,7 +20,7 @@ exports.verifyToken = (req, res, next) => {
 // Allow only logged-in users
 exports.requireAuth = (req, res, next) => {
   if (!req.session.user) {
-    return res.redirect("/"); // or /login
+    return res.redirect("/home"); // or /login
   }
   next();
 };

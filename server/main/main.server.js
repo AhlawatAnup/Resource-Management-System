@@ -1,4 +1,4 @@
-require('dotenv').config();
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
@@ -9,10 +9,11 @@ const connectDB = require("./database/db");
 const schedule = require("node-schedule");
 const { runBackup } = require("./services/backup");
 const pushSubscriptionRoutes = require("./routes/pushSubscription.route.js");
-const { checkExpiringResourceRequests } = require("./services/resourceExpiryNotifier");
-const { createProxyMiddleware } = require('http-proxy-middleware');
-const { getMachineByMigid } = require('./controllers/proxy.controller.js');
-
+const {
+  checkExpiringResourceRequests,
+} = require("./services/resourceExpiryNotifier");
+const { createProxyMiddleware } = require("http-proxy-middleware");
+const { getMachineByMigid } = require("./controllers/proxy.controller.js");
 
 // ✅ Connect to DB
 connectDB();
@@ -27,18 +28,21 @@ const {
   noCache,
 } = require("../main/middleware/authMiddleware.js");
 
-app.use(cors({
-  origin: process.env.CLIENT_URL, 
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE"]
-}));
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL,
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+  }),
+);
 
 // HTTPS enforcement: enable when ENFORCE_HTTPS=true
-if (process.env.ENFORCE_HTTPS === 'true') {
-  app.set('trust proxy', 1);
+if (process.env.ENFORCE_HTTPS === "true") {
+  app.set("trust proxy", 1);
   // Force HTTPS for all requests
   app.use((req, res, next) => {
-    if (req.secure || req.headers['x-forwarded-proto'] === 'https') return next();
+    if (req.secure || req.headers["x-forwarded-proto"] === "https")
+      return next();
     return res.redirect(301, `https://${req.headers.host}${req.originalUrl}`);
   });
 }
@@ -60,14 +64,14 @@ app.use(
     store: MongoStore.create({
       mongoUrl: process.env.MONGO_URI, // Replace with your actual MongoDB URI
       touchAfter: 24 * 3600, // lazy session update
-      ttl: 60 * 60 * 24 * 30 // 30 days 
+      ttl: 60 * 60 * 24 * 30, // 30 days
     }),
-    cookie: { maxAge: 60 * 60 * 1000 * 24 * 30}, // 30 days
-  })
+    cookie: { maxAge: 60 * 60 * 1000 * 24 * 30 }, // 30 days
+  }),
 );
 
 // Homepage route → serve public/home/index.html
-app.get("/", noCache, preventAuth, (req, res) => {
+app.get("/home", noCache, preventAuth, (req, res) => {
   res.sendFile(path.join(publicPath, "home", "home.html"));
 });
 
@@ -79,11 +83,17 @@ app.get("/logout", requireAuth, (req, res) => {
 });
 
 // Registration page (only accessible after email verification)
-app.get("/registration", noCache, preventAuth, requireRegistrationSession, (req, res) => {
-  res.sendFile(
-    path.join(__dirname, "../../public/registration/registration.html")
-  );
-});
+app.get(
+  "/registration",
+  noCache,
+  preventAuth,
+  requireRegistrationSession,
+  (req, res) => {
+    res.sendFile(
+      path.join(__dirname, "../../public/registration/registration.html"),
+    );
+  },
+);
 
 // Auth routes (should only be accessible to unauthenticated users)
 const authRoutes = require("./routes/authRoutes");
@@ -103,11 +113,11 @@ schedule.scheduleJob(backupSchedule, async () => {
   try {
     const now = new Date();
     const timeStr = now.toLocaleTimeString(); // e.g., "10:03:00 AM"
-    
+
     console.log(`🕒 ${timeStr} — starting MongoDB backup...`);
     await runBackup();
   } catch (error) {
-    console.error('Scheduled backup failed:', error);
+    console.error("Scheduled backup failed:", error);
   }
 });
 
@@ -119,76 +129,27 @@ schedule.scheduleJob(expiryNotifySchedule, async () => {
     console.log(`🕒 ${timeStr} — checking for expiring resource requests...`);
     await checkExpiringResourceRequests();
   } catch (error) {
-    console.error('Scheduled expiry check failed:', error);
+    console.error("Scheduled expiry check failed:", error);
   }
 });
 
-// app.use(
-//   '/',
-//   async (req, res, next) => {
-//     const urlMigid = req.query.migid;
-
-//     if (urlMigid) {
-//       try {
-//         console.log("####### DB hit")
-//         const machine = await getMachineByMigid(urlMigid);
-//         req.session.currentMachineMigid = urlMigid;
-//         req.session.proxyTarget = `http://${machine.ip}:${machine.port}`;
-//         return req.session.save((err) => {
-//           if (err) return next(err);
-//           next();
-//         });
-//       } catch (err) {
-//         return res.status(404).send("Machine not found.");
-//       }
-//     }
-
-//     if (!req.session?.proxyTarget) {
-//       return res.status(401).send("No active session. Please launch a machine from the dashboard.");
-//     }
-
-//     next();
-//   },
-// createProxyMiddleware({
-//   target: "http://127.0.0.1:8888",
-//   router: (req) => {
-//     // Return placeholder if no session — error handler will catch the failed connection
-//     return req.session?.proxyTarget || "http://127.0.0.1:8888";
-//   },
-//   changeOrigin: true,
-//   ws: true,
-//  pathRewrite: (path) => {
-//   if (path.startsWith('/notebook')) {
-//     return path.replace('/notebook', '');
-//   }
-//   return path;
-// },
-//   logLevel: 'debug',
-//   on: {
-//     proxyReq: (proxyReq, req) => {
-//       console.log("PROXY PATH →", proxyReq.path);
-//       console.log("ORIGINAL URL →", req.originalUrl);
-//     },
-//     error: (err, req, res) => {
-//       console.error("Proxy error:", err.message);
-//       if (res && typeof res.status === 'function') {
-//         res.status(502).send("Upstream machine unreachable.");
-//       } else if (res && typeof res.end === 'function') {
-//         res.end();
-//       }
-//     }
-//   }
-// })
-// );
-
+// PROXY TO ACCESS MACHINE
 app.use(
-  '/lab',
+  "/",
+  requireAuth,
   async (req, res, next) => {
-    const urlMigid = req.query.migid;
+    // SET ALL MACHINE :: USER EALTED PARAMS IN SESSIONS
+    // DO NOT MAKE QUERY SEARCH
+
+    let urlMigid = req.params.migid;
+    console.log(urlMigid);
+    // if (urlMigid == "login" || urlMigid == "lab") {
+    //   urlMigid = undefined;
+    // }
 
     if (urlMigid) {
       try {
-        console.log("####### DB hit")
+        console.log("####### DB hit");
         const machine = await getMachineByMigid(urlMigid);
         req.session.currentMachineMigid = urlMigid;
         req.session.proxyTarget = `http://${machine.ip}:${machine.port}`;
@@ -197,103 +158,26 @@ app.use(
           next();
         });
       } catch (err) {
+        console.log(err);
         return res.status(404).send("Machine not found.");
       }
     }
 
     if (!req.session?.proxyTarget) {
-      return res.status(401).send("No active session. Please launch a machine from the dashboard.");
+      return res.sendFile(path.join(publicPath, "home", "home.html"));
+      return res
+        .status(401)
+        .send("No active session. Please launch a machine from the dashboard.");
     }
 
     next();
   },
-createProxyMiddleware({
-  target: "http://127.0.0.1:8888",
-  router: (req) => {
-    // Return placeholder if no session — error handler will catch the failed connection
-    // return req.session?.proxyTarget || "http://127.0.0.1:8888";
-    return "http://172.16.10.24:8908";
-  },
-  changeOrigin: true,
-  ws: true,
-  pathRewrite: (path) => {
-    if (path.startsWith('/lab')) return path;
-    return '/lab' + path;
-  },
-  logLevel: 'debug',
-  on: {
-    proxyReq: (proxyReq, req) => {
-      console.log("PROXY PATH →", proxyReq.path);
-      console.log("ORIGINAL URL →", req.originalUrl);
-    },
-    error: (err, req, res) => {
-      console.error("Proxy error:", err.message);
-      if (res && typeof res.status === 'function') {
-        res.status(502).send("Upstream machine unreachable.");
-      } else if (res && typeof res.end === 'function') {
-        res.end();
-      }
-    }
-  }
-})
+  createProxyMiddleware({
+    target: "http://172.16.10.24:8908",
+    changeOrigin: true,
+    ws: true,
+  }),
 );
-
-app.use(
-  '/login',
-  async (req, res, next) => {
-    const urlMigid = req.query.migid;
-
-    if (urlMigid) {
-      try {
-        const machine = await getMachineByMigid(urlMigid);
-        req.session.currentMachineMigid = urlMigid;
-        req.session.proxyTarget = `http://${machine.ip}:${machine.port}`;
-        return req.session.save((err) => {
-          if (err) return next(err);
-          next();
-        });
-      } catch (err) {
-        return res.status(404).send("Machine not found.");
-      }
-    }
-
-    if (!req.session?.proxyTarget) {
-      return res.status(401).send("No active session. Please launch a machine from the dashboard.");
-    }
-
-    next();
-  },
-createProxyMiddleware({
-  target: "http://127.0.0.1:8888",
-  router: (req) => {
-    // Return placeholder if no session — error handler will catch the failed connection
-    return "http://172.16.10.24:8908";
-  
-  },
-  changeOrigin: true,
-  ws: true,
-  pathRewrite: (path) => {
-    if (path.startsWith('/login')) return path;
-    return '/login' + path;
-  },
-  logLevel: 'debug',
-  on: {
-    proxyReq: (proxyReq, req) => {
-      console.log("PROXY PATH →", proxyReq.path);
-      console.log("ORIGINAL URL →", req.originalUrl);
-    },
-    error: (err, req, res) => {
-      console.error("Proxy error:", err.message);
-      if (res && typeof res.status === 'function') {
-        res.status(502).send("Upstream machine unreachable.");
-      } else if (res && typeof res.end === 'function') {
-        res.end();
-      }
-    }
-  }
-})
-);
-
 
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
