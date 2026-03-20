@@ -1,4 +1,3 @@
-// migController.js
 const Machine = require('../../database/machineModel');
 
 exports.getMachineByMigid = async (migid) => {
