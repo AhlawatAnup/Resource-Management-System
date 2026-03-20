@@ -14,34 +14,22 @@ const resourceRequestSchema = new mongoose.Schema({
     type: String, 
     required: true 
   },
-  expiryDate: { 
-    type: Date, 
-    required: true 
+  machineId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Machine",
+    required: true
   },
-  // cpuCores: { 
-  //   type: Number, 
-  //   required: true 
-  // },
-  // cpuRam: { 
-  //   type: Number, // in GB
-  //   required: true 
-  // },
-  // gpuCount: { 
-  //   type: Number, 
-  //   required: true 
-  // },
-  gpuRam: { 
-    type: Number, // per GPU in GB
-    required: true 
+  duration: {
+    type: Number,
+    required: true,
+    min: 1,
+    max: 30
   },
-
-  // Username set by student at request time (VM username they want)
-  username: {
-    type: String,
-    required: false, 
-    unique: true
+  version: {
+    type: Number,
+    required: true,
+    default: 2
   },
-
 
   // Status tracking
   teacher_action: { type: Boolean, default: false },
@@ -50,13 +38,7 @@ const resourceRequestSchema = new mongoose.Schema({
   admin_verified: { type: Boolean, default: false },
   is_verified: { type: Boolean, default: false },
 
-  //assinged machine  
-  machineId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Machine"
-  },
-
-    // VM access credentials (provided when admin finally verifies)
+  // VM access credentials (provided when admin finally verifies)
   vmCredentials: {
     // username: { type: String },
     password: { type: String },

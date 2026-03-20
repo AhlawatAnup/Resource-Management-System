@@ -1,6 +1,14 @@
 const { sendResourceRequestSubmittedEmail, sendTeacherStudentResourceRequestEmail } = require('../utils/email/emails.service');
 const { notifyAdmin } = require('../utils/web-push-notifications/notifyAdmin');
 const { notifyTeacher } = require('../utils/web-push-notifications/notifyTeacher');
+const ResourceRequest = require("../database/resourceRequestModel");
+const Student = require("../database/studentModel");
+const Machine = require("../database/machineModel");
+const MachineAllotment = require("../database/machineAllotmentModel.js.js");
+const { addResourceRequestToStudent } = require("../utils/studentResourceUtils");
+const { isValidDuration } = require('../utils/common.utils');
+const mongoose = require('mongoose');
+
 const Teacher = require('../database/teacherModel');
 // Delete a resource request by ID
 exports.deleteStudentResourceRequest = async (req, res) => {
@@ -51,9 +59,7 @@ exports.deleteStudentResourceRequest = async (req, res) => {
     return res.status(500).json({ error: "Failed to delete resource request" });
   }
 };
-const ResourceRequest = require("../database/resourceRequestModel");
-const Student = require("../database/studentModel");
-const { addResourceRequestToStudent } = require("../utils/studentResourceUtils");
+
 
 // Submit a new resource request
 exports.submitResourceRequest = async (req, res) => {
@@ -63,8 +69,7 @@ exports.submitResourceRequest = async (req, res) => {
       return res.status(401).json({ error: "Not authenticated" });
     }
 
-    // const { title, purpose, expiryDate, cpuCores, cpuRam, gpuRam, studentId } = req.body;
-  const { title, purpose, expiryDate, gpuRam, studentId, username } = req.body;
+    const { title, purpose, studentId, duration, machineId } = req.body;
     
     // Security check: ensure the student can only submit requests for themselves
     if (req.session.user.id !== studentId) {
@@ -72,30 +77,21 @@ exports.submitResourceRequest = async (req, res) => {
     }
 
     // Validate required fields
-    if (!title || !purpose || !expiryDate || gpuRam === undefined || !studentId || !username) {
+    const parsedDuration = Number(duration);
+
+    if (!title || !purpose || !studentId || !machineId || !parsedDuration) {
       return res.status(400).json({ 
         error: "Missing required fields",
-        required: ["title", "purpose", "expiryDate", "gpuRam", "studentId", "username"]
+        required: ["title", "purpose", "studentId", "machineId", "duration"]
       });
     }
-    
-    if (!/^[A-Za-z0-9_-]+$/.test(username)) {
-      return res.status(400).json({ error: "Username can only contain letters, numbers, hyphens (-), and underscores (_), with no spaces or special characters" });
+
+    if (!isValidDuration(parsedDuration)) {
+      return res.status(400).json({ error: "Invalid duration. Allowed range is 1 to 30 days." });
     }
 
-    // Validate data types and ranges for gpuRam
-    const gpuRamNum = Number(gpuRam);
-    if (!Number.isFinite(gpuRamNum) || gpuRamNum < 0) {
-      return res.status(400).json({ error: "gpuRam must be a non-negative number" });
-    }
-
-    // Validate expiry date is in the future
-    const expiry = new Date(expiryDate);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    
-    if (expiry <= today) {
-      return res.status(400).json({ error: "Expiry date must be in the future" });
+    if (!mongoose.Types.ObjectId.isValid(machineId)) {
+      return res.status(400).json({ error: "Invalid machineId" });
     }
 
     // Check if student exists and is verified
@@ -111,13 +107,17 @@ exports.submitResourceRequest = async (req, res) => {
       });
     }
 
+    const machine = await Machine.findById(machineId);
+    if (!machine) {
+      return res.status(404).json({ error: "Selected machine not found" });
+    }
+
     // Check for existing pending request
     const existingPending = await ResourceRequest.findOne({
       studentId,
-       $or: [
-        { teacher_action: false, admin_action: false },  // No action yet by either
-        { teacher_action: true, teacher_verified: true, admin_action: false } // Teacher approved, waiting for admin
-      ]
+      teacher_action: false,
+      admin_action: false,
+      is_verified: false
     });
 
 
@@ -127,24 +127,13 @@ exports.submitResourceRequest = async (req, res) => {
       });
     }
 
-    // Check if requested username already exists in other resource requests
-    const usernameTrim = username ? String(username).trim() : '';
-    if (usernameTrim) {
-      const usernameExists = await ResourceRequest.findOne({ username: usernameTrim });
-      if (usernameExists) {
-        return res.status(400).json({ error: 'Username already exists' });
-      }
-    }
-
     // Create new resource request
     const resourceRequest = new ResourceRequest({
       studentId,
       title: title.trim(),
       purpose: purpose.trim(),
-      expiryDate: expiry,
-      username: username ? String(username).trim() : undefined,
-      // gpuCount: parseInt(gpuCount),
-      gpuRam: parseInt(gpuRam, 10)
+      machineId,
+      duration: parsedDuration,
     });
 
     // Save to database
@@ -279,5 +268,28 @@ exports.getStudentResourceRequests = async (req, res) => {
   } catch (error) {
     console.error("Error fetching student resource requests:", error);
     return res.status(500).json({ error: "Failed to fetch resource requests" });
+  }
+};
+
+exports.getRequestAllotmentTime = async (req, res) => {
+  try {
+    const { requestId } = req.params;
+    if (!requestId) {
+      return res.status(400).json({ error: "Request ID is required" });
+    }
+
+    // Find the allotment for this request
+    const allotment = await MachineAllotment.findOne({ resourceRequestId: requestId });
+    if (!allotment) {
+      return res.status(404).json({ error: "No allotment found for this request" });
+    }
+
+    return res.json({
+      startTime: allotment.startTime,
+      endTime: allotment.endTime
+    });
+  } catch (error) {
+    console.error("Error fetching allotment time:", error);
+    return res.status(500).json({ error: "Failed to fetch allotment time" });
   }
 };

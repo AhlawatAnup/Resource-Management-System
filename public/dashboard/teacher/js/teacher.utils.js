@@ -85,7 +85,7 @@ export function getStudentStatusClassForTeacher(student) {
 
 // Get request status information
 export function getRequestStatus(request) {
-  if (request.teacher_verified && request.admin_verified) {
+  if (request.is_verified) {
     return { text: "Approved", class: "verified" };
   } else if (request.teacher_action && !request.teacher_verified) {
     return { text: "Declined by Teacher", class: "declined" };

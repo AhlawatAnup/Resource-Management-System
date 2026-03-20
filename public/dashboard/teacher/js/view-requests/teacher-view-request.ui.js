@@ -41,14 +41,10 @@ export function renderResourceRequests(requests) {
         </div>
       </td>
       <td>
-        <div class="resource-specs">
-          <div><strong>GPU:</strong> ${request.gpuRam}GB</div>
-        </div>
+        <span>${request.machineId && request.machineId.MIGID ? request.machineId.MIGID : '-'}</span>
       </td>
       <td>
-        <div class="expiry-date">
-          ${formatDate(request.expiryDate)}
-        </div>
+        <span>${request.duration ? request.duration : '-'}</span>
       </td>
       <td>
         <span class="badge ${statusInfo.class}">${statusInfo.text}</span>
@@ -119,13 +115,6 @@ export function showEditModalUI(request) {
   document.getElementById('editRequestId').value = request._id;
   document.getElementById('editTitle').value = request.title;
   document.getElementById('editPurpose').value = request.purpose;
-  document.getElementById('editExpiryDate').value = request.expiryDate
-    ? request.expiryDate.split('T')[0]
-    : '';
-
-  document.getElementById('editGpuRam').value = request.gpuRam;
-  document.getElementById('editUsername').value = request.username || '';
-
   document.getElementById('editRequestModal').style.display = 'block';
 }
 
@@ -141,9 +130,6 @@ export function getEditFormData() {
     payload: {
       title: document.getElementById('editTitle').value,
       purpose: document.getElementById('editPurpose').value,
-      expiryDate: document.getElementById('editExpiryDate').value,
-      gpuRam: Number(document.getElementById('editGpuRam').value),
-      username: document.getElementById('editUsername').value
     }
   };
 }

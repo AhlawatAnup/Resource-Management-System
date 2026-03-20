@@ -4,12 +4,14 @@ const Teacher = require("../database/teacherModel");
 const Admin = require("../database/adminModel");
 const ResourceRequest = require("../database/resourceRequestModel");
 const Machine = require('../database/machineModel');
+const MachineAllotment = require("../database/machineAllotmentModel.js.js");
 const path = require("path");
 const publicPath = path.join(__dirname, "../../../public");
 const emailService = require("../utils/email/emails.service.js");
 const { notifyAdmin } = require('../utils/web-push-notifications/notifyAdmin.js');
 const { notifyTeacher } = require('../utils/web-push-notifications/notifyTeacher.js');
 const { notifyStudent } = require('../utils/web-push-notifications/notifyStudent.js');
+const { fetchMachineById, calculateAllotmentWindow, isValidDuration } = require("../utils/common.utils.js");
 
 exports.roleBasedDashboard = (req, res) => {
   if (!req.session.user) {
@@ -272,106 +274,80 @@ exports.teacher_data = async (req, res) => {
 };
 
 exports.updateResourceRequestVerification = async (req, res) => {
-  const { request_id } = req.params;
-  const { is_verified, vmCredentials } = req.body;
-  const userRole = req.session.user?.role;
-  const userId = req.session.user?.id;
+  const role = req.session.user?.role;
+  const request_id = req.params.request_id || req.body.request_id;
+  const { is_verified } = req.body;
 
-  // console.log(`${userRole} ${userId} updating resource request verification`, request_id, "to", is_verified);
+  if (!request_id) {
+    return res.status(400).json({ error: "request_id is required" });
+  }
 
-  // Validate request ID format
-  if (!request_id || !request_id.match(/^[0-9a-fA-F]{24}$/)) {
-    // console.log("Invalid request ID format:", request_id);
-    return res.status(400).json({ error: "Invalid request ID format" });
+  // Admin dummy
+  if (role === "admin") {
+    return res.status(200).json({
+      success: true,
+      message: "Admin verification handler is dummy for now",
+      request_id
+    });
+  }
+
+  if (role !== "teacher") {
+    return res.status(403).json({ error: "Unauthorized" });
+  }
+
+  if (typeof is_verified !== "boolean") {
+    return res.status(400).json({ error: "is_verified must be boolean" });
   }
 
   try {
-    const resourceRequest = await ResourceRequest.findById(request_id);
+    const existingRequest = await ResourceRequest.findById(request_id);
 
-    if (!resourceRequest) {
+    if (!existingRequest) {
       return res.status(404).json({ error: "Resource request not found" });
     }
 
-    // Role-based authorization and verification logic
-    let updateData = {};
+    const machineId = existingRequest.machineId;
 
-    if (userRole === "teacher") {
-      // Verify that this resource request belongs to a student under this teacher
-      const student = await Student.findById(resourceRequest.studentId);
-      if (!student || student.teacher.toString() !== userId) {
-        return res.status(403).json({ error: "Access denied. This request does not belong to your students." });
-      }
+    const durationInput = existingRequest.duration;
 
-      // Teacher verification logic
-      updateData = {
-        teacher_verified: is_verified,
-        teacher_action: true
-      };
+    const duration = Number(durationInput);
 
-    } else if (userRole === "admin") {
-      // Admin verification logic
-      if (is_verified) {
-        if (isDateInPast(resourceRequest.expiryDate)) {
-          return res.status(400).json({ error: "Cannot verify this request because the expiry date is in the past." });
-        }
-
-        // For approvals, VM credentials must include password/ip/migId
-        if (!vmCredentials || !vmCredentials.password || !vmCredentials.ip || !vmCredentials.migId) {
-          return res.status(400).json({ error: "Password, IP, and MIG ID are required for VM credentials" });
-        }
-
-        // const username = vmCredentials.username.trim();
-        const password = vmCredentials.password.trim();
-        const ip = vmCredentials.ip.trim();
-        const migId = vmCredentials.migId.trim();
-        // if (username.length < 3) {
-        //   return res.status(400).json({ error: "Username must be at least 3 characters long" });
-        // }
-        if (password.length < 6) {
-          return res.status(400).json({ error: "Password must be at least 6 characters long" });
-        }
-        // Optionally add IP/MIG ID format validation here
-        if (!ip) {
-          return res.status(400).json({ error: "IP address is required" });
-        }
-        if (!migId) {
-          return res.status(400).json({ error: "MIG ID is required" });
-        }
-
-        // Find the machine by MIGID to get its ObjectId
-        const machine = await Machine.findOne({ MIGID: migId });
-        if (!machine) {
-          return res.status(404).json({ error: `Machine with MIG ID '${migId}' not found` });
-        }
-
-        // Admin approves → set everything true and add VM credentials
-        updateData = {
-          teacher_verified: true,
-          teacher_action: true,
-          admin_verified: true,
-          admin_action: true,
-          is_verified: true,
-          machineId: machine._id,
-          vmCredentials: {
-            // username,
-            password,
-            ip,
-            migId
-          }
-        };
-
-      } else {
-        // Admin rejects → only update admin side
-        updateData = {
-          admin_verified: false,
-          admin_action: true,
-          is_verified: false
-        };
-      }
-
-    } else {
-      return res.status(403).json({ error: "Unauthorized to update resource request verification" });
+    if (!machineId) {
+      return res.status(400).json({ error: "machineId is required" });
     }
+
+    if (!isValidDuration(duration)) {
+      return res.status(400).json({ error: "Invalid duration. Allowed range is 1 to 30 days." });
+    }
+
+    const machine = await Machine.findById(machineId).select("_id MIGID");
+    if (!machine) {
+      return res.status(404).json({ error: "Machine not found" });
+    }
+
+    // 🔹 Get latest endTime across ALL allotments (true max)
+    const latestEndTimeResult = await MachineAllotment.aggregate([
+      { $match: { machineId: machine._id } },
+      { $group: { _id: null, maxEndTime: { $max: "$endTime" } } }
+    ]);
+
+    const lastAllotmentEndTime = latestEndTimeResult.length > 0
+      ? latestEndTimeResult[0].maxEndTime
+      : null;
+
+    // 🔹 Calculate new window (PURE UTC LOGIC)
+    const { startTime, endTime } = calculateAllotmentWindow(
+      lastAllotmentEndTime,
+      duration
+    );
+
+    // 🔹 Update request
+    const updateData = {
+      teacher_action: true,
+      teacher_verified: is_verified,
+      is_verified: is_verified, 
+      updatedAt: new Date()
+    };
 
     const updatedRequest = await ResourceRequest.findByIdAndUpdate(
       request_id,
@@ -379,172 +355,36 @@ exports.updateResourceRequestVerification = async (req, res) => {
       { new: true }
     );
 
-    // console.log(`Resource request verification updated by ${userRole}:`, updatedRequest);
+    let createdAllotment = null;
 
-    // Only send email if update was successful (in background)
-    if (updatedRequest) {
-      // If admin approved and machineId is present, assign the student to the machine
-      if (userRole === "admin" && updatedRequest.is_verified && updatedRequest.machineId) {
-        try {
-          // Update machine to assign student and resource request
-          const machine = await Machine.findByIdAndUpdate(
-            updatedRequest.machineId,
-            { $set: { 
-              assignedStudent: { 
-                studentId: updatedRequest.studentId,
-                resourceRequestId: updatedRequest._id
-              }, 
-              isAssigned: true 
-            } },
-            { new: true }
-          );
-          if (machine) {
-            // console.log(`Assigned student ${updatedRequest.studentId} to machine ${machine.MIGID}`);
-          } else {
-            console.warn(`Machine with ID ${updatedRequest.machineId} not found; could not assign student ${updatedRequest.studentId}`);
-          }
-        } catch (machineErr) {
-          console.error('Error assigning student to machine:', machineErr);
-          // Do not fail the request update if machine update fails
-        }
-      }
-
-      const student = await Student.findById(updatedRequest.studentId);
-      
-      // Send emails asynchronously without waiting
-      if (userRole === "teacher") {
-        const teacher = await require('../database/teacherModel').findById(userId);
-        if (is_verified) {
-          // Approved by teacher
-          emailService.sendResourceRequestVerifiedByTeacherEmail(student.email, student.name, updatedRequest.title, teacher.name)
-            .then(result => console.log("Teacher resource request verification email sent:", result))
-            .catch(error => console.error("Error sending teacher verification email:", error));
-          
-          notifyStudent(updatedRequest.studentId, {
-            title: 'Resource Request Verified by Teacher',
-            body: `Your resource request has been verified by your teacher.`
-          }).catch(err => {
-            console.error("Error sending student web-push notification:", err);
-          });
-
-          // Notify admin that resource request is pending
-          emailService.sendAdminResourceRequestPendingEmail(
-            student.name,
-            student.email,
-            updatedRequest.title,
-            teacher.name,
-            updatedRequest.gpuRam
-          )
-            .then(result => console.log("Admin notification sent:", result))
-            .catch(error => console.error("Error sending admin notification:", error));
-
-          notifyAdmin({
-            title: 'New Resource Request by Student',
-            body: 'Requires admin verification.', 
-            // type: 'ADMIN_RESOURCE_REQUEST_UPDATED'
-          }).catch(err => {
-            console.error('Error sending admin web push notification:', err);
-          });
-          
-        } else {
-          // Rejected by teacher
-          emailService.sendResourceRequestRejectedByTeacherEmail(student.email, student.name, updatedRequest.title, teacher.name)
-            .then(result => console.log("Teacher resource request rejection email sent:", result))
-            .catch(error => console.error("Error sending teacher rejection email:", error));
-
-          notifyStudent(updatedRequest.studentId, {
-            title: 'Resource Request rejected by Teacher',
-            body: `Your resource request has been rejected by your teacher.`
-          }).catch(err => {
-            console.error("Error sending student web-push notification:", err);
-          });
-
-          // notifyAdmin({
-          //   title: 'Rejected Resource Request of a student by teacher',
-          //   body: 'UI triggering', 
-          //   type: 'ADMIN_RESOURCE_REQUEST_UPDATED'
-          // }).catch(err => {
-          //   console.error('Error sending admin web push notification:', err);
-          // });
-        }
-      } else if (userRole === "admin") {
-        if (is_verified) {
-          // Approved by admin
-          emailService.sendResourceRequestVerifiedByAdminEmail(student.email, student.name, updatedRequest.title, updatedRequest.vmCredentials, updatedRequest.username)
-            .then(result => console.log("Admin resource request verification email sent:", result))
-            .catch(error => console.error("Error sending admin verification email:", error));
-          
-          notifyStudent(updatedRequest.studentId, {
-            title: 'Resource Request verified by admin',
-            body: `Your resource request has been verified by admin`
-          }).catch(err => {
-            console.error("Error sending student web-push notification:", err);
-          });
-
-          // Notify teacher about admin's approval of resource request
-          Teacher.findById(student.teacher)
-            .then(teacher => {
-              if (teacher) {
-                emailService.sendTeacherResourceRequestVerifiedByAdminEmail(teacher.email, teacher.name, student.name, updatedRequest.title)
-                  .then(result => console.log("Teacher notification email sent:", result))
-                  .catch(error => console.error("Error sending teacher notification:", error));
-
-                notifyTeacher(student.teacher, {
-                  title: 'Student Resource Request Approved by Admin',
-                  body: `A resource request of one of your students has been approved by the admin.`
-                }).catch((pushErr) => {
-                  console.error('[WebPush] Error in teacher notification block:', pushErr);
-                });
-              }
-            })
-            .catch(error => console.error("Error finding teacher:", error));
-
-
-        } else {
-          // Rejected by admin
-          emailService.sendResourceRequestRejectedByAdminEmail(student.email, student.name, updatedRequest.title)
-            .then(result => console.log("Admin resource request rejection email sent:", result))
-            .catch(error => console.error("Error sending admin rejection email:", error));
-          
-          // Notify teacher about admin's rejection
-          Teacher.findById(student.teacher)
-            .then(teacher => {
-              if (teacher) {
-                emailService.sendTeacherResourceRequestRejectedByAdminEmail(teacher.email, teacher.name, student.name, updatedRequest.title)
-                  .then(result => console.log("Teacher notification email sent:", result))
-                  .catch(error => console.error("Error sending teacher notification:", error));
-
-                notifyStudent(updatedRequest.studentId, {
-                  title: 'Resource Request Rejected by admin',
-                  body: `Your resource request has been rejected by admin`
-                }).catch(err => {
-                  console.error("Error sending student web-push notification:", err);
-                });
-              }
-            })
-            .catch(error => console.error("Error finding teacher:", error));
-
-          // Notify teacher about admin's denial of resource request (web-push)
-          notifyTeacher(student.teacher, {
-            title: 'Student Resource Request Rejected by Admin',
-            body: `A resource request of one of your students has been rejected by the admin.`
-          }).catch((pushErr) => {
-            console.error('[WebPush] Error in teacher notification block:', pushErr);
-          });
-          
-        }
-      }
+    // 🔹 Create allotment if approved
+    if (is_verified) {
+      createdAllotment = await MachineAllotment.create({
+        machineId: machine._id,
+        resourceRequestId: updatedRequest._id,
+        startTime,
+        endTime,
+        status: "active"
+      });
     }
 
-    return res.json({
-      message: "Resource request verification status updated successfully",
-      request: updatedRequest
+    return res.status(200).json({
+      success: true,
+      message: "Resource request verification updated successfully",
+      request: updatedRequest,
+      machine: {
+        _id: machine._id,
+        MIGID: machine.MIGID
+      },
+      lastAllotmentEndTime,
+      allotment: createdAllotment
     });
+
   } catch (err) {
     console.error("Error updating resource request verification:", err);
-    // Return the real error message to help the frontend diagnose (trim long stack if necessary)
-    const message = err && err.message ? err.message : 'Failed to update resource request verification';
-    return res.status(500).json({ error: message });
+    return res.status(500).json({
+      error: "Failed to update resource request verification"
+    });
   }
 };
 
@@ -618,3 +458,47 @@ function isDateInPast(date) {
   now.setHours(0,0,0,0);
   return d < now;
 }
+
+exports.getAllMachines = async (req, res) => {
+  try {
+    const machines = await Machine.find()
+      .select("_id MIGID gpuRam")
+      .lean();
+
+    if (!machines.length) {
+      return res.status(404).json({ message: "No machines found" });
+    }
+    res.status(200).json(machines);
+  } catch (error) {
+    console.error("Error fetching machines:", error);
+    res.status(500).json({ error: "Failed to fetch machines" });
+  }
+};
+
+exports.getMachineWiseActiveAllotments = async (req, res) => {
+  try {
+    const { machineId } = req.params;
+
+    const machine = await fetchMachineById(machineId);
+    if (!machine) {
+      return res.status(404).json({ message: "Machine not found or invalid ID" });
+    }
+
+    const allotments = await MachineAllotment.find({
+      machineId,
+      status: "active" 
+    })
+      .select("resourceRequestId startTime endTime status")
+      .lean();
+
+    const response = { machine, allotments };
+    if (!allotments.length) {
+      response.message = "No active allotments found for this machine";
+    }
+
+    res.status(200).json(response);
+  } catch (error) {
+    console.error("Error fetching machine-wise allotments:", error);
+    res.status(500).json({ error: "Failed to fetch allotments" });
+  }
+};

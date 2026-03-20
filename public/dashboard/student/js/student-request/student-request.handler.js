@@ -5,7 +5,7 @@ import {
     getLoggedInStudentId,
     showErrorMessage,
     getStudentVerificationStatus,
-    validateExpiryDate
+    isValidDuration,
 } from '../student.utils.js';
 
 // Services
@@ -17,11 +17,10 @@ import {
 // UI
 import {
     renderResourcesPage,
-    initializeExpiryDatePicker
 } from './student-request.ui.js';
 
 // External
-import { isValidUsername, logoutDirectly } from '../../../common/js/commons.js';
+import { logoutDirectly } from '../../../common/js/commons.js';
 
 export async function handleLoadRequestResources() {
     try {
@@ -49,9 +48,10 @@ export async function handleLoadRequestResources() {
             studentData,
             verificationStatus,
             handleResourceRequest,
-            initializeExpiryDatePicker
         );
-
+        
+        await loadAvailableMachines();
+        
     } catch (error) {
         console.error('Error loading student details for resources:', error);
         logoutDirectly();
@@ -70,31 +70,18 @@ export async function handleResourceRequest(event) {
 
     try {
         const formData = {
-            username: document.getElementById('username').value.trim(),
             title: document.getElementById('title').value.trim(),
             purpose: document.getElementById('purpose').value.trim(),
-            expiryDate: document.getElementById('expiry-date').value,
-            gpuRam: parseInt(document.getElementById('gpu-ram').value)
+            duration: Number(document.getElementById('duration').value),
+            machineId: document.getElementById('selected-machine-id')?.value,
         };
 
-        if (!formData.username || !formData.title || !formData.purpose || !formData.expiryDate || formData.gpuRam === undefined || formData.gpuRam === null) {
+        if (!formData.title || !formData.purpose || !formData.duration) {
             throw new Error('Please fill in all required fields');
-        }
-
-        if (!isValidUsername(formData.username)) {
-            throw new Error('Username can only contain letters, numbers, hyphens (-), and underscores (_), with no spaces or special characters');
-        }
-
-        if (formData.username.length <= 5 || formData.username.length >= 50) {
-            throw new Error('Username must be greater than 5 and less than 50 characters');
         }
 
         if (formData.title.length > 50) {
             throw new Error('Title must not exceed 50 characters');
-        }
-
-        if (!Number.isFinite(formData.gpuRam) || formData.gpuRam < 0) {
-            throw new Error('GPU RAM must be a non-negative number');
         }
 
         if (formData.purpose.length < 100) {
@@ -105,7 +92,13 @@ export async function handleResourceRequest(event) {
             throw new Error('Purpose must not exceed 2000 characters');
         }
 
-        validateExpiryDate(formData.expiryDate);
+        if (!isValidDuration(formData.duration)) {
+            throw new Error('Duration must be a whole number between 1 and 30 days');
+        }
+
+        if (!formData.machineId) {
+            throw new Error('Please select one available machine before submitting');
+        }
 
         const studentId = await getLoggedInStudentId();
         if (!studentId) {
@@ -125,18 +118,6 @@ export async function handleResourceRequest(event) {
                     'You already have a pending request. Please wait for it to be processed or delete it if no action has been taken by teacher/admin.',
                     'request-content'
                 );
-                return;
-            }
-
-            if (errorData.error && /username already exists/i.test(errorData.error)) {
-                Swal.fire({
-                    title: "Error!",
-                    text: "Username already taken. Please choose a different username.",
-                    icon: "error",
-                    draggable: true,
-                    scrollbarPadding: false,
-                    heightAuto: false
-                });
                 return;
             }
 
@@ -167,5 +148,39 @@ export async function handleResourceRequest(event) {
             submitBtn.disabled = false;
             submitBtn.innerHTML = originalText;
         }
+    }
+}
+
+export async function loadAvailableMachines() {
+    const container = document.getElementById('machines-flexbar');
+    if (!container) return;
+    try {
+        const res = await fetch('/dashboard/student/get_machines');
+        if (!res.ok) throw new Error('Failed to fetch machines');
+        const machines = await res.json();
+        if (!machines.length) {
+            container.innerHTML = '<span class="machine-bar-empty">No machines currently available.</span>';
+            return;
+        }
+        container.innerHTML = machines
+            .map(m => `<div class="machine-bar-item" data-machine-id="${m._id}"><span class="migid">${m.MIGID}</span><span class="gpuram">${m.gpuRam} GB</span></div>`)
+            .join('');
+
+        container.addEventListener('click', (e) => {
+            const item = e.target.closest('.machine-bar-item');
+            if (!item) return;
+            const isAlreadySelected = item.classList.contains('selected');
+            container.querySelectorAll('.machine-bar-item').forEach(el => el.classList.remove('selected'));
+            const hiddenInput = document.getElementById('selected-machine-id');
+            if (isAlreadySelected) {
+                if (hiddenInput) hiddenInput.value = '';
+            } else {
+                item.classList.add('selected');
+                if (hiddenInput) hiddenInput.value = item.dataset.machineId;
+            }
+        });
+    } catch (err) {
+        console.error('Error loading available machines:', err);
+        container.innerHTML = '<span class="machine-bar-empty">Could not load machines.</span>';
     }
 }

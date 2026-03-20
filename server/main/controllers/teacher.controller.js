@@ -14,7 +14,11 @@ exports.teacher_dashboard_data = async (req, res) => {
         .populate({
           path: 'students',
           populate: {
-            path: 'resourceRequests'
+            path: 'resourceRequests',
+            populate: {
+              path: 'machineId',
+              select: 'MIGID'
+            }
           }
         });
       

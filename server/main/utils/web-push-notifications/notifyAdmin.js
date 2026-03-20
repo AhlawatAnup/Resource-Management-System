@@ -8,7 +8,7 @@ const vapidKeys = {
 };
 
 webpush.setVapidDetails(
-  'mailto:admin@example.com',
+  `mailto:${process.env.EMAIL_USER}`,
   vapidKeys.publicKey,
   vapidKeys.privateKey
 );

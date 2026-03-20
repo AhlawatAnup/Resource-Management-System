@@ -43,6 +43,10 @@
           <i class="fas fa-desktop"></i>
           Machines
         </a>
+        <a href="/dashboard/admin/allotments" class="nav-item" id="view-requests-nav">
+          <i class="fas fa-network-wired"></i>
+          Allotments
+        </a>
         <a href="/dashboard/admin/profile" class="nav-item" id="view-requests-nav">
           <i class="fas fa-user"></i>
           Profile
@@ -106,8 +110,6 @@
                   <th class="sortable" data-sort="teacher">Teacher</th>
                   <th class="sortable" data-sort="title">Request Title</th>
                   <th class="sortable" data-sort="purpose">Purpose</th>
-                  <th class="sortable" data-sort="resources">Resources</th>
-                  <th class="sortable" data-sort="expiry">Expiry Date</th>
                   <th class="sortable" data-sort="status">Status</th>
                   <th class="sortable">Action</th>
                 </tr>
@@ -231,37 +233,6 @@
               <div class="form-group">
                 <label for="editPurpose">Purpose:</label>
                 <input type="text" id="editPurpose" name="purpose" class="form-control" required />
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label for="editExpiryDate">Expiry Date:</label>
-                <input type="text" id="editExpiryDate" name="expiryDate" class="form-control" placeholder="Select date" required />
-              </div>
-            </div>
-            <div class="form-row">
-              <!-- <div class="form-group">
-                <label for="editCpuCores">CPU Cores:</label>
-                <input type="number" id="editCpuCores" name="cpuCores" class="form-control" min="1" required />
-              </div>
-              <div class="form-group">
-                <label for="editCpuRam">CPU RAM (GB):</label>
-                <input type="number" id="editCpuRam" name="cpuRam" class="form-control" min="1" required />
-              </div> -->
-            </div>
-            <div class="form-row">
-              <!-- <div class="form-group">
-                <label for="editGpuCount">GPU Count:</label>
-                <input type="number" id="editGpuCount" name="gpuCount" class="form-control" min="0" required />
-              </div> -->
-              <div class="form-group">
-                <label for="editGpuRam">GPU RAM (GB):</label>
-                <input type="number" id="editGpuRam" name="gpuRam" class="form-control" min="0" required />
-              </div>
-              <div class="form-group">
-                <label for="editUsername">Username:</label>
-                <input type="text" id="editUsername" name="username" class="form-control" minlength="3" />
-                <div id="edit-username-error" style="color: red; font-size: 0.9em; margin-top: 2px;"></div>
               </div>
             </div>
           </div>

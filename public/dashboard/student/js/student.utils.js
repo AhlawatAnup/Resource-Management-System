@@ -107,37 +107,8 @@ export function getStudentStatusClass(student) {
     return "status-pending";
 }
 
-// Validate expiry date for resource requests
-export function validateExpiryDate(expiryDateValue, minDays = 1, maxDays = 30) {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const minDate = new Date();
-    minDate.setDate(today.getDate() + minDays);
-    minDate.setHours(0, 0, 0, 0);
-
-    const maxDate = new Date();
-    maxDate.setDate(today.getDate() + maxDays);
-    maxDate.setHours(0, 0, 0, 0);
-
-    const expiryDate = new Date(expiryDateValue);
-    expiryDate.setHours(0, 0, 0, 0);
-
-    if (expiryDate <= today) {
-        throw new Error('Expiry date must be in the future');
-    }
-    if (expiryDate < minDate) {
-        throw new Error(`Expiry date must be at least ${minDays} day(s) ahead`);
-    }
-    if (expiryDate > maxDate) {
-        throw new Error(`Expiry date cannot be more than ${maxDays} days ahead`);
-    }
-
-    return expiryDate;
-}
-
 export function getRequestStatus(request) {
-    if (request.teacher_verified && request.admin_verified && request.is_verified) {
+    if (request.is_verified) {
         return 'approved';
     }
 
@@ -152,7 +123,7 @@ export function getRequestStatus(request) {
 }
 
 export function getRequestStatusClass(request) {
-    if (request.teacher_verified && request.admin_verified && request.is_verified) {
+    if (request.is_verified) {
         return 'status-approved';
     }
 
@@ -172,7 +143,7 @@ export function getRequestStatusClass(request) {
 }
 
 export function getRequestStatusIcon(request) {
-    if (request.teacher_verified && request.admin_verified && request.is_verified) {
+    if (request.is_verified) {
         return '✓';
     }
 
@@ -191,7 +162,7 @@ export function getRequestStatusIcon(request) {
 }
 
 export function getRequestStatusText(request) {
-    if (request.teacher_verified && request.admin_verified && request.is_verified) {
+    if (request.is_verified) {
         return 'Approved';
     }
 
@@ -227,3 +198,20 @@ export function sortRequestsByDate(requests) {
 export function canDeleteRequest(request) {
     return !request.teacher_action && !request.admin_action && !request.is_verified;
 }
+
+export function isValidDuration(duration) {
+    return Number.isInteger(duration) && duration >= 1 && duration <= 30;
+}
+
+export function formatDateTime(dateStr) {
+    return new Date(dateStr).toLocaleString();
+}
+
+export const DataUtils = {
+  formatAllotments(allotments = []) {
+    return allotments.map(entry => ({
+      from: new Date(entry.startTime?.$date || entry.startTime),
+      to: new Date(entry.endTime?.$date || entry.endTime)
+    }));
+  }
+};
