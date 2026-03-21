@@ -13,6 +13,11 @@ const machineSchema = new mongoose.Schema({
     required: true // in GB
   },
 
+  ram: {
+    type: Number,
+    required: true // in GB
+  },
+
   ip: {
     type: String,
     required: true
@@ -28,15 +33,26 @@ const machineSchema = new mongoose.Schema({
     required: true
   },
 
+  name: {
+    type: String,
+    required: true
+  },
+
   sshPassword: {
     type: String,
     required: true
   },
+
+  token: {
+    type: String,
+    required: true
+  },
+
   version: {
     type: Number,
     required: true,
     default: 2
-  },
+  }
 
 }, { timestamps: true });
 
