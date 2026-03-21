@@ -161,19 +161,30 @@ async function handleDeleteRequest(requestId) {
 
 function attachAccessMachineHandlers() {
     document.querySelectorAll('.access-machine-btn').forEach(btn => {
-        btn.addEventListener('click', function () {
-            const migid = this.dataset.migid;
-            if (migid) {
-                // This initial hit sets the session variable on the server
+    btn.addEventListener('click', async function () {
+        const migid = this.dataset.migid;
+        if (!migid) return;
 
-                // TO DO : SEND FETCH REQUEST TO SET SESISONS
-                // window.open(`/?migid=${migid}`, '_blank');
-                // window.open(`/${migid}`, '_blank');
-                window.open(`/`, '_blank');
+        try {
+            const res = await fetch('/proxy/set-session', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include', // important for session
+                body: JSON.stringify({ migid })
+            });
+            const data = await res.json();
 
+            if (res.ok) {
+                window.open('/', '_blank'); // open proxy only if session is set
+            } else {
+                alert(data.message || 'Failed to initialize session');
             }
-        });
+        } catch (err) {
+            console.error(err);
+            alert('Error setting session');
+        }
     });
+});
 }
 
 

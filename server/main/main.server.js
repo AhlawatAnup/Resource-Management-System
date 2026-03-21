@@ -9,11 +9,11 @@ const connectDB = require("./database/db");
 const schedule = require("node-schedule");
 const { runBackup } = require("./services/backup");
 const pushSubscriptionRoutes = require("./routes/pushSubscription.route.js");
+const proxyMachineRoute = require("./proxy/routes/proxyMachine.route.js");
 const {
   checkExpiringResourceRequests,
 } = require("./services/resourceExpiryNotifier");
 const { createProxyMiddleware } = require("http-proxy-middleware");
-const { getMachineByMigid } = require("./controllers/proxy.controller.js");
 
 // ✅ Connect to DB
 connectDB();
@@ -106,6 +106,11 @@ app.use("/dashboard", noCache, requireAuth, dashboardRoutes);
 // Push Subscription API
 app.use("/push-subscription", requireAuth, pushSubscriptionRoutes);
 
+
+//Proxy
+app.use("/", requireAuth, proxyMachineRoute);
+
+
 // const backupSchedule = "*/2 * * * *"; // every 2 minutes (example)
 const backupSchedule = process.env.BACKUP_SCHEDULE || "0 3 * * *";
 
@@ -134,50 +139,50 @@ schedule.scheduleJob(expiryNotifySchedule, async () => {
 });
 
 // PROXY TO ACCESS MACHINE
-app.use(
-  "/",
-  requireAuth,
-  async (req, res, next) => {
-    // SET ALL MACHINE :: USER EALTED PARAMS IN SESSIONS
-    // DO NOT MAKE QUERY SEARCH
+// app.use(
+//   "/",
+//   requireAuth,
+//   async (req, res, next) => {
+//     // SET ALL MACHINE :: USER EALTED PARAMS IN SESSIONS
+//     // DO NOT MAKE QUERY SEARCH
 
-    let urlMigid = req.params.migid;
-    console.log(urlMigid);
-    // if (urlMigid == "login" || urlMigid == "lab") {
-    //   urlMigid = undefined;
-    // }
+//     let urlMigid = req.params.migid;
+//     console.log(urlMigid);
+//     // if (urlMigid == "login" || urlMigid == "lab") {
+//     //   urlMigid = undefined;
+//     // }
 
-    if (urlMigid) {
-      try {
-        console.log("####### DB hit");
-        const machine = await getMachineByMigid(urlMigid);
-        req.session.currentMachineMigid = urlMigid;
-        req.session.proxyTarget = `http://${machine.ip}:${machine.port}`;
-        return req.session.save((err) => {
-          if (err) return next(err);
-          next();
-        });
-      } catch (err) {
-        console.log(err);
-        return res.status(404).send("Machine not found.");
-      }
-    }
+//     if (urlMigid) {
+//       try {
+//         console.log("####### DB hit");
+//         const machine = await getMachineByMigid(urlMigid);
+//         req.session.currentMachineMigid = urlMigid;
+//         req.session.proxyTarget = `http://${machine.ip}:${machine.port}`;
+//         return req.session.save((err) => {
+//           if (err) return next(err);
+//           next();
+//         });
+//       } catch (err) {
+//         console.log(err);
+//         return res.status(404).send("Machine not found.");
+//       }
+//     }
 
-    if (!req.session?.proxyTarget) {
-      return res.sendFile(path.join(publicPath, "home", "home.html"));
-      return res
-        .status(401)
-        .send("No active session. Please launch a machine from the dashboard.");
-    }
+//     if (!req.session?.proxyTarget) {
+//       return res.sendFile(path.join(publicPath, "home", "home.html"));
+//       return res
+//         .status(401)
+//         .send("No active session. Please launch a machine from the dashboard.");
+//     }
 
-    next();
-  },
-  createProxyMiddleware({
-    target: "http://172.16.10.24:8908",
-    changeOrigin: true,
-    ws: true,
-  }),
-);
+//     next();
+//   },
+//   createProxyMiddleware({
+//     target: "http://172.16.10.24:8908",
+//     changeOrigin: true,
+//     ws: true,
+//   }),
+// );
 
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
