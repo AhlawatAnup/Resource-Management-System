@@ -38,10 +38,10 @@ const machineSchema = new mongoose.Schema({
     required: true
   },
 
-  sshPassword: {
-    type: String,
-    required: true
-  },
+  // sshPassword: {
+  //   type: String,
+  //   required: true
+  // },
 
   token: {
     type: String,

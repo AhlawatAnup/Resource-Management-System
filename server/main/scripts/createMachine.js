@@ -1,55 +1,34 @@
 require("dotenv").config(); // Must be at the top to load MONGO_URI
 const mongoose = require("mongoose");
-const bcrypt = require("bcrypt");
-const connectDB = require("../database/db.js"); // Adjust path to where your connectDB function lives
-const Machine = require("../database/machineModel.js"); // Adjust path to your Schema file
+const Machine = require("../database/machineModel"); // adjust path if needed
+const connectDB = require("../database/db.js"); // adjust path if needed
 
-async function run() {
+async function addMachine() {
   try {
-    // 1. Establish Connection
     await connectDB();
 
-    // 2. Define the machine data
-    const machineData = {
-      MIGID: "MIG-99234-AB",
-      gpuRam: 24,
-      ip: "192.168.1.50",
-      port: 2222,
-      username: "admin",
-      sshPassword: "super-secure-password-123" // Will be hashed below
-    };
-
-    // 3. Hash the password (Security Best Practice)
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(machineData.sshPassword, saltRounds);
-
-    // 4. Create and Save the Machine
-    const newMachine = new Machine({
-      ...machineData,
-      sshPassword: hashedPassword,
-      version: 2 // Explicitly setting as per your schema
+    const machine = new Machine({
+      MIGID: "MIG-2c4ed16b-e9e0-5f86-a16e-cbc0a49fdfeb",
+      gpuRam: 10,
+      ram: 32,
+      ip: "172.16.10.24",
+      port: 8908,
+      username: "user8",
+      name: "A100",
+      token: "382ac7ebf58c8fc0ac8d5a26c534e61bbe49681cb359b7e9bcb36b346e18f336",
+      // sshPassword: "your_password_here",
     });
 
-    const result = await newMachine.save();
-    
-    console.log("------------------------------------------");
-    console.log("✅ SUCCESS: Machine added to database.");
-    console.log(`ID: ${result._id}`);
-    console.log(`MIGID: ${result.MIGID}`);
-    console.log("------------------------------------------");
+    const saved = await machine.save();
 
+    console.log("🎉 Machine added:");
+    console.log(saved);
   } catch (error) {
-    if (error.code === 11000) {
-      console.error("❌ ERROR: A machine with this MIGID already exists.");
-    } else {
-      console.error("❌ ERROR during script execution:", error.message);
-    }
+    console.error("❌ Error adding machine:", error.message);
   } finally {
-    // 5. Always close the connection or the script will never exit
-    await mongoose.connection.close();
-    console.log("🔌 MongoDB connection closed.");
-    process.exit(0);
+    await mongoose.disconnect();
+    console.log("🔌 Disconnected");
   }
 }
 
-run();
+addMachine();

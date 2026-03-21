@@ -153,7 +153,7 @@ function createRequestCard(request) {
 
             <!-- Footer -->
             <div class="request-footer" style="display:flex; justify-content:flex-end; gap:12px; margin-top:12px; align-items:center;">
-                ${request.is_verified 
+                ${request.is_verified && request.machineId && request.machineId.MIGID
                     ? `<button class="access-machine-btn" 
                             data-request-id="${request._id}" 
                             data-migid="${request.machineId.MIGID}" 
