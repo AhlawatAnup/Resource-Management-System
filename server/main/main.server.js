@@ -13,10 +13,7 @@ const proxyMachineRoute = require("./proxy/routes/proxyMachine.route.js");
 const {
   checkExpiringResourceRequests,
 } = require("./services/resourceExpiryNotifier");
-const { createProxyMiddleware } = require("http-proxy-middleware");
-const {proxyMiddleware} =require('./proxy/controllers/proxyMachine.controller.js')
-const httpProxy = require('http-proxy'); // npm install http-proxy
-const wsProxyServer = httpProxy.createProxyServer({});
+const attachWebSocketProxy = require("./proxy/websocketProxy.js");
 
 
 // ✅ Connect to DB
@@ -144,57 +141,11 @@ schedule.scheduleJob(expiryNotifySchedule, async () => {
   }
 });
 
-
-//Proxy
-// app.use("/", requireAuth, proxyMachineRoute);
-app.use("/",  proxyMachineRoute);
+app.use("/", proxyMachineRoute);
 
 const server=app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
 });
 
-// module.exports={server};
-
-// server.on('upgrade', (req, socket, head) => {
-//   sessionMiddleware(req, {}, () => {
-//     console.log('[WS Upgrade]', req.url);
-//     console.log('[WS Session]', req.session?.proxyTarget);
-    
-//     if (!req.session?.proxyTarget) {
-//       socket.destroy(); // clean close instead of hanging
-//       return;
-//     }
-
-//     proxyMiddleware.upgrade(req, socket, head);
-//   });
-// });
-
-wsProxyServer.on('error', (err, req, socket) => {
-  console.error('[WS Direct Error]', err.message);
-  if (socket?.writable) socket.destroy();
-});
-
-server.on('upgrade', (req, socket, head) => {
-  socket.on('error', (err) => {
-    console.error('[Socket Error]', err.message);
-  });
-
-  sessionMiddleware(req, {}, () => {
-    const target = req.session?.proxyTarget;
-    console.log('[WS Upgrade]', req.url, '→', target);
-
-    if (!target) {
-      socket.destroy();
-      return;
-    }
-
-    wsProxyServer.ws(req, socket, head, {
-      target,
-      headers: {
-        cookie: req.headers.cookie || '',
-        origin: target,
-        host: new URL(target).host,
-      },
-    });
-  });
-});
+// --- PROXY WEBSOCKET UPGRADE HANDLER ---
+attachWebSocketProxy(sessionMiddleware, server);
