@@ -279,7 +279,10 @@ exports.getRequestAllotmentTime = async (req, res) => {
     }
 
     // Find the allotment for this request
-    const allotment = await MachineAllotment.findOne({ resourceRequestId: requestId });
+    const allotment = await MachineAllotment.findOne(
+      { resourceRequestId: requestId },
+      { startTime: 1, endTime: 1, _id: 0 }
+    ).lean();
     if (!allotment) {
       return res.status(404).json({ error: "No allotment found for this request" });
     }
