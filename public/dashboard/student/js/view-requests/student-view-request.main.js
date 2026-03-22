@@ -1,7 +1,8 @@
 // main.js
 
-import { handleLoadViewRequests } from './student-view-request.handler.js';
+import { handleLoadViewRequests, processVerifiedRequestsForToken } from './student-view-request.handler.js';
 
-document.addEventListener('DOMContentLoaded', () => {
-    handleLoadViewRequests();
+document.addEventListener('DOMContentLoaded', async () => {
+    await handleLoadViewRequests();
+    processVerifiedRequestsForToken();
 });

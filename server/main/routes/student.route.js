@@ -1,7 +1,6 @@
 const express = require("express");
 const path = require("path");
 const { logRequest, isStudent } = require("../middleware/authMiddleware.js");
-
 const {
   student_data,
   getAllMachines,
@@ -14,6 +13,7 @@ const {
   getStudentResourceRequests,
   deleteStudentResourceRequest,
   getRequestAllotmentTime,
+  getTokenByMigid
 } = require("../controllers/student.controller.js");
 
 
@@ -56,5 +56,8 @@ router.get("/resource-requests/:studentId", getStudentResourceRequests);
 router.get("/get_machines", getAllMachines);
 router.get("/allotments/:machineId", getMachineWiseActiveAllotments);
 router.get("/allotment-time/:requestId", getRequestAllotmentTime);
+
+//token
+router.get("/token/:migid", getTokenByMigid);
 
 module.exports = router;

@@ -23,7 +23,10 @@ import {
 // External
 import { logoutDirectly } from '../../../common/js/commons.js';
 
+import { fetchTokenForMigid } from './student-view-request.service.js';
+
 let allRequests = [];
+
 
 // ==============================
 // Page Load
@@ -185,6 +188,25 @@ function attachAccessMachineHandlers() {
         }
     });
 });
+}
+
+export async function processVerifiedRequestsForToken() {
+    for (const req of allRequests) {
+        if (req.is_verified && req.machineId && req.machineId.MIGID) {
+            handleLoadToken(req.machineId.MIGID);
+        }
+    }
+}
+
+async function handleLoadToken(migid) {
+    try {
+        const response = await fetchTokenForMigid(migid);
+        if (!response.ok) throw new Error('Failed to fetch token');
+        const data = await response.json();
+        console.log('Token received for MIGID', migid, ':', data.token);
+    } catch (err) {
+        console.error('Error loading token for MIGID', migid, err);
+    }
 }
 
 

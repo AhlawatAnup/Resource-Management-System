@@ -32,3 +32,13 @@ export async function fetchRequestAllotmentTime(requestId) {
     if (!response.ok) return null;
     return response.json();
 }
+
+export async function fetchTokenForMigid(migid) {
+    if (!migid) throw new Error('MIGID is required');
+    const response = await fetch(`/dashboard/student/token/${migid}`, {
+        method: 'GET',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' }
+    });
+    return response;
+}
