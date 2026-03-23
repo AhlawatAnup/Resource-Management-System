@@ -196,7 +196,7 @@ export async function processVerifiedRequestsForToken() {
         allRequests.map(async (request) => {
             if (request.is_verified && request.machineId?.MIGID) {
                 try {
-                    const token = await handleLoadToken(request.machineId.MIGID, request.requestId);
+                    const token = await handleLoadToken(request.machineId.MIGID, request._id);
 
                     if (token) {
                         request.token = token;
