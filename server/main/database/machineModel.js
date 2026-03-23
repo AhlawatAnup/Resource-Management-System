@@ -28,7 +28,7 @@ const machineSchema = new mongoose.Schema({
     default: 22
   },
 
-  username: {
+  user: {
     type: String,
     required: true
   },

@@ -18,21 +18,28 @@ exports.getTokenByMigid = async (req, res) => {
 
     const machine = await Machine.findOne(
       { MIGID: migid },
-      { username: 1, _id: 0 }
+      { user: 1, _id: 0 },
     ).lean();
 
     if (!machine) {
       return res.status(404).json({ error: "Machine not found for MIGID" });
     }
 
-    const username = machine.username;
+    const user = machine.user;
 
-    if (!username) {
-      return res.status(404).json({ error: "Username not found for machine" });
+    if (!user) {
+      return res.status(404).json({ error: "user not found for machine" });
     }
 
     const response = await fetch(
-      `http://localhost:5001/token/${encodeURIComponent(username)}`
+      `${process.env.API_URL}/token/${encodeURIComponent(user)}`,
+      {
+        method: "GET",
+        headers: {
+          user: user,
+          "x-api-key": process.env.X_API_KEY,
+        },
+      }
     );
 
     if (!response.ok) {
