@@ -84,6 +84,7 @@ async function loadRequests(studentId) {
         renderAllRequests(allRequests, handleDeleteRequest, reloadPage);
 
         attachAccessMachineHandlers();
+        await processVerifiedRequestsForToken();
 
         // updateAccessMachineButtons(allRequests);
 
