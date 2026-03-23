@@ -232,22 +232,31 @@ function reloadPage() {
 // Copy Token Handler
 // ==============================
 export function attachCopyTokenHandlers() {
-    document.querySelectorAll('.copy-token-btn').forEach(btn => {
-        btn.addEventListener('click', function () {
-            const token = btn.getAttribute('data-token');
-            const icon = btn.querySelector('i');
-            if (token && icon) {
-                navigator.clipboard.writeText(token).then(() => {
-                    icon.classList.remove('fa-copy');
-                    icon.classList.add('fa-check');
-                    btn.style.color = '#52c41a';
-                    setTimeout(() => {
-                        icon.classList.remove('fa-check');
-                        icon.classList.add('fa-copy');
-                        btn.style.color = '#237804';
-                    }, 1200);
-                });
-            }
-        });
-    });
+    const container = document.getElementById('all-requests-list');
+    if (!container) return;
+
+    function handleCopyClick(e) {
+        const btn = e.target.closest('.copy-token-btn');
+        if (!btn) return;
+
+        const token = btn.getAttribute('data-token');
+        const icon = btn.querySelector('i');
+
+        if (!token || !icon) return;
+
+        navigator.clipboard.writeText(token)
+            .then(() => {
+                icon.classList.replace('fa-copy', 'fa-check');
+                btn.classList.add('copy-success');
+
+                setTimeout(() => {
+                    icon.classList.replace('fa-check', 'fa-copy');
+                    btn.classList.remove('copy-success');
+                }, 1200);
+            })
+            .catch(err => console.error('Clipboard write failed:', err));
+    }
+
+    container.removeEventListener('click', handleCopyClick, true);
+    container.addEventListener('click', handleCopyClick, true);
 }
