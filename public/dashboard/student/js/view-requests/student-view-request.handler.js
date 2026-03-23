@@ -196,7 +196,7 @@ export async function processVerifiedRequestsForToken() {
         allRequests.map(async (request) => {
             if (request.is_verified && request.machineId?.MIGID) {
                 try {
-                    const token = await handleLoadToken(request.machineId.MIGID);
+                    const token = await handleLoadToken(request.machineId.MIGID, request.requestId);
 
                     if (token) {
                         request.token = token;
@@ -216,9 +216,9 @@ export async function processVerifiedRequestsForToken() {
     attachAccessMachineHandlers();
 }
 
-async function handleLoadToken(migid) {
+async function handleLoadToken(migid, requestId) {
     try {
-        const response = await fetchTokenForMigid(migid);
+        const response = await fetchTokenForMigid(migid, requestId);
         if (!response.ok) throw new Error('Failed to fetch token');
         const data = await response.json();
         return data.token;

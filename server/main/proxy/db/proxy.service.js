@@ -10,10 +10,11 @@ exports.getMachineByMigid = async (migid) => {
 
 exports.getTokenByMigid = async (req, res) => {
   try {
-    const { migid } = req.params;
+    const migid = req.headers['x-mig-id']; 
+    const requestId = req.headers['x-request-id'];
 
     if (!migid) {
-      return res.status(400).json({ error: "MIGID is required" });
+      return res.status(400).json({ error: "X-Mig-ID header is required" });
     }
 
     const machine = await Machine.findOne(
@@ -42,6 +43,7 @@ exports.getTokenByMigid = async (req, res) => {
       headers: {
         user: user,
         "x-api-key": process.env.X_API_KEY,
+        "X-Request-ID": requestId // Passing it along to the next service if needed
       },
     });
     if (!response.ok) {

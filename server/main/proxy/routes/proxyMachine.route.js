@@ -7,7 +7,7 @@ const { getTokenByMigid } = require("../db/proxy.service.js");
 const router = express.Router();
 
 router.post('/proxy/set-session', setSession);
-router.get("/proxy/token/:migid", getTokenByMigid);
+router.get("/proxy/token", getTokenByMigid);
 
 router.use('/', requireProxyTarget, proxyMiddleware);
 
