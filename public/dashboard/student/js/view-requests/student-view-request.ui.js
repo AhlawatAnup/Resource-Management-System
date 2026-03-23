@@ -171,11 +171,13 @@ function createRequestCard(request) {
             <!-- Token Section and Buttons -->
             ${showTokenAndButtons ? `
                 <div class="request-token" id="token-field-${request._id}"
-                     style="margin:12px 0; padding:10px; background:#f6ffed; border-left:4px solid #52c41a; border-radius:6px; color:#237804;">
-                    
+                     style="margin:12px 0; padding:10px; background:#f6ffed; border-left:4px solid #52c41a; border-radius:6px; color:#237804; display: flex; align-items: center; gap: 10px;">
                     ${request.token 
                         ? `<strong>Token:</strong> 
-                           <span class="token-value" style="font-family:monospace;">${request.token}</span>`
+                           <span class="token-value" style="font-family:monospace;">${request.token}</span>
+                           <button class="copy-token-btn" data-token="${request.token}" title="Copy Token" style="margin-left:8px; padding:2px 8px; font-size:1.1em; border-radius:4px; border:1px solid #b7eb8f; background:#fff; color:#237804; cursor:pointer; display: flex; align-items: center;">
+                               <i class="fas fa-copy"></i>
+                           </button>`
                         : `<span style="color:#999;">Token not generated yet</span>`
                     }
                 </div>
@@ -208,7 +210,6 @@ function createRequestCard(request) {
 // Event Handlers
 // ==============================
 
-
 function attachDeleteHandlers(onDelete, onReload) {
     document.querySelectorAll('.delete-request-btn').forEach(btn => {
         btn.addEventListener('click', async function () {
@@ -233,4 +234,5 @@ function attachDeleteHandlers(onDelete, onReload) {
             }
         });
     });
+
 }

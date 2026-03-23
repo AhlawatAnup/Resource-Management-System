@@ -82,6 +82,7 @@ async function loadRequests(studentId) {
         allRequests = data;
 
         renderAllRequests(allRequests, handleDeleteRequest, reloadPage);
+        attachCopyTokenHandlers();
         await processVerifiedRequests();
 
     } catch (error) {
@@ -225,4 +226,28 @@ function handleFilterChange(status) {
 
 function reloadPage() {
     handleLoadViewRequests();
+}
+
+// ==============================
+// Copy Token Handler
+// ==============================
+export function attachCopyTokenHandlers() {
+    document.querySelectorAll('.copy-token-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const token = btn.getAttribute('data-token');
+            const icon = btn.querySelector('i');
+            if (token && icon) {
+                navigator.clipboard.writeText(token).then(() => {
+                    icon.classList.remove('fa-copy');
+                    icon.classList.add('fa-check');
+                    btn.style.color = '#52c41a';
+                    setTimeout(() => {
+                        icon.classList.remove('fa-check');
+                        icon.classList.add('fa-copy');
+                        btn.style.color = '#237804';
+                    }, 1200);
+                });
+            }
+        });
+    });
 }
