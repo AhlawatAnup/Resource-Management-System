@@ -127,6 +127,8 @@ function createRequestCard(request) {
 
     const canDelete = canDeleteRequest(request);
 
+    const isVerified = request.is_verified && request.machineId && request.machineId.MIGID;
+
     return `
         <div class="request-item detailed" data-status="${status}" style="position:relative; border:1px solid #ddd; border-radius:12px; padding:16px; margin-bottom:16px; background:#fff; box-shadow:0 2px 6px rgba(0,0,0,0.05);">
 
@@ -151,11 +153,18 @@ function createRequestCard(request) {
                 </div>
             </div>
 
-            <!-- Footer -->
-            <div class="request-footer" style="display:flex; justify-content:flex-end; gap:12px; margin-top:12px; align-items:center;">
-                
-                ${request.is_verified && request.machineId && request.machineId.MIGID
-                    ? `
+            <!-- Token Section -->
+            ${isVerified ? `
+                <div class="request-token" id="token-field-${request._id}"
+                     style="margin:12px 0; padding:10px; background:#f6ffed; border-left:4px solid #52c41a; border-radius:6px; color:#237804;">
+                    
+                    ${request.token 
+                        ? `<strong>Token:</strong> 
+                           <span class="token-value" style="font-family:monospace;">${request.token}</span>`
+                        : `<span style="color:#999;">Token not generated yet</span>`
+                    }
+                </div>
+
                     <button class="raise-token-btn" 
                             data-request-id="${request._id}" 
                             style="cursor:pointer">
@@ -171,6 +180,9 @@ function createRequestCard(request) {
                     `
                     : ''}
 
+            <!-- Footer -->
+            <div class="request-footer" 
+                 style="display:flex; justify-content:flex-end; gap:12px; margin-top:12px; align-items:center;">
                 <small style="color:#666;">Submitted: ${formatDate(request.createdAt)}</small>
             </div>
         </div>

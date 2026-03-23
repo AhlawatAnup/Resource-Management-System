@@ -191,11 +191,28 @@ function attachAccessMachineHandlers() {
 }
 
 export async function processVerifiedRequestsForToken() {
-    for (const req of allRequests) {
-        if (req.is_verified && req.machineId && req.machineId.MIGID) {
-            handleLoadToken(req.machineId.MIGID);
-        }
-    }
+    await Promise.all(
+        allRequests.map(async (request) => {
+            if (request.is_verified && request.machineId?.MIGID) {
+                try {
+                    const token = await handleLoadToken(request.machineId.MIGID);
+
+                    if (token) {
+                        request.token = token;
+                    } else {
+                        request.token = null;
+                    }
+
+                } catch (err) {
+                    console.error("Token fetch failed for:", request._id);
+                    request.token = null;
+                }
+            }
+        })
+    );
+
+    renderAllRequests(allRequests, handleDeleteRequest, reloadPage);
+    attachAccessMachineHandlers();
 }
 
 async function handleLoadToken(migid) {
@@ -203,9 +220,10 @@ async function handleLoadToken(migid) {
         const response = await fetchTokenForMigid(migid);
         if (!response.ok) throw new Error('Failed to fetch token');
         const data = await response.json();
-        console.log('Token received for MIGID', migid, ':', data.token);
+        return data.token;
     } catch (err) {
         console.error('Error loading token for MIGID', migid, err);
+        return null;
     }
 }
 
