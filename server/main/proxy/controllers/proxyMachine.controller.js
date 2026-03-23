@@ -8,13 +8,19 @@ const { getMachineByMigid, getActiveAllotment } = require('../db/proxy.service')
 const setSession = async (req, res) => {
     try {
         console.log("request received for setSession")
-        const { migid } = req.body;
-        if (!migid) return res.status(400).json({ message: 'migid is required' });
+        const { migid, requestId } = req.body;
+
+        if (!migid || !requestId) {
+            return res.status(400).json({ message: 'migid and requestId are required' });
+        }
 
         const machine = await getMachineByMigid(migid);
-        if (!machine) return res.status(404).json({ message: 'Machine not found' });
+        if (!machine) {
+            return res.status(404).json({ message: 'Machine not found' });
+        }
 
         req.session.migid = migid;
+        req.session.requestId = requestId;
         req.session.proxyTarget = `http://${machine.ip}:${machine.port}`;
         req.session.ip = machine.ip;
         req.session.port = machine.port;

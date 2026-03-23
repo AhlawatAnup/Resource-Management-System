@@ -126,14 +126,15 @@ function attachAccessMachineHandlers() {
     document.querySelectorAll('.access-machine-btn').forEach(btn => {
     btn.addEventListener('click', async function () {
         const migid = this.dataset.migid;
-        if (!migid) return;
+        const requestId = this.dataset.requestId;
+        if (!migid || !requestId) return;
 
         try {
             const res = await fetch('/proxy/set-session', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include', // important for session
-                body: JSON.stringify({ migid })
+                body: JSON.stringify({ migid, requestId })
             });
             const data = await res.json();
 
