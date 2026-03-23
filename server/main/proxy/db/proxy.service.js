@@ -18,30 +18,32 @@ exports.getTokenByMigid = async (req, res) => {
 
     const machine = await Machine.findOne(
       { MIGID: migid },
-      { user: 1, _id: 0 },
+      { user: 1, ip: 1, _id: 0 },
     ).lean();
 
     if (!machine) {
       return res.status(404).json({ error: "Machine not found for MIGID" });
     }
 
-    const user = machine.user;
+    const { user, ip } = machine;
 
     if (!user) {
       return res.status(404).json({ error: "user not found for machine" });
     }
 
-    const response = await fetch(
-      `${process.env.API_URL}/token/${encodeURIComponent(user)}`,
-      {
-        method: "GET",
-        headers: {
-          user: user,
-          "x-api-key": process.env.X_API_KEY,
-        },
-      }
-    );
+    if (!ip) {
+      return res.status(404).json({ error: "ip not found for machine" });
+    }
 
+    const url = `http://${ip}:${process.env.TOKEN_SERVER_PORT}/token/${encodeURIComponent(user)}`;
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        user: user,
+        "x-api-key": process.env.X_API_KEY,
+      },
+    });
     if (!response.ok) {
       throw new Error("External API failed");
     }
