@@ -82,7 +82,7 @@ async function loadRequests(studentId) {
         allRequests = data;
 
         renderAllRequests(allRequests, handleDeleteRequest, reloadPage);
-        await processVerifiedRequestsForTokenAndActionButtons();
+        await processVerifiedRequests();
 
     } catch (error) {
         console.error('Error loading requests:', error);
@@ -150,13 +150,16 @@ function attachAccessMachineHandlers() {
 });
 }
 
-export async function processVerifiedRequestsForTokenAndActionButtons() {
+export async function processVerifiedRequests() {
     await Promise.all(
         allRequests.map(async (request) => {
             if (request.is_verified && request.machineId?.MIGID) {
                 try {
                     const allotment = await fetchRequestAllotmentTime(request._id);
                     if (allotment && allotment.startTime && allotment.endTime) {
+                        // Store allotment times on the request object
+                        request.allotmentStartTime = allotment.startTime;
+                        request.allotmentEndTime = allotment.endTime;
                         const now = Date.now();
                         const start = new Date(allotment.startTime).getTime();
                         const end = new Date(allotment.endTime).getTime();
@@ -171,14 +174,20 @@ export async function processVerifiedRequestsForTokenAndActionButtons() {
                     } else {
                         request.isAllotmentActive = false;
                         request.token = null;
+                        request.allotmentStartTime = null;
+                        request.allotmentEndTime = null;
                     }
                 } catch (err) {
                     request.isAllotmentActive = false;
                     request.token = null;
+                    request.allotmentStartTime = null;
+                    request.allotmentEndTime = null;
                 }
             } else {
                 request.isAllotmentActive = false;
                 request.token = null;
+                request.allotmentStartTime = null;
+                request.allotmentEndTime = null;
             }
         })
     );

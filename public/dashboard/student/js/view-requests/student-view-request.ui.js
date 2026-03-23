@@ -146,6 +146,20 @@ function createRequestCard(request) {
                 </div>
             </div>
 
+            <!-- MIGID and Allotment Time Display -->
+            ${(request.machineId && request.machineId.MIGID) ? `
+                <div class="request-migid" style="margin: 8px 0 0 0; color: #434343">
+                    <strong>MIGID:</strong> <span style="font-family:monospace;">${request.machineId.MIGID}</span>
+                </div>
+            ` : ''}
+            ${(request.allotmentStartTime && request.allotmentEndTime) ? `
+                <div class="request-allotment-time" style="margin: 4px 0 0 0; color: #434343">
+                    <strong>Allotment:</strong> 
+                    <span>Start: ${formatDate(request.allotmentStartTime)}</span> &nbsp; | &nbsp; 
+                    <span>End: ${formatDate(request.allotmentEndTime)}</span>
+                </div>
+            ` : ''}
+
             <!-- Body -->
             <div class="request-body">
                 <div class="request-purpose">
