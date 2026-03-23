@@ -82,11 +82,7 @@ async function loadRequests(studentId) {
         allRequests = data;
 
         renderAllRequests(allRequests, handleDeleteRequest, reloadPage);
-
-        attachAccessMachineHandlers();
-        await processVerifiedRequestsForToken();
-
-        // updateAccessMachineButtons(allRequests);
+        await processVerifiedRequestsForTokenAndActionButtons();
 
     } catch (error) {
         console.error('Error loading requests:', error);
@@ -124,44 +120,7 @@ async function handleDeleteRequest(requestId) {
     }
 }
 
-// async function updateAccessMachineButtons(requests) {
-//     for (const request of requests) {
-//         if (!request.is_verified) continue;
 
-//         const btn = document.querySelector(
-//             `.access-machine-btn[data-request-id="${request._id}"]`
-//         );
-
-//         if (!btn) continue;
-
-//         btn.disabled = true;
-//         btn.textContent = 'Checking...';
-
-//         try {
-//             const data = await fetchRequestAllotmentTime(request._id);
-
-//             if (data && data.startTime && data.endTime) {
-//                 const now = Date.now();
-//                 const start = new Date(data.startTime).getTime();
-//                 const end = new Date(data.endTime).getTime();
-
-//                 if (now >= start && now <= end) {
-//                     btn.disabled = false;
-//                     btn.textContent = 'Access Machine';
-//                 } else {
-//                     btn.disabled = true;
-//                     btn.textContent = 'Access Machine (Unavailable)';
-//                 }
-//             } else {
-//                 btn.disabled = true;
-//                 btn.textContent = 'Access Machine (No Allotment)';
-//             }
-//         } catch (err) {
-//             btn.disabled = true;
-//             btn.textContent = 'Access Machine (Error)';
-//         }
-//     }
-// }
 
 function attachAccessMachineHandlers() {
     document.querySelectorAll('.access-machine-btn').forEach(btn => {
@@ -191,23 +150,35 @@ function attachAccessMachineHandlers() {
 });
 }
 
-export async function processVerifiedRequestsForToken() {
+export async function processVerifiedRequestsForTokenAndActionButtons() {
     await Promise.all(
         allRequests.map(async (request) => {
             if (request.is_verified && request.machineId?.MIGID) {
                 try {
-                    const token = await handleLoadToken(request.machineId.MIGID, request._id);
-
-                    if (token) {
-                        request.token = token;
+                    const allotment = await fetchRequestAllotmentTime(request._id);
+                    if (allotment && allotment.startTime && allotment.endTime) {
+                        const now = Date.now();
+                        const start = new Date(allotment.startTime).getTime();
+                        const end = new Date(allotment.endTime).getTime();
+                        if (now >= start && now <= end) {
+                            request.isAllotmentActive = true;
+                            const token = await handleLoadToken(request.machineId.MIGID, request._id);
+                            request.token = token || null;
+                        } else {
+                            request.isAllotmentActive = false;
+                            request.token = null;
+                        }
                     } else {
+                        request.isAllotmentActive = false;
                         request.token = null;
                     }
-
                 } catch (err) {
-                    console.error("Token fetch failed for:", request._id);
+                    request.isAllotmentActive = false;
                     request.token = null;
                 }
+            } else {
+                request.isAllotmentActive = false;
+                request.token = null;
             }
         })
     );
@@ -219,11 +190,12 @@ export async function processVerifiedRequestsForToken() {
 async function handleLoadToken(migid, requestId) {
     try {
         const response = await fetchTokenForMigid(migid, requestId);
-        if (!response.ok) throw new Error('Failed to fetch token');
+        if (!response.ok) return null;
+
         const data = await response.json();
-        return data.token;
-    } catch (err) {
-        console.error('Error loading token for MIGID', migid, err);
+        return data?.token ?? null;
+
+    } catch {
         return null;
     }
 }

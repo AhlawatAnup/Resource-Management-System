@@ -128,6 +128,7 @@ function createRequestCard(request) {
     const canDelete = canDeleteRequest(request);
 
     const isVerified = request.is_verified && request.machineId && request.machineId.MIGID;
+    const showTokenAndButtons = isVerified && request.isAllotmentActive;
 
     return `
         <div class="request-item detailed" data-status="${status}" style="position:relative; border:1px solid #ddd; border-radius:12px; padding:16px; margin-bottom:16px; background:#fff; box-shadow:0 2px 6px rgba(0,0,0,0.05);">
@@ -153,8 +154,8 @@ function createRequestCard(request) {
                 </div>
             </div>
 
-            <!-- Token Section -->
-            ${isVerified ? `
+            <!-- Token Section and Buttons -->
+            ${showTokenAndButtons ? `
                 <div class="request-token" id="token-field-${request._id}"
                      style="margin:12px 0; padding:10px; background:#f6ffed; border-left:4px solid #52c41a; border-radius:6px; color:#237804;">
                     
