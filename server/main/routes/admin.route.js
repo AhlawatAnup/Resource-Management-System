@@ -111,7 +111,7 @@ router.post('/create-machine', isAdmin, createMachine);
 router.put('/machines/:id', isAdmin, updateMachine);
 router.delete('/machines/:id', isAdmin, deleteMachine);
 
-router.get('/get_machines', isAdmin, getAllMachines);
+router.get('/get_machines', isAdmin, getAllMachines); //for allotments
 router.get('/allotments/:machineId', isAdmin, getMachineWiseActiveAllotments);
 
 module.exports = router;

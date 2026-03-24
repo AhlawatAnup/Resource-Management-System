@@ -566,31 +566,18 @@ exports.UpdateAdminIdentity = exports.UpdateAdminProfile;
 
 exports.getMachines = async (req, res) => {
   try {
-    // populate nested assignedStudent.studentId with student's name and rollNo
-    const machines = await Machine.find({})
-      .populate({ path: 'assignedStudent.studentId', select: 'name rollNo' })
-      .lean();
+    const machines = await Machine.find({}).lean();
 
-    // normalize assignedStudent to include rollNumber and name for frontend
-    const normalized = machines.map(m => {
-      const copy = { ...m };
-      if (copy.assignedStudent && copy.assignedStudent.studentId) {
-        const s = copy.assignedStudent.studentId;
-        copy.assignedStudent = {
-          studentId: s._id,
-          rollNumber: s.rollNo || null,
-          name: s.name || null
-        };
-      } else {
-        copy.assignedStudent = null;
-      }
-      return copy;
+    return res.json({
+      ok: true,
+      machines
     });
 
-    return res.json({ ok: true, machines: normalized });
   } catch (err) {
     console.error('Failed to fetch machines', err);
-    return res.status(500).json({ error: 'Failed to fetch machines' });
+    return res.status(500).json({
+      error: 'Failed to fetch machines'
+    });
   }
 };
 
