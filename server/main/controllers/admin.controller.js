@@ -637,88 +637,31 @@ async function deleteResourceRequestAndCleanup(resourceRequestId, studentId) {
 
 // Update a machine (MIGID, gpuRam, assignedStudent)
 // When unassigning, also deletes the associated resource request
-exports.updateMachine = async (req, res) => {
+exports.updateMachineAvailability = async (req, res) => {
   const { id } = req.params;
-  const { MIGID, gpuRam, assignedStudent } = req.body;
+
   try {
-    const update = {};
-    if (MIGID !== undefined) update.MIGID = MIGID;
-    if (gpuRam !== undefined) update.gpuRam = gpuRam;
-    if (assignedStudent !== undefined && assignedStudent === null) {
-      // Get the current machine to find resourceRequestId
-      const currentMachine = await Machine.findById(id);
-      if (currentMachine && currentMachine.assignedStudent && currentMachine.assignedStudent.resourceRequestId) {
-        const resourceRequestId = currentMachine.assignedStudent.resourceRequestId;
-        const studentId = currentMachine.assignedStudent.studentId;
+    const machine = await Machine.findByIdAndUpdate(
+      id,
+      { isAvailable: false },
+      { new: true }
+    ).lean();
 
-        // Notify student and teacher before revocation cleanup (async, non-blocking)
-        Student.findById(studentId).then(student => {
-          if (!student) return;
-          
-          ResourceRequest.findById(resourceRequestId).then(resourceRequest => {
-            if (!resourceRequest) return;
-            
-            // Send student notification email
-            emailService
-              .sendResourceRequestRevokedByAdminEmail(
-              student.email,
-              student.name,
-              resourceRequest.title,
-              currentMachine.MIGID
-            ).catch(err => console.error('Error sending student revocation email:', err));
-
-            notifyStudent(studentId, {
-              title: 'Resource Revoked by admin',
-              body: `Your resource has been revoked by admin`
-            }).catch(err => {
-              console.error("Error sending student web-push notification:", err);
-            });
-            
-            // Send teacher notification email
-            Teacher.findById(student.teacher).then(teacher => {
-              if (teacher) {
-                emailService.sendTeacherResourceRequestRevokedByAdminEmail(
-                  teacher.email,
-                  teacher.name,
-                  student.name,
-                  resourceRequest.title
-                ).catch(err => console.error('Error sending teacher notification email:', err));
-
-                // Notify teacher when admin revokes student resource allocation (web-push)
-                notifyTeacher(student.teacher, {
-                  title: 'Resource Allocation Revoked',
-                  body: `A student resource allocation has been revoked by the admin.`
-                }).catch(err => {
-                  console.error("Error sending teacher web-push notification:", err);
-                });
-              }
-            }).catch(err => console.error('Error finding teacher:', err));
-
-          }).catch(err => console.error('Error finding resource request:', err));
-        }).catch(err => console.error('Error finding student:', err));
-
-        // Delete the resource request and clean up references
-        try {
-          await deleteResourceRequestAndCleanup(resourceRequestId, studentId);
-        } catch (error) {
-          console.error("Deletion failed:", error);
-          return res.status(500).json({
-            success: false,
-            message: "Failed to revoke resource properly. Try again."
-          });
-        }
-      }
-
-      // Clear both studentId and resourceRequestId when unassigning
-      update.assignedStudent = { studentId: null, resourceRequestId: null };
-      update.isAssigned = false;
+    if (!machine) {
+      return res.status(404).json({ error: 'Machine not found' });
     }
-    const machine = await Machine.findByIdAndUpdate(id, update, { new: true }).lean();
-    if (!machine) return res.status(404).json({ error: 'Machine not found' });
-    return res.json({ ok: true, machine });
+
+    return res.json({
+      ok: true,
+      message: 'Machine marked as unavailable',
+      machine
+    });
+
   } catch (err) {
     console.error('Failed to update machine', err);
-    return res.status(500).json({ error: 'Failed to update machine' });
+    return res.status(500).json({
+      error: 'Failed to update machine'
+    });
   }
 };
 

@@ -18,7 +18,7 @@ const {
   ChangeAdminEmail,
   getMachines,
   createMachine,
-  updateMachine,
+  updateMachineAvailability,
   deleteMachine,
   deleteResourceRequestByMig,
   UpdateAdminProfile,
@@ -108,7 +108,7 @@ router.post('/upload-machines', isAdmin, upload.single('file'), async (req, res)
 
 router.get('/machines', isAdmin, getMachines);
 router.post('/create-machine', isAdmin, createMachine);
-router.put('/machines/:id', isAdmin, updateMachine);
+router.put('/machines/:id', isAdmin, updateMachineAvailability);
 router.delete('/machines/:id', isAdmin, deleteMachine);
 
 router.get('/get_machines', isAdmin, getAllMachines); //for allotments

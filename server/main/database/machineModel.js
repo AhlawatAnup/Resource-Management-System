@@ -47,6 +47,11 @@ const machineSchema = new mongoose.Schema({
     type: Number,
     required: true,
     default: 2
+  },
+  
+  isAvailable: {
+  type: Boolean,
+  default: true
   }
 
 }, { timestamps: true });
