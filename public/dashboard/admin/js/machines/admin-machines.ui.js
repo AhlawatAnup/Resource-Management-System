@@ -285,6 +285,9 @@ modal.innerHTML = `
 `;
   document.body.appendChild(modal);
 
+  modal.querySelector('#machineAddCancel')
+  .addEventListener('click', closeAddModal);
+
   modal.querySelector('#machineAddForm')
     .addEventListener('submit', (e) => {
       e.preventDefault();
