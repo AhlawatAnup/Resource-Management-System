@@ -231,29 +231,42 @@ export function ensureAddModal(onSubmit) {
   });
 
   modal.innerHTML = `
-    <div style="background:#fff;padding:18px;border-radius:8px;max-width:520px;width:100%;">
-      <h2 style="margin-top:0; margin-bottom:12px;">Edit Machine</h2>
+    <div class="machine-modal">
+      <h2>Add Machine</h2>
+
       <form id="machineAddForm">
         <input id="addMIGID" placeholder="MIG ID" />
-      <input id="addGpuRam" placeholder="GPU RAM" />
-        <button type="button" id="machineAddCancel">Cancel</button>
-        <button type="submit">Save</button>
+        <input id="addGpuRam" placeholder="GPU RAM (GB)" />
+        <input id="addRam" placeholder="System RAM (GB)" />
+        <input id="addIp" placeholder="IP Address" />
+        <input id="addPort" placeholder="Port" />
+        <input id="addUser" placeholder="SSH User" />
+        <input id="addName" placeholder="Machine Name" />
+        <input id="addToken" placeholder="Token" />
+
+        <div class="machine-modal-actions">
+          <button type="button" id="machineAddCancel">Cancel</button>
+          <button type="submit">Save</button>
+        </div>
       </form>
     </div>
   `;
 
   document.body.appendChild(modal);
 
-  modal.querySelector('#machineAddCancel')
-    .addEventListener('click', closeAddModal);
-
   modal.querySelector('#machineAddForm')
     .addEventListener('submit', (e) => {
       e.preventDefault();
 
-      onSubmit({
+    onSubmit({
         MIGID: modal.querySelector('#addMIGID').value.trim(),
-        gpuRaw: modal.querySelector('#addGpuRam').value.trim()
+        gpuRaw: modal.querySelector('#addGpuRam').value.trim(),
+        ramRaw: modal.querySelector('#addRam').value.trim(),
+        ip: modal.querySelector('#addIp').value.trim(),
+        portRaw: modal.querySelector('#addPort').value.trim(),
+        user: modal.querySelector('#addUser').value.trim(),
+        name: modal.querySelector('#addName').value.trim(),
+        token: modal.querySelector('#addToken').value.trim()
       });
     });
 

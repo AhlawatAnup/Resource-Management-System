@@ -1,0 +1,96 @@
+/* Overlay */
+#machineAddModal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* Modal box */
+.machine-modal {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 520px;
+  width: 100%;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  animation: fadeIn 0.2s ease;
+}
+
+/* Title */
+.machine-modal h2 {
+  margin: 0 0 14px 0;
+  font-size: 20px;
+}
+
+/* Form */
+#machineAddForm {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Inputs */
+#machineAddForm input {
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border 0.2s;
+}
+
+#machineAddForm input:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+/* Buttons container */
+.machine-modal-actions {
+  margin-top: 14px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* Buttons */
+.machine-modal button {
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* Cancel button */
+#machineAddCancel {
+  background: #e5e7eb;
+}
+
+#machineAddCancel:hover {
+  background: #d1d5db;
+}
+
+/* Save button */
+#machineAddForm button[type="submit"] {
+  background: #2563eb;
+  color: white;
+}
+
+#machineAddForm button[type="submit"]:hover {
+  background: #1d4ed8;
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

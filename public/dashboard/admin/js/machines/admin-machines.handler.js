@@ -203,21 +203,28 @@ export async function handleEditSubmit({ id, MIGID, gpuRaw }, loadMachines) {
 /**
  * Handle add form submission
  */
-export async function handleAddSubmit({ MIGID, gpuRaw }, loadMachines) {
-  const { valid, value: gpu } = utils.validateGpu(gpuRaw);
-
-  if (!MIGID) {
-    Swal.fire({ toast: true, icon: 'error', title: 'MIGID is required' });
-    return;
-  }
-
+export async function handleAddSubmit(
+  { MIGID, gpuRaw, ramRaw, ip, portRaw, user, name, token },
+  loadMachines
+) {
+  const { valid, errors, values } = utils.validateMachineAddFields({ MIGID, gpuRaw, ramRaw, ip, portRaw, user, name, token });
   if (!valid) {
-    Swal.fire({ toast: true, icon: 'error', title: 'GPU RAM isnt valid' });
-    return;
+    // Show first error found
+    const firstError = Object.values(errors)[0];
+    return Swal.fire({ toast: true, icon: 'error', title: firstError });
   }
 
   try {
-    await service.createMachine({ MIGID, gpuRam: gpu });
+    await service.createMachine({
+      MIGID: values.MIGID,
+      gpuRam: values.gpuRam,
+      ram: values.ram,
+      ip: values.ip,
+      port: values.port,
+      user: values.user,
+      name: values.name,
+      token: values.token
+    });
 
     ui.closeAddModal();
 
