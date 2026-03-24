@@ -1,7 +1,9 @@
+const mongoose = require("mongoose");
 const Teacher = require("../database/teacherModel");
 const Student = require("../database/studentModel");
 const Admin = require("../database/adminModel");
 const Machine = require('../database/machineModel');
+const MachineAllotment = require("../database/machineAllotmentModel.js.js");
 const ResourceRequest = require("../database/resourceRequestModel");
 const emailService = require("../utils/email/emails.service.js");
 const {notifyTeacher} = require("../utils/web-push-notifications/notifyTeacher.js")
@@ -675,12 +677,44 @@ exports.updateMachineAvailability = async (req, res) => {
 // Delete a machine
 exports.deleteMachine = async (req, res) => {
   const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ error: "Invalid machine ID" });
+  }
+
   try {
-    const result = await Machine.findByIdAndDelete(id);
-    if (!result) return res.status(404).json({ error: 'Machine not found' });
+    // Check if machine exists
+    const machine = await Machine.findById(id);
+    if (!machine) return res.status(404).json({ error: "Machine not found" });
+
+    // Check for active or future allotments first
+    const now = new Date();
+    const activeAllotment = await MachineAllotment.findOne({
+      machineId: id,
+      $or: [
+        { status: "active" },
+        { endTime: { $gte: now } } // future allotments
+      ]
+    });
+
+    if (activeAllotment) {
+      return res.status(400).json({
+        error: "Cannot delete machine with active or future allotments"
+      });
+    }
+
+    // Check if machine is disabled
+    if (machine.isAvailable) {
+      return res.status(400).json({
+        error: "Machine must be disabled before deletion"
+      });
+    }
+
+    // Safe to delete
+    await Machine.findByIdAndDelete(id);
     return res.json({ ok: true });
   } catch (err) {
-    console.error('Failed to delete machine', err);
-    return res.status(500).json({ error: 'Failed to delete machine' });
+    console.error("Failed to delete machine", err);
+    return res.status(500).json({ error: "Failed to delete machine" });
   }
 };
