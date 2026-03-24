@@ -93,11 +93,23 @@ export function renderTable(wrapper, machines, handlers) {
     // Delete button
     const deleteBtn = createBtn('Delete', () => handlers.onDelete(m, tr));
     actionTd.appendChild(deleteBtn);
-    const revokeBtn = createBtn('Revoke', () => handlers.onRevoke(m, revokeBtn, handlers.loadMachines));
-    revokeBtn.style.marginLeft = '8px';
-    revokeBtn.style.background = '#fa6251ff';
-    revokeBtn.style.color = '#fff';
-    actionTd.appendChild(revokeBtn);
+    let actionBtn;
+    if (m.isAvailable) {
+      actionBtn = createBtn('Disable', function () {
+        handlers.onRevoke(m, actionBtn, handlers.loadMachines);
+      });
+      actionBtn.style.background = '#fa6251ff';
+    } else {
+      actionBtn = createBtn('Enable', function () {
+        handlers.onEnable(m, actionBtn, handlers.loadMachines);
+      });
+      actionBtn.style.background = '#28a745';
+    }
+
+    actionBtn.style.marginLeft = '8px';
+    actionBtn.style.color = '#fff';
+
+    actionTd.appendChild(actionBtn);
     tr.appendChild(actionTd);
 
     tbody.appendChild(tr);

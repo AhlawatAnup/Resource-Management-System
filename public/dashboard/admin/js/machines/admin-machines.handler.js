@@ -243,3 +243,46 @@ export async function handleAddSubmit(
     });
   }
 }
+
+export async function handleEnable(machine, enableBtn, loadMachines) {
+  const idText = machine.MIGID ? ` (${machine.MIGID})` : '';
+
+  const result = await Swal.fire({
+    title: 'Mark Machine Available',
+    html: `Type <strong>CONFIRM</strong> to mark this machine${idText} as available for future allotments`,
+    input: 'text',
+    showCancelButton: true,
+    confirmButtonText: 'Enable',
+    inputValidator: (value) => {
+      if (!value || value.trim().toUpperCase() !== 'CONFIRM') {
+        return 'Please type CONFIRM';
+      }
+    }
+  });
+
+  if (!result.isConfirmed) return;
+
+  enableBtn.disabled = true;
+  const originalText = enableBtn.textContent;
+  enableBtn.textContent = 'Processing...';
+
+  try {
+    await service.updateMachineAvailability(machine._id, { isAvailable: true });
+
+    enableBtn.remove();
+
+    await loadMachines();
+
+    Swal.fire('Machine marked as available.', '', 'success');
+
+  } catch (err) {
+    enableBtn.disabled = false;
+    enableBtn.textContent = originalText;
+
+    Toastify({ 
+      text: err.message, 
+      duration: 3000, gravity: "top", position: "center", 
+      backgroundColor: "#ff6b6b" 
+    }).showToast();
+  }
+}

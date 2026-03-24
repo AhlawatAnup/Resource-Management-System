@@ -7,6 +7,7 @@ import {
   handleImport, 
   handleDelete, 
   handleRevoke, 
+  handleEnable,
   // handleEdit, 
   // handleEditSubmit, 
   handleAddSubmit 
@@ -55,7 +56,8 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         // onEdit: (machine, tr) => handleEdit(machine, tr, (data) => handleEditSubmit(data, loadMachines)),
         onDelete: handleDelete,
-        onRevoke: (machine, revokeBtn) => handleRevoke(machine, revokeBtn, loadMachines)
+        onRevoke: (machine, revokeBtn) => handleRevoke(machine, revokeBtn, loadMachines),
+        onEnable: (machine, enableBtn) => handleEnable(machine, enableBtn, loadMachines)
       });
 
     } catch (err) {
