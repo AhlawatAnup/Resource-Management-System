@@ -59,62 +59,50 @@ export function renderTable(wrapper, machines, handlers) {
 
   const thead = document.createElement('thead');
   const headerRow = document.createElement('tr');
-
-  ['MIGID', 'gpuRam', 'Assigned student', 'Edit'].forEach(h => {
+  ['MIGID', 'gpuRam', 'ram', 'ip:port', 'name', 'Action'].forEach(h => {
     const th = document.createElement('th');
     th.textContent = h;
     headerRow.appendChild(th);
   });
-
   thead.appendChild(headerRow);
   table.appendChild(thead);
 
   const tbody = document.createElement('tbody');
-
   machines.forEach((m, idx) => {
     const tr = document.createElement('tr');
-
     const rowId = `machine-row-${m._id || idx}`;
     tr.setAttribute('data-machine-row-id', rowId);
 
-    [m.MIGID, m.gpuRam].forEach(val => {
+    // Render the required columns in order, combining ip and port
+
+    const rowVals = [
+      m.MIGID,
+      m.gpuRam,
+      m.ram,
+      (m.ip && m.port ? `${m.ip}:${m.port}` : (m.ip || '')),
+      m.name
+    ];
+    rowVals.forEach(val => {
       const td = document.createElement('td');
       td.textContent = val === undefined ? '' : val;
       tr.appendChild(td);
     });
 
-    const assignedTd = document.createElement('td');
-    handlers.setAssignedText(m.assignedStudent, assignedTd);
-    tr.appendChild(assignedTd);
-
+    // Action buttons cell
     const actionTd = document.createElement('td');
-
-    // EDIT
-    const editBtn = createBtn('Edit', () => handlers.onEdit(m, tr, assignedTd));
-    actionTd.appendChild(editBtn);
-
-    // DELETE
+    // Delete button
     const deleteBtn = createBtn('Delete', () => handlers.onDelete(m, tr));
-    deleteBtn.style.marginLeft = '8px';
     actionTd.appendChild(deleteBtn);
-
-    // REVOKE
-    if (handlers.isAssigned(m)) {
-      const revokeBtn = createBtn('Revoke', () =>
-        handlers.onRevoke(m, assignedTd, revokeBtn)
-      );
-
-      revokeBtn.style.marginLeft = '8px';
-      revokeBtn.style.background = '#fa6251ff';
-      revokeBtn.style.color = '#fff';
-
-      actionTd.appendChild(revokeBtn);
-    }
-
+    // Revoke button
+    const revokeBtn = createBtn('Revoke', () => handlers.onRevoke(m, tr));
+    revokeBtn.style.marginLeft = '8px';
+    revokeBtn.style.background = '#fa6251ff';
+    revokeBtn.style.color = '#fff';
+    actionTd.appendChild(revokeBtn);
     tr.appendChild(actionTd);
+
     tbody.appendChild(tr);
   });
-
   table.appendChild(tbody);
   container.appendChild(table);
   wrapper.appendChild(container);
