@@ -152,53 +152,53 @@ export async function handleRevoke(machine, assignedTd, revokeBtn, loadMachines)
 /**
  * Handle editing a machine (open edit modal)
  */
-export function handleEdit(machine, tr, handleEditSubmit) {
-  if (utils.getAssignedStatus(machine)) {
-    Toastify({ 
-      text: "Cannot edit assigned machine", 
-      duration: 3000, gravity: "top", position: "center", 
-      backgroundColor: "#ff6b6b" 
-    }).showToast();
-    return;
-  }
+// export function handleEdit(machine, tr, handleEditSubmit) {
+//   if (utils.getAssignedStatus(machine)) {
+//     Toastify({ 
+//       text: "Cannot edit assigned machine", 
+//       duration: 3000, gravity: "top", position: "center", 
+//       backgroundColor: "#ff6b6b" 
+//     }).showToast();
+//     return;
+//   }
 
-  const modal = ui.ensureEditModal(handleEditSubmit);
-  ui.openEditModal(modal, machine, tr);
-}
+//   const modal = ui.ensureEditModal(handleEditSubmit);
+//   ui.openEditModal(modal, machine, tr);
+// }
 
 /**
  * Handle edit form submission
  */
-export async function handleEditSubmit({ id, MIGID, gpuRaw }, loadMachines) {
-  const { valid, value: gpu } = utils.validateGpu(gpuRaw);
+// export async function handleEditSubmit({ id, MIGID, gpuRaw }, loadMachines) {
+//   const { valid, value: gpu } = utils.validateGpu(gpuRaw);
 
-  if (!valid) {
-    Toastify({ text: 'GPU RAM must be non-negative', duration: 3000 }).showToast();
-    return;
-  }
+//   if (!valid) {
+//     Toastify({ text: 'GPU RAM must be non-negative', duration: 3000 }).showToast();
+//     return;
+//   }
 
-  try {
-    if (id) {
-      await service.updateMachine(id, { MIGID: MIGID || null, gpuRam: gpu });
-    }
+//   try {
+//     if (id) {
+//       await service.updateMachine(id, { MIGID: MIGID || null, gpuRam: gpu });
+//     }
 
-    ui.closeEditModal();
+//     ui.closeEditModal();
 
-    Swal.fire({
-      toast: true,
-      position: 'top-end',
-      icon: 'success',
-      title: 'Machine updated successfully',
-      showConfirmButton: false,
-      timer: 3000
-    });
+//     Swal.fire({
+//       toast: true,
+//       position: 'top-end',
+//       icon: 'success',
+//       title: 'Machine updated successfully',
+//       showConfirmButton: false,
+//       timer: 3000
+//     });
 
-    loadMachines();
+//     loadMachines();
 
-  } catch (err) {
-    Toastify({ text: err.message }).showToast();
-  }
-}
+//   } catch (err) {
+//     Toastify({ text: err.message }).showToast();
+//   }
+// }
 
 /**
  * Handle add form submission

@@ -121,84 +121,84 @@ function createBtn(text, onClick) {
 
 
 // ---------------- EDIT MODAL ----------------
-export function ensureEditModal(onSubmit) {
-  if (document.getElementById('machineEditModal'))
-    return document.getElementById('machineEditModal');
+// export function ensureEditModal(onSubmit) {
+//   if (document.getElementById('machineEditModal'))
+//     return document.getElementById('machineEditModal');
 
-  const modal = document.createElement('div');
-  modal.id = 'machineEditModal';
+//   const modal = document.createElement('div');
+//   modal.id = 'machineEditModal';
 
-  Object.assign(modal.style, {
-    position: 'fixed',
-    left: '0',
-    top: '0',
-    right: '0',
-    bottom: '0',
-    background: 'rgba(0,0,0,0.4)',
-    display: 'none',
-    alignItems: 'center',
-    justifyContent: 'center'
-  });
+//   Object.assign(modal.style, {
+//     position: 'fixed',
+//     left: '0',
+//     top: '0',
+//     right: '0',
+//     bottom: '0',
+//     background: 'rgba(0,0,0,0.4)',
+//     display: 'none',
+//     alignItems: 'center',
+//     justifyContent: 'center'
+//   });
 
-  modal.innerHTML = `
-    <div style="background:#fff;padding:18px;border-radius:8px;max-width:480px;width:100%;">
-      <h3>Edit Machine</h3>
-      <form id="machineEditForm">
-        <input id="machineMIGID"/>
-        <input id="machineGpu"/>
-        <button type="button" id="machineEditCancel">Cancel</button>
-        <button type="submit" id="machineEditSave">Save</button>
-      </form>
-    </div>
-  `;
+//   modal.innerHTML = `
+//     <div style="background:#fff;padding:18px;border-radius:8px;max-width:480px;width:100%;">
+//       <h3>Edit Machine</h3>
+//       <form id="machineEditForm">
+//         <input id="machineMIGID"/>
+//         <input id="machineGpu"/>
+//         <button type="button" id="machineEditCancel">Cancel</button>
+//         <button type="submit" id="machineEditSave">Save</button>
+//       </form>
+//     </div>
+//   `;
 
-  document.body.appendChild(modal);
+//   document.body.appendChild(modal);
 
-  modal.querySelector('#machineEditCancel')
-    .addEventListener('click', closeEditModal);
+//   modal.querySelector('#machineEditCancel')
+//     .addEventListener('click', closeEditModal);
 
-  modal.querySelector('#machineEditForm')
-    .addEventListener('submit', (e) => {
-      e.preventDefault();
+//   modal.querySelector('#machineEditForm')
+//     .addEventListener('submit', (e) => {
+//       e.preventDefault();
 
-      onSubmit({
-        id: modal.dataset.machineId,
-        MIGID: modal.querySelector('#machineMIGID').value.trim(),
-        gpuRaw: modal.querySelector('#machineGpu').value.trim(),
-        rowSelector: modal.dataset.rowSelector
-      });
-    });
+//       onSubmit({
+//         id: modal.dataset.machineId,
+//         MIGID: modal.querySelector('#machineMIGID').value.trim(),
+//         gpuRaw: modal.querySelector('#machineGpu').value.trim(),
+//         rowSelector: modal.dataset.rowSelector
+//       });
+//     });
 
-  return modal;
-}
+//   return modal;
+// }
 
 
-export function openEditModal(modal, machine, tableRow) {
-  modal.style.display = 'flex';
+// export function openEditModal(modal, machine, tableRow) {
+//   modal.style.display = 'flex';
 
-  modal.dataset.machineId = machine._id || '';
+//   modal.dataset.machineId = machine._id || '';
 
-  const rowId = `machine-row-${machine._id || Math.random().toString(36).slice(2)}`;
-  tableRow.setAttribute('data-machine-row-id', rowId);
-  modal.dataset.rowSelector = `[data-machine-row-id="${rowId}"]`;
+//   const rowId = `machine-row-${machine._id || Math.random().toString(36).slice(2)}`;
+//   tableRow.setAttribute('data-machine-row-id', rowId);
+//   modal.dataset.rowSelector = `[data-machine-row-id="${rowId}"]`;
 
-  modal.querySelector('#machineMIGID').value = machine.MIGID || '';
-  modal.querySelector('#machineGpu').value =
-    machine.gpuRam ?? '';
-}
+//   modal.querySelector('#machineMIGID').value = machine.MIGID || '';
+//   modal.querySelector('#machineGpu').value =
+//     machine.gpuRam ?? '';
+// }
 
-export function closeEditModal() {
-  const modal = document.getElementById('machineEditModal');
-  if (!modal) return;
+// export function closeEditModal() {
+//   const modal = document.getElementById('machineEditModal');
+//   if (!modal) return;
 
-  modal.style.display = 'none';
+//   modal.style.display = 'none';
 
-  delete modal.dataset.machineId;
-  delete modal.dataset.rowSelector;
+//   delete modal.dataset.machineId;
+//   delete modal.dataset.rowSelector;
 
-  const form = modal.querySelector('#machineEditForm');
-  if (form) form.reset();
-}
+//   const form = modal.querySelector('#machineEditForm');
+//   if (form) form.reset();
+// }
 
 
 // ---------------- ADD MODAL ----------------
