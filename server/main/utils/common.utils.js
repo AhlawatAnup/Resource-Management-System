@@ -62,7 +62,7 @@ exports.calculateAllotmentWindow = (lastEndTime, durationDays) => {
 };
 
 exports.validateMachineInput = (body) => {
-  const {
+  let {
     MIGID,
     gpuRam,
     ram,
@@ -73,49 +73,45 @@ exports.validateMachineInput = (body) => {
     token
   } = body;
 
-  // --- Required checks ---
-  if (!MIGID || MIGID.trim() === '') {
-    return { error: 'MIGID is required' };
+  // --- Trim strings ---
+  MIGID = MIGID?.trim();
+  ip = ip?.trim();
+  user = user?.trim();
+  name = name?.trim();
+  token = token?.trim();
+
+  // --- Required string fields ---
+  if (!MIGID) return { error: 'MIGID is required' };
+  if (!ip) return { error: 'ip is required' };
+  if (!user) return { error: 'user is required' };
+  if (!name) return { error: 'name is required' };
+  if (!token) return { error: 'token is required' };
+
+  // --- GPU (optional) ---
+  let gpu = null;
+  if (gpuRam !== '' && gpuRam !== undefined && gpuRam !== null) {
+    gpu = Number(gpuRam);
+    if (Number.isNaN(gpu) || gpu < 0) {
+      return { error: 'gpuRam must be a non-negative number' };
+    }
   }
 
-  if (gpuRam === undefined || gpuRam === null || gpuRam === '') {
-    return { error: 'gpuRam is required' };
-  }
-
-  if (ram === undefined || ram === null || ram === '') {
+  // --- RAM (required) ---
+  if (ram === '' || ram === undefined || ram === null) {
     return { error: 'ram is required' };
   }
 
-  if (!ip || ip.trim() === '') {
-    return { error: 'ip is required' };
-  }
-
-  if (!user || user.trim() === '') {
-    return { error: 'user is required' };
-  }
-
-  if (!name || name.trim() === '') {
-    return { error: 'name is required' };
-  }
-
-  if (!token || token.trim() === '') {
-    return { error: 'token is required' };
-  }
-
-  // --- Type conversions ---
-  const gpu = Number(gpuRam);
   const systemRam = Number(ram);
-  const machinePort = port ? Number(port) : 22;
-
-  // --- Number validation ---
-  if (Number.isNaN(gpu) || gpu < 0) {
-    return { error: 'gpuRam must be a non-negative number' };
-  }
-
   if (Number.isNaN(systemRam) || systemRam <= 0) {
     return { error: 'ram must be a positive number' };
   }
 
+  // --- PORT (required, no default) ---
+  if (port === '' || port === undefined || port === null) {
+    return { error: 'port is required' };
+  }
+
+  const machinePort = Number(port);
   if (Number.isNaN(machinePort) || machinePort <= 0) {
     return { error: 'port must be a valid number' };
   }
@@ -123,14 +119,14 @@ exports.validateMachineInput = (body) => {
   // --- Cleaned data ---
   return {
     value: {
-      MIGID: MIGID.trim(),
+      MIGID,
       gpuRam: gpu,
       ram: systemRam,
-      ip: ip.trim(),
+      ip,
       port: machinePort,
-      user: user.trim(),
-      name: name.trim(),
-      token: token.trim()
+      user,
+      name,
+      token
     }
   };
-}
+};
