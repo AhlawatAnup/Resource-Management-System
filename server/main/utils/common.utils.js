@@ -60,3 +60,77 @@ exports.calculateAllotmentWindow = (lastEndTime, durationDays) => {
 
   return { startTime, endTime };
 };
+
+exports.validateMachineInput = (body) => {
+  const {
+    MIGID,
+    gpuRam,
+    ram,
+    ip,
+    port,
+    user,
+    name,
+    token
+  } = body;
+
+  // --- Required checks ---
+  if (!MIGID || MIGID.trim() === '') {
+    return { error: 'MIGID is required' };
+  }
+
+  if (gpuRam === undefined || gpuRam === null || gpuRam === '') {
+    return { error: 'gpuRam is required' };
+  }
+
+  if (ram === undefined || ram === null || ram === '') {
+    return { error: 'ram is required' };
+  }
+
+  if (!ip || ip.trim() === '') {
+    return { error: 'ip is required' };
+  }
+
+  if (!user || user.trim() === '') {
+    return { error: 'user is required' };
+  }
+
+  if (!name || name.trim() === '') {
+    return { error: 'name is required' };
+  }
+
+  if (!token || token.trim() === '') {
+    return { error: 'token is required' };
+  }
+
+  // --- Type conversions ---
+  const gpu = Number(gpuRam);
+  const systemRam = Number(ram);
+  const machinePort = port ? Number(port) : 22;
+
+  // --- Number validation ---
+  if (Number.isNaN(gpu) || gpu < 0) {
+    return { error: 'gpuRam must be a non-negative number' };
+  }
+
+  if (Number.isNaN(systemRam) || systemRam <= 0) {
+    return { error: 'ram must be a positive number' };
+  }
+
+  if (Number.isNaN(machinePort) || machinePort <= 0) {
+    return { error: 'port must be a valid number' };
+  }
+
+  // --- Cleaned data ---
+  return {
+    value: {
+      MIGID: MIGID.trim(),
+      gpuRam: gpu,
+      ram: systemRam,
+      ip: ip.trim(),
+      port: machinePort,
+      user: user.trim(),
+      name: name.trim(),
+      token: token.trim()
+    }
+  };
+}

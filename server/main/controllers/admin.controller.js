@@ -6,6 +6,7 @@ const ResourceRequest = require("../database/resourceRequestModel");
 const emailService = require("../utils/email/emails.service.js");
 const {notifyTeacher} = require("../utils/web-push-notifications/notifyTeacher.js")
 const { notifyStudent } = require('../utils/web-push-notifications/notifyStudent.js');
+const { validateMachineInput } = require('../utils/common.utils.js');
 const bcrypt = require('bcrypt');
 
 exports.admin_dashboard_data = async (req, res) => {
@@ -596,17 +597,27 @@ exports.getMachines = async (req, res) => {
 // Create a new machine
 exports.createMachine = async (req, res) => {
   try {
-    const { MIGID, gpuRam } = req.body;
-    if (!MIGID || MIGID.trim() === '') return res.status(400).json({ error: 'MIGID is required' });
-    const gpu = (gpuRam === undefined || gpuRam === null || gpuRam === '') ? null : Number(gpuRam);
-    if (gpu === null || Number.isNaN(gpu) || gpu < 0) return res.status(400).json({ error: 'gpuRam must be a non-negative number' });
+    const { error, value } = validateMachineInput(req.body);
 
-    const machine = new Machine({ MIGID: MIGID.trim(), gpuRam: gpu, assignedStudent: null });
+    if (error) {
+      return res.status(400).json({ error });
+    }
+
+    const machine = new Machine(value);
     await machine.save();
-    return res.status(201).json({ ok: true, machine });
+
+    return res.status(201).json({
+      ok: true,
+      machine
+    });
+
   } catch (err) {
     console.error('Failed to create machine', err);
-    if (err.code === 11000) return res.status(409).json({ error: 'MIGID already exists' });
+
+    if (err.code === 11000) {
+      return res.status(409).json({ error: 'MIGID already exists' });
+    }
+
     return res.status(500).json({ error: 'Failed to create machine' });
   }
 };
