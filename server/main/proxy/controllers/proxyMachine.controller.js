@@ -2,6 +2,7 @@ const path = require("path");
 const mongoose = require('mongoose');
 const { createProxyMiddleware ,fixRequestBody } = require("http-proxy-middleware");
 const { getMachineByMigid, getActiveAllotment } = require('../db/proxy.service');
+const { isResourceRequestVerified } = require('../db/proxy.service');
 
 // const {server} =require('../../main.server')
 
@@ -12,6 +13,11 @@ const setSession = async (req, res) => {
 
         if (!migid || !requestId) {
             return res.status(400).json({ message: 'migid and requestId are required' });
+        }
+
+        const isVerified = await isResourceRequestVerified(requestId);
+        if (!isVerified) {
+          return res.status(403).json({ message: 'Resource request is not verified' });
         }
 
         const machine = await getMachineByMigid(migid);
@@ -55,6 +61,12 @@ const getTokenByMigid = async (req, res) => {
 
     if (!resourceObjectId) {
       return res.status(400).json({ error: "Invalid request id" });
+    }
+
+    // 0. Check if request is verified
+    const isVerified = await isResourceRequestVerified(requestId);
+    if (!isVerified) {
+      return res.status(403).json({ error: "Resource request is not verified" });
     }
 
     // 1. Allotment check (via service)

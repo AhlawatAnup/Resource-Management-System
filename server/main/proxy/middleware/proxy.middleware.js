@@ -1,4 +1,5 @@
 const { getActiveAllotment } = require('../db/proxy.service');
+const { isResourceRequestVerified } = require('../db/proxy.service');
 
 exports.requireProxyTarget = async (req, res, next) => {
 	if (!req.session?.proxyTarget) {
@@ -7,12 +8,17 @@ exports.requireProxyTarget = async (req, res, next) => {
 	next();
 };
 
-exports.checkActiveAllotment = async (req, res, next) => {
+exports.validateRequest = async (req, res, next) => {
     try {
         const requestId = req.session.requestId;
 
         if (!requestId) {
             return res.status(400).json({ message: 'No requestId in session' });
+        }
+
+        const isVerified = await isResourceRequestVerified(requestId);
+        if (!isVerified) {
+            return res.status(403).json({ message: 'Access denied: Resource request is not verified' });
         }
 
         const allotment = await getActiveAllotment(requestId);
