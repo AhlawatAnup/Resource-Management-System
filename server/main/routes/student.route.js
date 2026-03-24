@@ -1,7 +1,6 @@
 const express = require("express");
 const path = require("path");
 const { logRequest, isStudent } = require("../middleware/authMiddleware.js");
-
 const {
   student_data,
   getAllMachines,

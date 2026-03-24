@@ -1,19 +1,32 @@
 const path = require("path");
+const mongoose = require('mongoose');
 const { createProxyMiddleware ,fixRequestBody } = require("http-proxy-middleware");
-const { getMachineByMigid } = require('../db/proxy.service'); // adjust path
+const { getMachineByMigid, getActiveAllotment } = require('../db/proxy.service');
+const { isResourceRequestVerified } = require('../db/proxy.service');
 
 // const {server} =require('../../main.server')
 
 const setSession = async (req, res) => {
     try {
         console.log("request received for setSession")
-        const { migid } = req.body;
-        if (!migid) return res.status(400).json({ message: 'migid is required' });
+        const { migid, requestId } = req.body;
+
+        if (!migid || !requestId) {
+            return res.status(400).json({ message: 'migid and requestId are required' });
+        }
+
+        const isVerified = await isResourceRequestVerified(requestId);
+        if (!isVerified) {
+          return res.status(403).json({ message: 'Resource request is not verified' });
+        }
 
         const machine = await getMachineByMigid(migid);
-        if (!machine) return res.status(404).json({ message: 'Machine not found' });
+        if (!machine) {
+            return res.status(404).json({ message: 'Machine not found' });
+        }
 
         req.session.migid = migid;
+        req.session.requestId = requestId;
         req.session.proxyTarget = `http://${machine.ip}:${machine.port}`;
         req.session.ip = machine.ip;
         req.session.port = machine.port;
@@ -26,6 +39,81 @@ const setSession = async (req, res) => {
         console.error(err);
         res.status(500).json({ message: 'Server error' });
     }
+};
+
+
+const getTokenByMigid = async (req, res) => {
+  try {
+    const migid = req.headers['x-mig-id']; 
+    const requestId = req.headers['x-request-id'];
+
+    if (!migid) {
+      return res.status(400).json({ error: "X-Mig-ID header is required" });
+    }
+
+    if (!requestId) {
+      return res.status(400).json({ error: "X-Request-ID header is required" });
+    }
+
+    const resourceObjectId = mongoose.Types.ObjectId.isValid(requestId)
+      ? new mongoose.Types.ObjectId(requestId)
+      : null;
+
+    if (!resourceObjectId) {
+      return res.status(400).json({ error: "Invalid request id" });
+    }
+
+    // 0. Check if request is verified
+    const isVerified = await isResourceRequestVerified(requestId);
+    if (!isVerified) {
+      return res.status(403).json({ error: "Resource request is not verified" });
+    }
+
+    // 1. Allotment check (via service)
+    const activeAllotment = await getActiveAllotment(resourceObjectId);
+
+    if (!activeAllotment) {
+      return res.status(403).json({ 
+        error: "No active allotment found for this request at the current time."
+      });
+    }
+
+    // 2. Machine fetch (via service)
+    const { user, ip } = await getMachineByMigid(migid);
+
+    if (!user || !ip) {
+      return res.status(404).json({ 
+        error: "User or IP details missing for machine" 
+      });
+    }
+
+    // 3. External API call (keep in controller or move later if needed)
+    const url = `http://${ip}:${process.env.TOKEN_SERVER_PORT}/token/${encodeURIComponent(user)}`;
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        user: user,
+        "x-api-key": process.env.X_API_KEY
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`External API failed with status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return res.json(data);
+
+  } catch (err) {
+    console.error("Token fetch error:", err);
+
+    if (err.message.includes("Machine not found")) {
+      return res.status(404).json({ error: err.message });
+    }
+
+    return res.status(500).json({ error: "Internal server error" });
+  }
 };
 
 
@@ -124,6 +212,7 @@ const proxyMiddleware = createProxyMiddleware({
 
 
 module.exports = {
-    setSession,
-    proxyMiddleware,
+  setSession,
+  proxyMiddleware,
+  getTokenByMigid,
 };

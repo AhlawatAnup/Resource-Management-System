@@ -13,7 +13,7 @@ async function addMachine() {
       ram: 32,
       ip: "172.16.10.24",
       port: 8908,
-      username: "user8",
+      user: "user8",
       name: "A100",
       token: "382ac7ebf58c8fc0ac8d5a26c534e61bbe49681cb359b7e9bcb36b346e18f336",
       // sshPassword: "your_password_here",

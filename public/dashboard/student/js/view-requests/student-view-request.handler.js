@@ -23,7 +23,10 @@ import {
 // External
 import { logoutDirectly } from '../../../common/js/commons.js';
 
+import { fetchTokenForMigid } from './student-view-request.service.js';
+
 let allRequests = [];
+
 
 // ==============================
 // Page Load
@@ -79,10 +82,8 @@ async function loadRequests(studentId) {
         allRequests = data;
 
         renderAllRequests(allRequests, handleDeleteRequest, reloadPage);
-
-        attachAccessMachineHandlers();
-
-        // updateAccessMachineButtons(allRequests);
+        attachCopyTokenHandlers();
+        await processVerifiedRequests();
 
     } catch (error) {
         console.error('Error loading requests:', error);
@@ -120,57 +121,21 @@ async function handleDeleteRequest(requestId) {
     }
 }
 
-// async function updateAccessMachineButtons(requests) {
-//     for (const request of requests) {
-//         if (!request.is_verified) continue;
 
-//         const btn = document.querySelector(
-//             `.access-machine-btn[data-request-id="${request._id}"]`
-//         );
-
-//         if (!btn) continue;
-
-//         btn.disabled = true;
-//         btn.textContent = 'Checking...';
-
-//         try {
-//             const data = await fetchRequestAllotmentTime(request._id);
-
-//             if (data && data.startTime && data.endTime) {
-//                 const now = Date.now();
-//                 const start = new Date(data.startTime).getTime();
-//                 const end = new Date(data.endTime).getTime();
-
-//                 if (now >= start && now <= end) {
-//                     btn.disabled = false;
-//                     btn.textContent = 'Access Machine';
-//                 } else {
-//                     btn.disabled = true;
-//                     btn.textContent = 'Access Machine (Unavailable)';
-//                 }
-//             } else {
-//                 btn.disabled = true;
-//                 btn.textContent = 'Access Machine (No Allotment)';
-//             }
-//         } catch (err) {
-//             btn.disabled = true;
-//             btn.textContent = 'Access Machine (Error)';
-//         }
-//     }
-// }
 
 function attachAccessMachineHandlers() {
     document.querySelectorAll('.access-machine-btn').forEach(btn => {
     btn.addEventListener('click', async function () {
         const migid = this.dataset.migid;
-        if (!migid) return;
+        const requestId = this.dataset.requestId;
+        if (!migid || !requestId) return;
 
         try {
             const res = await fetch('/proxy/set-session', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include', // important for session
-                body: JSON.stringify({ migid })
+                body: JSON.stringify({ migid, requestId })
             });
             const data = await res.json();
 
@@ -185,6 +150,65 @@ function attachAccessMachineHandlers() {
         }
     });
 });
+}
+
+export async function processVerifiedRequests() {
+    await Promise.all(
+        allRequests.map(async (request) => {
+            if (request.is_verified && request.machineId?.MIGID) {
+                try {
+                    const allotment = await fetchRequestAllotmentTime(request._id);
+                    if (allotment && allotment.startTime && allotment.endTime) {
+                        // Store allotment times on the request object
+                        request.allotmentStartTime = allotment.startTime;
+                        request.allotmentEndTime = allotment.endTime;
+                        const now = Date.now();
+                        const start = new Date(allotment.startTime).getTime();
+                        const end = new Date(allotment.endTime).getTime();
+                        if (now >= start && now <= end) {
+                            request.isAllotmentActive = true;
+                            const token = await handleLoadToken(request.machineId.MIGID, request._id);
+                            request.token = token || null;
+                        } else {
+                            request.isAllotmentActive = false;
+                            request.token = null;
+                        }
+                    } else {
+                        request.isAllotmentActive = false;
+                        request.token = null;
+                        request.allotmentStartTime = null;
+                        request.allotmentEndTime = null;
+                    }
+                } catch (err) {
+                    request.isAllotmentActive = false;
+                    request.token = null;
+                    request.allotmentStartTime = null;
+                    request.allotmentEndTime = null;
+                }
+            } else {
+                request.isAllotmentActive = false;
+                request.token = null;
+                request.allotmentStartTime = null;
+                request.allotmentEndTime = null;
+            }
+        })
+    );
+
+    renderAllRequests(allRequests, handleDeleteRequest, reloadPage);
+    attachAccessMachineHandlers();
+}
+
+async function handleLoadToken(migid, requestId) {
+    try {
+        const response = await fetchTokenForMigid(migid, requestId);
+        if (!response.ok) return null;
+
+        const data = await response.json();
+        return data?.token ?? null;
+
+    } catch {
+        return null;
+    }
 }
 
 
@@ -202,4 +226,37 @@ function handleFilterChange(status) {
 
 function reloadPage() {
     handleLoadViewRequests();
+}
+
+// ==============================
+// Copy Token Handler
+// ==============================
+export function attachCopyTokenHandlers() {
+    const container = document.getElementById('all-requests-list');
+    if (!container) return;
+
+    function handleCopyClick(e) {
+        const btn = e.target.closest('.copy-token-btn');
+        if (!btn) return;
+
+        const token = btn.getAttribute('data-token');
+        const icon = btn.querySelector('i');
+
+        if (!token || !icon) return;
+
+        navigator.clipboard.writeText(token)
+            .then(() => {
+                icon.classList.replace('fa-copy', 'fa-check');
+                btn.classList.add('copy-success');
+
+                setTimeout(() => {
+                    icon.classList.replace('fa-check', 'fa-copy');
+                    btn.classList.remove('copy-success');
+                }, 1200);
+            })
+            .catch(err => console.error('Clipboard write failed:', err));
+    }
+
+    container.removeEventListener('click', handleCopyClick, true);
+    container.addEventListener('click', handleCopyClick, true);
 }

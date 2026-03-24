@@ -127,6 +127,9 @@ function createRequestCard(request) {
 
     const canDelete = canDeleteRequest(request);
 
+    const isVerified = request.is_verified && request.machineId && request.machineId.MIGID;
+    const showTokenAndButtons = isVerified && request.isAllotmentActive;
+
     return `
         <div class="request-item detailed" data-status="${status}" style="position:relative; border:1px solid #ddd; border-radius:12px; padding:16px; margin-bottom:16px; background:#fff; box-shadow:0 2px 6px rgba(0,0,0,0.05);">
 
@@ -143,6 +146,20 @@ function createRequestCard(request) {
                 </div>
             </div>
 
+            <!-- MIGID and Allotment Time Display -->
+            ${(request.machineId && request.machineId.MIGID) ? `
+                <div class="request-migid" style="margin: 8px 0 0 0; color: #434343">
+                    <strong>MIGID:</strong> <span>${request.machineId.MIGID}</span>
+                </div>
+            ` : ''}
+            ${(request.allotmentStartTime && request.allotmentEndTime) ? `
+                <div class="request-allotment-time" style="margin: 4px 0 0 0; color: #434343">
+                    <strong>Allotment:</strong> 
+                    <span>Start: ${formatDate(request.allotmentStartTime)}</span> &nbsp; | &nbsp; 
+                    <span>End: ${formatDate(request.allotmentEndTime)}</span>
+                </div>
+            ` : ''}
+
             <!-- Body -->
             <div class="request-body">
                 <div class="request-purpose">
@@ -151,14 +168,38 @@ function createRequestCard(request) {
                 </div>
             </div>
 
-            <!-- Footer -->
-            <div class="request-footer" style="display:flex; justify-content:flex-end; gap:12px; margin-top:12px; align-items:center;">
-                ${request.is_verified && request.machineId && request.machineId.MIGID
-                    ? `<button class="access-machine-btn" 
+            <!-- Token Section and Buttons -->
+            ${showTokenAndButtons ? `
+                <div class="request-token" id="token-field-${request._id}"
+                     style="margin:12px 0; padding:10px; background:#f6ffed; border-left:4px solid #52c41a; border-radius:6px; color:#237804; display: flex; align-items: center; gap: 10px;">
+                    ${request.token 
+                        ? `<strong>Token:</strong> 
+                           <span class="token-value" style="font-family:monospace;">${request.token}</span>
+                           <button class="copy-token-btn" data-token="${request.token}" title="Copy Token" style="margin-left:8px; padding:2px 8px; font-size:1.1em; border-radius:4px; border:1px solid #b7eb8f; background:#fff; color:#237804; cursor:pointer; display: flex; align-items: center;">
+                               <i class="fas fa-copy"></i>
+                           </button>`
+                        : `<span style="color:#999;">Token not generated yet</span>`
+                    }
+                </div>
+
+                    <button class="raise-token-btn" 
+                            data-request-id="${request._id}" 
+                            style="cursor:pointer">
+                        Raise Token
+                    </button>
+
+                    <button class="access-machine-btn" 
                             data-request-id="${request._id}" 
                             data-migid="${request.machineId.MIGID}" 
-                            style="cursor:pointer">Access Machine</button>` 
+                            style="cursor:pointer">
+                        Access Machine
+                    </button>
+                    `
                     : ''}
+
+            <!-- Footer -->
+            <div class="request-footer" 
+                 style="display:flex; justify-content:flex-end; gap:12px; margin-top:12px; align-items:center;">
                 <small style="color:#666;">Submitted: ${formatDate(request.createdAt)}</small>
             </div>
         </div>
@@ -168,7 +209,6 @@ function createRequestCard(request) {
 // ==============================
 // Event Handlers
 // ==============================
-
 
 function attachDeleteHandlers(onDelete, onReload) {
     document.querySelectorAll('.delete-request-btn').forEach(btn => {
@@ -194,4 +234,5 @@ function attachDeleteHandlers(onDelete, onReload) {
             }
         });
     });
+
 }

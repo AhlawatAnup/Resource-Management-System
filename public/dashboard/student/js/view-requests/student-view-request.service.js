@@ -32,3 +32,18 @@ export async function fetchRequestAllotmentTime(requestId) {
     if (!response.ok) return null;
     return response.json();
 }
+
+export async function fetchTokenForMigid(migid, requestId) {
+    if (!migid) throw new Error('MIGID is required');
+    if (!requestId) throw new Error('requestId is required');
+    const response = await fetch('/proxy/token', {
+        method: 'GET',
+        credentials: 'include',
+        headers: { 
+            'Content-Type': 'application/json',
+            'x-mig-id': migid,
+            'x-request-id': requestId 
+        }
+    });
+    return response;
+}
