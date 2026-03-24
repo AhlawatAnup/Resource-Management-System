@@ -12,7 +12,7 @@
 /* Modal box */
 .machine-modal {
   background: #ffffff;
-  padding: 20px;
+  padding: 22px;
   border-radius: 10px;
   max-width: 520px;
   width: 100%;
@@ -22,34 +22,53 @@
 
 /* Title */
 .machine-modal h2 {
-  margin: 0 0 14px 0;
+  margin: 0 0 16px 0;
   font-size: 20px;
+  font-weight: 600;
 }
 
-/* Form */
+/* Form layout */
 #machineAddForm {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
+}
+
+/* Each field group */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+/* Labels */
+.form-group label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
 }
 
 /* Inputs */
 #machineAddForm input {
   padding: 10px 12px;
-  border: 1px solid #ddd;
+  border: 1px solid #d1d5db;
   border-radius: 6px;
   font-size: 14px;
-  transition: border 0.2s;
+  transition: all 0.2s ease;
+  width: 100%;
+  box-sizing: border-box;
 }
 
+/* Input focus */
 #machineAddForm input:focus {
-  border-color: #007bff;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
   outline: none;
 }
 
 /* Buttons container */
 .machine-modal-actions {
-  margin-top: 14px;
+  margin-top: 16px;
   display: flex;
   justify-content: flex-end;
   gap: 10px;
@@ -57,11 +76,12 @@
 
 /* Buttons */
 .machine-modal button {
-  padding: 8px 14px;
+  padding: 9px 16px;
   border-radius: 6px;
   border: none;
   cursor: pointer;
   font-size: 14px;
+  transition: background 0.2s ease;
 }
 
 /* Cancel button */
@@ -87,7 +107,7 @@
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(12px);
   }
   to {
     opacity: 1;

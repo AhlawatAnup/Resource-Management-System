@@ -229,29 +229,60 @@ export function ensureAddModal(onSubmit) {
     alignItems: 'center',
     justifyContent: 'center'
   });
+modal.innerHTML = `
+  <div class="machine-modal">
+    <h2>Add Machine</h2>
 
-  modal.innerHTML = `
-    <div class="machine-modal">
-      <h2>Add Machine</h2>
+    <form id="machineAddForm">
 
-      <form id="machineAddForm">
-        <input id="addMIGID" placeholder="MIG ID" />
-        <input id="addGpuRam" placeholder="GPU RAM (GB)" />
-        <input id="addRam" placeholder="System RAM (GB)" />
-        <input id="addIp" placeholder="IP Address" />
-        <input id="addPort" placeholder="Port" />
-        <input id="addUser" placeholder="SSH User" />
-        <input id="addName" placeholder="Machine Name" />
-        <input id="addToken" placeholder="Token" />
+      <div class="form-group">
+        <label for="addMIGID">MIG ID</label>
+        <input id="addMIGID" placeholder="e.g. MIG-00123" />
+      </div>
 
-        <div class="machine-modal-actions">
-          <button type="button" id="machineAddCancel">Cancel</button>
-          <button type="submit">Save</button>
-        </div>
-      </form>
-    </div>
-  `;
+      <div class="form-group">
+        <label for="addGpuRam">GPU RAM (GB)</label>
+        <input id="addGpuRam" type="number" placeholder="e.g. 16" />
+      </div>
 
+      <div class="form-group">
+        <label for="addRam">System RAM (GB)</label>
+        <input id="addRam" type="number" placeholder="e.g. 64" />
+      </div>
+
+      <div class="form-group">
+        <label for="addIp">IP Address</label>
+        <input id="addIp" placeholder="e.g. 192.168.1.10" />
+      </div>
+
+      <div class="form-group">
+        <label for="addPort">Port</label>
+        <input id="addPort" type="number" placeholder="e.g. 22" />
+      </div>
+
+      <div class="form-group">
+        <label for="addUser">SSH User</label>
+        <input id="addUser" placeholder="e.g. ubuntu" />
+      </div>
+
+      <div class="form-group">
+        <label for="addName">Machine Name</label>
+        <input id="addName" placeholder="e.g. gpu-machine-1" />
+      </div>
+
+      <div class="form-group">
+        <label for="addToken">Token</label>
+        <input id="addToken" placeholder="Enter secure token" />
+      </div>
+
+      <div class="machine-modal-actions">
+        <button type="button" id="machineAddCancel">Cancel</button>
+        <button type="submit">Save</button>
+      </div>
+
+    </form>
+  </div>
+`;
   document.body.appendChild(modal);
 
   modal.querySelector('#machineAddForm')
