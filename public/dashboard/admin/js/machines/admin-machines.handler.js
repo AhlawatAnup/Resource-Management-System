@@ -105,12 +105,12 @@ export async function handleDelete(machine, tr) {
 /**
  * Handle revoking machine assignment
  */
-export async function handleRevoke(machine, assignedTd, revokeBtn, loadMachines) {
+export async function handleRevoke(machine, revokeBtn, loadMachines) {
   const idText = machine.MIGID ? ` (${machine.MIGID})` : '';
 
   const result = await Swal.fire({
-    title: 'Revoke Assignment',
-    html: `Type <strong>CONFIRM</strong> to revoke assignment for this machine${idText}`,
+    title: 'Mark Machine Unavailable',
+    html: `Type <strong>CONFIRM</strong> to mark this machine${idText} as unavailable for future allotments`,
     input: 'text',
     showCancelButton: true,
     confirmButtonText: 'Revoke',
@@ -128,14 +128,13 @@ export async function handleRevoke(machine, assignedTd, revokeBtn, loadMachines)
   revokeBtn.textContent = 'Processing...';
 
   try {
-    await service.revokeMachineAssignment(machine._id);
+    await service.updateMachineAvailability(machine._id, { available: false });
 
-    assignedTd.textContent = 'Unassigned';
     revokeBtn.remove();
 
     await loadMachines();
 
-    Swal.fire('Assignment revoked successfully.', '', 'success');
+    Swal.fire('Machine marked as unavailable.', '', 'success');
 
   } catch (err) {
     revokeBtn.disabled = false;

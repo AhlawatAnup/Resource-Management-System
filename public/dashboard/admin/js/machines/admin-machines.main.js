@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         // onEdit: (machine, tr) => handleEdit(machine, tr, (data) => handleEditSubmit(data, loadMachines)),
         onDelete: handleDelete,
-        onRevoke: (machine, assignedTd, revokeBtn) => handleRevoke(machine, assignedTd, revokeBtn, loadMachines)
+        onRevoke: (machine, revokeBtn) => handleRevoke(machine, revokeBtn, loadMachines)
       });
 
     } catch (err) {

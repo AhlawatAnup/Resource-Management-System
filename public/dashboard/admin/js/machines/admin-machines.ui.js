@@ -93,8 +93,7 @@ export function renderTable(wrapper, machines, handlers) {
     // Delete button
     const deleteBtn = createBtn('Delete', () => handlers.onDelete(m, tr));
     actionTd.appendChild(deleteBtn);
-    // Revoke button
-    const revokeBtn = createBtn('Revoke', () => handlers.onRevoke(m, tr));
+    const revokeBtn = createBtn('Revoke', () => handlers.onRevoke(m, revokeBtn, handlers.loadMachines));
     revokeBtn.style.marginLeft = '8px';
     revokeBtn.style.background = '#fa6251ff';
     revokeBtn.style.color = '#fff';

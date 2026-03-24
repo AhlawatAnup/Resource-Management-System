@@ -86,12 +86,12 @@ export async function createMachine(data) {
 
 
 // ---------------- REVOKE ASSIGNMENT ----------------
-export async function revokeMachineAssignment(id) {
+export async function updateMachineAvailability(id, data) {
   const resp = await fetch(`/dashboard/admin/machines/${id}`, {
     method: 'PUT',
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ assignedStudent: null })
+    body: JSON.stringify(data)
   });
 
   if (!resp.ok) {
