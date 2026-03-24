@@ -639,11 +639,18 @@ async function deleteResourceRequestAndCleanup(resourceRequestId, studentId) {
 // When unassigning, also deletes the associated resource request
 exports.updateMachineAvailability = async (req, res) => {
   const { id } = req.params;
+  const { isAvailable } = req.body;
 
   try {
+    if (typeof isAvailable !== 'boolean') {
+      return res.status(400).json({
+        error: 'isAvailable must be a boolean (true or false)'
+      });
+    }
+
     const machine = await Machine.findByIdAndUpdate(
       id,
-      { isAvailable: false },
+      { isAvailable },
       { new: true }
     ).lean();
 
@@ -653,7 +660,7 @@ exports.updateMachineAvailability = async (req, res) => {
 
     return res.json({
       ok: true,
-      message: 'Machine marked as unavailable',
+      message: `Machine marked as ${isAvailable ? 'available' : 'unavailable'}`,
       machine
     });
 

@@ -128,7 +128,7 @@ export async function handleRevoke(machine, revokeBtn, loadMachines) {
   revokeBtn.textContent = 'Processing...';
 
   try {
-    await service.updateMachineAvailability(machine._id, { available: false });
+    await service.updateMachineAvailability(machine._id, { isAvailable: false });
 
     revokeBtn.remove();
 
