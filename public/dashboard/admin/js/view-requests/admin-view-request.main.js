@@ -11,7 +11,7 @@ import {
   submitVerificationHandler
 } from './admin-view-request.handler.js';
 
-import { generatePassword } from './admin-view-request.utils.js';
+import { generatePassword, showMachinePopup } from './admin-view-request.utils.js';
 
 // Expose modal close handlers to window for inline onclick handlers
 window.closeVerificationModal = closeVerificationModalHandler;
@@ -77,5 +77,13 @@ document.addEventListener('DOMContentLoaded', () => {
     closeVerificationModalHandler();
     await submitVerificationHandler(id, true, credentials);
   });
+
+  document.addEventListener('click', (e) => {
+  const btn = e.target.closest('.info-btn'); 
+  if (!btn) return;
+
+  const request = JSON.parse(btn.getAttribute('data-request') || '{}');
+  showMachinePopup(request);
+});
 
 });
