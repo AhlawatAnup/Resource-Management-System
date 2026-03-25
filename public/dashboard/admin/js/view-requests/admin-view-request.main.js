@@ -79,11 +79,10 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.addEventListener('click', (e) => {
-  const btn = e.target.closest('.info-btn'); 
+  const btn = e.target.closest('.info-btn');
   if (!btn) return;
 
   const request = JSON.parse(btn.getAttribute('data-request') || '{}');
-  showMachinePopup(request);
+  showMachinePopup(request, btn);
 });
-
 });

@@ -77,7 +77,7 @@ export function generatePassword(length = 12) {
   return pwd;
 }
 
-export function showMachinePopup(machine) {
+export function showMachinePopup(machine, anchorBtn) {
   const overlay = document.createElement('div');
   overlay.className = 'popup-overlay';
 
@@ -94,9 +94,48 @@ export function showMachinePopup(machine) {
     <p><b>Port:</b> ${machine.port ?? '-'}</p>
     <p><b>Name:</b> ${machine.name ?? '-'}</p>
   `;
+
   overlay.appendChild(popup);
   document.body.appendChild(overlay);
 
+  // Position popup near the button
+  if (anchorBtn) {
+    popup.style.position = 'absolute';
+    popup.style.top = '0';
+    popup.style.left = '0';
+    popup.style.transform = 'none';
+
+    const rect = anchorBtn.getBoundingClientRect();
+    const scrollX = window.scrollX || window.pageXOffset;
+    const scrollY = window.scrollY || window.pageYOffset;
+
+    // Measure popup size
+    popup.style.visibility = 'hidden';
+    document.body.appendChild(popup);
+
+    const popupRect = popup.getBoundingClientRect();
+    popup.style.visibility = '';
+
+    // Ensure popup is inside overlay
+    if (popup.parentNode !== overlay) {
+      popup.remove();
+      overlay.appendChild(popup);
+    }
+
+    let top = rect.top + scrollY;
+    let left = rect.left + scrollX;
+
+    // Prevent overflow bottom
+    if (top + popupRect.height > window.innerHeight + scrollY) {
+      top = rect.bottom + scrollY - popupRect.height;
+      if (top < scrollY) top = scrollY;
+    }
+
+    popup.style.top = `${top}px`;
+    popup.style.left = `${left}px`;
+  }
+
+  // Close on outside click
   overlay.addEventListener('click', (e) => {
     if (e.target === overlay) {
       overlay.remove();
