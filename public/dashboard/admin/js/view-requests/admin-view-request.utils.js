@@ -78,8 +78,11 @@ export function generatePassword(length = 12) {
 }
 
 export function showMachinePopup(machine) {
+  const overlay = document.createElement('div');
+  overlay.className = 'popup-overlay';
+
   const popup = document.createElement('div');
-  popup.className = 'machine-popup'; // ✅ use class instead
+  popup.className = 'machine-popup';
 
   popup.innerHTML = `
     <h4>Machine Details</h4>
@@ -90,13 +93,13 @@ export function showMachinePopup(machine) {
     <p><b>IP:</b> ${machine.ip ?? '-'}</p>
     <p><b>Port:</b> ${machine.port ?? '-'}</p>
     <p><b>Name:</b> ${machine.name ?? '-'}</p>
-    <br/>
-    <button class="close-popup">Close</button>
   `;
+  overlay.appendChild(popup);
+  document.body.appendChild(overlay);
 
-  document.body.appendChild(popup);
-
-  popup.querySelector('.close-popup').onclick = () => {
-    document.body.removeChild(popup);
-  };
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) {
+      overlay.remove();
+    }
+  });
 }
