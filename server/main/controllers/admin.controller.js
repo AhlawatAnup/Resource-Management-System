@@ -380,47 +380,40 @@ exports.getRejectedStudents = async (req, res) => {
 
 exports.getAllResourceRequests = async (req, res) => {
   const role = req.session.user.role;
-  const uid = req.session.user.id;
-  // console.log("Admin requested all resource requests", uid);
 
   if (role !== "admin") {
     return res.status(403).json({ error: "Access denied. Admin role required." });
   }
 
   try {
-    // Find all resource requests from all students
     const resourceRequests = await ResourceRequest.find({})
       .populate({
-        path: 'studentId',
-        select: 'name rollNo email branch teacher',
-        populate: {
-          path: 'teacher',
-          select: 'name'
-        }
+        path: "studentId",
+        select: "name rollNo branch teacher",
+        populate: { path: "teacher", select: "name" }
       })
-      .sort({ createdAt: -1 }); // Most recent first
+      .populate({ path: "machineId", select: "migId" })
+      .sort({ createdAt: -1 });
 
-    // console.log(`Found ${resourceRequests.length} total resource requests for admin`);
-
-    // Format the data to include teacher info in the response
     const formattedRequests = resourceRequests
-      .filter(request => request.studentId)
-      .map(request => {
-        const teacher = request.studentId.teacher || null;
-        return {
-          ...request._doc,
-          studentInfo: {
-            _id: request.studentId._id,
-            name: request.studentId.name,
-            rollNo: request.studentId.rollNo,
-            email: request.studentId.email,
-            branch: request.studentId.branch
-          },
-          teacherInfo: teacher
-            ? { _id: teacher._id, name: teacher.name }
-            : { _id: null, name: "Unknown" }
-        };
-      });
+      .filter(r => r.studentId && r.machineId)
+      .map(r => ({
+        studentName: r.studentId.name,
+        rollNo: r.studentId.rollNo,
+        branch: r.studentId.branch,
+        teacherName: r.studentId.teacher ? r.studentId.teacher.name : "Unknown",
+        title: r.title,
+        purpose: r.purpose,
+        duration: r.duration,
+        migId: r.vmCredentials?.migId || r.machineId.migId,
+        status: {
+          teacher_action: r.teacher_action,
+          teacher_verified: r.teacher_verified,
+          admin_action: r.admin_action,
+          admin_verified: r.admin_verified,
+          is_verified: r.is_verified
+        }
+      }));
 
     return res.json({
       success: true,
@@ -692,7 +685,7 @@ exports.deleteMachine = async (req, res) => {
     const activeAllotment = await MachineAllotment.findOne({
       machineId: id,
       $or: [
-        { isActive: true },
+        // { isActive: true },
         { endTime: { $gte: now } } // future allotments
       ]
     });
