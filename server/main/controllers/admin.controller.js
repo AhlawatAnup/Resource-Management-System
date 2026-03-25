@@ -692,7 +692,7 @@ exports.deleteMachine = async (req, res) => {
     const activeAllotment = await MachineAllotment.findOne({
       machineId: id,
       $or: [
-        { status: "active" },
+        { isActive: true },
         { endTime: { $gte: now } } // future allotments
       ]
     });
