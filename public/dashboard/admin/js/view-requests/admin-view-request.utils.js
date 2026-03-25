@@ -1,22 +1,26 @@
 // Get request status (ADMIN version - includes teacher + admin states)
 export function getRequestStatus(request) {
-  if (request.teacher_verified && request.admin_verified) {
-    return { text: "Approved", class: "verified" };
+  // 1. Teacher has taken action → FINAL
+  if (request.teacher_action) {
+    if (request.teacher_verified) {
+      return { text: "Approved by Teacher", class: "verified" };
+    } else {
+      return { text: "Declined by Teacher", class: "declined" };
+    }
+  }
 
-  } else if (request.admin_action && !request.admin_verified) {
-    return { text: "Declined by Admin", class: "declined" };
+  // 2. Teacher has NOT acted
 
-  } else if (request.teacher_action && !request.teacher_verified) {
-    return { text: "Declined by Teacher", class: "declined" };
-
-  } else if (request.teacher_verified && !request.admin_action) {
-    return { text: "Pending Admin", class: "pending-admin" };
-
-  } else if (!request.teacher_action) {
+  // Default state → Pending Teacher
+  if (!request.admin_action) {
     return { text: "Pending Teacher", class: "pending-teacher" };
+  }
 
+  // 3. Admin has acted (only because teacher didn’t)
+  if (request.admin_verified) {
+    return { text: "Approved by Admin", class: "verified" };
   } else {
-    return { text: "Pending", class: "pending" };
+    return { text: "Declined by Admin", class: "declined" };
   }
 }
 

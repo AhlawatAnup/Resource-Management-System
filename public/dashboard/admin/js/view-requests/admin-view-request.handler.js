@@ -208,10 +208,26 @@ export async function copyHandler(targetId) {
 
 
 function getActionButtons(r) {
-  return `
-    <button class="icon-btn approve-btn" data-request-id="${r._id}" data-action="approve"></button>
-    <button class="icon-btn decline-btn" data-request-id="${r._id}" data-action="decline"></button>
-  `;
+  // Use getRequestStatus for consistent status logic
+  const status = getRequestStatus(r);
+  if (status.class === 'declined') {
+    return '';
+  }
+  if (status.class === 'verified') {
+    return `<button class="icon-btn revoke-btn" data-request-id="${r._id}" disabled>Revoke</button>`;
+  }
+  if (status.class === 'pending-teacher') {
+    return `
+      <button class="icon-btn approve-btn" data-request-id="${r._id}" data-action="approve" title="Approve">
+        <i class="fas fa-check"></i>
+      </button>
+
+      <button class="icon-btn decline-btn" data-request-id="${r._id}" data-action="decline" title="Decline">
+        <i class="fas fa-times"></i>
+      </button>
+    `;
+  }
+  return '';
 }
 
 // initAdminRefresh(loadRequestsHandler);
