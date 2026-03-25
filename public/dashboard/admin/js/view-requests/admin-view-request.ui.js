@@ -29,15 +29,10 @@ export function renderResourceRequests(requests, deps) {
         <div class="contact-info">
           <div class="avatar ${getRandomNamedColor()}">${getInitials(request.studentName)}</div>
           <div class="contact-details">
-            <h4>${request.studentName}</h4>
+            <h4 title="Teacher: ${request.teacherName}">${request.studentName}</h4>
             <div class="contact-time">${request.rollNo}</div>
             <div class="contact-time">${request.branch}</div>
           </div>
-        </div>
-      </td>
-      <td>
-        <div class="teacher-info">
-          <h4>${request.teacherName}</h4>
         </div>
       </td>
       <td>
@@ -55,10 +50,10 @@ export function renderResourceRequests(requests, deps) {
       <td>
         <span>${request.duration ?? '-'}</span>
       </td>
-      <td>
-        <span>${request.migId ?? '-'}</span>
-      </td>
-      <td>
+      <td title="${request.user ?? '-'}">
+            ${request.migId ?? '-'}
+          </td>
+        <td>
         <span class="badge ${statusInfo.class}">${statusInfo.text}</span>
       </td>
       <td>
