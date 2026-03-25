@@ -461,12 +461,12 @@ function isDateInPast(date) {
 
 exports.getAllMachines = async (req, res) => {
   try {
-    const machines = await Machine.find()
+    const machines = await Machine.find({ isAvailable: true })
       .select("_id MIGID gpuRam")
       .lean();
 
     if (!machines.length) {
-      return res.status(404).json({ message: "No machines found" });
+      return res.status(404).json({ message: "No available machines found" });
     }
     res.status(200).json(machines);
   } catch (error) {
