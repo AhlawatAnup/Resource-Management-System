@@ -48,6 +48,9 @@ export function renderResourceRequests(requests, deps) {
         </div>
       </td>
       <td>
+          <span>${request.duration ?? '-'}</span>
+      </td>
+      <td>
         <span>${request.migId ?? '-'}</span>
         ${request.migId ? `
           <button class="info-btn" title="Machine Info" data-request='${JSON.stringify(request)}'>
@@ -55,9 +58,6 @@ export function renderResourceRequests(requests, deps) {
           </button>
         ` : ''}
       </td>
-      <td title="${request.user ?? '-'}">
-            ${request.migId ?? '-'}
-          </td>
         <td>
         <span class="badge ${statusInfo.class}">${statusInfo.text}</span>
       </td>
