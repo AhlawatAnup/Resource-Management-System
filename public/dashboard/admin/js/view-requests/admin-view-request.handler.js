@@ -1,7 +1,6 @@
 import {
   fetchAdminResourceRequests,
   verifyAdminRequest,
-  editAdminRequest,
   fetchAvailableMachines
 } from './admin-view-request.service.js';
 
@@ -13,9 +12,6 @@ import {
   showVerificationModalUI,
   closeVerificationModalUI,
   populateMachinesSelectUI,
-  showEditModalUI,
-  closeEditModalUI,
-  getEditFormData,
   setSubmitButtonState,
   setFieldError,
   copyToClipboard
@@ -24,7 +20,6 @@ import {
 import {
   getRequestStatus,
   filterRequestsList,
-  buildEditPayload,
   mergeUpdatedRequest
 } from './admin-view-request.utils.js'
 
@@ -155,10 +150,6 @@ export function closeVerificationModalHandler() {
   closeVerificationModalUI();
 }
 
-export function closeEditModalHandler() {
-  closeEditModalUI();
-}
-
 
 // ===== SUBMIT VERIFY =====
 export async function submitVerificationHandler(requestId, isVerified, credentials = null) {
@@ -190,53 +181,12 @@ export async function submitVerificationHandler(requestId, isVerified, credentia
 }
 
 
-// ===== EDIT =====
-export function showEditHandler(id) {
-  const req = resourceRequests.find(r => r._id === id);
-  if (!req) return;
-  showEditModalUI(req);
-}
 
-export async function submitEditHandler(btn) {
-  const { requestId, formValues } = getEditFormData();
-
-  if (!isValidUsername(formValues.username)) {
-    setFieldError('edit-username-error', 'Invalid username');
-    return;
-  }
-
-  const payload = buildEditPayload(formValues);
-
-  try {
-    setSubmitButtonState(btn, true);
-
-    const result = await editAdminRequest(requestId, payload);
-
-    const idx = resourceRequests.findIndex(r => r._id === requestId);
-    if (idx !== -1) {
-      resourceRequests[idx] = mergeUpdatedRequest(resourceRequests[idx], result.resourceRequest);
-    }
-
-    filterHandler(document.getElementById('searchInput').value);
-    closeEditModalUI();
-    showNotification('Updated successfully', 'success');
-
-  } catch (err) {
-    showNotification(err.message, 'error');
-  } finally {
-    setSubmitButtonState(btn, false);
-  }
-}
 
 
 // ===== INIT =====
 export function initHandler() {
   initializePurposePanel();
-
-  flatpickr('#editExpiryDate', {
-    dateFormat: 'Y-m-d',
-    minDate: 'today'
-  });
 }
 
 
@@ -258,16 +208,9 @@ export async function copyHandler(targetId) {
 
 
 function getActionButtons(r) {
-  if (r.admin_action) {
-    return `
-      <button class="icon-btn edit-btn" data-request-id="${r._id}" data-action="edit"></button>
-    `;
-  }
-
   return `
     <button class="icon-btn approve-btn" data-request-id="${r._id}" data-action="approve"></button>
     <button class="icon-btn decline-btn" data-request-id="${r._id}" data-action="decline"></button>
-    <button class="icon-btn edit-btn" data-request-id="${r._id}" data-action="edit"></button>
   `;
 }
 

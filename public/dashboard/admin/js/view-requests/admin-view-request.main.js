@@ -2,12 +2,9 @@ import {
   loadRequestsHandler,
   filterHandler,
   verifyHandler,
-  showEditHandler,
-  submitEditHandler,
   initHandler,
   copyHandler,
   closeVerificationModalHandler,
-  closeEditModalHandler,
   submitVerificationHandler
 } from './admin-view-request.handler.js';
 
@@ -16,7 +13,6 @@ import { generatePassword } from './admin-view-request.utils.js';
 
 // Expose modal close handlers to window for inline onclick handlers
 window.closeVerificationModal = closeVerificationModalHandler;
-window.closeEditModal = closeEditModalHandler;
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -30,13 +26,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // table actions
   document.getElementById("requestsTableBody")?.addEventListener("click", (e) => {
-    const btn = e.target.closest('.approve-btn, .decline-btn, .edit-btn');
+    const btn = e.target.closest('.approve-btn, .decline-btn');
     if (!btn) return;
 
     const id = btn.dataset.requestId;
     const action = btn.dataset.action;
 
-    if (action === 'edit') return showEditHandler(id);
     verifyHandler(id, action === 'approve');
   });
 
@@ -45,13 +40,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const btn = e.target.closest('.copy-btn');
     if (!btn) return;
     copyHandler(btn.dataset.target);
-  });
-
-  // edit submit
-  document.getElementById('editRequestForm')?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const btn = e.submitter;
-    await submitEditHandler(btn);
   });
 
   // generate password

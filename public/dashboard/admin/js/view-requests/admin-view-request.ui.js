@@ -179,58 +179,6 @@ export function populateMachinesSelectUI(machines) {
       `<option value="${m.MIGID}">${m.MIGID} (${m.gpuRam}GB GPU)</option>`
     ).join('');
 }
-
-
-// ===== EDIT MODAL =====
-
-// Configure edit form fields for approved requests (only expiry date editable)
-function setEditFormApprovedState(isApproved) {
-  const fieldsToDisable = ['editTitle', 'editPurpose', 'editGpuRam', 'editUsername'];
-  const opacity = isApproved ? '0.6' : '';
-
-  fieldsToDisable.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.disabled = isApproved;
-      el.style.opacity = opacity;
-    }
-  });
-}
-
-export function showEditModalUI(request) {
-  const submitBtn = document.querySelector('#editRequestForm button[type="submit"]');
-
-  if (submitBtn) {
-    submitBtn.disabled = false;
-    submitBtn.style.opacity = '';
-    submitBtn.style.cursor = '';
-  }
-
-  document.getElementById('editRequestId').value = request._id;
-  document.getElementById('editTitle').value = request.title;
-  document.getElementById('editPurpose').value = request.purpose;
-  setEditFormApprovedState(request.admin_action === true);
-
-  document.getElementById('editRequestModal').style.display = 'block';
-}
-
-export function closeEditModalUI() {
-  document.getElementById('editRequestModal').style.display = 'none';
-}
-
-
-// Read edit form data
-export function getEditFormData() {
-  return {
-    requestId: document.getElementById('editRequestId').value,
-    formValues: {
-      title: document.getElementById('editTitle').value,
-      purpose: document.getElementById('editPurpose').value,
-    }
-  };
-}
-
-
 // Button state
 export function setSubmitButtonState(button, isLoading) {
   if (!button) return;

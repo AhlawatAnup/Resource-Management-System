@@ -39,18 +39,6 @@ export function filterRequestsList(requests, searchTerm) {
 }
 
 
-// Build payload for edit request (pure extraction helper)
-export function buildEditPayload(formValues) {
-  return {
-    title: formValues.title,
-    purpose: formValues.purpose,
-    expiryDate: formValues.expiryDate,
-    gpuRam: Number(formValues.gpuRam),
-    username: formValues.username
-  };
-}
-
-
 // Merge updated request safely (preserve missing nested data)
 export function mergeUpdatedRequest(oldRequest, updatedRequest) {
   const merged = { ...updatedRequest };

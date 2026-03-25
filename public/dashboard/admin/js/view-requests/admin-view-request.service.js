@@ -55,29 +55,7 @@ export async function verifyAdminRequest(requestId, isVerified, credentials = nu
 }
 
 
-// Edit request (admin endpoint)
-export async function editAdminRequest(requestId, payload) {
-  const response = await fetch(`/dashboard/admin/edit_request/${requestId}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  });
 
-  let result;
-
-  try {
-    result = await response.json();
-  } catch (err) {
-    throw new Error('Invalid server response');
-  }
-
-  if (!response.ok || !result.success) {
-    const errorMsg = result?.error || 'Failed to edit request';
-    throw new Error(errorMsg);
-  }
-
-  return result;
-}
 
 
 // Fetch available machines
