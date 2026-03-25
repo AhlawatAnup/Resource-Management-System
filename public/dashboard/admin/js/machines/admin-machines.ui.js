@@ -75,8 +75,14 @@ export function renderTable(wrapper, machines, handlers) {
 
     // Render the required columns in order, combining ip and port
 
+    // MIGID column (with user as title)
+    const migTd = document.createElement('td');
+    migTd.textContent = m.MIGID ?? '';
+    migTd.title = m.user ?? '-';
+    tr.appendChild(migTd);
+
+    // Remaining columns
     const rowVals = [
-      m.MIGID,
       m.gpuRam,
       m.ram,
       (m.ip && m.port ? `${m.ip}:${m.port}` : (m.ip || '')),
