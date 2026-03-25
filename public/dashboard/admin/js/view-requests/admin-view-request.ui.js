@@ -113,51 +113,6 @@ export function showNotification(message, type) {
   }, 3000);
 }
 
-
-// ===== VERIFICATION MODAL =====
-
-// Populate and show verification modal
-export function showVerificationModalUI(request) {
-  const modal = document.getElementById('verificationModal');
-  const requestInfo = document.getElementById('modalRequestInfo');
-
-  if (!modal || !request) return;
-
-  requestInfo.innerHTML = `
-    <div class="request-summary">
-      <h5>${request.title}</h5>
-      <div class="request-details">
-        <p><strong>Student:</strong> ${request.studentInfo.name}</p>
-        <p><strong>Roll No:</strong> ${request.studentInfo.rollNo}</p>
-        <p><strong>Teacher:</strong> ${request.teacherInfo.name}</p>
-        <p><strong>GPU:</strong> ${request.gpuRam}GB</p>
-        <p><strong>Purpose:</strong> ${request.purpose.length > 80 ? request.purpose.substring(0, 80) + '...' : request.purpose}</p>
-      </div>
-    </div>
-  `;
-
-  modal.setAttribute('data-request-id', request._id);
-
-  const usernameEl = document.getElementById('vmUsername');
-  const passwordEl = document.getElementById('vmPassword');
-
-  if (usernameEl) {
-    usernameEl.value = request.username;
-    usernameEl.readOnly = true;
-  }
-
-  if (passwordEl) passwordEl.value = '';
-
-  modal.style.display = 'block';
-}
-
-// Close modal
-export function closeVerificationModalUI() {
-  const modal = document.getElementById('verificationModal');
-  if (modal) modal.style.display = 'none';
-}
-
-
 // Populate MIG select
 export function populateMachinesSelectUI(machines) {
   const select = document.getElementById('vmMigId');

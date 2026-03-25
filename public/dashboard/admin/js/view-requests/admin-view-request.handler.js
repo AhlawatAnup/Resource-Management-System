@@ -1,6 +1,5 @@
 import {
   fetchAdminResourceRequests,
-  verifyAdminRequest,
   fetchAvailableMachines
 } from './admin-view-request.service.js';
 
@@ -9,8 +8,6 @@ import {
   showEmptyState,
   showErrorState,
   showNotification,
-  showVerificationModalUI,
-  closeVerificationModalUI,
   populateMachinesSelectUI,
   setSubmitButtonState,
   setFieldError,
@@ -88,101 +85,6 @@ export function filterHandler(term) {
   filteredRequests = filterRequestsList(resourceRequests, term);
   render();
 }
-
-
-// ===== VERIFY =====
-export async function verifyHandler(requestId, isVerified) {
-  const request = resourceRequests.find(r => r._id === requestId);
-  if (!request) {
-    showNotification('Request not found.', 'error');
-    return;
-  }
-
-  // expiry check
-  if (isVerified) {
-    const d = new Date(request.expiryDate);
-    const now = new Date();
-    d.setHours(0,0,0,0);
-    now.setHours(0,0,0,0);
-
-    if (d < now) {
-      await Swal.fire({
-        icon: 'error',
-        title: 'Invalid Request',
-        text: 'The expiry date is in the past. Please update the expiry date to proceed'
-      });
-      return;
-    }
-
-    await openVerificationModalHandler(requestId);
-    return;
-  }
-
-  const res = await Swal.fire({
-    title: 'Are you sure?',
-    text: 'Decline request?',
-    icon: 'warning',
-    showCancelButton: true
-  });
-
-  if (!res.isConfirmed) return;
-
-  await submitVerificationHandler(requestId, false);
-}
-
-
-// ===== MODAL =====
-export async function openVerificationModalHandler(requestId) {
-  const request = resourceRequests.find(r => r._id === requestId);
-  if (!request) return;
-
-  showVerificationModalUI(request);
-
-  try {
-    const machines = await fetchAvailableMachines();
-    populateMachinesSelectUI(machines);
-  } catch (err) {
-    console.error(err);
-  }
-}
-
-export function closeVerificationModalHandler() {
-  closeVerificationModalUI();
-}
-
-
-// ===== SUBMIT VERIFY =====
-export async function submitVerificationHandler(requestId, isVerified, credentials = null) {
-  try {
-    await verifyAdminRequest(requestId, isVerified, credentials);
-
-    const idx = resourceRequests.findIndex(r => r._id === requestId);
-
-    if (idx !== -1) {
-      resourceRequests[idx].admin_verified = isVerified;
-      resourceRequests[idx].admin_action = true;
-
-      if (isVerified) {
-        resourceRequests[idx].teacher_verified = true;
-        resourceRequests[idx].teacher_action = true;
-        if (credentials) {
-          resourceRequests[idx].vmCredentials = credentials;
-        }
-      }
-    }
-
-    filterHandler(document.getElementById('searchInput').value);
-    showNotification(`Request ${isVerified ? 'approved' : 'declined'}`, 'success');
-
-  } catch (err) {
-    console.error(err);
-    showNotification('Failed to update request', 'error');
-  }
-}
-
-
-
-
 
 // ===== INIT =====
 export function initHandler() {
