@@ -392,7 +392,7 @@ exports.getAllResourceRequests = async (req, res) => {
         select: "name rollNo branch teacher",
         populate: { path: "teacher", select: "name" }
       })
-      .populate({ path: "machineId", select: "migId" })
+      .populate({ path: "machineId", select: "MIGID" }) // fetch MIGID from Machine
       .sort({ createdAt: -1 });
 
     const formattedRequests = resourceRequests
@@ -405,7 +405,7 @@ exports.getAllResourceRequests = async (req, res) => {
         title: r.title,
         purpose: r.purpose,
         duration: r.duration,
-        migId: r.vmCredentials?.migId || r.machineId.migId,
+        migId: r.machineId.MIGID,  // now strictly from Machine collection
         status: {
           teacher_action: r.teacher_action,
           teacher_verified: r.teacher_verified,
