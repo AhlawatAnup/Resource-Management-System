@@ -27,23 +27,23 @@ export function renderResourceRequests(requests, deps) {
     tr.innerHTML = `
       <td>
         <div class="contact-info">
-          <div class="avatar ${getRandomNamedColor()}">${getInitials(request.studentInfo.name)}</div>
+          <div class="avatar ${getRandomNamedColor()}">${getInitials(request.studentName)}</div>
           <div class="contact-details">
-            <h4>${request.studentInfo.name}</h4>
-            <div class="contact-time">${request.studentInfo.rollNo}</div>
-            <div class="contact-time">${request.studentInfo.branch}</div>
+            <h4>${request.studentName}</h4>
+            <div class="contact-time">${request.rollNo}</div>
+            <div class="contact-time">${request.branch}</div>
           </div>
         </div>
       </td>
       <td>
         <div class="teacher-info">
-          <h4>${request.teacherInfo.name}</h4>
+          <h4>${request.teacherName}</h4>
         </div>
       </td>
       <td>
         <div class="request-title">
           <p>${request.title}<p>
-          <div class="request-date">${formatDate(request.createdAt)}</div>
+          <div class="request-date">${formatDate ? formatDate(request.createdAt) : ''}</div>
         </div>
       </td>
       <td>
@@ -51,6 +51,12 @@ export function renderResourceRequests(requests, deps) {
           <span>${request.purpose.length > 20 ? request.purpose.substring(0, 20) + '...' : request.purpose}</span>
           ${createViewMoreButton(request._id, request.purpose)}
         </div>
+      </td>
+      <td>
+        <span>${request.duration ?? '-'}</span>
+      </td>
+      <td>
+        <span>${request.migId ?? '-'}</span>
       </td>
       <td>
         <span class="badge ${statusInfo.class}">${statusInfo.text}</span>
