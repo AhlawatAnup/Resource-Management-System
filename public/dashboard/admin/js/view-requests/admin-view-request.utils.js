@@ -68,3 +68,28 @@ export function generatePassword(length = 12) {
   }
   return pwd;
 }
+
+export async function confirmAction(action) {
+  const result = await Swal.fire({
+    title: `Confirm ${action}?`,
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Yes',
+    cancelButtonText: 'No',
+    focusCancel: true,
+    reverseButtons: true
+  });
+  return result.isConfirmed;
+}
+
+export function showToast(message, type = 'success') {
+  const bgColor = type === 'success' ? '#4CAF50' : '#F44336';
+  Toastify({
+    text: message,
+    duration: type === 'success' ? 2000 : 2500,
+    gravity: "top",
+    position: "right",
+    backgroundColor: bgColor,
+    close: true
+  }).showToast();
+}

@@ -4,9 +4,9 @@ import {
   initHandler,
   copyHandler,
 } from './admin-view-request.handler.js';
-
+import { verifyAdminRequest } from './admin-view-request.service.js';
 import { showMachinePopup } from './admin-view-request.ui.js';
-import { generatePassword } from './admin-view-request.utils.js';
+import { generatePassword, confirmAction, showToast } from './admin-view-request.utils.js';
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -19,13 +19,26 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // table actions
-  document.getElementById("requestsTableBody")?.addEventListener("click", (e) => {
+  document.getElementById("requestsTableBody")?.addEventListener("click", async (e) => {
     const btn = e.target.closest('.approve-btn, .decline-btn');
     if (!btn) return;
 
     const id = btn.dataset.requestId;
     const action = btn.dataset.action;
+    if (!id || !action) return;
 
+    try {
+      const confirmed = await confirmAction(action);
+      if (!confirmed) return;
+
+      await verifyAdminRequest(id, action === 'approve');
+      await loadRequestsHandler();
+
+      showToast(`Request ${action}d successfully!`, 'success');
+
+    } catch (err) {
+      showToast(err.message || 'Failed to update request', 'error');
+    }
   });
 
   // copy
