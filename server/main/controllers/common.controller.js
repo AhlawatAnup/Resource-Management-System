@@ -486,7 +486,7 @@ exports.getMachineWiseActiveAllotments = async (req, res) => {
 
     const allotments = await MachineAllotment.find({
       machineId,
-      status: "active" 
+      isActive: true
     })
       .select("resourceRequestId startTime endTime status")
       .lean();
