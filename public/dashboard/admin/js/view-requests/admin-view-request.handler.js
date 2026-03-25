@@ -51,7 +51,14 @@ export async function loadRequestsHandler() {
 
     if (error) throw new Error();
 
-    resourceRequests = data.requests || [];
+
+    // Flatten status object into top-level for each request
+    resourceRequests = (data.requests || []).map(r => {
+      if (r.status && typeof r.status === 'object') {
+        return { ...r, ...r.status };
+      }
+      return r;
+    });
     filteredRequests = [...resourceRequests];
 
     render();
