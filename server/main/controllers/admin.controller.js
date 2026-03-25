@@ -398,6 +398,8 @@ exports.getAllResourceRequests = async (req, res) => {
     const formattedRequests = resourceRequests
       .filter(r => r.studentId && r.machineId)
       .map(r => ({
+        _id: r._id, // Add the MongoDB ObjectId for frontend actions
+        createdAt: r.createdAt, // Add creation date for frontend display
         studentName: r.studentId.name,
         rollNo: r.studentId.rollNo,
         branch: r.studentId.branch,
