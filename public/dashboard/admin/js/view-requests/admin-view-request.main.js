@@ -11,7 +11,8 @@ import {
   submitVerificationHandler
 } from './admin-view-request.handler.js';
 
-import { generatePassword, showMachinePopup } from './admin-view-request.utils.js';
+import { showMachinePopup } from './admin-view-request.ui.js';
+import { generatePassword } from './admin-view-request.utils.js';
 
 // Expose modal close handlers to window for inline onclick handlers
 window.closeVerificationModal = closeVerificationModalHandler;
