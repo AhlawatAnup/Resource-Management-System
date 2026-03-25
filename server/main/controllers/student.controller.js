@@ -87,7 +87,7 @@ exports.submitResourceRequest = async (req, res) => {
     }
 
     if (!isValidDuration(parsedDuration)) {
-      return res.status(400).json({ error: "Invalid duration. Allowed range is 1 to 30 days." });
+      return res.status(400).json({ error: "Invalid duration. Allowed range is 1 to 15 days." });
     }
 
     if (!mongoose.Types.ObjectId.isValid(machineId)) {

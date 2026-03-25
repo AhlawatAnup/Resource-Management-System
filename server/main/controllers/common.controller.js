@@ -317,7 +317,7 @@ exports.updateResourceRequestVerification = async (req, res) => {
     }
 
     if (!isValidDuration(duration)) {
-      return res.status(400).json({ error: "Invalid duration. Allowed range is 1 to 30 days." });
+      return res.status(400).json({ error: "Invalid duration. Allowed range is 1 to 15 days." });
     }
 
     const machine = await Machine.findById(machineId).select("_id MIGID");
