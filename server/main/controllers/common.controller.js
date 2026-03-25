@@ -282,110 +282,107 @@ exports.updateResourceRequestVerification = async (req, res) => {
     return res.status(400).json({ error: "request_id is required" });
   }
 
-  // Admin dummy
-  if (role === "admin") {
-    return res.status(200).json({
-      success: true,
-      message: "Admin verification handler is dummy for now",
-      request_id
-    });
-  }
-
-  if (role !== "teacher") {
+  if (role !== "teacher" && role !== "admin") {
     return res.status(403).json({ error: "Unauthorized" });
   }
-
-  if (typeof is_verified !== "boolean") {
-    return res.status(400).json({ error: "is_verified must be boolean" });
-  }
-
-  try {
-    const existingRequest = await ResourceRequest.findById(request_id);
-
-    if (!existingRequest) {
-      return res.status(404).json({ error: "Resource request not found" });
+    if (typeof is_verified !== "boolean") {
+      return res.status(400).json({ error: "is_verified must be boolean" });
     }
 
-    const machineId = existingRequest.machineId;
+    try {
+      const existingRequest = await ResourceRequest.findById(request_id);
 
-    const durationInput = existingRequest.duration;
+      if (!existingRequest) {
+        return res.status(404).json({ error: "Resource request not found" });
+      }
 
-    const duration = Number(durationInput);
+      const machineId = existingRequest.machineId;
 
-    if (!machineId) {
-      return res.status(400).json({ error: "machineId is required" });
-    }
+      const durationInput = existingRequest.duration;
+      const duration = Number(durationInput);
 
-    if (!isValidDuration(duration)) {
-      return res.status(400).json({ error: "Invalid duration. Allowed range is 1 to 15 days." });
-    }
+      if (!machineId) {
+        return res.status(400).json({ error: "machineId is required" });
+      }
 
-    const machine = await Machine.findById(machineId).select("_id MIGID");
-    if (!machine) {
-      return res.status(404).json({ error: "Machine not found" });
-    }
+      if (!isValidDuration(duration)) {
+        return res.status(400).json({
+          error: "Invalid duration. Allowed range is 1 to 15 days."
+        });
+      }
 
-    // 🔹 Get latest endTime across ALL allotments (true max)
-    const latestEndTimeResult = await MachineAllotment.aggregate([
-      { $match: { machineId: machine._id } },
-      { $group: { _id: null, maxEndTime: { $max: "$endTime" } } }
-    ]);
+      const machine = await Machine.findById(machineId).select("_id MIGID");
+      if (!machine) {
+        return res.status(404).json({ error: "Machine not found" });
+      }
 
-    const lastAllotmentEndTime = latestEndTimeResult.length > 0
-      ? latestEndTimeResult[0].maxEndTime
-      : null;
+      // 🔹 Get latest endTime across ALL allotments (true max)
+      const latestEndTimeResult = await MachineAllotment.aggregate([
+        { $match: { machineId: machine._id } },
+        { $group: { _id: null, maxEndTime: { $max: "$endTime" } } }
+      ]);
 
-    // 🔹 Calculate new window (PURE UTC LOGIC)
-    const { startTime, endTime } = calculateAllotmentWindow(
-      lastAllotmentEndTime,
-      duration
-    );
+      const lastAllotmentEndTime = latestEndTimeResult.length > 0
+        ? latestEndTimeResult[0].maxEndTime
+        : null;
 
-    // 🔹 Update request
-    const updateData = {
-      teacher_action: true,
-      teacher_verified: is_verified,
-      is_verified: is_verified, 
-      updatedAt: new Date()
-    };
+      // 🔹 Calculate new window (PURE UTC LOGIC)
+      const { startTime, endTime } = calculateAllotmentWindow(
+        lastAllotmentEndTime,
+        duration
+      );
 
-    const updatedRequest = await ResourceRequest.findByIdAndUpdate(
-      request_id,
-      updateData,
-      { new: true }
-    );
+      // 🔹 Update request
+      let updateData = {
+        is_verified: is_verified,
+        updatedAt: new Date()
+      };
 
-    let createdAllotment = null;
+      if (role === "teacher") {
+        updateData.teacher_action = true;
+        updateData.teacher_verified = is_verified;
+      } else if (role === "admin") {
+        updateData.admin_action = true;
+        updateData.admin_verified = is_verified;
+      }
 
-    // 🔹 Create allotment if approved
-    if (is_verified) {
-      createdAllotment = await MachineAllotment.create({
-        machineId: machine._id,
-        resourceRequestId: updatedRequest._id,
-        startTime,
-        endTime,
-        status: "active"
+      const updatedRequest = await ResourceRequest.findByIdAndUpdate(
+        request_id,
+        updateData,
+        { new: true }
+      );
+
+      let createdAllotment = null;
+
+      // 🔹 Create allotment if approved
+      if (is_verified) {
+        createdAllotment = await MachineAllotment.create({
+          machineId: machine._id,
+          resourceRequestId: updatedRequest._id,
+          startTime,
+          endTime,
+          status: "active"
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: "Resource request verification updated successfully",
+        // request: updatedRequest,
+        // machine: {
+        //   _id: machine._id,
+        //   MIGID: machine.MIGID
+        // },
+        // lastAllotmentEndTime,
+        // allotment: createdAllotment
+      });
+
+    } catch (err) {
+      console.error("Error updating resource request verification:", err);
+      return res.status(500).json({
+        error: "Failed to update resource request verification"
       });
     }
-
-    return res.status(200).json({
-      success: true,
-      message: "Resource request verification updated successfully",
-      request: updatedRequest,
-      machine: {
-        _id: machine._id,
-        MIGID: machine.MIGID
-      },
-      lastAllotmentEndTime,
-      allotment: createdAllotment
-    });
-
-  } catch (err) {
-    console.error("Error updating resource request verification:", err);
-    return res.status(500).json({
-      error: "Failed to update resource request verification"
-    });
-  }
 };
 
 // Common function for editing a resource request by teacher or admin
