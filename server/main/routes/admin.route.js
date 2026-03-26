@@ -23,6 +23,7 @@ const {
   deleteResourceRequestByMig,
   UpdateAdminProfile,
   unverifyStudentIfPossible,
+  revokeResourceRequest,
 } = require("../controllers/admin.controller.js");
 
 const {
@@ -85,6 +86,7 @@ router.put("/unverify_student/:student_id", unverifyStudentIfPossible);
 // Resource request management routes
 router.get("/resource-requests", getAllResourceRequests);
 router.put("/verify_request/:request_id", updateResourceRequestVerification);
+router.post("/revoke/:requestId", revokeResourceRequest);
 
 // Profile section routes
 router.get("/details", isAdmin, getAdminDetails);

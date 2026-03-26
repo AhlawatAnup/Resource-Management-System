@@ -729,3 +729,52 @@ exports.deleteMachine = async (req, res) => {
     return res.status(500).json({ error: "Failed to delete machine" });
   }
 };
+
+exports.revokeResourceRequest = async (req, res) => {
+  try {
+    const { requestId } = req.params;
+    console.log(requestId)
+
+    // 1. Validate ID
+    if (!mongoose.Types.ObjectId.isValid(requestId)) {
+      return res.status(400).json({ message: "Invalid requestId" });
+    }
+
+    // 2. Find request
+    const request = await ResourceRequest.findById(requestId);
+
+    if (!request) {
+      return res.status(404).json({ message: "Request not found" });
+    }
+
+    // 3. Update request
+    request.is_verified = false;
+    request.admin_action = true;
+    request.admin_verified = false;
+
+    await request.save();
+
+    // 4. Deactivate matching allotments
+    const result = await MachineAllotment.updateMany(
+      {
+        resourceRequestId: requestId,
+        isActive: true,
+      },
+      {
+        $set: { isActive: false },
+      }
+    );
+
+    return res.status(200).json({
+      message: "Request rejected and allotments deactivated",
+      updatedCount: result.modifiedCount,
+    });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      message: "Server error",
+      error: error.message,
+    });
+  }
+};
