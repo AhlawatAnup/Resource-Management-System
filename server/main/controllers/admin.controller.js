@@ -569,7 +569,7 @@ exports.UpdateAdminIdentity = exports.UpdateAdminProfile;
 
 exports.getMachines = async (req, res) => {
   try {
-    const machines = await Machine.find({}).lean();
+    const machines = await Machine.find({isAvailable: { $in: [true, false] }}).lean(); //need to pass isAvailable: { $in: [true, false] } coz of pre middleware
 
     return res.json({
       ok: true,
@@ -685,7 +685,10 @@ exports.deleteMachine = async (req, res) => {
 
   try {
     // Check if machine exists
-    const machine = await Machine.findById(id);
+    const machine = await Machine.findOne({ 
+      _id: id, 
+      isAvailable: { $in: [true, false] } 
+    });
     if (!machine) return res.status(404).json({ error: "Machine not found" });
 
     // Check for active or future allotments first
@@ -693,7 +696,7 @@ exports.deleteMachine = async (req, res) => {
     const activeAllotment = await MachineAllotment.findOne({
       machineId: id,
       $or: [
-        { isAvailable: true },
+        { isActive: true },
         { endTime: { $gte: now } } // future allotments
       ]
     });
@@ -712,7 +715,14 @@ exports.deleteMachine = async (req, res) => {
     }
 
     // Safe to delete
-    await Machine.findByIdAndUpdate(id, { isDeleted: true });
+    // await Machine.findByIdAndUpdate(id, { isDeleted: true });
+    await Machine.findOneAndUpdate(
+      {
+        _id: id,
+        isAvailable: { $in: [true, false] }
+      },
+      { isDeleted: true }
+    );
     return res.json({ ok: true });
   } catch (err) {
     console.error("Failed to delete machine", err);
