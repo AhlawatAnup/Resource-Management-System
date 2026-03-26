@@ -152,6 +152,11 @@ function createRequestCard(request) {
                     <strong>MIGID:</strong> <span>${request.machineId.MIGID}</span>
                 </div>
             ` : ''}
+            ${(request.machineId && request.machineId.gpuRam) ? `
+                <div class="request-gpuram" style="margin: 4px 0 0 0; color: #434343">
+                    <strong>GPU RAM:</strong> <span>${request.machineId.gpuRam} GB</span>
+                </div>
+            ` : ''}
             ${(request.allotmentStartTime && request.allotmentEndTime) ? `
                 <div class="request-allotment-time" style="margin: 4px 0 0 0; color: #434343">
                     <strong>Allotment:</strong> 
