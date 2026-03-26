@@ -70,15 +70,17 @@ machineSchema.index(
 );
 
 machineSchema.pre(/^find/, function (next) {
-  // If the 'ignoreDeleteFilter' option is true, skip the filter (for Admin use)
-  if (this.getOptions().ignoreDeleteFilter) {
-    return next();
+  const query = this.getQuery();
+
+  // 1. ALWAYS filter out deleted documents (No way to bypass this easily)
+  this.where({ isDeleted: { $ne: true } });
+
+  // 2. ONLY filter for availability if the user hasn't specified it
+  if (query.isAvailable === undefined) {
+    this.where({ isAvailable: true });
   }
 
-  // Otherwise, automatically filter out deleted documents
-  this.where({ isDeleted: { $ne: true } });
   next();
 });
-
 
 module.exports = mongoose.model('Machine', machineSchema);
