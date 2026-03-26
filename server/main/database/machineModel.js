@@ -52,9 +52,25 @@ const machineSchema = new mongoose.Schema({
   isAvailable: {
   type: Boolean,
   default: true
+  },
+
+  isDeleted: {
+    type: Boolean,
+    default: false
   }
 
 }, { timestamps: true });
+
+machineSchema.pre(/^find/, function (next) {
+  // If the 'ignoreDeleteFilter' option is true, skip the filter (for Admin use)
+  if (this.getOptions().ignoreDeleteFilter) {
+    return next();
+  }
+
+  // Otherwise, automatically filter out deleted documents
+  this.where({ isDeleted: { $ne: true } });
+  next();
+});
 
 
 module.exports = mongoose.model('Machine', machineSchema);
