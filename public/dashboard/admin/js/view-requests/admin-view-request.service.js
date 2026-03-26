@@ -53,10 +53,6 @@ export async function verifyAdminRequest(requestId, isVerified) {
   return result;
 }
 
-
-
-
-
 // Fetch available machines
 export async function fetchAvailableMachines() {
   const response = await fetch('/dashboard/admin/machines', {
@@ -69,4 +65,17 @@ export async function fetchAvailableMachines() {
 
   const data = await response.json();
   return data.machines || [];
+}
+
+// Revoke a resource request (admin)
+export async function revokeAdminRequest(requestId) {
+  const res = await fetch(`/dashboard/admin/revoke/${requestId}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' }
+  });
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(errText || 'Failed to revoke request');
+  }
+  return res.json();
 }

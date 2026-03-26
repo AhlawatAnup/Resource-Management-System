@@ -116,7 +116,7 @@ function getActionButtons(r) {
     return '';
   }
   if (status.class === 'verified') {
-    return `<button class="icon-btn revoke-btn" data-request-id="${r._id}" disabled>Revoke</button>`;
+    return `<button class="icon-btn revoke-btn" data-request-id="${r._id}">Revoke</button>`;
   }
   if (status.class === 'pending-teacher') {
     return `

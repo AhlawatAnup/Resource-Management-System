@@ -4,7 +4,7 @@ import {
   initHandler,
   copyHandler,
 } from './admin-view-request.handler.js';
-import { verifyAdminRequest } from './admin-view-request.service.js';
+import { verifyAdminRequest, revokeAdminRequest } from './admin-view-request.service.js';
 import { showMachinePopup } from './admin-view-request.ui.js';
 import { generatePassword, confirmAction, showToast } from './admin-view-request.utils.js';
 
@@ -20,24 +20,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // table actions
   document.getElementById("requestsTableBody")?.addEventListener("click", async (e) => {
-    const btn = e.target.closest('.approve-btn, .decline-btn');
-    if (!btn) return;
+    const approveDeclineBtn = e.target.closest('.approve-btn, .decline-btn');
+    const revokeBtn = e.target.closest('.revoke-btn');
 
-    const id = btn.dataset.requestId;
-    const action = btn.dataset.action;
-    if (!id || !action) return;
+    // Approve/Decline
+    if (approveDeclineBtn) {
+      const id = approveDeclineBtn.dataset.requestId;
+      const action = approveDeclineBtn.dataset.action;
+      if (!id || !action) return;
+      try {
+        const confirmed = await confirmAction(action);
+        if (!confirmed) return;
+        await verifyAdminRequest(id, action === 'approve');
+        await loadRequestsHandler();
+        showToast(`Request ${action}d successfully!`, 'success');
+      } catch (err) {
+        showToast(err.message || 'Failed to update request', 'error');
+      }
+      return;
+    }
 
-    try {
-      const confirmed = await confirmAction(action);
-      if (!confirmed) return;
-
-      await verifyAdminRequest(id, action === 'approve');
-      await loadRequestsHandler();
-
-      showToast(`Request ${action}d successfully!`, 'success');
-
-    } catch (err) {
-      showToast(err.message || 'Failed to update request', 'error');
+    // Revoke
+    if (revokeBtn) {
+      const id = revokeBtn.dataset.requestId;
+      if (!id) return;
+      try {
+        const confirmed = await confirmAction('revoke');
+        if (!confirmed) return;
+        await revokeAdminRequest(id);
+        await loadRequestsHandler();
+        showToast('Request revoked successfully!', 'success');
+      } catch (err) {
+        showToast(err.message || 'Failed to revoke request', 'error');
+      }
+      return;
     }
   });
 
