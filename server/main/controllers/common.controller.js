@@ -458,7 +458,7 @@ function isDateInPast(date) {
 
 exports.getAllMachines = async (req, res) => {
   try {
-    const machines = await Machine.find({ isAvailable: true })
+    const machines = await Machine.find({}) //fetches isAvailable:true only due to pre middleware
       .select("_id MIGID gpuRam")
       .lean();
 

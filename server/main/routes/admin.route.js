@@ -106,7 +106,7 @@ router.post('/upload-machines', isAdmin, upload.single('file'), async (req, res)
   }
 });
 
-router.get('/machines', isAdmin, getMachines);
+router.get('/machines', isAdmin, getMachines); //admin machine page
 router.post('/create-machine', isAdmin, createMachine);
 router.put('/machines/:id', isAdmin, updateMachineAvailability);
 router.delete('/machines/:id', isAdmin, deleteMachine);
