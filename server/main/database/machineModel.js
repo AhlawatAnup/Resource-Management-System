@@ -5,7 +5,7 @@ const machineSchema = new mongoose.Schema({
   MIGID: {
     type: String,
     required: true,
-    unique: true
+    unique: false
   },
 
   gpuRam: {
@@ -60,6 +60,14 @@ const machineSchema = new mongoose.Schema({
   }
 
 }, { timestamps: true });
+
+machineSchema.index(
+  { MIGID: 1 }, 
+  { 
+    unique: true, 
+    partialFilterExpression: { isDeleted: false } 
+  }
+);
 
 machineSchema.pre(/^find/, function (next) {
   // If the 'ignoreDeleteFilter' option is true, skip the filter (for Admin use)
