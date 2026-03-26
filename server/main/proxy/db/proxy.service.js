@@ -20,7 +20,7 @@ exports.getActiveAllotment = async (resourceObjectId) => {
 
   const allotment = await MachineAllotment.findOne({
     resourceRequestId: resourceObjectId,
-    status: "active",
+    isActive: true,
     startTime: { $lte: now },
     endTime: { $gte: now }
   }).lean();

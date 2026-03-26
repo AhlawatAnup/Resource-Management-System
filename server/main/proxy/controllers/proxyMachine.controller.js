@@ -46,7 +46,7 @@ const getTokenByMigid = async (req, res) => {
   try {
     const migid = req.headers['x-mig-id']; 
     const requestId = req.headers['x-request-id'];
-
+    
     if (!migid) {
       return res.status(400).json({ error: "X-Mig-ID header is required" });
     }
