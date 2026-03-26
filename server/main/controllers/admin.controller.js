@@ -712,7 +712,7 @@ exports.deleteMachine = async (req, res) => {
     }
 
     // Safe to delete
-    await Machine.findByIdAndDelete(id);
+    await Machine.findByIdAndUpdate(id, { isDeleted: true });
     return res.json({ ok: true });
   } catch (err) {
     console.error("Failed to delete machine", err);
