@@ -38,14 +38,13 @@ MachineAllotmentSchema.index(
   }
 );
 
-MachineAllotmentSchema.pre(/^find/, function (next) {
-  const query = this.getQuery();
-
+MachineAllotmentSchema.pre(/^find|^findOneAndUpdate/, function (next) {
   // 1. ALWAYS exclude deleted
   this.where({ isDeleted: { $ne: true } });
 
-  // 2. ONLY show active if not explicitly requested
-  if (query.isActive === undefined) {
+  // 2. ONLY show active if not explicitly opted out
+  const { includeInactive } = this.getOptions();
+  if (!includeInactive) {
     this.where({ isActive: true });
   }
 
