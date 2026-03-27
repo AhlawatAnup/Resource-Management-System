@@ -18,7 +18,7 @@ const connectDB = require("../../database/db.js");
 const Student         = require("../../database/studentModel.js");
 const Machine         = require("../../database/machineModel.js");
 const ResourceRequest = require("../../database/resourceRequestModel.js");
-const MachineAllotment = require("../../database/machineAllotmentModel.js.js");
+const MachineAllotment = require("../../database/machineAllotmentModel.js");
 
 // How many past allotments to seed
 const SEED_COUNT = 5;
