@@ -22,9 +22,34 @@ const MachineAllotmentSchema = new mongoose.Schema(
   isActive: {
     type: Boolean,
     default: true
+  },
+    isDeleted: {
+    type: Boolean,
+    default: false
   }
 },
 { timestamps: true }
 );
+
+MachineAllotmentSchema.index(
+  { machineId: 1, startTime: 1, endTime: 1 },
+  {
+    partialFilterExpression: { isDeleted: false }
+  }
+);
+
+MachineAllotmentSchema.pre(/^find/, function (next) {
+  const query = this.getQuery();
+
+  // 1. ALWAYS exclude deleted
+  this.where({ isDeleted: { $ne: true } });
+
+  // 2. ONLY show active if not explicitly requested
+  if (query.isActive === undefined) {
+    this.where({ isActive: true });
+  }
+
+  next();
+});
 
 module.exports = mongoose.model("MachineAllotment", MachineAllotmentSchema);
