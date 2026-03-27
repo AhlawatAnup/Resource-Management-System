@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const Machine = require("../database/machineModel");
 
 exports.isValidDuration = function (duration) {
-  return Number.isInteger(duration) && duration >= 1 && duration <= 30;
+  return Number.isInteger(duration) && duration >= 1 && duration <= 15;
 };
 
 exports.fetchMachineById = async (machineId) => {
@@ -59,4 +59,74 @@ exports.calculateAllotmentWindow = (lastEndTime, durationDays) => {
   const endTime = createUTCFromIST(year, month, endDay, 23, 30);
 
   return { startTime, endTime };
+};
+
+exports.validateMachineInput = (body) => {
+  let {
+    MIGID,
+    gpuRam,
+    ram,
+    ip,
+    port,
+    user,
+    name,
+    token
+  } = body;
+
+  // --- Trim strings ---
+  MIGID = MIGID?.trim();
+  ip = ip?.trim();
+  user = user?.trim();
+  name = name?.trim();
+  token = token?.trim();
+
+  // --- Required string fields ---
+  if (!MIGID) return { error: 'MIGID is required' };
+  if (!ip) return { error: 'ip is required' };
+  if (!user) return { error: 'user is required' };
+  if (!name) return { error: 'name is required' };
+  if (!token) return { error: 'token is required' };
+
+  // --- GPU (optional) ---
+  let gpu = null;
+  if (gpuRam !== '' && gpuRam !== undefined && gpuRam !== null) {
+    gpu = Number(gpuRam);
+    if (Number.isNaN(gpu) || gpu < 0) {
+      return { error: 'gpuRam must be a non-negative number' };
+    }
+  }
+
+  // --- RAM (required) ---
+  if (ram === '' || ram === undefined || ram === null) {
+    return { error: 'ram is required' };
+  }
+
+  const systemRam = Number(ram);
+  if (Number.isNaN(systemRam) || systemRam <= 0) {
+    return { error: 'ram must be a positive number' };
+  }
+
+  // --- PORT (required, no default) ---
+  if (port === '' || port === undefined || port === null) {
+    return { error: 'port is required' };
+  }
+
+  const machinePort = Number(port);
+  if (Number.isNaN(machinePort) || machinePort <= 0) {
+    return { error: 'port must be a valid number' };
+  }
+
+  // --- Cleaned data ---
+  return {
+    value: {
+      MIGID,
+      gpuRam: gpu,
+      ram: systemRam,
+      ip,
+      port: machinePort,
+      user,
+      name,
+      token
+    }
+  };
 };

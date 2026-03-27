@@ -21,10 +21,9 @@ export async function fetchAdminResourceRequests() {
 
 
 // Verify (approve/decline) request with optional credentials
-export async function verifyAdminRequest(requestId, isVerified, credentials = null) {
+export async function verifyAdminRequest(requestId, isVerified) {
   const requestBody = {
     is_verified: isVerified,
-    vmCredentials: credentials
   };
 
   const response = await fetch(`/dashboard/admin/verify_request/${requestId}`, {
@@ -54,32 +53,6 @@ export async function verifyAdminRequest(requestId, isVerified, credentials = nu
   return result;
 }
 
-
-// Edit request (admin endpoint)
-export async function editAdminRequest(requestId, payload) {
-  const response = await fetch(`/dashboard/admin/edit_request/${requestId}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  });
-
-  let result;
-
-  try {
-    result = await response.json();
-  } catch (err) {
-    throw new Error('Invalid server response');
-  }
-
-  if (!response.ok || !result.success) {
-    const errorMsg = result?.error || 'Failed to edit request';
-    throw new Error(errorMsg);
-  }
-
-  return result;
-}
-
-
 // Fetch available machines
 export async function fetchAvailableMachines() {
   const response = await fetch('/dashboard/admin/machines', {
@@ -92,4 +65,17 @@ export async function fetchAvailableMachines() {
 
   const data = await response.json();
   return data.machines || [];
+}
+
+// Revoke a resource request (admin)
+export async function revokeAdminRequest(requestId) {
+  const res = await fetch(`/dashboard/admin/revoke/${requestId}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' }
+  });
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(errText || 'Failed to revoke request');
+  }
+  return res.json();
 }

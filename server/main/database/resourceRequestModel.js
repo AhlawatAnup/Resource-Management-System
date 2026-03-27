@@ -23,7 +23,7 @@ const resourceRequestSchema = new mongoose.Schema({
     type: Number,
     required: true,
     min: 1,
-    max: 30
+    max: 15
   },
   version: {
     type: Number,
@@ -38,14 +38,6 @@ const resourceRequestSchema = new mongoose.Schema({
   admin_verified: { type: Boolean, default: false },
   is_verified: { type: Boolean, default: false },
 
-  // VM access credentials (provided when admin finally verifies)
-  vmCredentials: {
-    // username: { type: String },
-    password: { type: String },
-    ip: { type: String },
-    migId: { type: String }
-  },
-
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 
@@ -59,7 +51,10 @@ const resourceRequestSchema = new mongoose.Schema({
       day2: { type: Boolean, default: false }
     },
     default: () => ({ day7: false, day2: false })
-  }
+  },
+
+  isActive: { type: Boolean, default: true },
+  
 });
 
 module.exports = mongoose.model("ResourceRequest", resourceRequestSchema, "resourceRequests");

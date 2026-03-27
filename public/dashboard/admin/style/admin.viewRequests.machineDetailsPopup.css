@@ -1,0 +1,66 @@
+/* i button */
+.info-btn {
+  border: none;
+  background: none;
+  cursor: pointer;
+  margin-left: 5px;
+}
+
+.info-btn i {
+  color: #aaaaaa; /* circle color */
+  font-size: 14px; /* ↓ decreased */
+}
+
+.info-btn:hover i {
+  color: #707070;
+}
+
+
+/* popup */
+.machine-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  
+  box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+  z-index: 10000;
+  
+  min-width: 250px;
+
+  font-size: 13px; /* ↓ added smaller base font */
+}
+
+.machine-popup h4 {
+  margin-top: 0;
+  font-size: 15px; /* ↓ decreased */
+}
+
+.machine-popup p {
+  font-size: 13px; /* ↓ decreased */
+}
+
+.machine-popup button {
+  margin-top: 10px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 12px; /* ↓ decreased */
+}
+
+/* Overlay for popup */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.2);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

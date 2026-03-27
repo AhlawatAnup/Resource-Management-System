@@ -1,5 +1,6 @@
 import { createAllotmentsHandler } from "./allotments.handler.js";
 import { createMachineService, detectRoleFromPath } from "./allotments.service.js";
+import { handleLogout } from '../commons.js';  //for html logout
 
 function initAllotments() {
   const role = detectRoleFromPath();

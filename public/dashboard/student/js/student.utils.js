@@ -200,7 +200,7 @@ export function canDeleteRequest(request) {
 }
 
 export function isValidDuration(duration) {
-    return Number.isInteger(duration) && duration >= 1 && duration <= 30;
+    return Number.isInteger(duration) && duration >= 1 && duration <= 15;
 }
 
 export function formatDateTime(dateStr) {

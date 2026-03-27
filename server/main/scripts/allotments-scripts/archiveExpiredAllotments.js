@@ -16,7 +16,7 @@ require("dotenv").config({ path: path.resolve(__dirname, "../../../../.env") });
 const mongoose = require("mongoose");
 const connectDB = require("../../database/db.js");
 
-const MachineAllotment = require("../../database/machineAllotmentModel.js.js");
+const MachineAllotment = require("../../database/machineAllotmentModel.js");
 const MachineHistory   = require("../../database/machineHistoryModel.js");
 
 // We require the raw models only for population — no ObjectId refs stored in history.

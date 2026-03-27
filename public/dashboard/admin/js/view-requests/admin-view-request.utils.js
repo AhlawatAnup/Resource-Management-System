@@ -1,23 +1,30 @@
 // Get request status (ADMIN version - includes teacher + admin states)
 export function getRequestStatus(request) {
-  if (request.teacher_verified && request.admin_verified) {
-    return { text: "Approved", class: "verified" };
-
-  } else if (request.admin_action && !request.admin_verified) {
-    return { text: "Declined by Admin", class: "declined" };
-
-  } else if (request.teacher_action && !request.teacher_verified) {
-    return { text: "Declined by Teacher", class: "declined" };
-
-  } else if (request.teacher_verified && !request.admin_action) {
-    return { text: "Pending Admin", class: "pending-admin" };
-
-  } else if (!request.teacher_action) {
-    return { text: "Pending Teacher", class: "pending-teacher" };
-
-  } else {
-    return { text: "Pending", class: "pending" };
+  // 1. FINAL → Fully verified
+  if (request.is_verified) {
+    return { text: "Verified", class: "verified" };
   }
+
+  // 2. Any rejection (highest priority after final)
+  if (request.teacher_action && !request.teacher_verified) {
+    return { text: "Declined by Teacher", class: "declined" };
+  }
+
+  if (request.admin_action && !request.admin_verified) {
+    return { text: "Declined by Admin", class: "declined" };
+  }
+
+  // 3. Any approval
+  if (request.teacher_action && request.teacher_verified) {
+    return { text: "Approved by Teacher", class: "verified" };
+  }
+
+  if (request.admin_action && request.admin_verified) {
+    return { text: "Approved by Admin", class: "verified" };
+  }
+
+  // 4. Default → Pending
+  return { text: "Pending Teacher", class: "pending-teacher" };
 }
 
 
@@ -36,18 +43,6 @@ export function filterRequestsList(requests, searchTerm) {
     request.title?.toLowerCase().includes(term) ||
     request.purpose?.toLowerCase().includes(term)
   );
-}
-
-
-// Build payload for edit request (pure extraction helper)
-export function buildEditPayload(formValues) {
-  return {
-    title: formValues.title,
-    purpose: formValues.purpose,
-    expiryDate: formValues.expiryDate,
-    gpuRam: Number(formValues.gpuRam),
-    username: formValues.username
-  };
 }
 
 
@@ -75,4 +70,29 @@ export function generatePassword(length = 12) {
     pwd += chars[Math.floor(Math.random() * chars.length)];
   }
   return pwd;
+}
+
+export async function confirmAction(action) {
+  const result = await Swal.fire({
+    title: `Confirm ${action}?`,
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Yes',
+    cancelButtonText: 'No',
+    focusCancel: true,
+    reverseButtons: true
+  });
+  return result.isConfirmed;
+}
+
+export function showToast(message, type = 'success') {
+  const bgColor = type === 'success' ? '#4CAF50' : '#F44336';
+  Toastify({
+    text: message,
+    duration: type === 'success' ? 2000 : 2500,
+    gravity: "top",
+    position: "right",
+    backgroundColor: bgColor,
+    close: true
+  }).showToast();
 }

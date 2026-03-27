@@ -49,21 +49,21 @@ export async function deleteMachine(id) {
 
 
 // ---------------- UPDATE MACHINE ----------------
-export async function updateMachine(id, data) {
-  const resp = await fetch(`/dashboard/admin/machines/${id}`, {
-    method: 'PUT',
-    credentials: 'include',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
-  });
+// export async function updateMachine(id, data) {
+//   const resp = await fetch(`/dashboard/admin/machines/${id}`, {
+//     method: 'PUT',
+//     credentials: 'include',
+//     headers: { 'Content-Type': 'application/json' },
+//     body: JSON.stringify(data)
+//   });
 
-  if (!resp.ok) {
-    const txt = await resp.text();
-    throw new Error(txt || resp.statusText);
-  }
+//   if (!resp.ok) {
+//     const txt = await resp.text();
+//     throw new Error(txt || resp.statusText);
+//   }
 
-  return true;
-}
+//   return true;
+// }
 
 
 // ---------------- CREATE MACHINE ----------------
@@ -86,12 +86,12 @@ export async function createMachine(data) {
 
 
 // ---------------- REVOKE ASSIGNMENT ----------------
-export async function revokeMachineAssignment(id) {
+export async function updateMachineAvailability(id, data) {
   const resp = await fetch(`/dashboard/admin/machines/${id}`, {
     method: 'PUT',
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ assignedStudent: null })
+    body: JSON.stringify(data)
   });
 
   if (!resp.ok) {

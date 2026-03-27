@@ -93,7 +93,7 @@ export async function handleResourceRequest(event) {
         }
 
         if (!isValidDuration(formData.duration)) {
-            throw new Error('Duration must be a whole number between 1 and 30 days');
+            throw new Error('Duration must be a whole number between 1 and 15 days');
         }
 
         if (!formData.machineId) {

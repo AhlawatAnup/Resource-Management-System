@@ -105,12 +105,12 @@ export async function handleDelete(machine, tr) {
 /**
  * Handle revoking machine assignment
  */
-export async function handleRevoke(machine, assignedTd, revokeBtn, loadMachines) {
+export async function handleRevoke(machine, revokeBtn, loadMachines) {
   const idText = machine.MIGID ? ` (${machine.MIGID})` : '';
 
   const result = await Swal.fire({
-    title: 'Revoke Assignment',
-    html: `Type <strong>CONFIRM</strong> to revoke assignment for this machine${idText}`,
+    title: 'Mark Machine Unavailable',
+    html: `Type <strong>CONFIRM</strong> to mark this machine${idText} as unavailable for future allotments`,
     input: 'text',
     showCancelButton: true,
     confirmButtonText: 'Revoke',
@@ -128,14 +128,13 @@ export async function handleRevoke(machine, assignedTd, revokeBtn, loadMachines)
   revokeBtn.textContent = 'Processing...';
 
   try {
-    await service.revokeMachineAssignment(machine._id);
+    await service.updateMachineAvailability(machine._id, { isAvailable: false });
 
-    assignedTd.textContent = 'Unassigned';
     revokeBtn.remove();
 
     await loadMachines();
 
-    Swal.fire('Assignment revoked successfully.', '', 'success');
+    Swal.fire('Machine marked as unavailable.', '', 'success');
 
   } catch (err) {
     revokeBtn.disabled = false;
@@ -152,72 +151,79 @@ export async function handleRevoke(machine, assignedTd, revokeBtn, loadMachines)
 /**
  * Handle editing a machine (open edit modal)
  */
-export function handleEdit(machine, tr, handleEditSubmit) {
-  if (utils.getAssignedStatus(machine)) {
-    Toastify({ 
-      text: "Cannot edit assigned machine", 
-      duration: 3000, gravity: "top", position: "center", 
-      backgroundColor: "#ff6b6b" 
-    }).showToast();
-    return;
-  }
+// export function handleEdit(machine, tr, handleEditSubmit) {
+//   if (utils.getAssignedStatus(machine)) {
+//     Toastify({ 
+//       text: "Cannot edit assigned machine", 
+//       duration: 3000, gravity: "top", position: "center", 
+//       backgroundColor: "#ff6b6b" 
+//     }).showToast();
+//     return;
+//   }
 
-  const modal = ui.ensureEditModal(handleEditSubmit);
-  ui.openEditModal(modal, machine, tr);
-}
+//   const modal = ui.ensureEditModal(handleEditSubmit);
+//   ui.openEditModal(modal, machine, tr);
+// }
 
 /**
  * Handle edit form submission
  */
-export async function handleEditSubmit({ id, MIGID, gpuRaw }, loadMachines) {
-  const { valid, value: gpu } = utils.validateGpu(gpuRaw);
+// export async function handleEditSubmit({ id, MIGID, gpuRaw }, loadMachines) {
+//   const { valid, value: gpu } = utils.validateGpu(gpuRaw);
 
-  if (!valid) {
-    Toastify({ text: 'GPU RAM must be non-negative', duration: 3000 }).showToast();
-    return;
-  }
+//   if (!valid) {
+//     Toastify({ text: 'GPU RAM must be non-negative', duration: 3000 }).showToast();
+//     return;
+//   }
 
-  try {
-    if (id) {
-      await service.updateMachine(id, { MIGID: MIGID || null, gpuRam: gpu });
-    }
+//   try {
+//     if (id) {
+//       await service.updateMachine(id, { MIGID: MIGID || null, gpuRam: gpu });
+//     }
 
-    ui.closeEditModal();
+//     ui.closeEditModal();
 
-    Swal.fire({
-      toast: true,
-      position: 'top-end',
-      icon: 'success',
-      title: 'Machine updated successfully',
-      showConfirmButton: false,
-      timer: 3000
-    });
+//     Swal.fire({
+//       toast: true,
+//       position: 'top-end',
+//       icon: 'success',
+//       title: 'Machine updated successfully',
+//       showConfirmButton: false,
+//       timer: 3000
+//     });
 
-    loadMachines();
+//     loadMachines();
 
-  } catch (err) {
-    Toastify({ text: err.message }).showToast();
-  }
-}
+//   } catch (err) {
+//     Toastify({ text: err.message }).showToast();
+//   }
+// }
 
 /**
  * Handle add form submission
  */
-export async function handleAddSubmit({ MIGID, gpuRaw }, loadMachines) {
-  const { valid, value: gpu } = utils.validateGpu(gpuRaw);
-
-  if (!MIGID) {
-    Swal.fire({ toast: true, icon: 'error', title: 'MIGID is required' });
-    return;
-  }
-
+export async function handleAddSubmit(
+  { MIGID, gpuRaw, ramRaw, ip, portRaw, user, name, token },
+  loadMachines
+) {
+  const { valid, errors, values } = utils.validateMachineAddFields({ MIGID, gpuRaw, ramRaw, ip, portRaw, user, name, token });
   if (!valid) {
-    Swal.fire({ toast: true, icon: 'error', title: 'GPU RAM isnt valid' });
-    return;
+    // Show first error found
+    const firstError = Object.values(errors)[0];
+    return Swal.fire({ toast: true, icon: 'error', title: firstError });
   }
 
   try {
-    await service.createMachine({ MIGID, gpuRam: gpu });
+    await service.createMachine({
+      MIGID: values.MIGID,
+      gpuRam: values.gpuRam,
+      ram: values.ram,
+      ip: values.ip,
+      port: values.port,
+      user: values.user,
+      name: values.name,
+      token: values.token
+    });
 
     ui.closeAddModal();
 
@@ -235,5 +241,48 @@ export async function handleAddSubmit({ MIGID, gpuRaw }, loadMachines) {
       icon: 'error',
       title: err.message
     });
+  }
+}
+
+export async function handleEnable(machine, enableBtn, loadMachines) {
+  const idText = machine.MIGID ? ` (${machine.MIGID})` : '';
+
+  const result = await Swal.fire({
+    title: 'Mark Machine Available',
+    html: `Type <strong>CONFIRM</strong> to mark this machine${idText} as available for future allotments`,
+    input: 'text',
+    showCancelButton: true,
+    confirmButtonText: 'Enable',
+    inputValidator: (value) => {
+      if (!value || value.trim().toUpperCase() !== 'CONFIRM') {
+        return 'Please type CONFIRM';
+      }
+    }
+  });
+
+  if (!result.isConfirmed) return;
+
+  enableBtn.disabled = true;
+  const originalText = enableBtn.textContent;
+  enableBtn.textContent = 'Processing...';
+
+  try {
+    await service.updateMachineAvailability(machine._id, { isAvailable: true });
+
+    enableBtn.remove();
+
+    await loadMachines();
+
+    Swal.fire('Machine marked as available.', '', 'success');
+
+  } catch (err) {
+    enableBtn.disabled = false;
+    enableBtn.textContent = originalText;
+
+    Toastify({ 
+      text: err.message, 
+      duration: 3000, gravity: "top", position: "center", 
+      backgroundColor: "#ff6b6b" 
+    }).showToast();
   }
 }

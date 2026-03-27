@@ -4,7 +4,7 @@ const { notifyTeacher } = require('../utils/web-push-notifications/notifyTeacher
 const ResourceRequest = require("../database/resourceRequestModel");
 const Student = require("../database/studentModel");
 const Machine = require("../database/machineModel");
-const MachineAllotment = require("../database/machineAllotmentModel.js.js");
+const MachineAllotment = require("../database/machineAllotmentModel.js");
 const { addResourceRequestToStudent } = require("../utils/studentResourceUtils");
 const { isValidDuration } = require('../utils/common.utils');
 const mongoose = require('mongoose');
@@ -87,7 +87,7 @@ exports.submitResourceRequest = async (req, res) => {
     }
 
     if (!isValidDuration(parsedDuration)) {
-      return res.status(400).json({ error: "Invalid duration. Allowed range is 1 to 30 days." });
+      return res.status(400).json({ error: "Invalid duration. Allowed range is 1 to 15 days." });
     }
 
     if (!mongoose.Types.ObjectId.isValid(machineId)) {
@@ -257,7 +257,7 @@ exports.getStudentResourceRequests = async (req, res) => {
 
     // Get all resource requests for this student, sorted by creation date (newest first)
     const resourceRequests = await ResourceRequest.find({ studentId })
-      .populate('machineId', 'MIGID') // Populate machine to get MIGID
+      .populate('machineId', 'MIGID gpuRam') // Populate machine to get MIGID
       .sort({ createdAt: -1 })
       .limit(50); // Limit to last 50 requests to avoid performance issues
 

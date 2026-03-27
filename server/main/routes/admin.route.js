@@ -18,11 +18,12 @@ const {
   ChangeAdminEmail,
   getMachines,
   createMachine,
-  updateMachine,
+  updateMachineAvailability,
   deleteMachine,
   deleteResourceRequestByMig,
   UpdateAdminProfile,
   unverifyStudentIfPossible,
+  revokeResourceRequest,
 } = require("../controllers/admin.controller.js");
 
 const {
@@ -85,6 +86,7 @@ router.put("/unverify_student/:student_id", unverifyStudentIfPossible);
 // Resource request management routes
 router.get("/resource-requests", getAllResourceRequests);
 router.put("/verify_request/:request_id", updateResourceRequestVerification);
+router.post("/revoke/:requestId", revokeResourceRequest);
 
 // Profile section routes
 router.get("/details", isAdmin, getAdminDetails);
@@ -106,12 +108,12 @@ router.post('/upload-machines', isAdmin, upload.single('file'), async (req, res)
   }
 });
 
-router.get('/machines', isAdmin, getMachines);
+router.get('/machines', isAdmin, getMachines); //admin machine page
 router.post('/create-machine', isAdmin, createMachine);
-router.put('/machines/:id', isAdmin, updateMachine);
+router.put('/machines/:id', isAdmin, updateMachineAvailability);
 router.delete('/machines/:id', isAdmin, deleteMachine);
 
-router.get('/get_machines', isAdmin, getAllMachines);
+router.get('/get_machines', isAdmin, getAllMachines); //for allotments
 router.get('/allotments/:machineId', isAdmin, getMachineWiseActiveAllotments);
 
 module.exports = router;

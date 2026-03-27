@@ -27,23 +27,18 @@ export function renderResourceRequests(requests, deps) {
     tr.innerHTML = `
       <td>
         <div class="contact-info">
-          <div class="avatar ${getRandomNamedColor()}">${getInitials(request.studentInfo.name)}</div>
+          <div class="avatar ${getRandomNamedColor()}">${getInitials(request.studentName)}</div>
           <div class="contact-details">
-            <h4>${request.studentInfo.name}</h4>
-            <div class="contact-time">${request.studentInfo.rollNo}</div>
-            <div class="contact-time">${request.studentInfo.branch}</div>
+            <h4 title="Teacher: ${request.teacherName}">${request.studentName}</h4>
+            <div class="contact-time">${request.rollNo}</div>
+            <div class="contact-time">${request.branch}</div>
           </div>
-        </div>
-      </td>
-      <td>
-        <div class="teacher-info">
-          <h4>${request.teacherInfo.name}</h4>
         </div>
       </td>
       <td>
         <div class="request-title">
           <p>${request.title}<p>
-          <div class="request-date">${formatDate(request.createdAt)}</div>
+          <div class="request-date">${formatDate ? formatDate(request.createdAt) : ''}</div>
         </div>
       </td>
       <td>
@@ -53,6 +48,17 @@ export function renderResourceRequests(requests, deps) {
         </div>
       </td>
       <td>
+          <span>${request.duration ?? '-'}</span>
+      </td>
+      <td>
+        <span>${request.migId ?? '-'}</span>
+        ${request.migId ? `
+          <button class="info-btn" title="Machine Info" data-request='${JSON.stringify(request)}'>
+            <i class="fa fa-info-circle"></i>
+          </button>
+        ` : ''}
+      </td>
+        <td>
         <span class="badge ${statusInfo.class}">${statusInfo.text}</span>
       </td>
       <td>
@@ -107,51 +113,6 @@ export function showNotification(message, type) {
   }, 3000);
 }
 
-
-// ===== VERIFICATION MODAL =====
-
-// Populate and show verification modal
-export function showVerificationModalUI(request) {
-  const modal = document.getElementById('verificationModal');
-  const requestInfo = document.getElementById('modalRequestInfo');
-
-  if (!modal || !request) return;
-
-  requestInfo.innerHTML = `
-    <div class="request-summary">
-      <h5>${request.title}</h5>
-      <div class="request-details">
-        <p><strong>Student:</strong> ${request.studentInfo.name}</p>
-        <p><strong>Roll No:</strong> ${request.studentInfo.rollNo}</p>
-        <p><strong>Teacher:</strong> ${request.teacherInfo.name}</p>
-        <p><strong>GPU:</strong> ${request.gpuRam}GB</p>
-        <p><strong>Purpose:</strong> ${request.purpose.length > 80 ? request.purpose.substring(0, 80) + '...' : request.purpose}</p>
-      </div>
-    </div>
-  `;
-
-  modal.setAttribute('data-request-id', request._id);
-
-  const usernameEl = document.getElementById('vmUsername');
-  const passwordEl = document.getElementById('vmPassword');
-
-  if (usernameEl) {
-    usernameEl.value = request.username;
-    usernameEl.readOnly = true;
-  }
-
-  if (passwordEl) passwordEl.value = '';
-
-  modal.style.display = 'block';
-}
-
-// Close modal
-export function closeVerificationModalUI() {
-  const modal = document.getElementById('verificationModal');
-  if (modal) modal.style.display = 'none';
-}
-
-
 // Populate MIG select
 export function populateMachinesSelectUI(machines) {
   const select = document.getElementById('vmMigId');
@@ -173,58 +134,6 @@ export function populateMachinesSelectUI(machines) {
       `<option value="${m.MIGID}">${m.MIGID} (${m.gpuRam}GB GPU)</option>`
     ).join('');
 }
-
-
-// ===== EDIT MODAL =====
-
-// Configure edit form fields for approved requests (only expiry date editable)
-function setEditFormApprovedState(isApproved) {
-  const fieldsToDisable = ['editTitle', 'editPurpose', 'editGpuRam', 'editUsername'];
-  const opacity = isApproved ? '0.6' : '';
-
-  fieldsToDisable.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.disabled = isApproved;
-      el.style.opacity = opacity;
-    }
-  });
-}
-
-export function showEditModalUI(request) {
-  const submitBtn = document.querySelector('#editRequestForm button[type="submit"]');
-
-  if (submitBtn) {
-    submitBtn.disabled = false;
-    submitBtn.style.opacity = '';
-    submitBtn.style.cursor = '';
-  }
-
-  document.getElementById('editRequestId').value = request._id;
-  document.getElementById('editTitle').value = request.title;
-  document.getElementById('editPurpose').value = request.purpose;
-  setEditFormApprovedState(request.admin_action === true);
-
-  document.getElementById('editRequestModal').style.display = 'block';
-}
-
-export function closeEditModalUI() {
-  document.getElementById('editRequestModal').style.display = 'none';
-}
-
-
-// Read edit form data
-export function getEditFormData() {
-  return {
-    requestId: document.getElementById('editRequestId').value,
-    formValues: {
-      title: document.getElementById('editTitle').value,
-      purpose: document.getElementById('editPurpose').value,
-    }
-  };
-}
-
-
 // Button state
 export function setSubmitButtonState(button, isLoading) {
   if (!button) return;
@@ -251,4 +160,70 @@ export function setFieldError(id, message) {
 // Clipboard copy
 export function copyToClipboard(value) {
   return navigator.clipboard.writeText(value);
+}
+
+export function showMachinePopup(machine, anchorBtn) {
+  const overlay = document.createElement('div');
+  overlay.className = 'popup-overlay';
+
+  const popup = document.createElement('div');
+  popup.className = 'machine-popup';
+
+  popup.innerHTML = `
+    <h4>Machine Details</h4>
+    <p><b>MIG ID:</b> ${machine.migId ?? '-'}</p>
+    <p><b>User:</b> ${machine.user ?? '-'}</p>
+    <p><b>GPU:</b> ${machine.gpuRam ?? '-'} GB</p>
+    <p><b>RAM:</b> ${machine.ram ?? '-'} GB</p>
+    <p><b>IP:</b> ${machine.ip ?? '-'}</p>
+    <p><b>Port:</b> ${machine.port ?? '-'}</p>
+    <p><b>Name:</b> ${machine.name ?? '-'}</p>
+  `;
+
+  overlay.appendChild(popup);
+  document.body.appendChild(overlay);
+
+  // Position popup near the button
+  if (anchorBtn) {
+    popup.style.position = 'absolute';
+    popup.style.top = '0';
+    popup.style.left = '0';
+    popup.style.transform = 'none';
+
+    const rect = anchorBtn.getBoundingClientRect();
+    const scrollX = window.scrollX || window.pageXOffset;
+    const scrollY = window.scrollY || window.pageYOffset;
+
+    // Measure popup size
+    popup.style.visibility = 'hidden';
+    document.body.appendChild(popup);
+
+    const popupRect = popup.getBoundingClientRect();
+    popup.style.visibility = '';
+
+    // Ensure popup is inside overlay
+    if (popup.parentNode !== overlay) {
+      popup.remove();
+      overlay.appendChild(popup);
+    }
+
+    let top = rect.top + scrollY;
+    let left = rect.left + scrollX;
+
+    // Prevent overflow bottom
+    if (top + popupRect.height > window.innerHeight + scrollY) {
+      top = rect.bottom + scrollY - popupRect.height;
+      if (top < scrollY) top = scrollY;
+    }
+
+    popup.style.top = `${top}px`;
+    popup.style.left = `${left}px`;
+  }
+
+  // Close on outside click
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) {
+      overlay.remove();
+    }
+  });
 }
