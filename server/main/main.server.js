@@ -143,7 +143,8 @@ schedule.scheduleJob(expiryNotifySchedule, async () => {
 });
 
 // Schedule job to run every day at 00:00
-schedule.scheduleJob("*/1 * * * *", async () => {
+const expiryAllotmentsSchedule = process.env.expiryAllotmentsSchedule || "0 0 * * *";
+schedule.scheduleJob(expiryAllotmentsSchedule, async () => {
   console.log(`Expired allotments scheduler started...`);
   await markExpiredAllotmentsDeleted();
 });
