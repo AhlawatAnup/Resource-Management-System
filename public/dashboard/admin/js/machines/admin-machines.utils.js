@@ -1,11 +1,5 @@
 // utils.js
 
-// ---------------- FILE VALIDATION ----------------
-export function isCSVFile(file) {
-  return file && file.name.toLowerCase().endsWith('.csv');
-}
-
-
 // ---------------- MACHINE STATE HELPERS ----------------
 export function getAssignedStatus(machine) {
   let isAssigned = (typeof machine.isAssigned === 'boolean') ? machine.isAssigned : null;

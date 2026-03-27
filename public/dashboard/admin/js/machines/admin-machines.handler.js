@@ -4,60 +4,6 @@ import * as service from './admin-machines.service.js';
 import * as utils from './admin-machines.utils.js';
 
 /**
- * Handle importing CSV file
- */
-export async function handleImport(e, uiRefs, loadMachines) {
-  const file = e.target.files[0];
-  if (!file) return;
-
-  if (!utils.isCSVFile(file)) {
-    Toastify({ 
-      text: "Please select a CSV file", 
-      duration: 3000, gravity: "top", position: "center", 
-      backgroundColor: "#ff6b6b" 
-    }).showToast();
-    return;
-  }
-
-  const formData = new FormData();
-  formData.append('file', file);
-
-  try {
-    uiRefs.importBtn.disabled = true;
-    uiRefs.importBtn.textContent = 'Uploading...';
-
-    const json = await service.uploadMachinesCSV(formData);
-    const msg = `Imported: ${json.imported} / ${json.total}`;
-
-    if (json.skipped?.length) {
-      Swal.fire({
-        icon: 'success',
-        title: 'Import completed',
-        text: `${msg}. Skipped rows: ${json.skipped.length}`
-      });
-    } else {
-      Swal.fire({
-        icon: 'success',
-        title: 'Import successful',
-        text: msg
-      });
-    }
-
-  } catch (err) {
-    Toastify({ 
-      text: 'Import failed: ' + err.message, 
-      duration: 3000, gravity: "top", position: "center", 
-      backgroundColor: "#ff6b6b" 
-    }).showToast();
-  } finally {
-    uiRefs.importBtn.disabled = false;
-    uiRefs.importBtn.textContent = 'Import CSV';
-    uiRefs.importInput.value = '';
-    loadMachines();
-  }
-}
-
-/**
  * Handle deleting a machine
  */
 export async function handleDelete(machine, tr) {

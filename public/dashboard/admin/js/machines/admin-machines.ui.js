@@ -1,13 +1,8 @@
 // ui.js
 
 // ---------------- INIT UI ----------------
-export function initUI({ onImportClick, onFileChange, onFilterChange, onAddClick }) {
-  const importBtn = document.getElementById('importCsvBtn');
-  const importInput = document.getElementById('importCsvInput');
+export function initUI({ onFilterChange, onAddClick }) {
   const addBtn = document.getElementById('addMachineBtn');
-
-  importBtn.addEventListener('click', onImportClick);
-  importInput.addEventListener('change', onFileChange);
 
   if (addBtn) addBtn.addEventListener('click', onAddClick);
 
@@ -20,7 +15,7 @@ export function initUI({ onImportClick, onFileChange, onFilterChange, onAddClick
     });
   });
 
-  return { importBtn, importInput };
+  return {};
 }
 
 

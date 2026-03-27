@@ -4,7 +4,6 @@ import * as service from './admin-machines.service.js';
 import * as utils from './admin-machines.utils.js';
 import { handleLogout } from '../../../common/js/commons.js';  //for html logout
 import { 
-  handleImport, 
   handleDelete, 
   handleRevoke, 
   handleEnable,
@@ -20,8 +19,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const tableWrapper = ui.createTableWrapper();
 
   const uiRefs = ui.initUI({
-    onImportClick: () => uiRefs.importInput.click(),
-    onFileChange: (e) => handleImport(e, uiRefs, loadMachines),
     onFilterChange: (f) => {
       currentFilter = f;
       loadMachines(f);

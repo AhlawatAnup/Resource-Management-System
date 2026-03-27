@@ -14,24 +14,6 @@ export async function fetchMachines() {
 }
 
 
-// ---------------- UPLOAD CSV ----------------
-export async function uploadMachinesCSV(formData) {
-  const resp = await fetch('/dashboard/admin/upload-machines', {
-    method: 'POST',
-    body: formData,
-    credentials: 'include'
-  });
-
-  const json = await resp.json();
-
-  if (!resp.ok) {
-    throw new Error(json.error || resp.statusText);
-  }
-
-  return json;
-}
-
-
 // ---------------- DELETE MACHINE ----------------
 export async function deleteMachine(id) {
   const resp = await fetch(`/dashboard/admin/machines/${id}`, {
