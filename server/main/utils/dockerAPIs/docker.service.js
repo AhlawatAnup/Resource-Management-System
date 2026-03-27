@@ -1,6 +1,6 @@
-const API_KEY =process.env.X_API_KEY;
-async function stopUser(ip, port, user) {
-  const baseUrl = `http://${ip}:${port}`;
+const API_KEY = process.env.X_API_KEY;
+
+async function stopUser(baseUrl, user) {
   const res = await fetch(`${baseUrl}/stop/${user}`, {
     method: "POST",
     headers: { "x-api-key": API_KEY },
@@ -8,8 +8,7 @@ async function stopUser(ip, port, user) {
   return res.json();
 }
 
-async function deleteUser(ip, port, user) {
-  const baseUrl = `http://${ip}:${port}`;
+async function deleteUser(baseUrl, user) {
   const res = await fetch(`${baseUrl}/user/${user}`, {
     method: "DELETE",
     headers: { "x-api-key": API_KEY },
@@ -17,8 +16,7 @@ async function deleteUser(ip, port, user) {
   return res.json();
 }
 
-async function startUser(ip, port, user) {
-  const baseUrl = `http://${ip}:${port}`;
+async function startUser(baseUrl, user) {
   const res = await fetch(`${baseUrl}/start/${user}`, {
     method: "POST",
     headers: { "x-api-key": API_KEY },
