@@ -1,3 +1,14 @@
+// Returns true if the request's allotment has expired
+export function isRequestExpired(request) {
+    if (
+        request.is_verified &&
+        request.allotmentEndTime &&
+        new Date(request.allotmentEndTime).getTime() < Date.now()
+    ) {
+        return true;
+    }
+    return false;
+}
 // Student-specific utility functions
 
 export async function getLoggedInStudentId() {
@@ -108,6 +119,9 @@ export function getStudentStatusClass(student) {
 }
 
 export function getRequestStatus(request) {
+    if (isRequestExpired(request)) {
+        return 'expired';
+    }
     if (request.is_verified) {
         return 'approved';
     }
@@ -123,6 +137,9 @@ export function getRequestStatus(request) {
 }
 
 export function getRequestStatusClass(request) {
+    if (isRequestExpired(request)) {
+        return 'status-expired';
+    }
     if (request.is_verified) {
         return 'status-approved';
     }
@@ -143,6 +160,9 @@ export function getRequestStatusClass(request) {
 }
 
 export function getRequestStatusIcon(request) {
+    if (isRequestExpired(request)) {
+        return '⏰';
+    }
     if (request.is_verified) {
         return '✓';
     }
@@ -162,6 +182,9 @@ export function getRequestStatusIcon(request) {
 }
 
 export function getRequestStatusText(request) {
+    if (isRequestExpired(request)) {
+        return 'Expired';
+    }
     if (request.is_verified) {
         return 'Approved';
     }
