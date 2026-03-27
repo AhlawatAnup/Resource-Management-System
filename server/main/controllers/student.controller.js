@@ -109,7 +109,7 @@ exports.submitResourceRequest = async (req, res) => {
 
     const machine = await Machine.findById(machineId);
     if (!machine) {
-      return res.status(404).json({ error: "Selected machine not found" });
+      return res.status(404).json({ error: "Selected machine not found. Kindly refresh the page." });
     }
 
     // Check for existing pending request
