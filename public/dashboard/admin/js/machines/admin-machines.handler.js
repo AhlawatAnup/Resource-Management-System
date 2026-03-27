@@ -149,10 +149,10 @@ export async function handleRevoke(machine, revokeBtn, loadMachines) {
  * Handle add form submission
  */
 export async function handleAddSubmit(
-  { MIGID, gpuRaw, ramRaw, ip, portRaw, user, name, token },
+  { MIGID, gpuRaw, ramRaw, ip, portRaw, user, name },
   loadMachines
 ) {
-  const { valid, errors, values } = utils.validateMachineAddFields({ MIGID, gpuRaw, ramRaw, ip, portRaw, user, name, token });
+  const { valid, errors, values } = utils.validateMachineAddFields({ MIGID, gpuRaw, ramRaw, ip, portRaw, user, name });
   if (!valid) {
     // Show first error found
     const firstError = Object.values(errors)[0];
@@ -168,7 +168,6 @@ export async function handleAddSubmit(
       port: values.port,
       user: values.user,
       name: values.name,
-      token: values.token
     });
 
     ui.closeAddModal();

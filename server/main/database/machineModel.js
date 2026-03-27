@@ -38,11 +38,6 @@ const machineSchema = new mongoose.Schema({
     required: true
   },
 
-  token: {
-    type: String,
-    required: true
-  },
-
   version: {
     type: Number,
     required: true,

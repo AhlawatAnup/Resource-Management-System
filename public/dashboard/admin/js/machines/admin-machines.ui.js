@@ -273,11 +273,6 @@ modal.innerHTML = `
         <input id="addName" placeholder="e.g. gpu-machine-1" />
       </div>
 
-      <div class="form-group">
-        <label for="addToken">Token</label>
-        <input id="addToken" placeholder="Enter secure token" />
-      </div>
-
       <div class="machine-modal-actions">
         <button type="button" id="machineAddCancel">Cancel</button>
         <button type="submit">Save</button>
@@ -303,7 +298,6 @@ modal.innerHTML = `
         portRaw: modal.querySelector('#addPort').value.trim(),
         user: modal.querySelector('#addUser').value.trim(),
         name: modal.querySelector('#addName').value.trim(),
-        token: modal.querySelector('#addToken').value.trim()
       });
     });
 

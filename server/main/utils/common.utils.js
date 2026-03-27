@@ -70,7 +70,6 @@ exports.validateMachineInput = (body) => {
     port,
     user,
     name,
-    token
   } = body;
 
   // --- Trim strings ---
@@ -78,14 +77,12 @@ exports.validateMachineInput = (body) => {
   ip = ip?.trim();
   user = user?.trim();
   name = name?.trim();
-  token = token?.trim();
 
   // --- Required string fields ---
   if (!MIGID) return { error: 'MIGID is required' };
   if (!ip) return { error: 'ip is required' };
   if (!user) return { error: 'user is required' };
   if (!name) return { error: 'name is required' };
-  if (!token) return { error: 'token is required' };
 
   // --- GPU (optional) ---
   let gpu = null;
@@ -126,7 +123,6 @@ exports.validateMachineInput = (body) => {
       port: machinePort,
       user,
       name,
-      token
     }
   };
 };

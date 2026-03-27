@@ -57,7 +57,6 @@ export function validateMachineAddFields({
   portRaw,
   user,
   name,
-  token
 }) {
   const errors = {};
 
@@ -66,14 +65,12 @@ export function validateMachineAddFields({
   ip = ip?.trim();
   user = user?.trim();
   name = name?.trim();
-  token = token?.trim();
 
   // --- Required string fields ---
   if (!MIGID) errors.MIGID = 'MIGID is required';
   if (!ip) errors.ip = 'IP is required';
   if (!user) errors.user = 'User is required';
   if (!name) errors.name = 'Name is required';
-  if (!token) errors.token = 'Token is required';
 
   // --- GPU (optional, but must be valid number if provided) ---
   let gpu = null;
@@ -117,7 +114,6 @@ export function validateMachineAddFields({
       port,
       user,
       name,
-      token
     }
   };
 }
