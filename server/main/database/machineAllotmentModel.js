@@ -39,11 +39,14 @@ MachineAllotmentSchema.index(
 );
 
 MachineAllotmentSchema.pre(/^find|^findOneAndUpdate/, function (next) {
-  // 1. ALWAYS exclude deleted
-  this.where({ isDeleted: { $ne: true } });
+  const { includeInactive, includeDeleted } = this.getOptions();
 
-  // 2. ONLY show active if not explicitly opted out
-  const { includeInactive } = this.getOptions();
+  // 1. Exclude deleted UNLESS explicitly asked
+  if (!includeDeleted) {
+    this.where({ isDeleted: { $ne: true } });
+  }
+
+  // 2. Exclude inactive UNLESS explicitly asked
   if (!includeInactive) {
     this.where({ isActive: true });
   }

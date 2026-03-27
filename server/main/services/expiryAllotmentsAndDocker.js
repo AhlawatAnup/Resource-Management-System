@@ -45,6 +45,7 @@ async function markExpiredAllotmentsDeleted() {
         console.log(`[${new Date().toISOString()}] START response for ${user}:`, startData);
 
         allotment.isDeleted = true;
+        allotment.isActive = false;
         await allotment.save();
         console.log(`[${new Date().toISOString()}] Allotment ${allotment._id} marked as deleted`);
 
