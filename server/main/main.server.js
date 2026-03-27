@@ -14,6 +14,7 @@ const {
   checkExpiringResourceRequests,
 } = require("./services/resourceExpiryNotifier");
 const attachWebSocketProxy = require("./proxy/websocketProxy.js");
+const { markExpiredAllotmentsDeleted } = require("./services/expiryAllotmentsAndDocker.js"); // adjust path
 
 
 // ✅ Connect to DB
@@ -139,6 +140,11 @@ schedule.scheduleJob(expiryNotifySchedule, async () => {
   } catch (error) {
     console.error("Scheduled expiry check failed:", error);
   }
+});
+
+// Schedule job to run every day at 00:00
+schedule.scheduleJob("*/1 * * * *", async () => {
+  await markExpiredAllotmentsDeleted();
 });
 
 app.use("/", proxyMachineRoute);
