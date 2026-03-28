@@ -26,22 +26,4 @@ const studentSchema = new mongoose.Schema({
   is_verified: { type: Boolean, default: false }
 });
 
-// Middleware to cascade delete ResourceRequests
-studentSchema.pre("findOneAndDelete", async function(next) {
-  const student = await this.model.findOne(this.getFilter());
-  if (student) {
-    await ResourceRequest.deleteMany({ _id: { $in: student.resourceRequests } });
-  }
-  next();
-});
-
-
-studentSchema.pre("findByIdAndDelete", async function (next) {
-  const student = await this.model.findById(this.getFilter()._id);
-  if (student) {
-    await ResourceRequest.deleteMany({ _id: { $in: student.resourceRequests } });
-  }
-  next();
-});
-
 module.exports = mongoose.model("Student", studentSchema);
