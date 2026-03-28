@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Student = require("../database/studentModel.js");
+const Teacher = require("../database/teacherModel.js");
 const ResourceRequest = require("../database/resourceRequestModel");
 const Machine = require("../database/machineModel");
 const MachineAllotment = require("../database/machineAllotmentModel.js");
@@ -132,12 +133,15 @@ const validateMachineInput = (body) => {
 
 const deleteStudentDependencies = async (student) => {
   try {
+    console.log("delete student dependcies called")
     if (!student) {
       throw new Error("Student object is required");
     }
 
-    const requestIds = student.resourceRequests || [];
-
+    // Always fetch all resource requests for this student
+    const requests = await ResourceRequest.find({ studentId: student._id }).select('_id');
+    const requestIds = requests.map(r => r._id);
+    console.log(student._id, requestIds)
     // 1. Delete MachineAllotments
     await MachineAllotment.deleteMany({
       resourceRequestId: { $in: requestIds }
@@ -161,6 +165,7 @@ const deleteStudentDependencies = async (student) => {
 
 
 const deleteStudent = async (studentId) => {
+  console.log("detle student called")
   try {
 
     if (!studentId) {
@@ -190,6 +195,8 @@ const deleteStudent = async (studentId) => {
 
 
 const deleteTeacher = async (teacherId) => {
+
+  console.log("detle teacher called")
   if (!teacherId) {
     throw new Error("Teacher ID is required");
   }

@@ -8,7 +8,7 @@ const ResourceRequest = require("../database/resourceRequestModel");
 const emailService = require("../utils/email/emails.service.js");
 const {notifyTeacher} = require("../utils/web-push-notifications/notifyTeacher.js")
 const { notifyStudent } = require('../utils/web-push-notifications/notifyStudent.js');
-const { validateMachineInput, deleteStudentDependencies } = require('../utils/common.utils.js');
+const { validateMachineInput, deleteStudentDependencies, deleteTeacher } = require('../utils/common.utils.js');
 const bcrypt = require('bcrypt');
 
 exports.admin_dashboard_data = async (req, res) => {
@@ -118,11 +118,11 @@ exports.updateTeacherVerification = async (req, res) => {
       }).catch((pushErr) => {
         console.error('[WebPush] Error in teacher notification block:', pushErr);
       });
-      
-      // Delete the teacher account
-      await Teacher.findByIdAndDelete(teacher_id);
 
-      return res.json({ message: "Teacher account has been deleted successfully" });
+      // Use your cascade delete
+      await deleteTeacher(teacher_id);
+
+      return res.json({ message: "Teacher account and all related data deleted successfully" });
     }
   } catch (err) {
     console.error(err);
@@ -167,9 +167,9 @@ exports.unverifyTeacherIfPossible = async (req, res) => {
 
     // 2️⃣ Delete ALL resource requests of students
     if (studentIds.length > 0) {
-      await ResourceRequest.deleteMany({
-        studentId: { $in: studentIds }
-      });
+      await Promise.all(
+        studentIds.map(id => deleteStudentDependencies(id))
+      );
     }
 
     // 3️⃣ Unverify teacher
