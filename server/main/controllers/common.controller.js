@@ -11,7 +11,7 @@ const emailService = require("../utils/email/emails.service.js");
 const { notifyAdmin } = require('../utils/web-push-notifications/notifyAdmin.js');
 const { notifyTeacher } = require('../utils/web-push-notifications/notifyTeacher.js');
 const { notifyStudent } = require('../utils/web-push-notifications/notifyStudent.js');
-const { fetchMachineById, calculateAllotmentWindow, isValidDuration } = require("../utils/common.utils.js");
+const { fetchMachineById, calculateAllotmentWindow, isValidDuration, deleteStudent } = require("../utils/common.utils.js");
 
 exports.roleBasedDashboard = (req, res) => {
   if (!req.session.user) {
@@ -105,8 +105,7 @@ exports.updateStudentVerification = async (req, res) => {
           console.error("Error sending student web-push notification:", err);
         });
 
-        // Delete the student (cascade delete will handle resource requests)
-        await Student.findByIdAndDelete(studentId);
+        await deleteStudent(studentId);
         
         return res.json({ message: "Student account and associated resources have been deleted successfully" });
       }
@@ -155,8 +154,7 @@ exports.updateStudentVerification = async (req, res) => {
             console.error('[WebPush] Error in teacher notification block:', pushErr);
           });
         
-        // Delete the student (cascade delete will handle resource requests)
-        await Student.findByIdAndDelete(studentId);
+        await deleteStudent(studentId);
         
         return res.json({ message: "Student account and associated resources have been deleted successfully" });
       }
@@ -498,6 +496,8 @@ exports.getMachineWiseActiveAllotments = async (req, res) => {
     })
       .select("resourceRequestId startTime endTime status")
       .lean();
+
+      console.log(allotments)
 
     const response = { machine, allotments };
     if (!allotments.length) {

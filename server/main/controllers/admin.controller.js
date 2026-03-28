@@ -8,7 +8,7 @@ const ResourceRequest = require("../database/resourceRequestModel");
 const emailService = require("../utils/email/emails.service.js");
 const {notifyTeacher} = require("../utils/web-push-notifications/notifyTeacher.js")
 const { notifyStudent } = require('../utils/web-push-notifications/notifyStudent.js');
-const { validateMachineInput } = require('../utils/common.utils.js');
+const { validateMachineInput, deleteStudentDependencies } = require('../utils/common.utils.js');
 const bcrypt = require('bcrypt');
 
 exports.admin_dashboard_data = async (req, res) => {
@@ -266,10 +266,8 @@ exports.unverifyStudentIfPossible = async (req, res) => {
       });
     }
 
-    // 2️⃣ Delete ALL resource requests of this student
-    await ResourceRequest.deleteMany({
-      studentId: student_id
-    });
+    // 2️⃣ Delete dependencies (ressource request, machine allotments)
+    await deleteStudentDependencies(student);
 
     // 3️⃣ Unverify student and clear resourceRequests array
     const updatedStudent = await Student.findByIdAndUpdate(
