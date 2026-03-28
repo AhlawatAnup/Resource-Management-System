@@ -318,8 +318,19 @@ exports.updateResourceRequestVerification = async (req, res) => {
 
       // 🔹 Get latest endTime across ALL allotments (true max)
       const latestEndTimeResult = await MachineAllotment.aggregate([
-        { $match: { machineId: machine._id } },
-        { $group: { _id: null, maxEndTime: { $max: "$endTime" } } }
+        {
+          $match: {
+            machineId: machine._id,
+            isDeleted: { $ne: true },   //required for aggreated: otherwise pre middleware will be bypassed
+            isActive: true              //required for aggreated: otherwise pre middleware will be bypassed
+          }
+        },
+        {
+          $group: {
+            _id: null,
+            maxEndTime: { $max: "$endTime" }
+          }
+        }
       ]);
 
       const lastAllotmentEndTime = latestEndTimeResult.length > 0
