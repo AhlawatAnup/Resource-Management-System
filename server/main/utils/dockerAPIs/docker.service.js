@@ -24,4 +24,12 @@ async function startUser(baseUrl, user) {
   return res.json();
 }
 
-module.exports = { stopUser, deleteUser, startUser };
+async function machineStats(baseUrl) {
+  const res = await fetch(`${baseUrl}/stats`, {
+    method: "GET",
+    headers: { "x-api-key": API_KEY },
+  });
+  return res.json();
+}
+
+module.exports = { stopUser, deleteUser, startUser, machineStats };
