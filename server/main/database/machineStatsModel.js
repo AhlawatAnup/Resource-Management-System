@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 // const statsUri = process.env.STATS_DB_URI;
-const statsUri = 'mongodb://localhost:27017/machine_monitoring'
+const statsUri = process.env.STATS_DB_URI
 const statsConnection = mongoose.createConnection(statsUri);
 
 statsConnection.on('connected', () => {
