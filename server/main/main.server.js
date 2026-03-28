@@ -15,6 +15,7 @@ const {
 } = require("./services/resourceExpiryNotifier");
 const attachWebSocketProxy = require("./proxy/websocketProxy.js");
 const { markExpiredAllotmentsDeleted } = require("./services/expiryAllotmentsAndDocker.js"); // adjust path
+const { collectAndStoreStats } = require("./services/collectAllMachineStats.js");
 
 
 // ✅ Connect to DB
@@ -147,6 +148,16 @@ const expiryAllotmentsSchedule = process.env.EXPIRY_ALLOTMENTS_SCHEDULE;
 schedule.scheduleJob(expiryAllotmentsSchedule, async () => {
   console.log(`Expired allotments scheduler started...`);
   await markExpiredAllotmentsDeleted();
+});
+
+const machineStatsSchedule = process.env.MACHINE_STATS_SCHEDULE;
+schedule.scheduleJob(machineStatsSchedule, async () => {
+  console.log(`[${new Date().toLocaleTimeString()}] Starting stats collection...`);
+  try {
+    await collectAndStoreStats();
+  } catch (err) {
+    console.error("Scheduler Error:", err);
+  }
 });
 
 app.use("/", proxyMachineRoute);

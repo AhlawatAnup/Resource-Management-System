@@ -264,13 +264,13 @@ modal.innerHTML = `
       </div>
 
       <div class="form-group">
-        <label for="addUser">SSH User</label>
-        <input id="addUser" placeholder="e.g. ubuntu" />
+        <label for="addUser">User</label>
+        <input id="addUser" placeholder="e.g. user8" />
       </div>
 
       <div class="form-group">
-        <label for="addName">Machine Name</label>
-        <input id="addName" placeholder="e.g. gpu-machine-1" />
+        <label for="addName">Parent Machine Name</label>
+        <input id="addName" placeholder="e.g. H100" />
       </div>
 
       <div class="machine-modal-actions">
