@@ -109,7 +109,7 @@ exports.submitResourceRequest = async (req, res) => {
 
     const machine = await Machine.findById(machineId);
     if (!machine) {
-      return res.status(404).json({ error: "Selected machine not found" });
+      return res.status(404).json({ error: "Selected machine not found. Kindly refresh the page." });
     }
 
     // Check for existing pending request
@@ -282,7 +282,12 @@ exports.getRequestAllotmentTime = async (req, res) => {
     const allotment = await MachineAllotment.findOne(
       { resourceRequestId: requestId },
       { startTime: 1, endTime: 1, _id: 0 }
-    ).lean();
+    )
+      .setOptions({
+        includeDeleted: true,
+        includeInactive: true
+      })
+      .lean();
     if (!allotment) {
       return res.status(404).json({ error: "No allotment found for this request" });
     }

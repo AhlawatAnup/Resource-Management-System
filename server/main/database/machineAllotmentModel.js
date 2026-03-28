@@ -38,14 +38,16 @@ MachineAllotmentSchema.index(
   }
 );
 
-MachineAllotmentSchema.pre(/^find/, function (next) {
-  const query = this.getQuery();
+MachineAllotmentSchema.pre(/^find|^findOneAndUpdate/, function (next) {
+  const { includeInactive, includeDeleted } = this.getOptions();
 
-  // 1. ALWAYS exclude deleted
-  this.where({ isDeleted: { $ne: true } });
+  // 1. Exclude deleted UNLESS explicitly asked
+  if (!includeDeleted) {
+    this.where({ isDeleted: { $ne: true } });
+  }
 
-  // 2. ONLY show active if not explicitly requested
-  if (query.isActive === undefined) {
+  // 2. Exclude inactive UNLESS explicitly asked
+  if (!includeInactive) {
     this.where({ isActive: true });
   }
 

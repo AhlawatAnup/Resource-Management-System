@@ -186,13 +186,7 @@ function createRequestCard(request) {
                         : `<span style="color:#999;">Token not generated yet</span>`
                     }
                 </div>
-
-                    <button class="raise-token-btn" 
-                            data-request-id="${request._id}" 
-                            style="cursor:pointer">
-                        Raise Token
-                    </button>
-
+                
                     <button class="access-machine-btn" 
                             data-request-id="${request._id}" 
                             data-migid="${request.machineId.MIGID}" 

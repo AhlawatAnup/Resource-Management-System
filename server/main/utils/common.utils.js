@@ -1,11 +1,15 @@
 const mongoose = require("mongoose");
+const Student = require("../database/studentModel.js");
+const Teacher = require("../database/teacherModel.js");
+const ResourceRequest = require("../database/resourceRequestModel");
 const Machine = require("../database/machineModel");
+const MachineAllotment = require("../database/machineAllotmentModel.js");
 
-exports.isValidDuration = function (duration) {
+const isValidDuration = function (duration) {
   return Number.isInteger(duration) && duration >= 1 && duration <= 15;
 };
 
-exports.fetchMachineById = async (machineId) => {
+const fetchMachineById = async (machineId) => {
   if (!mongoose.Types.ObjectId.isValid(machineId)) return null;
   return Machine.findById(machineId)
     .select("_id MIGID gpuRam")
@@ -44,7 +48,7 @@ const getNextISTDay = (date) => {
 };
 
 // Main function: calculate start & end time
-exports.calculateAllotmentWindow = (lastEndTime, durationDays) => {
+const calculateAllotmentWindow = (lastEndTime, durationDays) => {
   const baseDate = lastEndTime ? new Date(lastEndTime) : new Date();
 
   // Step 1: next IST day
@@ -61,7 +65,7 @@ exports.calculateAllotmentWindow = (lastEndTime, durationDays) => {
   return { startTime, endTime };
 };
 
-exports.validateMachineInput = (body) => {
+const validateMachineInput = (body) => {
   let {
     MIGID,
     gpuRam,
@@ -70,7 +74,6 @@ exports.validateMachineInput = (body) => {
     port,
     user,
     name,
-    token
   } = body;
 
   // --- Trim strings ---
@@ -78,14 +81,12 @@ exports.validateMachineInput = (body) => {
   ip = ip?.trim();
   user = user?.trim();
   name = name?.trim();
-  token = token?.trim();
 
   // --- Required string fields ---
   if (!MIGID) return { error: 'MIGID is required' };
   if (!ip) return { error: 'ip is required' };
   if (!user) return { error: 'user is required' };
   if (!name) return { error: 'name is required' };
-  if (!token) return { error: 'token is required' };
 
   // --- GPU (optional) ---
   let gpu = null;
@@ -126,7 +127,110 @@ exports.validateMachineInput = (body) => {
       port: machinePort,
       user,
       name,
-      token
     }
   };
+};
+
+const deleteStudentDependencies = async (student) => {
+  try {
+    console.log("delete student dependcies called")
+    if (!student) {
+      throw new Error("Student object is required");
+    }
+
+    // Always fetch all resource requests for this student
+    const requests = await ResourceRequest.find({ studentId: student._id }).select('_id');
+    const requestIds = requests.map(r => r._id);
+    console.log(student._id, requestIds)
+    // 1. Delete MachineAllotments
+    await MachineAllotment.deleteMany({
+      resourceRequestId: { $in: requestIds }
+    });
+
+    // 2. Delete ResourceRequests
+    await ResourceRequest.deleteMany({
+      _id: { $in: requestIds }
+    });
+
+    return {
+      success: true,
+      message: "Student dependencies deleted"
+    };
+
+  } catch (err) {
+    console.error("Error deleting student dependencies:", err.message);
+    throw err;
+  }
+};
+
+
+const deleteStudent = async (studentId) => {
+  console.log("detle student called")
+  try {
+
+    if (!studentId) {
+      throw new Error("Student ID is required");
+    }
+
+    const student = await Student.findById(studentId);
+    if (!student) {
+      throw new Error("Student not found");
+    }
+
+    await deleteStudentDependencies(student);
+
+    // Delete student
+    await Student.deleteOne({ _id: studentId });
+
+    return {
+      success: true,
+      message: "Student and related data deleted successfully"
+    };
+
+  } catch (err) {
+    console.error("Error deleting student:", err.message);
+    throw new Error(err.message || "Failed to delete student");
+  }
+};
+
+
+const deleteTeacher = async (teacherId) => {
+
+  console.log("detle teacher called")
+  if (!teacherId) {
+    throw new Error("Teacher ID is required");
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(teacherId)) {
+    throw new Error("Invalid Teacher ID");
+  }
+
+  // 1. Get teacher
+  const teacher = await Teacher.findById(teacherId);
+  if (!teacher) {
+    throw new Error("Teacher not found");
+  }
+
+  const studentIds = teacher.students || [];
+
+  // 2. Delete all students (this will cascade further)
+  for (const studentId of studentIds) {
+    await deleteStudent(studentId);
+  }
+
+  // 3. Delete teacher
+  await Teacher.deleteOne({ _id: teacherId });
+
+  return "Teacher and all associated students deleted successfully";
+};
+
+
+module.exports = {
+  isValidDuration,
+  fetchMachineById,
+  calculateAllotmentWindow,
+  validateMachineInput,
+  deleteStudentDependencies,
+  deleteStudent,
+  deleteTeacher
 };

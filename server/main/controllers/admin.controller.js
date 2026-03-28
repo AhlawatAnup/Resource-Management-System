@@ -8,7 +8,7 @@ const ResourceRequest = require("../database/resourceRequestModel");
 const emailService = require("../utils/email/emails.service.js");
 const {notifyTeacher} = require("../utils/web-push-notifications/notifyTeacher.js")
 const { notifyStudent } = require('../utils/web-push-notifications/notifyStudent.js');
-const { validateMachineInput } = require('../utils/common.utils.js');
+const { validateMachineInput, deleteStudentDependencies, deleteTeacher } = require('../utils/common.utils.js');
 const bcrypt = require('bcrypt');
 
 exports.admin_dashboard_data = async (req, res) => {
@@ -118,11 +118,11 @@ exports.updateTeacherVerification = async (req, res) => {
       }).catch((pushErr) => {
         console.error('[WebPush] Error in teacher notification block:', pushErr);
       });
-      
-      // Delete the teacher account
-      await Teacher.findByIdAndDelete(teacher_id);
 
-      return res.json({ message: "Teacher account has been deleted successfully" });
+      // Use your cascade delete
+      await deleteTeacher(teacher_id);
+
+      return res.json({ message: "Teacher account and all related data deleted successfully" });
     }
   } catch (err) {
     console.error(err);
@@ -167,9 +167,9 @@ exports.unverifyTeacherIfPossible = async (req, res) => {
 
     // 2️⃣ Delete ALL resource requests of students
     if (studentIds.length > 0) {
-      await ResourceRequest.deleteMany({
-        studentId: { $in: studentIds }
-      });
+      await Promise.all(
+        studentIds.map(id => deleteStudentDependencies(id))
+      );
     }
 
     // 3️⃣ Unverify teacher
@@ -266,10 +266,8 @@ exports.unverifyStudentIfPossible = async (req, res) => {
       });
     }
 
-    // 2️⃣ Delete ALL resource requests of this student
-    await ResourceRequest.deleteMany({
-      studentId: student_id
-    });
+    // 2️⃣ Delete dependencies (ressource request, machine allotments)
+    await deleteStudentDependencies(student);
 
     // 3️⃣ Unverify student and clear resourceRequests array
     const updatedStudent = await Student.findByIdAndUpdate(
@@ -569,7 +567,9 @@ exports.UpdateAdminIdentity = exports.UpdateAdminProfile;
 
 exports.getMachines = async (req, res) => {
   try {
-    const machines = await Machine.find({isAvailable: { $in: [true, false] }}).lean(); //need to pass isAvailable: { $in: [true, false] } coz of pre middleware
+   const machines = await Machine.find()
+  .setOptions({ includeUnavailable: true })
+  .lean(); //setOptions is needed coz of pre middleware
 
     return res.json({
       ok: true,
@@ -654,7 +654,7 @@ exports.updateMachineAvailability = async (req, res) => {
     const machine = await Machine.findByIdAndUpdate(
       id,
       { isAvailable },
-      { new: true }
+      { new: true, includeUnavailable: true }
     ).lean();
 
     if (!machine) {
@@ -685,10 +685,9 @@ exports.deleteMachine = async (req, res) => {
 
   try {
     // Check if machine exists
-    const machine = await Machine.findOne({ 
-      _id: id, 
-      isAvailable: { $in: [true, false] } 
-    });
+    const machine = await Machine.findOne({ _id: id })
+      .setOptions({ includeUnavailable: true });
+      
     if (!machine) return res.status(404).json({ error: "Machine not found" });
 
     // Check for active or future allotments first
@@ -717,11 +716,9 @@ exports.deleteMachine = async (req, res) => {
     // Safe to delete
     // await Machine.findByIdAndUpdate(id, { isDeleted: true });
     await Machine.findOneAndUpdate(
-      {
-        _id: id,
-        isAvailable: { $in: [true, false] }
-      },
-      { isDeleted: true }
+      { _id: id },
+      { isDeleted: true },
+      { includeUnavailable: true }
     );
     return res.json({ ok: true });
   } catch (err) {

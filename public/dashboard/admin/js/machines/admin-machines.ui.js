@@ -1,13 +1,8 @@
 // ui.js
 
 // ---------------- INIT UI ----------------
-export function initUI({ onImportClick, onFileChange, onFilterChange, onAddClick }) {
-  const importBtn = document.getElementById('importCsvBtn');
-  const importInput = document.getElementById('importCsvInput');
+export function initUI({ onFilterChange, onAddClick }) {
   const addBtn = document.getElementById('addMachineBtn');
-
-  importBtn.addEventListener('click', onImportClick);
-  importInput.addEventListener('change', onFileChange);
 
   if (addBtn) addBtn.addEventListener('click', onAddClick);
 
@@ -20,7 +15,7 @@ export function initUI({ onImportClick, onFileChange, onFilterChange, onAddClick
     });
   });
 
-  return { importBtn, importInput };
+  return {};
 }
 
 
@@ -98,6 +93,7 @@ export function renderTable(wrapper, machines, handlers) {
     const actionTd = document.createElement('td');
     // Delete button
     const deleteBtn = createBtn('Delete', () => handlers.onDelete(m, tr));
+    deleteBtn.title = 'Deleting this machine is irreversible. All related data will be lost!';
     actionTd.appendChild(deleteBtn);
     let actionBtn;
     if (m.isAvailable) {
@@ -105,11 +101,13 @@ export function renderTable(wrapper, machines, handlers) {
         handlers.onRevoke(m, actionBtn, handlers.loadMachines);
       });
       actionBtn.style.background = '#fa6251ff';
+      actionBtn.title = 'Disabling this machine will prevent users from using it until it is re-enabled. New allotments cannot be made while disabled.';
     } else {
       actionBtn = createBtn('Enable', function () {
         handlers.onEnable(m, actionBtn, handlers.loadMachines);
       });
       actionBtn.style.background = '#28a745';
+       actionBtn.title = 'Enabling this machine will allow users to use it again and new allotments can be made.';
     }
 
     actionBtn.style.marginLeft = '8px';
@@ -275,11 +273,6 @@ modal.innerHTML = `
         <input id="addName" placeholder="e.g. gpu-machine-1" />
       </div>
 
-      <div class="form-group">
-        <label for="addToken">Token</label>
-        <input id="addToken" placeholder="Enter secure token" />
-      </div>
-
       <div class="machine-modal-actions">
         <button type="button" id="machineAddCancel">Cancel</button>
         <button type="submit">Save</button>
@@ -305,7 +298,6 @@ modal.innerHTML = `
         portRaw: modal.querySelector('#addPort').value.trim(),
         user: modal.querySelector('#addUser').value.trim(),
         name: modal.querySelector('#addName').value.trim(),
-        token: modal.querySelector('#addToken').value.trim()
       });
     });
 

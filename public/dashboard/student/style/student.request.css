@@ -540,8 +540,7 @@
   flex-shrink: 0;
 }
 
-/* Raise Token and Access Machine buttons */
-.raise-token-btn,
+/* Access Machine buttons */
 .access-machine-btn {
     padding: 8px 14px;
     border: 1px solid #ccc;
@@ -550,7 +549,6 @@
     cursor: pointer;
 }
 
-.raise-token-btn:hover,
 .access-machine-btn:hover {
     background: #eaeaea;
 }

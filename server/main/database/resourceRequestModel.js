@@ -51,10 +51,7 @@ const resourceRequestSchema = new mongoose.Schema({
       day2: { type: Boolean, default: false }
     },
     default: () => ({ day7: false, day2: false })
-  },
-
-  isActive: { type: Boolean, default: true },
-  
+  },  
 });
 
 module.exports = mongoose.model("ResourceRequest", resourceRequestSchema, "resourceRequests");

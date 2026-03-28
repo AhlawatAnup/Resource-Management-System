@@ -52,8 +52,8 @@ router.post("/submit-resource-request", submitResourceRequest);
 router.get("/resource-requests/:studentId", getStudentResourceRequests);
 
 //machines
-router.get("/get_machines", getAllMachines);
-router.get("/allotments/:machineId", getMachineWiseActiveAllotments);
+router.get("/get_machines", getAllMachines); //for calendar
+router.get("/allotments/:machineId", getMachineWiseActiveAllotments); //for calendar
 router.get("/allotment-time/:requestId", getRequestAllotmentTime);
 
 module.exports = router;

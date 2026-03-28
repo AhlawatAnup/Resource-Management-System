@@ -38,11 +38,6 @@ const machineSchema = new mongoose.Schema({
     required: true
   },
 
-  token: {
-    type: String,
-    required: true
-  },
-
   version: {
     type: Number,
     required: true,
@@ -70,13 +65,12 @@ machineSchema.index(
 );
 
 machineSchema.pre(/^find/, function (next) {
-  const query = this.getQuery();
-
-  // 1. ALWAYS filter out deleted documents (No way to bypass this easily)
+  // 1. ALWAYS filter out deleted documents (No way to bypass)
   this.where({ isDeleted: { $ne: true } });
 
-  // 2. ONLY filter for availability if the user hasn't specified it
-  if (query.isAvailable === undefined) {
+  // 2. Only return available machines by default; set `includeUnavailable: true` in options to bypass this filter
+  const { includeUnavailable } = this.getOptions();
+  if (!includeUnavailable) {
     this.where({ isAvailable: true });
   }
 
