@@ -172,16 +172,20 @@ async function handleVerifyTeacher(id, isVerified, reload) {
 // Student Actions
 // -----------------------------
 async function handleVerifyStudent(id, isVerified, reload) {
-  const action = isVerified ? 'approve' : 'reject';
+  const action = isVerified ? 'approve' : 'decline';
 
   const result = await Swal.fire({
     title: 'Are you sure?',
-    text: `Do you want to ${action} this student profile?`,
+    text: isVerified
+      ? 'Do you want to approve this student profile?'
+      : 'Rejecting this student will permanently delete their account and all associated data. However, they will still be eligible to register again.',
     icon: 'warning',
     showCancelButton: true,
-    confirmButtonText: `Yes, ${action}`
+    confirmButtonColor: isVerified ? '#3085d6' : '#d33',
+    cancelButtonColor: '#6c757d',
+    confirmButtonText: isVerified ? 'Yes, approve' : 'Reject & Delete',
+    cancelButtonText: 'Cancel'
   });
-
   if (!result.isConfirmed) return;
 
   try {

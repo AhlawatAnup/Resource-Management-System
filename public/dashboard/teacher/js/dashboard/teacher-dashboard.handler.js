@@ -153,12 +153,14 @@ export async function handleStudentVerification(studentId, isVerified) {
 
     const result_confirmation = await Swal.fire({
       title: 'Are you sure?',
-      text: `Do you want to ${action} this student?`,
+      text: isVerified
+        ? 'Do you want to approve this student?'
+        : 'Rejecting this student will permanently delete their account and all associated data. However, they will still be eligible to register again.',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: `Approve`,
+      confirmButtonColor: isVerified ? '#3085d6' : '#d33',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: isVerified ? 'Approve' : 'Reject',
       cancelButtonText: 'Cancel',
       draggable: true,
       scrollbarPadding: false,

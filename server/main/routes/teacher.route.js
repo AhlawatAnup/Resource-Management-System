@@ -47,7 +47,7 @@ router.get("/allotments", isTeacher, (req, res) => {
 
 router.get("/student_data/:stu_id", student_data);
 
-router.put("/verify_student/:stu_id", updateStudentVerification);
+router.put("/verify_student/:student_id", updateStudentVerification);
 
 router.put("/edit_request/:request_id", editResourceRequest);
 
