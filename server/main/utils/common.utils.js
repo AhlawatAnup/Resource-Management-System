@@ -4,6 +4,7 @@ const Teacher = require("../database/teacherModel.js");
 const ResourceRequest = require("../database/resourceRequestModel");
 const Machine = require("../database/machineModel");
 const MachineAllotment = require("../database/machineAllotmentModel.js");
+const { saveAllotmentHistory } = require('./machineHistory/historyHelper.js');
 
 const isValidDuration = function (duration) {
   return Number.isInteger(duration) && duration >= 1 && duration <= 15;
@@ -292,6 +293,49 @@ const deleteTeacher = async (teacherId) => {
   return "Teacher and all associated students deleted successfully";
 };
 
+const makeMachineHistory = async (studentId) => {
+  try {
+    if (!studentId) {
+      throw new Error("stunvdentId is required");
+    }
+
+    // 1️⃣ Fetch student with resourceRequests
+    const student = await Student.findById(studentId).select("resourceRequests");
+
+    if (!student) {
+      throw new Error("Student not found");
+    }
+
+    if (!student.resourceRequests || student.resourceRequests.length === 0) {
+      return {
+        success: true,
+        message: "No resource requests found for student"
+      };
+    }
+
+    // 2️⃣ Fetch all allotments linked to those resource requests
+    const allotments = await MachineAllotment.find({
+      resourceRequestId: { $in: student.resourceRequests }
+    }).setOptions({ includeInactive: true });
+
+    // 3️⃣ Save history for each allotment
+    for (const allotment of allotments) {
+      await saveAllotmentHistory(allotment, "system");
+    }
+
+    return {
+      success: true,
+      message: "Machine history created successfully"
+    };
+
+  } catch (err) {
+    console.error("Error creating machine history:", err.message);
+    throw err;
+  }
+};
+
+module.exports = makeMachineHistory;
+
 
 module.exports = {
   isValidDuration,
@@ -300,5 +344,7 @@ module.exports = {
   validateMachineInput,
   deleteStudentDependencies,
   deleteStudent,
-  deleteTeacher
+  deleteTeacher,
+  unverifyStudent,
+  makeMachineHistory,
 };

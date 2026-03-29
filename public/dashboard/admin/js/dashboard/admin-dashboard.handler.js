@@ -211,7 +211,7 @@ async function handleVerifyStudent(id, isVerified, reload) {
 async function handleUnverifyStudent(id, reload) {
   const result = await Swal.fire({
     title: 'Are you sure?',
-    text: 'Unverify this student?',
+    text: "Unverifying this student will permanently delete all their resource requests and machine allotments. Do you want to continue?",
     icon: 'warning',
     showCancelButton: true
   });

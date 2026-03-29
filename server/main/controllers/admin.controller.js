@@ -8,7 +8,7 @@ const ResourceRequest = require("../database/resourceRequestModel");
 const emailService = require("../utils/email/emails.service.js");
 const {notifyTeacher} = require("../utils/web-push-notifications/notifyTeacher.js")
 const { notifyStudent } = require('../utils/web-push-notifications/notifyStudent.js');
-const { validateMachineInput, deleteStudentDependencies, deleteTeacher } = require('../utils/common.utils.js');
+const { validateMachineInput, deleteStudentDependencies, deleteTeacher, unverifyStudent, makeMachineHistory } = require('../utils/common.utils.js');
 const bcrypt = require('bcrypt');
 
 exports.admin_dashboard_data = async (req, res) => {
@@ -245,72 +245,30 @@ exports.unverifyTeacherIfPossible = async (req, res) => {
   }
 };
 
-exports.unverifyStudentIfPossible = async (req, res) => {
+exports.unverifyStudentByAdmin = async (req, res) => {
   const { student_id } = req.params;
 
   try {
-    const student = await Student.findById(student_id);
-    if (!student) {
-      return res.status(404).json({ error: "Student not found" });
-    }
+    await makeMachineHistory(student_id);
+    const result = await unverifyStudent(student_id);
 
-    // 1️⃣ Block if student has any allotted resource
-    const allottedRequests = await ResourceRequest.find({
-      studentId: student_id,
-      is_verified: true
+    notifyStudent(student_id, {
+      title: 'Student Profile unverified by Admin',
+      body: `Your profile has been unverified by admin.`
+    }).catch(err => {
+      console.error("Error sending student web-push notification:", err);
     });
 
-    if (allottedRequests && allottedRequests.length > 0) {
-      return res.status(400).json({
-        error: "Student has allocated resources. Cannot unverify."
-      });
-    }
+    return res.status(200).json(result);
 
-    // 2️⃣ Delete dependencies (ressource request, machine allotments)
-    await deleteStudentDependencies(student);
+  } catch (err) {
+    console.error("Unverify student error:", err.message);
 
-    // 3️⃣ Unverify student and clear resourceRequests array
-    const updatedStudent = await Student.findByIdAndUpdate(
-      student_id,
-      {
-        $set: {
-          teacher_verified: false,
-          teacher_action: false,
-          admin_verified: false,
-          admin_action: false,
-          is_verified: false,
-          resourceRequests: []
-        }
-      },
-      { new: true }
-    );
-
-    // Send email to student about unverification
-    if (updatedStudent) {
-      emailService.sendStudentProfileUnverifiedByAdminEmail(updatedStudent.email, updatedStudent.name)
-        .then(result => console.log("Student unverification email sent:", result))
-        .catch(error => console.error("Error sending student unverification email:", error));
-        
-      notifyStudent(student_id, {
-        title: 'Student Profile unverified by Admin',
-        body: `Your profile has been unverified by admin.`
-      }).catch(err => {
-        console.error("Error sending student web-push notification:", err);
-      });
-    }
-        
-    return res.status(200).json({
-      message: "Student unverified successfully"
-    });
-
-  } catch (error) {
-    console.error("Error unverifying student:", error);
-    res.status(500).json({
-      error: "Failed to unverify student"
+    return res.status(400).json({
+      error: err.message || "Failed to unverify student"
     });
   }
-};
-
+}
 
 exports.getPendingStudents = async (req, res) => {
   try {
