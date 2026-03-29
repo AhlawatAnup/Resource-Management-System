@@ -138,27 +138,97 @@ const deleteStudentDependencies = async (student) => {
       throw new Error("Student object is required");
     }
 
-    // Always fetch all resource requests for this student
+    //TO DO: add to history first
+
+    // 1️⃣ Fetch all resource request IDs
     const requests = await ResourceRequest.find({ studentId: student._id }).select('_id');
     const requestIds = requests.map(r => r._id);
-    console.log(student._id, requestIds)
-    // 1. Delete MachineAllotments
+
+    // 2️⃣ Delete MachineAllotments
     await MachineAllotment.deleteMany({
       resourceRequestId: { $in: requestIds }
     });
 
-    // 2. Delete ResourceRequests
+    // 3️⃣ Delete ResourceRequests
     await ResourceRequest.deleteMany({
       _id: { $in: requestIds }
     });
 
+    // 4️⃣ Clear student's resourceRequests array
+    await Student.updateOne(
+      { _id: student._id },
+      { $set: { resourceRequests: [] } }
+    );
+
     return {
       success: true,
-      message: "Student dependencies deleted"
+      message: "Student dependencies deleted & references cleared"
     };
 
   } catch (err) {
     console.error("Error deleting student dependencies:", err.message);
+    throw err;
+  }
+};
+const resetStudentVerificationFlags = async (studentId) => {
+  try {
+    const updatedStudent = await Student.findByIdAndUpdate(
+      studentId,
+      {
+        $set: {
+          teacher_verified: false,
+          teacher_action: false,
+          admin_verified: false,
+          admin_action: false,
+          is_verified: false
+        }
+      },
+      { new: true } 
+    );
+
+    if (!updatedStudent) {
+      throw new Error("Student not found");
+    }
+
+    return {
+      success: true,
+      message: "Student verification flags reset",
+      data: updatedStudent
+    };
+
+  } catch (err) {
+    console.error("Error resetting student flags:", err.message);
+    throw err;
+  }
+};
+
+const unverifyStudent = async (studentId) => {
+  try {
+    if (!studentId) {
+      throw new Error("studentId is required");
+    }
+
+    // 1️⃣ Fetch student once
+    const student = await Student.findById(studentId);
+
+    if (!student) {
+      throw new Error("Student not found");
+    }
+
+    // 2️⃣ Delete all dependencies (requests + allotments + clear array)
+    await deleteStudentDependencies(student);
+
+    // 3️⃣ Reset verification flags on student
+    const updatedStudent = await resetStudentVerificationFlags(studentId);
+
+    return {
+      success: true,
+      message: "Student unverified successfully",
+      data: updatedStudent
+    };
+
+  } catch (err) {
+    console.error("Error unverifying student:", err.message);
     throw err;
   }
 };
