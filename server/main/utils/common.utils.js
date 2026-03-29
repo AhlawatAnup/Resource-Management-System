@@ -247,8 +247,6 @@ const deleteStudent = async (studentId) => {
       throw new Error("Student not found");
     }
 
-    await deleteStudentDependencies(student);
-
     // Delete student
     await Student.deleteOne({ _id: studentId });
 

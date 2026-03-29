@@ -62,13 +62,11 @@ exports.student_data = async (req, res) => {
 };
 
 exports.updateStudentVerification = async (req, res) => {
-  const { stu_id, student_id } = req.params; // Support both parameter names
+  const { student_id } = req.params;
   const { is_verified } = req.body;
   const userRole = req.session.user?.role;
 
-  const studentId = stu_id || student_id; // Use whichever parameter is provided
-
-  // console.log(`${userRole} updating student verification`, studentId, "to", is_verified);
+  const studentId = student_id;
 
   try {
     const student = await Student.findById(studentId);
@@ -79,40 +77,18 @@ exports.updateStudentVerification = async (req, res) => {
     let updateData = {};
 
     if (userRole === "teacher") {
-      // Teacher verification logic
       if (is_verified) {
-        // Teacher approves
         updateData = {
           teacher_verified: is_verified,
           teacher_action: true
         };
       } else {
-        // Teacher rejects → delete the student account and all related resources
-        
-        // Get teacher name for rejection email
-        const teacher = await Teacher.findById(req.session.user.id);
-        const teacherName = teacher ? teacher.name : 'your teacher';
-        
-        // Send rejection email before deleting
-        emailService.sendStudentProfileRejectedByTeacherEmail(student.email, student.name, teacherName)
-          .then(result => console.log("Email sent for student profile rejected by teacher:", result))
-          .catch(error => console.error("Error sending rejection email:", error));
-        
-        notifyStudent(studentId, {
-          title: 'Student Profile Rejected by Teacher',
-          body: `Your profile has been rejected by your teacher.`
-        }).catch(err => {
-          console.error("Error sending student web-push notification:", err);
-        });
-
         await deleteStudent(studentId);
         
-        return res.json({ message: "Student account and associated resources have been deleted successfully" });
+        return res.json({ message: "Student account has been deleted successfully" });
       }
     } else if (userRole === "admin") {
-      // Admin verification logic
       if (is_verified) {
-        // Admin approves → set everything true
         updateData = {
           teacher_verified: true,
           teacher_action: true,
@@ -121,39 +97,6 @@ exports.updateStudentVerification = async (req, res) => {
           is_verified: true
         };
       } else {
-        // Admin rejects → delete the student account and all related resources
-        
-        // Send rejection email before deleting
-        emailService.sendStudentProfileRejectedByAdminEmail(student.email, student.name)
-          .then(result => console.log("Email sent for student profile rejected by admin:", result))
-          .catch(error => console.error("Error sending rejection email:", error));
-        
-        notifyStudent(studentId, {
-          title: 'Student Profile Rejected by Admin',
-          body: `Your profile has been rejected by admin.`
-        }).catch(err => {
-          console.error("Error sending student web-push notification:", err);
-        });
-
-        // Notify teacher about admin's rejection
-        Teacher.findById(student.teacher)
-          .then(teacher => {
-            if (teacher) {
-              emailService.sendTeacherStudentRejectedByAdminEmail(teacher.email, teacher.name, student.name)
-                .then(result => console.log("Teacher notification email sent:", result))
-                .catch(error => console.error("Error sending teacher notification:", error));
-            }
-          })
-          .catch(error => console.error("Error finding teacher:", error));
-
-        // Notify teacher about admin's verification (web-push)
-          notifyTeacher(student.teacher, {
-            title: 'Student Verification Rejected by Admin',
-            body: `A student under you has been rejected by the Admin.`
-          }).catch((pushErr) => {
-            console.error('[WebPush] Error in teacher notification block:', pushErr);
-          });
-        
         await deleteStudent(studentId);
         
         return res.json({ message: "Student account and associated resources have been deleted successfully" });
@@ -169,38 +112,10 @@ exports.updateStudentVerification = async (req, res) => {
       { new: true }
     );
 
-    // Send email notification after successful update
+    // Send emails
     if (updatedStudent) {
-      
-      // Send emails 
       if (userRole === "teacher") {
         if (is_verified) {
-          // Get teacher details for emails
-          const teacher = await Teacher.findById(req.session.user.id);
-          const teacherName = teacher ? teacher.name : 'Teacher';
-          
-          emailService.sendStudentProfileVerifiedByTeacherEmail(updatedStudent.email, updatedStudent.name, teacherName)
-            .then(result => console.log("Email sent for student profile verified by teacher:", result))
-            .catch(error => console.error("Error sending verification email:", error));
-          
-          notifyStudent(studentId, {
-            title: 'Student Profile Verified by Teacher',
-            body: `Your profile has been verified by your teacher.`
-          }).catch(err => {
-            console.error("Error sending student web-push notification:", err);
-          });
-
-          // Notify admins that student verification is pending (email)
-          emailService.sendAdminStudentVerificationPendingEmail(
-            updatedStudent.name,
-            updatedStudent.email,
-            updatedStudent.rollNo,
-            teacherName
-          )
-            .then(result => console.log("Admin notification sent:", result))
-            .catch(error => console.error("Error sending admin notification:", error));
-
-          // Notify admin that student verification is pending (web-push)
           notifyAdmin({
             title: 'New Student Registered',
             body: 'Requires admin verification.'
@@ -210,40 +125,16 @@ exports.updateStudentVerification = async (req, res) => {
         }
       } else if (userRole === "admin") {
         if (is_verified) {
-          emailService.sendStudentProfileVerifiedByAdminEmail(updatedStudent.email, updatedStudent.name)
-            .then(result => console.log("Email sent for student profile verified by admin:", result))
-            .catch(error => console.error("Error sending verification email:", error));
-          
           notifyStudent(studentId, {
             title: 'Student Profile Verified by Admin',
             body: `Your profile has been verified by admin.`
           }).catch(err => {
             console.error("Error sending student web-push notification:", err);
           });
-
-          // Notify teacher about admin's verification
-          Teacher.findById(updatedStudent.teacher)
-            .then(teacher => {
-              if (teacher) {
-                emailService.sendTeacherStudentVerifiedByAdminEmail(teacher.email, teacher.name, updatedStudent.name)
-                  .then(result => console.log("Teacher notification email sent:", result))
-                  .catch(error => console.error("Error sending teacher notification:", error));
-              }
-            })
-            .catch(error => console.error("Error finding teacher:", error));
-
-          // Notify teacher about admin's verification (web-push)
-          notifyTeacher(student.teacher, {
-            title: 'Student Verification approved by Admin',
-            body: `A student under you has been verified by the Admin.`
-          }).catch((pushErr) => {
-            console.error('[WebPush] Error in teacher notification block:', pushErr);
-          });
         }
       }
     }
 
-    // console.log(`Student verification updated by ${userRole}:`, updatedStudent);
     return res.json({
       message: "Student verification status updated successfully",
       student: { ...updatedStudent._doc }
