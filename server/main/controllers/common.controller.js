@@ -127,6 +127,8 @@ exports.updateStudentVerification = async (req, res) => {
           { new: true }
         );
 
+        emailHandler.handleSendStudentProfileVerifiedByAdminEmail(studentData);
+
         notifyStudent(student_id, {
           title: 'Student Profile Verified by Admin',
           body: 'Your profile has been verified by admin.'

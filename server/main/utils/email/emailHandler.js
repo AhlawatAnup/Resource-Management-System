@@ -60,22 +60,21 @@ async function handleSendStudentProfileRejectedByAdminEmail(studentData) {
   }
 }
 
-async function handleSendStudentProfileVerifiedByTeacherEmail(studentData, teacherName) {
+async function handleSendStudentProfileVerifiedByAdminEmail(studentData) {
   if (!studentData) return;
 
   try {
-    const emailResult = await emailService.sendStudentProfileVerifiedByTeacherEmail(
+    const emailResult = await emailService.sendStudentProfileVerifiedByAdminEmail(
       studentData.email,
-      studentData.name,
-      teacherName
+      studentData.name
     );
 
     console.log(
-      "Email sent for student profile verified by teacher:",
+      "Email sent for student profile verified by admin:",
       emailResult
     );
   } catch (error) {
-    console.error("Error sending teacher verification email:", error);
+    console.error("Error sending student profile verified by admin email:", error);
   }
 }
 
@@ -83,5 +82,5 @@ module.exports = {
   handleSendStudentProfileUnverifiedByAdminEmail,
   handleSendStudentProfileRejectedByTeacherEmail,
   handleSendStudentProfileRejectedByAdminEmail,
-  handleSendStudentProfileVerifiedByTeacherEmail,
+  handleSendStudentProfileVerifiedByAdminEmail,
 };
