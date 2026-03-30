@@ -66,20 +66,19 @@ exports.updateStudentVerification = async (req, res) => {
   const { student_id } = req.params;
   const { is_verified } = req.body;
   const userRole = req.session.user?.role;
-  const teacherId = req.session.user?.id;
+  const userId = req.session.user?.id;
 
   try {
     const student = await Student.findById(student_id).lean();
-    const teacher = await Teacher.findById(teacherId).lean();
-
     if (!student) {
       return res.status(404).json({ error: "Student not found" });
     }
-    if (!teacher) {
-      return res.status(404).json({ error: "Teacher not found" });
-    }
 
     if (userRole === "teacher") {
+      const teacher = await Teacher.findById(userId).lean();
+      if (!teacher) {
+        return res.status(404).json({ error: "Teacher not found" });
+      }
 
       if (is_verified) {
         const updatedStudent = await Student.findByIdAndUpdate(
@@ -112,7 +111,7 @@ exports.updateStudentVerification = async (req, res) => {
         });
       }
     }
-    if (userRole === "admin") {
+    else if (userRole === "admin") {
 
       if (is_verified) {
         const updatedStudent = await Student.findByIdAndUpdate(
@@ -141,13 +140,10 @@ exports.updateStudentVerification = async (req, res) => {
 
       } else {
 
-        // 2. Delete student
         await deleteStudent(student_id);
 
-        // 3. Fire-and-forget email notification
         emailHandler.handleSendStudentProfileRejectedByAdminEmail(student);
 
-        // 4. Respond immediately
         return res.json({
           message: "Student deleted by admin"
         });
@@ -165,6 +161,7 @@ exports.updateStudentVerification = async (req, res) => {
     });
   }
 };
+
 exports.teacher_data = async (req, res) => {
   const { teacher_id } = req.params;
   // console.log("requested Teacher data", teacher_id);
