@@ -25,18 +25,16 @@ try {
   }
 }
 
-async function handleSendStudentProfileRejectedByTeacherEmail(studentData, teacherId) {
-  if (!studentData) return;
+async function handleSendStudentProfileRejectedByTeacherEmail(student, teacher) {
+  if (!student || !teacher) return;
 
   try {
-    // Fetch teacher name
-    const teacher = await Teacher.findById(teacherId);
     const teacherName = teacher ? teacher.name : 'your teacher';
 
     // Send rejection email
     const emailResult = await emailService.sendStudentProfileRejectedByTeacherEmail(
-      studentData.email,
-      studentData.name,
+      student.email,
+      student.name,
       teacherName
     );
     console.log("Email sent for student profile rejected by teacher:", emailResult);
@@ -45,13 +43,13 @@ async function handleSendStudentProfileRejectedByTeacherEmail(studentData, teach
   }
 }
 
-async function handleSendStudentProfileRejectedByAdminEmail(studentData) {
-  if (!studentData) return;
+async function handleSendStudentProfileRejectedByAdminEmail(student) {
+  if (!student) return;
 
   try {
     const emailResult = await emailService.sendStudentProfileRejectedByAdminEmail(
-      studentData.email,
-      studentData.name
+      student.email,
+      student.name
     );
 
     console.log("Email sent for student profile rejected by admin:", emailResult);
@@ -60,13 +58,13 @@ async function handleSendStudentProfileRejectedByAdminEmail(studentData) {
   }
 }
 
-async function handleSendStudentProfileVerifiedByAdminEmail(studentData) {
-  if (!studentData) return;
+async function handleSendStudentProfileVerifiedByAdminEmail(student) {
+  if (!student) return;
 
   try {
     const emailResult = await emailService.sendStudentProfileVerifiedByAdminEmail(
-      studentData.email,
-      studentData.name
+      student.email,
+      student.name
     );
 
     console.log(
