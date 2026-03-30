@@ -57,153 +57,57 @@ const sendResourceRequestSubmittedEmail = async (studentEmail, studentName, requ
   });
 };
 
-// Verified by Teacher
-const sendResourceRequestVerifiedByTeacherEmail = async (
+// Verified Email (for both Teacher/Admin)
+const sendResourceRequestVerifiedEmail = async ({
   studentEmail,
   studentName,
-  requestTitle,
-  teacherName
-) => {
+  requestTitle
+}) => {
   return sendEmail({
     to: studentEmail,
-    subject: 'Resource Request Update - Teacher Approved',
+    subject: `[VERIFIED] Your Resource Request is Approved`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width:600px; margin:auto;">
-        <h3 style="color:#4CAF50;">✅ Teacher Approval Received</h3>
-
-        <p>Dear <strong>${studentName}</strong>,</p>
+        <h3 style="color:#4CAF50;">🎉 Congratulations, ${studentName}!</h3>
 
         <p>
-          Your resource request
-          <strong>"${requestTitle}"</strong>
-          has been approved by
-          <strong>${teacherName}</strong>.
+          Your resource request <strong>"${requestTitle}"</strong> has been verified and approved.
+          You can now use the allocated resources as needed.
         </p>
 
-        <div style="background-color:#e8f5e9; border:1px solid #c8e6c9; padding:12px; border-radius:6px; margin:16px 0;">
-          <p style="margin:0;">
-            The request is now pending <strong>administrator approval</strong>.
-            You will be notified once the admin completes the verification.
-          </p>
-        </div>
+        <p>
+          Please log in to your dashboard for more details.
+        </p>
 
-        <p>You can track the status from your dashboard.</p>
       </div>
     `
   });
 };
 
-
-// Rejected by Teacher
-const sendResourceRequestRejectedByTeacherEmail = async (
+// Rejected Email (for both Teacher/Admin)
+const sendResourceRequestRejectedEmail = async ({
   studentEmail,
   studentName,
   requestTitle
-) => {
+}) => {
   return sendEmail({
     to: studentEmail,
-    subject: '[REJECTED] Resource Request Update - Teacher Review Required',
+    subject: `[REJECTED] Your Resource Request Update`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width:600px; margin:auto;">
-        <h3 style="color:#f44336;">❌ Request Rejected by Teacher</h3>
-
-        <p>Dear <strong>${studentName}</strong>,</p>
+        <h3 style="color:#f44336;">❌ Update on Your Request, ${studentName}</h3>
 
         <p>
-          Your resource request
-          <strong>"${requestTitle}"</strong>
-          has been reviewed and rejected by the teacher.
+          Your resource request <strong>"${requestTitle}"</strong> has been reviewed and rejected.
         </p>
 
         <div style="background-color:#ffebee; border:1px solid #ffcdd2; padding:12px; border-radius:6px; margin:16px 0;">
           <p style="margin:0;">
-            You may submit a <strong>new resource request</strong> with corrected
-            or updated details for further review.
+            You may submit a <strong>new request</strong> with updated or corrected details for further review.
           </p>
         </div>
 
-        <p>Please review the requirements carefully before resubmitting.</p>
-      </div>
-    `
-  });
-};
-
-
-// Verified by Admin (VM credentials)
-const sendResourceRequestVerifiedByAdminEmail = async (
-  studentEmail,
-  studentName,
-  requestTitle,
-  vmCredentials,
-  requestUsername
-) => {
-  return sendEmail({
-    to: studentEmail,
-    subject: '[VERIFIED] Resource Request Approved - VM Access Granted',
-    html: `
-      <div style="font-family: Arial, sans-serif; max-width:600px; margin:auto;">
-        <h3 style="color:#4CAF50;">🎉 Resource Request Approved</h3>
-
-        <p>Dear <strong>${studentName}</strong>,</p>
-
-        <p>
-          Your resource request
-          <strong>"${requestTitle}"</strong>
-          has been fully approved by the administrator.
-          Your virtual machine is now ready to use.
-        </p>
-
-        <div style="background-color:#f5f5f5; border:1px solid #ddd; padding:15px; border-radius:6px; margin:20px 0;">
-          <p style="margin:0 0 8px 0;"><strong>VM Access Credentials</strong></p>
-          <p style="margin:4px 0;"><strong>Username:</strong> ${requestUsername || 'N/A'}</p>
-          <p style="margin:4px 0;"><strong>Password:</strong> ${vmCredentials.password}</p>
-          <p style="margin:4px 0;"><strong>IP Address:</strong> ${vmCredentials.ip}</p>
-          <p style="margin:4px 0;"><strong>MIG ID:</strong> ${vmCredentials.migId}</p>
-        </div>
-
-        <div style="background-color:#fff3cd; border:1px solid #ffeeba; padding:12px; border-radius:6px;">
-          <p style="margin:0;">
-            Please keep these credentials secure and use the resources responsibly.
-            These credentials are also available on the website after login.
-          </p>
-        </div>
-
-        <p>You can now start using the allocated resources.</p>
-      </div>
-    `
-  });
-};
-
-
-// Rejected by Admin
-const sendResourceRequestRejectedByAdminEmail = async (
-  studentEmail,
-  studentName,
-  requestTitle
-) => {
-  return sendEmail({
-    to: studentEmail,
-    subject: '[REJECTED] Resource Request Update - Admin Review',
-    html: `
-      <div style="font-family: Arial, sans-serif; max-width:600px; margin:auto;">
-        <h3 style="color:#f44336;">❌ Request Rejected by Admin</h3>
-
-        <p>Dear <strong>${studentName}</strong>,</p>
-
-        <p>
-          Your resource request
-          <strong>"${requestTitle}"</strong>
-          has been reviewed and rejected by the administrator.
-        </p>
-
-        <div style="background-color:#ffebee; border:1px solid #ffcdd2; padding:12px; border-radius:6px; margin:16px 0;">
-          <p style="margin:0;">
-            You may submit a <strong>new request</strong> with revised details
-            if you still require the resources.
-          </p>
-        </div>
-
-        <p>Please ensure all required information is accurate before resubmitting.</p>
+        <p>Please check the details carefully before resubmitting.</p>
       </div>
     `
   });
@@ -247,9 +151,7 @@ const sendResourceRequestRevokedByAdminEmail = async (
 
 module.exports = {
   sendResourceRequestSubmittedEmail,
-  sendResourceRequestVerifiedByTeacherEmail,
-  sendResourceRequestRejectedByTeacherEmail,
-  sendResourceRequestVerifiedByAdminEmail,
-  sendResourceRequestRejectedByAdminEmail,
+  sendResourceRequestVerifiedEmail,
+  sendResourceRequestRejectedEmail,
   sendResourceRequestRevokedByAdminEmail
 };

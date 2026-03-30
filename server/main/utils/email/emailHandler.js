@@ -96,10 +96,40 @@ async function handleSendAdminStudentVerificationPendingEmail(student, teacher) 
   }
 }
 
+// Handler for Verified Email
+async function handleSendResourceRequestVerifiedEmail(studentEmail, studentName, requestTitle) {
+  try {
+    const result = await emailService.sendResourceRequestVerifiedEmail({
+      studentEmail,
+      studentName,
+      requestTitle
+    });
+
+  } catch (error) {
+    console.error("Error sending verified email:", error);
+  }
+}
+
+// Handler for Rejected Email
+async function handleSendResourceRequestRejectedEmail(studentEmail, studentName, requestTitle) {
+  try {
+    const result = await emailService.sendResourceRequestRejectedEmail({
+      studentEmail,
+      studentName,
+      requestTitle
+    });
+
+  } catch (error) {
+    console.error("Error sending rejected email:", error);
+  }
+}
+
 module.exports = {
   handleSendStudentProfileUnverifiedByAdminEmail,
   handleSendStudentProfileRejectedByTeacherEmail,
   handleSendStudentProfileRejectedByAdminEmail,
   handleSendStudentProfileVerifiedByAdminEmail,
   handleSendAdminStudentVerificationPendingEmail,
+  handleSendResourceRequestVerifiedEmail,
+  handleSendResourceRequestRejectedEmail,
 };

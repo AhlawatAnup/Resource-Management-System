@@ -196,7 +196,8 @@ exports.updateResourceRequestVerification = async (req, res) => {
     }
 
     try {
-      const existingRequest = await ResourceRequest.findById(request_id);
+      const existingRequest = await ResourceRequest.findById(request_id)
+      .populate("studentId", "name email");;
 
       if (!existingRequest) {
         return res.status(404).json({ error: "Resource request not found" });
@@ -280,18 +281,24 @@ exports.updateResourceRequestVerification = async (req, res) => {
           endTime,
           status: "active"
         });
+        
+        emailHandler.handleSendResourceRequestVerifiedEmail(
+          existingRequest.studentId.email, 
+          existingRequest.studentId.name, 
+          existingRequest.title
+        )
       }
-
+      
+      if (!is_verified) {
+        emailHandler.handleSendResourceRequestRejectedEmail(
+          existingRequest.studentId.email, 
+          existingRequest.studentId.name, 
+          existingRequest.title
+        )
+      } 
       return res.status(200).json({
         success: true,
         message: "Resource request verification updated successfully",
-        // request: updatedRequest,
-        // machine: {
-        //   _id: machine._id,
-        //   MIGID: machine.MIGID
-        // },
-        // lastAllotmentEndTime,
-        // allotment: createdAllotment
       });
 
     } catch (err) {
