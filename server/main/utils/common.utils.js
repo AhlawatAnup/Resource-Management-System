@@ -5,6 +5,7 @@ const ResourceRequest = require("../database/resourceRequestModel");
 const Machine = require("../database/machineModel");
 const MachineAllotment = require("../database/machineAllotmentModel.js");
 const { saveAllotmentHistory } = require('./machineHistory/historyHelper.js');
+const { handleSendStudentProfileUnverifiedByAdminEmail } = require('./email/emailHandler.js');
 
 const isValidDuration = function (duration) {
   return Number.isInteger(duration) && duration >= 1 && duration <= 15;
@@ -203,28 +204,6 @@ const resetStudentVerificationFlags = async (studentId) => {
   }
 };
 
-async function handleSendStudentProfileUnverifiedByAdminEmail(updatedStudent, studentId) {
-  if (!updatedStudent) return;
-
-  try {
-    const emailResult = await emailService.sendStudentProfileUnverifiedByAdminEmail(
-      updatedStudent.email,
-      updatedStudent.name
-    );
-    console.log("Student unverification email sent:", emailResult);
-  } catch (error) {
-    console.error("Error sending student unverification email:", error);
-  }
-
-  try {
-    await notifyStudent(studentId, {
-      title: 'Student Profile unverified by Admin',
-      body: 'Your profile has been unverified by admin.'
-    });
-  } catch (err) {
-    console.error("Error sending student web-push notification:", err);
-  }
-}
 
 const unverifyStudent = async (studentId) => {
   try {
