@@ -10,9 +10,7 @@ const schedule = require("node-schedule");
 const { runBackup } = require("./services/backup");
 const pushSubscriptionRoutes = require("./routes/pushSubscription.route.js");
 const proxyMachineRoute = require("./proxy/routes/proxyMachine.route.js");
-const {
-  checkExpiringResourceRequests,
-} = require("./services/resourceExpiryNotifier");
+ const {sendExpiryEmails} = require("./services/resourceExpiryNotifier");
 const attachWebSocketProxy = require("./proxy/websocketProxy.js");
 const { markExpiredAllotmentsDeleted } = require("./services/expiryAllotmentsAndDocker.js"); // adjust path
 const { collectAndStoreStats } = require("./services/collectAllMachineStats.js");
@@ -134,10 +132,8 @@ schedule.scheduleJob(backupSchedule, async () => {
 const expiryNotifySchedule = process.env.EXPIRY_NOTIFY_SCHEDULE || "0 9 * * *";
 schedule.scheduleJob(expiryNotifySchedule, async () => {
   try {
-    const now = new Date();
-    const timeStr = now.toLocaleTimeString();
-    console.log(`🕒 ${timeStr} — checking for expiring resource requests...`);
-    await checkExpiringResourceRequests();
+    console.log("🕘 Running expiry check job...");
+    await sendExpiryEmails();
   } catch (error) {
     console.error("Scheduled expiry check failed:", error);
   }

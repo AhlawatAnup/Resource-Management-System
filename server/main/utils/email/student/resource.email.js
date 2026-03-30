@@ -170,10 +170,62 @@ const sendResourceRequestRevokedByAdminEmail = async (
   });
 };
 
+// Expiry Warning (same-day expiry reminder)
+const sendResourceAllotmentExpiryTodayEmail = async ({
+  studentEmail,
+  studentName,
+  requestTitle,
+  endTime,
+}) => {
+
+  const formattedEndTime = new Date(endTime).toLocaleString("en-IN", {
+    timeZone: "Asia/Kolkata",
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+
+  return sendEmail({
+    to: studentEmail,
+    subject: '[IMPORTANT] Resource Allotment Expiring Today',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width:600px; margin:auto;">
+        <h3 style="color:#ff9800;">⏳ Resource Allotment Expiring Today</h3>
+
+        <p>Dear <strong>${studentName}</strong>,</p>
+
+        <p>
+          Your resource allotment for 
+          <strong>"${requestTitle}"</strong> 
+          is scheduled to expire today.
+        </p>
+
+        <div style="background-color:#fff3e0; border:1px solid #ffe0b2; padding:12px; border-radius:6px; margin:16px 0;">
+          <p style="margin:0 0 8px 0;"><strong>Expiry Time:</strong> ${formattedEndTime}</p>
+        </div>
+
+        <p>
+          Please ensure that you save all required data from the machine before expiry.
+        </p>
+
+        <p style="color:#d32f2f;">
+          Any data loss after the expiry time will be your responsibility.
+        </p>
+
+        <p>Regards,</p>
+        <strong>UIET Cluster Resource Management System</strong></p>
+      </div>
+    `
+  });
+};
+
 
 module.exports = {
   sendResourceRequestSubmittedEmail,
   sendResourceRequestVerifiedEmail,
   sendResourceRequestRejectedEmail,
-  sendResourceRequestRevokedByAdminEmail
+  sendResourceRequestRevokedByAdminEmail,
+  sendResourceAllotmentExpiryTodayEmail,
 };

@@ -26,7 +26,11 @@ const MachineAllotmentSchema = new mongoose.Schema(
     isDeleted: {
     type: Boolean,
     default: false
-  }
+  },
+    expiryNotified: {
+    type: Boolean,
+    default: false
+  },
 },
 { timestamps: true }
 );
