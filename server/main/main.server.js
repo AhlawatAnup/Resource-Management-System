@@ -116,9 +116,8 @@ app.use("/dashboard", noCache, requireAuth, dashboardRoutes);
 app.use("/push-subscription", requireAuth, pushSubscriptionRoutes);
 
 
-// const backupSchedule = "*/2 * * * *"; // every 2 minutes (example)
+// Schedule job for backup
 const backupSchedule = process.env.BACKUP_SCHEDULE || "0 3 * * *";
-
 schedule.scheduleJob(backupSchedule, async () => {
   try {
     const now = new Date();
@@ -131,7 +130,8 @@ schedule.scheduleJob(backupSchedule, async () => {
   }
 });
 
-const expiryNotifySchedule = process.env.EXPIRY_NOTIFY_SCHEDULE || "5 3 * * *";
+// Schedule job to go through each allotment and send email if today is the expiry day
+const expiryNotifySchedule = process.env.EXPIRY_NOTIFY_SCHEDULE || "0 9 * * *";
 schedule.scheduleJob(expiryNotifySchedule, async () => {
   try {
     const now = new Date();
@@ -143,14 +143,14 @@ schedule.scheduleJob(expiryNotifySchedule, async () => {
   }
 });
 
-// Schedule job to run every day at 00:00
+// Schedule job to go through all machine allotmetns: save history and restart machine using docker
 const expiryAllotmentsSchedule = process.env.EXPIRY_ALLOTMENTS_SCHEDULE;
 schedule.scheduleJob(expiryAllotmentsSchedule, async () => {
   console.log(`Expired allotments scheduler started...`);
   await markExpiredAllotmentsDeleted();
 });
 
-const machineStatsSchedule = process.env.MACHINE_STATS_SCHEDULE;
+const machineStatsSchedule = process.env.MACHINE_STATS_SCHEDULE || "0 0 * * *";
 schedule.scheduleJob(machineStatsSchedule, async () => {
   console.log(`[${new Date().toLocaleTimeString()}] Starting stats collection...`);
   try {
