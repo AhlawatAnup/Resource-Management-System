@@ -97,19 +97,31 @@ async function handleSendAdminStudentVerificationPendingEmail(student, teacher) 
 }
 
 // Handler for Verified Email
-async function handleSendResourceRequestVerifiedEmail(studentEmail, studentName, requestTitle) {
+async function handleSendResourceRequestVerifiedEmail(
+  studentEmail,
+  studentName,
+  requestTitle,
+  startTime,
+  endTime,
+  migId,
+  duration
+) {
+  if (!studentEmail) return;
+
   try {
     const result = await emailService.sendResourceRequestVerifiedEmail({
       studentEmail,
       studentName,
-      requestTitle
+      requestTitle,
+      startTime,
+      endTime,
+      migId,
+      duration
     });
-
   } catch (error) {
     console.error("Error sending verified email:", error);
   }
 }
-
 // Handler for Rejected Email
 async function handleSendResourceRequestRejectedEmail(studentEmail, studentName, requestTitle) {
   try {

@@ -61,8 +61,22 @@ const sendResourceRequestSubmittedEmail = async (studentEmail, studentName, requ
 const sendResourceRequestVerifiedEmail = async ({
   studentEmail,
   studentName,
-  requestTitle
+  requestTitle,
+  startTime,
+  endTime,
+  migId,
+  duration
 }) => {
+  const formatDate = (date) =>
+    new Date(date).toLocaleString("en-IN", {
+      timeZone: "Asia/Kolkata",
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+
   return sendEmail({
     to: studentEmail,
     subject: `[VERIFIED] Your Resource Request is Approved`,
@@ -75,10 +89,18 @@ const sendResourceRequestVerifiedEmail = async ({
           You can now use the allocated resources as needed.
         </p>
 
+        <div style="background-color:#f5f5f5; border:1px solid #ddd; padding:12px; border-radius:6px; margin:16px 0;">
+          <p style="margin:4px 0;"><strong>Start Time:</strong> ${formatDate(startTime)}</p>
+          <p style="margin:4px 0;"><strong>End Time:</strong> ${formatDate(endTime)}</p>
+          <p style="margin:4px 0;"><strong>Duration:</strong> ${duration} day(s)</p>
+          <p style="margin:4px 0;"><strong>MIG ID:</strong> ${migId}</p>
+        </div>
+
         <p>
-          Please log in to your dashboard for more details.
+          Please log in to your dashboard to view more details and track your requests.
         </p>
 
+        <p>Thank you for submitting your request!</p>
       </div>
     `
   });

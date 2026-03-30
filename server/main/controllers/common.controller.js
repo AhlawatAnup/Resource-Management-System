@@ -285,7 +285,11 @@ exports.updateResourceRequestVerification = async (req, res) => {
         emailHandler.handleSendResourceRequestVerifiedEmail(
           existingRequest.studentId.email, 
           existingRequest.studentId.name, 
-          existingRequest.title
+          existingRequest.title,
+          startTime,
+          endTime,
+          machine.MIGID,
+          duration,
         )
       }
       
