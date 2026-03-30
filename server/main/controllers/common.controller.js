@@ -102,17 +102,16 @@ exports.updateStudentVerification = async (req, res) => {
           message: "Student approved by teacher",
           student: updatedStudent
         });
+      } else {
+        await deleteStudent(student_id);
+
+        handleStudentRejectionByTeacherEmail(studentData, teacherId);
+
+        return res.json({
+          message: "Student rejected and deleted successfully"
+        });
       }
-
-      await deleteStudent(student_id);
-
-      handleStudentRejectionByTeacherEmail(studentData, teacherId);
-
-      return res.json({
-        message: "Student rejected and deleted successfully"
-      });
     }
-
     if (userRole === "admin") {
 
       if (is_verified) {
@@ -137,15 +136,20 @@ exports.updateStudentVerification = async (req, res) => {
           message: "Student fully verified",
           student: updatedStudent
         });
+
+      } else {
+
+        // 2. Delete student
+        await deleteStudent(student_id);
+
+        // 3. Fire-and-forget email notification
+        sendStudentProfileRejectedByAdminEmail(studentData);
+
+        // 4. Respond immediately
+        return res.json({
+          message: "Student deleted by admin"
+        });
       }
-
-      await deleteStudent(student_id);
-
-      sendStudentProfileRejectedByAdminEmail(studentData); 
-
-      return res.json({
-        message: "Student deleted by admin"
-      });
     }
 
     return res.status(403).json({
