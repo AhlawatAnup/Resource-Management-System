@@ -15,7 +15,7 @@ function handleSendStudentProfileUnverifiedByAdminEmail(updatedStudent, studentI
     console.error("Error sending student unverification email:", error);
   }
 
-  try {
+try {
     notifyStudent(studentId, {
       title: 'Student Profile unverified by Admin',
       body: 'Your profile has been unverified by admin.'
@@ -60,8 +60,28 @@ async function handleSendStudentProfileRejectedByAdminEmail(studentData) {
   }
 }
 
+async function handleSendStudentProfileVerifiedByTeacherEmail(studentData, teacherName) {
+  if (!studentData) return;
+
+  try {
+    const emailResult = await emailService.sendStudentProfileVerifiedByTeacherEmail(
+      studentData.email,
+      studentData.name,
+      teacherName
+    );
+
+    console.log(
+      "Email sent for student profile verified by teacher:",
+      emailResult
+    );
+  } catch (error) {
+    console.error("Error sending teacher verification email:", error);
+  }
+}
+
 module.exports = {
   handleSendStudentProfileUnverifiedByAdminEmail,
   handleSendStudentProfileRejectedByTeacherEmail,
-  handleSendStudentProfileRejectedByAdminEmail
+  handleSendStudentProfileRejectedByAdminEmail,
+  handleSendStudentProfileVerifiedByTeacherEmail,
 };

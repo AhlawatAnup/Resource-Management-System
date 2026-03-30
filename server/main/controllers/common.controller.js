@@ -11,7 +11,7 @@ const { notifyAdmin } = require('../utils/web-push-notifications/notifyAdmin.js'
 const { notifyTeacher } = require('../utils/web-push-notifications/notifyTeacher.js');
 const { notifyStudent } = require('../utils/web-push-notifications/notifyStudent.js');
 const { fetchMachineById, calculateAllotmentWindow, isValidDuration, deleteStudent } = require("../utils/common.utils.js");
-const { handleSendStudentProfileRejectedByTeacherEmail, handleSendStudentProfileRejectedByAdminEmail } = require('../utils/email/emailHandler.js');
+const emailHandler = require('../utils/email/emailHandler.js');
 
 
 exports.roleBasedDashboard = (req, res) => {
@@ -105,7 +105,7 @@ exports.updateStudentVerification = async (req, res) => {
       } else {
         await deleteStudent(student_id);
 
-        handleSendStudentProfileRejectedByTeacherEmail(studentData, teacherId);
+        emailHandler.handleSendStudentProfileRejectedByTeacherEmail(studentData, teacherId);
 
         return res.json({
           message: "Student rejected and deleted successfully"
@@ -143,7 +143,7 @@ exports.updateStudentVerification = async (req, res) => {
         await deleteStudent(student_id);
 
         // 3. Fire-and-forget email notification
-        handleSendStudentProfileRejectedByAdminEmail(studentData);
+        emailHandler.handleSendStudentProfileRejectedByAdminEmail(studentData);
 
         // 4. Respond immediately
         return res.json({

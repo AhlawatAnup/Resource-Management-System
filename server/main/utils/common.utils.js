@@ -5,7 +5,7 @@ const ResourceRequest = require("../database/resourceRequestModel");
 const Machine = require("../database/machineModel");
 const MachineAllotment = require("../database/machineAllotmentModel.js");
 const { saveAllotmentHistory } = require('./machineHistory/historyHelper.js');
-const { handleSendStudentProfileUnverifiedByAdminEmail } = require('./email/emailHandler.js');
+const emailHandler = require('../utils/email/emailHandler.js');
 
 const isValidDuration = function (duration) {
   return Number.isInteger(duration) && duration >= 1 && duration <= 15;
@@ -225,7 +225,7 @@ const unverifyStudent = async (studentId) => {
     const updatedStudent = await resetStudentVerificationFlags(studentId);
     
     // 4. Send unverfication email, push notification
-    handleSendStudentProfileUnverifiedByAdminEmail(student, studentId);
+    emailHandler.handleSendStudentProfileUnverifiedByAdminEmail(student, studentId);
 
     return {
       success: true,
