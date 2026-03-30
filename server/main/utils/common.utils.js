@@ -225,7 +225,7 @@ const unverifyStudent = async (studentId) => {
     const updatedStudent = await resetStudentVerificationFlags(studentId);
     
     // 4. Send unverfication email, push notification
-    await handleSendStudentProfileUnverifiedByAdminEmail(updatedStudent, studentId);
+    handleSendStudentProfileUnverifiedByAdminEmail(student, studentId);
 
     return {
       success: true,

@@ -1,18 +1,20 @@
-async function handleSendStudentProfileUnverifiedByAdminEmail(updatedStudent, studentId) {
+const emailService = require("../../utils/email/emails.service");
+const { notifyStudent } = require('../../utils/web-push-notifications/notifyStudent.js');
+
+function handleSendStudentProfileUnverifiedByAdminEmail(updatedStudent, studentId) {
   if (!updatedStudent) return;
 
   try {
-    const emailResult = await emailService.sendStudentProfileUnverifiedByAdminEmail(
+    const emailResult = emailService.sendStudentProfileUnverifiedByAdminEmail(
       updatedStudent.email,
       updatedStudent.name
     );
-    console.log("Student unverification email sent:", emailResult);
   } catch (error) {
     console.error("Error sending student unverification email:", error);
   }
 
   try {
-    await notifyStudent(studentId, {
+    notifyStudent(studentId, {
       title: 'Student Profile unverified by Admin',
       body: 'Your profile has been unverified by admin.'
     });

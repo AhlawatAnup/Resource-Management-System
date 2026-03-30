@@ -7,7 +7,6 @@ const Machine = require('../database/machineModel');
 const MachineAllotment = require("../database/machineAllotmentModel.js");
 const path = require("path");
 const publicPath = path.join(__dirname, "../../../public");
-const emailService = require("../utils/email/emails.service.js");
 const { notifyAdmin } = require('../utils/web-push-notifications/notifyAdmin.js');
 const { notifyTeacher } = require('../utils/web-push-notifications/notifyTeacher.js');
 const { notifyStudent } = require('../utils/web-push-notifications/notifyStudent.js');
