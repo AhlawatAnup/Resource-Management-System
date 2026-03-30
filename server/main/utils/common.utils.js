@@ -140,8 +140,6 @@ const deleteStudentDependencies = async (student) => {
       throw new Error("Student object is required");
     }
 
-    //TO DO: add to history first
-
     // 1️⃣ Fetch all resource request IDs
     const requests = await ResourceRequest.find({ studentId: student._id }).select('_id');
     const requestIds = requests.map(r => r._id);
@@ -239,6 +237,18 @@ const unverifyStudent = async (studentId) => {
   }
 };
 
+const removeStudentFromTeachers = async (studentId) => {
+  try {
+    await Teacher.updateMany(
+      { students: studentId },
+      { $pull: { students: studentId } }
+    );
+    console.log(`Removed student ${studentId} from all teachers`);
+  } catch (err) {
+    console.error(`Failed to remove student ${studentId} from teachers:`, err);
+  }
+};
+
 
 const deleteStudent = async (studentId) => {
   console.log("detle student called")
@@ -252,6 +262,8 @@ const deleteStudent = async (studentId) => {
     if (!student) {
       throw new Error("Student not found");
     }
+
+    await removeStudentFromTeachers(studentId);
 
     // Delete student
     await Student.deleteOne({ _id: studentId });
