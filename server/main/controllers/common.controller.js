@@ -197,7 +197,7 @@ exports.updateResourceRequestVerification = async (req, res) => {
 
     try {
       const existingRequest = await ResourceRequest.findById(request_id)
-      .populate("studentId", "name email");;
+      .populate("studentId");
 
       if (!existingRequest) {
         return res.status(404).json({ error: "Resource request not found" });
@@ -282,15 +282,14 @@ exports.updateResourceRequestVerification = async (req, res) => {
           status: "active"
         });
         
-        emailHandler.handleSendResourceRequestVerifiedEmail(
-          existingRequest.studentId.email, 
-          existingRequest.studentId.name, 
-          existingRequest.title,
+        emailHandler.handleSendResourceRequestVerifiedEmail({
+          student: existingRequest.studentId,
+          request: existingRequest,
+          machine,
           startTime,
           endTime,
-          machine.MIGID,
-          duration,
-        )
+          duration
+        });
       }
       
       if (!is_verified) {

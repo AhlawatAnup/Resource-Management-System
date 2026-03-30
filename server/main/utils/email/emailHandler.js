@@ -2,6 +2,7 @@ const emailService = require("../../utils/email/emails.service");
 const Student = require('../../database/studentModel.js');
 const Teacher = require('../../database/teacherModel.js');
 const { notifyStudent } = require('../../utils/web-push-notifications/notifyStudent.js');
+const { generateUndertakingPDF } = require("../email/common/undertakingPdfGenerator.js");
 
 function handleSendStudentProfileUnverifiedByAdminEmail(updatedStudent, studentId) {
   if (!updatedStudent) return;
@@ -96,19 +97,39 @@ async function handleSendAdminStudentVerificationPendingEmail(student, teacher) 
   }
 }
 
-// Handler for Verified Email
-async function handleSendResourceRequestVerifiedEmail(
-  studentEmail,
-  studentName,
-  requestTitle,
+async function handleSendResourceRequestVerifiedEmail({
+  student,
+  request,
+  machine,
   startTime,
   endTime,
-  migId,
   duration
-) {
+}) {
+  const studentEmail = student?.email;
+  const studentName = student?.name;
+  const studentRollNo = student?.rollNo;
+  const studentBranch = student?.branch;
+  const studentInstituteName = student?.instituteName;
+  const studentInstituteAddress = student?.instituteAddress;
+
+  const requestTitle = request?.title;
+  const purpose = request?.purpose;
+
+  const migId = machine?.MIGID;
+
   if (!studentEmail) return;
 
   try {
+    const studentData = {
+      name: studentName,
+      rollNo: studentRollNo,
+      branch: studentBranch,
+      instituteName: studentInstituteName,
+      instituteAddress: studentInstituteAddress
+    };
+
+    const pdfBuffer = await generateUndertakingPDF(studentData, purpose);
+
     const result = await emailService.sendResourceRequestVerifiedEmail({
       studentEmail,
       studentName,
@@ -116,12 +137,23 @@ async function handleSendResourceRequestVerifiedEmail(
       startTime,
       endTime,
       migId,
-      duration
+      duration,
+      attachments: [
+        {
+          filename: "undertaking.pdf",
+          content: pdfBuffer,
+          contentType: "application/pdf"
+        }
+      ]
     });
+
+    return result;
+
   } catch (error) {
     console.error("Error sending verified email:", error);
   }
 }
+
 // Handler for Rejected Email
 async function handleSendResourceRequestRejectedEmail(studentEmail, studentName, requestTitle) {
   try {

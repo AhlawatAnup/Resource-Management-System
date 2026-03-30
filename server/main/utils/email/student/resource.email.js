@@ -65,7 +65,8 @@ const sendResourceRequestVerifiedEmail = async ({
   startTime,
   endTime,
   migId,
-  duration
+  duration,
+  attachments = [] 
 }) => {
   const formatDate = (date) =>
     new Date(date).toLocaleString("en-IN", {
@@ -80,6 +81,7 @@ const sendResourceRequestVerifiedEmail = async ({
   return sendEmail({
     to: studentEmail,
     subject: `[VERIFIED] Your Resource Request is Approved`,
+    attachments, 
     html: `
       <div style="font-family: Arial, sans-serif; max-width:600px; margin:auto;">
         <h3 style="color:#4CAF50;">🎉 Congratulations, ${studentName}!</h3>
@@ -97,10 +99,12 @@ const sendResourceRequestVerifiedEmail = async ({
         </div>
 
         <p>
-          Please log in to your dashboard to view more details and track your requests.
+          📄 An undertaking document is attached with this email. Please review it carefully.
         </p>
 
-        <p>Thank you for submitting your request!</p>
+        <p>
+          Please log in to your dashboard for more details.
+        </p>
       </div>
     `
   });
