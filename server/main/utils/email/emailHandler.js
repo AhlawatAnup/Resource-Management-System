@@ -25,7 +25,7 @@ function handleSendStudentProfileUnverifiedByAdminEmail(updatedStudent, studentI
   }
 }
 
-async function handleStudentRejectionByTeacherEmail(studentData, teacherId) {
+async function handleSendStudentProfileRejectedByTeacherEmail(studentData, teacherId) {
   if (!studentData) return;
 
   try {
@@ -45,7 +45,7 @@ async function handleStudentRejectionByTeacherEmail(studentData, teacherId) {
   }
 }
 
-async function sendStudentProfileRejectedByAdminEmail(studentData) {
+async function handleSendStudentProfileRejectedByAdminEmail(studentData) {
   if (!studentData) return;
 
   try {
@@ -62,6 +62,6 @@ async function sendStudentProfileRejectedByAdminEmail(studentData) {
 
 module.exports = {
   handleSendStudentProfileUnverifiedByAdminEmail,
-  handleStudentRejectionByTeacherEmail,
-  sendStudentProfileRejectedByAdminEmail
+  handleSendStudentProfileRejectedByTeacherEmail,
+  handleSendStudentProfileRejectedByAdminEmail
 };
