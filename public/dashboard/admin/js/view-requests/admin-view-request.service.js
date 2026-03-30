@@ -68,7 +68,7 @@ export async function fetchAvailableMachines() {
 }
 
 // Revoke a resource request (admin)
-export async function revokeAdminRequest(requestId) {
+export async function revokeStudentRequest(requestId) {
   const res = await fetch(`/dashboard/admin/revoke/${requestId}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' }
