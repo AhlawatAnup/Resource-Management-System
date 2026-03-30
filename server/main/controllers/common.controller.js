@@ -91,6 +91,8 @@ exports.updateStudentVerification = async (req, res) => {
           { new: true }
         );
 
+        emailHandler.handleSendAdminStudentVerificationPendingEmail(student, teacher);
+
         notifyAdmin({
           title: 'New Student Registered',
           body: 'Requires admin verification.'

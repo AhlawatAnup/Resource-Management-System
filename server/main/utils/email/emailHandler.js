@@ -76,9 +76,30 @@ async function handleSendStudentProfileVerifiedByAdminEmail(student) {
   }
 }
 
+async function handleSendAdminStudentVerificationPendingEmail(student, teacher) {
+  if (!student) return;
+
+  try {
+    const { name, email, rollNo } = student;
+
+    const result = await emailService.sendAdminStudentVerificationPendingEmail(
+      name,
+      email,
+      rollNo,
+      teacher.name
+    );
+
+    console.log("Admin notified of student verification pending:", result);
+
+  } catch (error) {
+    console.error("Error sending admin verification pending email:", error);
+  }
+}
+
 module.exports = {
   handleSendStudentProfileUnverifiedByAdminEmail,
   handleSendStudentProfileRejectedByTeacherEmail,
   handleSendStudentProfileRejectedByAdminEmail,
   handleSendStudentProfileVerifiedByAdminEmail,
+  handleSendAdminStudentVerificationPendingEmail,
 };
