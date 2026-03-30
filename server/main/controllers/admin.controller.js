@@ -252,13 +252,6 @@ exports.unverifyStudentByAdmin = async (req, res) => {
     await makeMachineHistory(student_id);
     const result = await unverifyStudent(student_id);
 
-    notifyStudent(student_id, {
-      title: 'Student Profile unverified by Admin',
-      body: `Your profile has been unverified by admin.`
-    }).catch(err => {
-      console.error("Error sending student web-push notification:", err);
-    });
-
     return res.status(200).json(result);
 
   } catch (err) {

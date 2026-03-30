@@ -203,24 +203,50 @@ const resetStudentVerificationFlags = async (studentId) => {
   }
 };
 
+async function handleSendStudentProfileUnverifiedByAdminEmail(updatedStudent, studentId) {
+  if (!updatedStudent) return;
+
+  try {
+    const emailResult = await emailService.sendStudentProfileUnverifiedByAdminEmail(
+      updatedStudent.email,
+      updatedStudent.name
+    );
+    console.log("Student unverification email sent:", emailResult);
+  } catch (error) {
+    console.error("Error sending student unverification email:", error);
+  }
+
+  try {
+    await notifyStudent(studentId, {
+      title: 'Student Profile unverified by Admin',
+      body: 'Your profile has been unverified by admin.'
+    });
+  } catch (err) {
+    console.error("Error sending student web-push notification:", err);
+  }
+}
+
 const unverifyStudent = async (studentId) => {
   try {
     if (!studentId) {
       throw new Error("studentId is required");
     }
 
-    // 1️⃣ Fetch student once
+    // 1️. Fetch student once
     const student = await Student.findById(studentId);
 
     if (!student) {
       throw new Error("Student not found");
     }
 
-    // 2️⃣ Delete all dependencies (requests + allotments + clear array)
+    // 2️. Delete all dependencies (requests + allotments + clear array)
     await deleteStudentDependencies(student);
 
-    // 3️⃣ Reset verification flags on student
+    // 3️. Reset verification flags on student
     const updatedStudent = await resetStudentVerificationFlags(studentId);
+    
+    // 4. Send unverfication email, push notification
+    await handleSendStudentProfileUnverifiedByAdminEmail(updatedStudent, studentId);
 
     return {
       success: true,
