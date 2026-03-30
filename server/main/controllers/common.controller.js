@@ -11,6 +11,8 @@ const { notifyAdmin } = require('../utils/web-push-notifications/notifyAdmin.js'
 const { notifyTeacher } = require('../utils/web-push-notifications/notifyTeacher.js');
 const { notifyStudent } = require('../utils/web-push-notifications/notifyStudent.js');
 const { fetchMachineById, calculateAllotmentWindow, isValidDuration, deleteStudent } = require("../utils/common.utils.js");
+const { handleStudentRejectionByTeacherEmail, sendStudentProfileRejectedByAdminEmail } = require('../utils/email/emailHandler.js');
+
 
 exports.roleBasedDashboard = (req, res) => {
   if (!req.session.user) {
@@ -64,86 +66,99 @@ exports.updateStudentVerification = async (req, res) => {
   const { student_id } = req.params;
   const { is_verified } = req.body;
   const userRole = req.session.user?.role;
-
-  const studentId = student_id;
+  const teacherId = req.session.user?.id;
 
   try {
-    const student = await Student.findById(studentId);
+    const student = await Student.findById(student_id).lean();
+
     if (!student) {
       return res.status(404).json({ error: "Student not found" });
     }
 
-    let updateData = {};
+    const studentData = {
+      _id: student._id,
+      email: student.email,
+      name: student.name
+    };
 
     if (userRole === "teacher") {
+
       if (is_verified) {
-        updateData = {
-          teacher_verified: is_verified,
-          teacher_action: true
-        };
-      } else {
-        await deleteStudent(studentId);
-        
-        return res.json({ message: "Student account has been deleted successfully" });
+        const updatedStudent = await Student.findByIdAndUpdate(
+          student_id,
+          {
+            teacher_verified: true,
+            teacher_action: true
+          },
+          { new: true }
+        );
+
+        notifyAdmin({
+          title: 'New Student Registered',
+          body: 'Requires admin verification.'
+        }).catch(console.error);
+
+        return res.json({
+          message: "Student approved by teacher",
+          student: updatedStudent
+        });
       }
-    } else if (userRole === "admin") {
-      if (is_verified) {
-        updateData = {
-          teacher_verified: true,
-          teacher_action: true,
-          admin_verified: true,
-          admin_action: true,
-          is_verified: true
-        };
-      } else {
-        await deleteStudent(studentId);
-        
-        return res.json({ message: "Student account and associated resources have been deleted successfully" });
-      }
-    } else {
-      return res.status(403).json({ error: "Unauthorized to update student verification" });
+
+      await deleteStudent(student_id);
+
+      handleStudentRejectionByTeacherEmail(studentData, teacherId);
+
+      return res.json({
+        message: "Student rejected and deleted successfully"
+      });
     }
 
+    if (userRole === "admin") {
 
-    const updatedStudent = await Student.findByIdAndUpdate(
-      studentId,
-      updateData,
-      { new: true }
-    );
+      if (is_verified) {
+        const updatedStudent = await Student.findByIdAndUpdate(
+          student_id,
+          {
+            teacher_verified: true,
+            teacher_action: true,
+            admin_verified: true,
+            admin_action: true,
+            is_verified: true
+          },
+          { new: true }
+        );
 
-    // Send emails
-    if (updatedStudent) {
-      if (userRole === "teacher") {
-        if (is_verified) {
-          notifyAdmin({
-            title: 'New Student Registered',
-            body: 'Requires admin verification.'
-          }).catch(err => {
-            console.error('Error sending admin web push notification:', err);
-          });
-        }
-      } else if (userRole === "admin") {
-        if (is_verified) {
-          notifyStudent(studentId, {
-            title: 'Student Profile Verified by Admin',
-            body: `Your profile has been verified by admin.`
-          }).catch(err => {
-            console.error("Error sending student web-push notification:", err);
-          });
-        }
+        notifyStudent(student_id, {
+          title: 'Student Profile Verified by Admin',
+          body: 'Your profile has been verified by admin.'
+        }).catch(console.error);
+
+        return res.json({
+          message: "Student fully verified",
+          student: updatedStudent
+        });
       }
+
+      await deleteStudent(student_id);
+
+      sendStudentProfileRejectedByAdminEmail(studentData); 
+
+      return res.json({
+        message: "Student deleted by admin"
+      });
     }
 
-    return res.json({
-      message: "Student verification status updated successfully",
-      student: { ...updatedStudent._doc }
+    return res.status(403).json({
+      error: "Unauthorized to update student verification"
     });
+
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: "Failed to update student verification" });
+    console.error("Update error:", err);
+    return res.status(500).json({
+      error: "Failed to update student verification"
+    });
   }
 };
-
 exports.teacher_data = async (req, res) => {
   const { teacher_id } = req.params;
   // console.log("requested Teacher data", teacher_id);
