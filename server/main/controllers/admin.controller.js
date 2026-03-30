@@ -69,18 +69,13 @@ exports.updateTeacherVerification = async (req, res) => {
   const { teacher_id } = req.params;
   const { is_verified } = req.body;
 
-  // console.log("Updating teacher verification", teacher_id, "to", is_verified);
-
   try {
     const teacher = await Teacher.findById(teacher_id);
     if (!teacher) {
       return res.status(404).json({ error: "Teacher not found" });
     }
 
-    // Email notification for teacher profile verification/rejection
-
     if (is_verified) {
-      // Approve: Update teacher verification status
       const updatedTeacher = await Teacher.findByIdAndUpdate(
         teacher_id,
         {
