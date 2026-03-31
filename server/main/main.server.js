@@ -11,7 +11,7 @@ const schedule = require("node-schedule");
 const { runBackup } = require("./services/backup");
 const pushSubscriptionRoutes = require("./routes/pushSubscription.route.js");
 const proxyMachineRoute = require("./proxy/routes/proxyMachine.route.js");
- const {sendExpiryEmails} = require("./services/resourceExpiryNotifier");
+ const {sendAllotmentNotifications} = require("./services/resourceExpiryNotifier");
 const attachWebSocketProxy = require("./proxy/websocketProxy.js");
 const { markExpiredAllotmentsHistoryAndCleanupDocker } = require("./services/expiryAllotmentsAndDocker.js"); // adjust path
 const { collectAndStoreStats } = require("./services/collectAllMachineStats.js");
@@ -133,12 +133,12 @@ schedule.scheduleJob(backupSchedule, async () => {
   }
 });
 
-// Schedule job to go through each allotment and send email if today is the expiry day
+// Schedule job to go through each allotment and send email if today is the starting or expiry day
 const expiryNotifySchedule = process.env.EXPIRY_NOTIFY_SCHEDULE || "0 9 * * *";
 schedule.scheduleJob(expiryNotifySchedule, async () => {
   try {
     console.log("🕘 Running expiry check job...");
-    await sendExpiryEmails();
+    await sendAllotmentNotifications();
   } catch (error) {
     console.error("Scheduled expiry check failed:", error);
   }

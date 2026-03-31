@@ -27,7 +27,11 @@ const MachineAllotmentSchema = new mongoose.Schema(
     type: Boolean,
     default: false
   },
-    expiryNotified: {
+  startNotified: {
+      type: Boolean,
+      default: false
+  },
+  expiryNotified: {
     type: Boolean,
     default: false
   },
