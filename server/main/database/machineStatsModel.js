@@ -1,9 +1,10 @@
 const mongoose = require('mongoose');
 
-// Schema optimized for Time Series, grouping by user (user = machine alias)
 const MachineStatSchema = new mongoose.Schema({
   timestamp: { type: Date, required: true },
+  MIGID: { type: String, required: true },  
   user: { type: String, required: true },
+  parentMachine: { type: String, required: true },
   cpuPerc: Number,
   memUseMiB: Number,
   memTotalMiB: Number,
@@ -12,7 +13,7 @@ const MachineStatSchema = new mongoose.Schema({
 }, {
   timeseries: {
     timeField: 'timestamp',
-    metaField: 'user',
+    metaField: 'MIGID',
     granularity: 'minutes'
   },
   autoCreate: true
