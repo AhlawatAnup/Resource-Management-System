@@ -13,7 +13,7 @@ const pushSubscriptionRoutes = require("./routes/pushSubscription.route.js");
 const proxyMachineRoute = require("./proxy/routes/proxyMachine.route.js");
  const {sendExpiryEmails} = require("./services/resourceExpiryNotifier");
 const attachWebSocketProxy = require("./proxy/websocketProxy.js");
-const { markExpiredAllotmentsDeleted } = require("./services/expiryAllotmentsAndDocker.js"); // adjust path
+const { markExpiredAllotmentsHistoryAndCleanupDocker } = require("./services/expiryAllotmentsAndDocker.js"); // adjust path
 const { collectAndStoreStats } = require("./services/collectAllMachineStats.js");
 
 let statsConnection;
@@ -144,13 +144,19 @@ schedule.scheduleJob(expiryNotifySchedule, async () => {
   }
 });
 
+// Run expired allotments cleanup once on server start
+markExpiredAllotmentsHistoryAndCleanupDocker()
+  .then(() => console.log('Initial expired allotments cleanup done.'))
+  .catch(err => console.error('Initial expired allotments cleanup failed:', err));
+
 // Schedule job to go through all machine allotmetns: save history and restart machine using docker
 const expiryAllotmentsSchedule = process.env.EXPIRY_ALLOTMENTS_SCHEDULE;
 schedule.scheduleJob(expiryAllotmentsSchedule, async () => {
   console.log(`Expired allotments scheduler started...`);
-  await markExpiredAllotmentsDeleted();
+  await markExpiredAllotmentsHistoryAndCleanupDocker();
 });
 
+// Schedule job for storing machine stats in seperate DB
 const machineStatsSchedule = process.env.MACHINE_STATS_SCHEDULE || "0 0 * * *";
 schedule.scheduleJob(machineStatsSchedule, async () => {
   console.log(`[${new Date().toLocaleTimeString()}] Starting stats collection...`);
