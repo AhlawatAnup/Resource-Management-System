@@ -69,6 +69,41 @@ export function renderResourceRequests(requests, deps) {
     `;
 
     tbody.appendChild(tr);
+    
+    // info-btn logic starts
+    if (request.migId) {
+      const infoBtn = tr.querySelector('.info-btn');
+      if (infoBtn) {
+        initializeMachineInfoTippy(infoBtn);
+      }
+    }
+    
+    function initializeMachineInfoTippy(infoBtn) {
+      const machine = JSON.parse(infoBtn.getAttribute('data-request'));
+      const htmlContent = `
+      <p><b>MIG ID:</b> ${machine.migId ?? '-'}</p>
+      <p><b>User:</b> ${machine.user ?? '-'}</p>
+      <p><b>GPU:</b> ${machine.gpuRam ?? '-'} GB</p>
+      <p><b>RAM:</b> ${machine.ram ?? '-'} GB</p>
+      <p><b>IP:</b> ${machine.ip ?? '-'}</p>
+      <p><b>Port:</b> ${machine.port ?? '-'}</p>
+      <p><b>Name:</b> ${machine.name ?? '-'}</p>
+      `;
+      
+      tippy(infoBtn, {
+        content: htmlContent,
+        allowHTML: true,
+        placement: 'right',
+        arrow: true,
+        animation: 'shift-away',
+        duration: [150, 50],
+        delay: [0, 0],
+        maxWidth: 250,
+        interactive: true,
+        hideOnClick: true,
+      });
+    }
+    // info-btn logic ends
   });
 }
 
@@ -160,70 +195,4 @@ export function setFieldError(id, message) {
 // Clipboard copy
 export function copyToClipboard(value) {
   return navigator.clipboard.writeText(value);
-}
-
-export function showMachinePopup(machine, anchorBtn) {
-  const overlay = document.createElement('div');
-  overlay.className = 'popup-overlay';
-
-  const popup = document.createElement('div');
-  popup.className = 'machine-popup';
-
-  popup.innerHTML = `
-    <h4>Machine Details</h4>
-    <p><b>MIG ID:</b> ${machine.migId ?? '-'}</p>
-    <p><b>User:</b> ${machine.user ?? '-'}</p>
-    <p><b>GPU:</b> ${machine.gpuRam ?? '-'} GB</p>
-    <p><b>RAM:</b> ${machine.ram ?? '-'} GB</p>
-    <p><b>IP:</b> ${machine.ip ?? '-'}</p>
-    <p><b>Port:</b> ${machine.port ?? '-'}</p>
-    <p><b>Name:</b> ${machine.name ?? '-'}</p>
-  `;
-
-  overlay.appendChild(popup);
-  document.body.appendChild(overlay);
-
-  // Position popup near the button
-  if (anchorBtn) {
-    popup.style.position = 'absolute';
-    popup.style.top = '0';
-    popup.style.left = '0';
-    popup.style.transform = 'none';
-
-    const rect = anchorBtn.getBoundingClientRect();
-    const scrollX = window.scrollX || window.pageXOffset;
-    const scrollY = window.scrollY || window.pageYOffset;
-
-    // Measure popup size
-    popup.style.visibility = 'hidden';
-    document.body.appendChild(popup);
-
-    const popupRect = popup.getBoundingClientRect();
-    popup.style.visibility = '';
-
-    // Ensure popup is inside overlay
-    if (popup.parentNode !== overlay) {
-      popup.remove();
-      overlay.appendChild(popup);
-    }
-
-    let top = rect.top + scrollY;
-    let left = rect.left + scrollX;
-
-    // Prevent overflow bottom
-    if (top + popupRect.height > window.innerHeight + scrollY) {
-      top = rect.bottom + scrollY - popupRect.height;
-      if (top < scrollY) top = scrollY;
-    }
-
-    popup.style.top = `${top}px`;
-    popup.style.left = `${left}px`;
-  }
-
-  // Close on outside click
-  overlay.addEventListener('click', (e) => {
-    if (e.target === overlay) {
-      overlay.remove();
-    }
-  });
 }
