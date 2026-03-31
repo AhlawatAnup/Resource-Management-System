@@ -144,9 +144,7 @@ const sendResourceRequestRevokedByAdminEmail = async (
   studentEmail,
   studentName,
   requestTitle,
-  migId
 ) => {
-  const migLine = migId ? `<p style="margin:4px 0;"><strong>MIG ID:</strong> ${migId}</p>` : '';
 
   return sendEmail({
     to: studentEmail,
@@ -162,11 +160,6 @@ const sendResourceRequestRevokedByAdminEmail = async (
           <strong>"${requestTitle}"</strong>
           has been revoked by the administrator.
         </p>
-
-        <div style="background-color:#ffebee; border:1px solid #ffcdd2; padding:12px; border-radius:6px; margin:16px 0;">
-          <p style="margin:0 0 8px 0;"><strong>Access Status:</strong> Removed</p>
-          ${migLine}
-        </div>
 
         <p>If you still need resources, please submit a new request with updated details.</p>
       </div>

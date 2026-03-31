@@ -591,10 +591,14 @@ exports.revokeResourceRequest = async (req, res) => {
     }
 
     // 2. Find request
-    const request = await ResourceRequest.findById(requestId);
+    const request = await ResourceRequest.findById(requestId).populate("studentId");
 
     if (!request) {
       return res.status(404).json({ message: "Request not found" });
+    }
+
+    if (!request.studentId) {
+      return res.status(404).json({ message: "Student not found for this request" });
     }
 
     // 3. Update request
@@ -615,8 +619,17 @@ exports.revokeResourceRequest = async (req, res) => {
       }
     );
 
+    // 5. Send notification email to student
+    emailService.sendResourceRequestRevokedByAdminEmail(
+      request.studentId.email,
+      request.studentId.name,
+      request.title
+    )
+    .then(result => console.log("Resource revoked email sent to student:", result))
+    .catch(error => console.error("Error sending resource revoked email:", error));
+
     return res.status(200).json({
-      message: "Request rejected and allotments deactivated",
+      message: "Request rejected, allotments deactivated, and student notified",
       updatedCount: result.modifiedCount,
     });
 
