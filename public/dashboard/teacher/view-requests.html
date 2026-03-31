@@ -102,34 +102,6 @@
             </tbody>
           </table>
         </div>
-        <!-- Edit Resource Request Modal (Teacher, styled like Admin) -->
-        <div id="editRequestModal" class="modal">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h3><i class="fas fa-pen-to-square"></i> Edit Resource Request</h3>
-              <button class="close-btn" id="closeEditModal">&times;</button>
-            </div>
-            <form id="editRequestForm">
-              <input type="hidden" id="editRequestId" />
-              <div class="modal-body">
-                <div class="form-row">
-                  <div class="form-group">
-                    <label for="editTitle">Title:</label>
-                    <input type="text" id="editTitle" name="title" class="form-control" required />
-                    <div id="edit-title-error" style="color: red; font-size: 0.9em; margin-top: 2px;"></div>
-                  </div>
-                  <div class="form-group">
-                    <label for="editPurpose">Purpose:</label>
-                    <input type="text" id="editPurpose" name="purpose" class="form-control" required />
-                  </div>
-                </div>
-              <div class="modal-footer">
-                <!-- <button type="button" class="btn btn-secondary" id="closeEditModal">Cancel</button> -->
-                <button type="submit" class="btn btn-primary">Save Changes</button>
-              </div>
-            </form>
-          </div>
-        </div>
       </div>
     </main>
 

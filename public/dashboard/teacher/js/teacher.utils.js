@@ -119,9 +119,6 @@ export function getActionButtons(request) {
     <button class="icon-btn decline-btn" title="Decline Request" data-request-id="${request._id}" data-action="decline">
       <i class="fa-solid fa-times"></i>
     </button>
-    <button class="icon-btn edit-btn" title="Edit Request" data-request-id="${request._id}" data-action="edit">
-      <i class="fa-solid fa-pen-to-square"></i>
-    </button>
   `;
 }
 

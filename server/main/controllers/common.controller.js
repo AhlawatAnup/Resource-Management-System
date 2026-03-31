@@ -323,51 +323,6 @@ exports.updateResourceRequestVerification = async (req, res) => {
     }
 };
 
-// Common function for editing a resource request by teacher or admin
-exports.editResourceRequest = async (req, res) => {
-  const role = req.session.user.role;
-  if (role !== "teacher" && role !== "admin") {
-    return res.status(403).json({ error: "Unauthorized" });
-  }
-  const requestId = req.params.request_id;
-  const updateFields = req.body;
-  // Only allow certain fields to be updated
-  const allowedFields = ["title", "purpose", "expiryDate", "cpuCores", "cpuRam", "gpuRam", "username"];
-  const updates = {};
-  for (const key of allowedFields) {
-    if (updateFields[key] !== undefined) {
-      updates[key] = updateFields[key];
-    }
-  }
-  if (updates.username !== undefined && !/^[A-Za-z0-9_-]+$/.test(updates.username)) {
-    return res.status(400).json({ error: "Username can only contain letters, numbers, hyphens (-), and underscores (_), with no spaces or special characters" });
-  }
-  updates.updatedAt = new Date();
-  updates.isEdited = true;
-  try {
-    const updatedRequest = await ResourceRequest.findByIdAndUpdate(requestId, updates, { new: true });
-    if (!updatedRequest) {
-      return res.status(404).json({ error: "Resource request not found" });
-    }
-
-    // Notify admin when teacher edits a student's resource request
-    // if (role === "teacher") {
-    //   notifyAdmin({
-    //     title: 'Teacher edited resource request',
-    //     body: 'UI triggering',
-    //     // type: 'ADMIN_RESOURCE_REQUEST_UPDATED'
-    //   }).catch(err => {
-    //     console.error('Error sending admin web push notification:', err);
-    //   });
-    // }
-
-    return res.json({ success: true, resourceRequest: updatedRequest });
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: "Failed to update resource request", details: err.message });
-  }
-};
-
 // Delete student and corresponding resource requests (for admin/teacher)
 exports.deleteStudentAndResources = async (req, res) => {
   const { studentId } = req.params;
