@@ -85,7 +85,7 @@ const sendStudentProfileUnverifiedByAdminEmail = async (studentEmail, studentNam
         <p><strong>Important:</strong></p>
         <ul>
           <li>Your verification status has been reset to unverified</li>
-          <li>All your pending resource requests have been removed</li>
+          <li>All your resource requests have been removed</li>
         </ul>
       </div>
       

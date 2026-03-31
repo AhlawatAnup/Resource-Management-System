@@ -2,6 +2,7 @@ const emailService = require("../../utils/email/emails.service");
 const Student = require('../../database/studentModel.js');
 const Teacher = require('../../database/teacherModel.js');
 const { notifyStudent } = require('../../utils/web-push-notifications/notifyStudent.js');
+const { notifyTeacher } = require('../../utils/web-push-notifications/notifyTeacher.js');
 const { generateUndertakingPDF } = require("../email/common/undertakingPdfGenerator.js");
 
 function handleSendStudentProfileUnverifiedByAdminEmail(updatedStudent, studentId) {
@@ -168,6 +169,37 @@ async function handleSendResourceRequestRejectedEmail(studentEmail, studentName,
   }
 }
 
+function handleSendTeacherProfileUnverifiedByAdminEmail(updatedTeacher, teacherId) {
+  if (!updatedTeacher) return;
+
+  try {
+    // 1️⃣ Send teacher unverification email
+    emailService.sendTeacherProfileUnverifiedByAdminEmail(
+      updatedTeacher.email,
+      updatedTeacher.name
+    ).then(result => {
+      console.log(`Teacher unverification email sent to ${updatedTeacher.name}:`, result);
+    }).catch(error => {
+      console.error("Error sending teacher unverification email:", error);
+    });
+
+    // 2️⃣ Send web-push notification to teacher
+    try {
+      notifyTeacher(teacherId, {
+        title: 'Profile Unverified by Admin',
+        body: 'Your profile has been unverified by the admin.'
+      });
+    } catch (err) {
+      console.error("Error sending teacher web-push notification:", err);
+    }
+
+  } catch (err) {
+    console.error("Error in handleSendTeacherProfileUnverifiedByAdminEmail:", err);
+  }
+}
+
+module.exports = { handleSendTeacherProfileUnverifiedByAdminEmail };
+
 module.exports = {
   handleSendStudentProfileUnverifiedByAdminEmail,
   handleSendStudentProfileRejectedByTeacherEmail,
@@ -176,4 +208,5 @@ module.exports = {
   handleSendAdminStudentVerificationPendingEmail,
   handleSendResourceRequestVerifiedEmail,
   handleSendResourceRequestRejectedEmail,
+  handleSendTeacherProfileUnverifiedByAdminEmail
 };

@@ -8,7 +8,7 @@ const ResourceRequest = require("../database/resourceRequestModel");
 const emailService = require("../utils/email/emails.service.js");
 const {notifyTeacher} = require("../utils/web-push-notifications/notifyTeacher.js")
 const { notifyStudent } = require('../utils/web-push-notifications/notifyStudent.js');
-const { validateMachineInput, deleteStudentDependencies, deleteTeacher, unverifyStudent, makeMachineHistory } = require('../utils/common.utils.js');
+const { validateMachineInput, deleteTeacher, unverifyStudent, unverifyTeacher } = require('../utils/common.utils.js');
 const bcrypt = require('bcrypt');
 
 exports.admin_dashboard_data = async (req, res) => {
@@ -125,117 +125,25 @@ exports.updateTeacherVerification = async (req, res) => {
   }
 };
 
-// Teacher unverfication logic
-exports.unverifyTeacherIfPossible = async (req, res) => {
+exports.unverifyTeacher = async (req, res) => {
   const { teacher_id } = req.params;
 
   try {
-    const teacher = await Teacher.findById(teacher_id).select('students');
+    const teacher = await Teacher.findById(teacher_id);
     if (!teacher) {
       return res.status(404).json({ error: "Teacher not found" });
     }
 
-    const studentIds = Array.isArray(teacher.students) ? teacher.students : [];
-
-    // 1️⃣ Block if any student has allotted resource
-    if (studentIds.length > 0) {
-      const allottedRequests = await ResourceRequest.find({
-        studentId: { $in: studentIds },
-        is_verified: true
-      }).populate('studentId', 'rollNo name').select('studentId');
-
-      if (allottedRequests && allottedRequests.length > 0) {
-        // Extract roll numbers of students with allocated resources
-        const studentsWithResources = allottedRequests
-          .filter(req => req.studentId) // Filter out any null references
-          .map(req => ({
-            rollNo: req.studentId.rollNo,
-            name: req.studentId.name
-          }));
-
-        return res.status(400).json({
-          error: "Some students have allocated resources",
-          studentsWithResources: studentsWithResources
-        });
-      }
-    }
-
-    // 2️⃣ Delete ALL resource requests of students
-    if (studentIds.length > 0) {
-      await Promise.all(
-        studentIds.map(id => deleteStudentDependencies(id))
-      );
-    }
-
-    // 3️⃣ Unverify teacher
-    const updatedTeacher = await Teacher.findByIdAndUpdate(
-      teacher_id,
-      {
-        is_verified: false,
-        verification_completed: false
-      },
-      { new: true }
-    );
-
-    // Send email to teacher about unverification
-    if (updatedTeacher) {
-      emailService.sendTeacherProfileUnverifiedByAdminEmail(updatedTeacher.email, updatedTeacher.name)
-        .then(result => console.log("Teacher unverification email sent:", result))
-        .catch(error => console.error("Error sending teacher unverification email:", error));
-    }
-
-      notifyTeacher(teacher_id, {
-        title: 'Profile Unverified by admin',
-        body: `Your profile has been unverified by the admin.`
-      }).catch((pushErr) => {
-        console.error('[WebPush] Error in teacher notification block:', pushErr);
-      });
-
-    // 4️⃣ Unverify all students and send them emails
-    if (studentIds.length > 0) {
-      // Fetch student details before updating
-      const students = await Student.find({ _id: { $in: studentIds } }).select('email name');
-      
-      // Update all students
-      await Student.updateMany(
-        { _id: { $in: studentIds } },
-        {
-          $set: {
-            teacher_verified: false,
-            teacher_action: false,
-            admin_verified: false,
-            admin_action: false,
-            is_verified: false
-          }
-        }
-      );
-      
-      // Send emails to all affected students
-      students.forEach(student => {
-        emailService.sendStudentUnverifiedDueToTeacherUnverificationEmail(
-          student.email,
-          student.name,
-          updatedTeacher?.name || teacher.name
-        )
-        .then(result => console.log(`Student unverification email sent to ${student.name}:`, result))
-        .catch(error => console.error(`Error sending email to ${student.name}:`, error));
-
-        notifyStudent(student._id, {
-          title: 'Student Profile unverified by Admin',
-          body: `Your profile has unverified due to unverification of your teacher`
-        }).catch(err => {
-          console.error("Error sending student web-push notification:", err);
-        });
-      });
-    }
+    // Unverify teacher and all its students
+    const result = await unverifyTeacher(teacher_id);
 
     return res.json({
       success: true,
-      message: "Teacher, students, and their resource requests have been reset successfully"
+      message: result.message
     });
 
   } catch (err) {
-    console.error(err);
+    console.error("Error in unverifyTeacher:", err);
     return res.status(500).json({ error: "Failed to unverify teacher" });
   }
 };

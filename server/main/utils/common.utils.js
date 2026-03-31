@@ -170,6 +170,7 @@ const deleteStudentDependencies = async (student) => {
     throw err;
   }
 };
+
 const resetStudentVerificationFlags = async (studentId) => {
   try {
     const updatedStudent = await Student.findByIdAndUpdate(
@@ -201,7 +202,6 @@ const resetStudentVerificationFlags = async (studentId) => {
     throw err;
   }
 };
-
 
 const unverifyStudent = async (studentId) => {
   try {
@@ -251,7 +251,6 @@ const removeStudentFromTeachers = async (studentId) => {
   }
 };
 
-
 const deleteStudent = async (studentId) => {
   console.log("detle student called")
   try {
@@ -281,6 +280,46 @@ const deleteStudent = async (studentId) => {
   }
 };
 
+const resetTeacherVerificationFlags = async (teacherId) => {
+  const updatedTeacher = await Teacher.findByIdAndUpdate(
+    teacherId,
+    { $set: { is_verified: false, verification_completed: false } },
+    { new: true }
+  );
+
+  if (!updatedTeacher) throw new Error("Teacher not found");
+  return updatedTeacher;
+};
+
+const unverifyTeacher = async (teacherId) => {
+  try {
+    const teacher = await Teacher.findById(teacherId).populate("students");
+    if (!teacher) throw new Error("Teacher not found");
+
+    // Reset teacher flags
+    await resetTeacherVerificationFlags(teacherId);
+
+    // Unverify all students its students
+    await Promise.all(
+      teacher.students.map(student => unverifyStudent(student._id, teacher.name))
+    );
+
+    // Send teacher email & notification
+    emailHandler.handleSendTeacherProfileUnverifiedByAdminEmail(
+      teacher,
+      teacherId
+    );
+
+    return {
+      success: true,
+      message: `Teacher ${teacher.name} and all ${teacher.students.length} students unverified successfully`
+    };
+
+  } catch (err) {
+    console.error("Error unverifying teacher:", err.message);
+    throw err;
+  }
+};
 
 const deleteTeacher = async (teacherId) => {
 
@@ -360,6 +399,7 @@ module.exports = {
   validateMachineInput,
   deleteStudentDependencies,
   deleteStudent,
+  unverifyTeacher,
   deleteTeacher,
   unverifyStudent,
   makeMachineHistory,
