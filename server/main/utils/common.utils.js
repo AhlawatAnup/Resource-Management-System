@@ -209,6 +209,8 @@ const unverifyStudent = async (studentId) => {
       throw new Error("studentId is required");
     }
 
+    await makeMachineHistory(studentId);
+
     // 1️. Fetch student once
     const student = await Student.findById(studentId);
 

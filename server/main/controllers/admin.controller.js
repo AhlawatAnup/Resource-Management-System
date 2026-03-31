@@ -244,7 +244,6 @@ exports.unverifyStudentByAdmin = async (req, res) => {
   const { student_id } = req.params;
 
   try {
-    await makeMachineHistory(student_id);
     const result = await unverifyStudent(student_id);
 
     return res.status(200).json(result);
