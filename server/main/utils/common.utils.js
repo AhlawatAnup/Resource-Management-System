@@ -351,9 +351,6 @@ const makeMachineHistory = async (studentId) => {
   }
 };
 
-module.exports = makeMachineHistory;
-
-
 module.exports = {
   isValidDuration,
   fetchMachineById,
