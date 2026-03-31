@@ -37,9 +37,9 @@ export function filterRequestsList(requests, searchTerm) {
   const term = searchTerm.toLowerCase();
 
   return requests.filter((request) =>
-    request.studentInfo?.name?.toLowerCase().includes(term) ||
-    request.studentInfo?.rollNo?.toLowerCase().includes(term) ||
-    request.teacherInfo?.name?.toLowerCase().includes(term) ||
+    request.studentName?.toLowerCase().includes(term) ||
+    request.rollNo?.toLowerCase().includes(term) ||
+    request.teacherName?.toLowerCase().includes(term) ||
     request.title?.toLowerCase().includes(term) ||
     request.purpose?.toLowerCase().includes(term)
   );
