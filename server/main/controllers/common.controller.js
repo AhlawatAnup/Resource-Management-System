@@ -69,7 +69,10 @@ exports.updateStudentVerification = async (req, res) => {
   const userId = req.session.user?.id;
 
   try {
-    const student = await Student.findById(student_id).lean();
+    const student = await Student.findById(student_id)
+      .populate({ path: "teacher", select: "name is_verified" })
+      .lean();
+
     if (!student) {
       return res.status(404).json({ error: "Student not found" });
     }
@@ -114,6 +117,14 @@ exports.updateStudentVerification = async (req, res) => {
     else if (userRole === "admin") {
 
       if (is_verified) {
+          const teacher = student.teacher;
+          if (!teacher) {
+            return res.status(404).json({ error: "Teacher for this studnet is not found" });
+          }
+
+          if (!teacher.is_verified) {
+            return res.status(400).json({ error: `Cannot verify student since its teacher: ${student.teacher.name} is not verified` });
+          }
         const updatedStudent = await Student.findByIdAndUpdate(
           student_id,
           {

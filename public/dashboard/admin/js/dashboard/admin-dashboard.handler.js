@@ -242,7 +242,7 @@ async function handleUnverifyStudent(id, reload) {
 async function handleUnverifyTeacher(id, reload) {
   const result = await Swal.fire({
     title: 'Are you sure?',
-    text: 'Unverify this teacher and all students?',
+    text: 'Unverify this teacher and all its students?',
     icon: 'warning',
     showCancelButton: true
   });
