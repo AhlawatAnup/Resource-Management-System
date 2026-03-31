@@ -6,6 +6,7 @@ const bodyParser = require("body-parser");
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
 const connectDB = require("./database/db");
+const { connectStatsDB } = require("./database/connectStatsDB");
 const schedule = require("node-schedule");
 const { runBackup } = require("./services/backup");
 const pushSubscriptionRoutes = require("./routes/pushSubscription.route.js");
@@ -15,9 +16,13 @@ const attachWebSocketProxy = require("./proxy/websocketProxy.js");
 const { markExpiredAllotmentsDeleted } = require("./services/expiryAllotmentsAndDocker.js"); // adjust path
 const { collectAndStoreStats } = require("./services/collectAllMachineStats.js");
 
+let statsConnection;
 
-// ✅ Connect to DB
+// ✅ Connect to DBs
 connectDB();
+connectStatsDB().then(conn => {
+  statsConnection = conn;
+});
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -150,7 +155,11 @@ const machineStatsSchedule = process.env.MACHINE_STATS_SCHEDULE || "0 0 * * *";
 schedule.scheduleJob(machineStatsSchedule, async () => {
   console.log(`[${new Date().toLocaleTimeString()}] Starting stats collection...`);
   try {
-    await collectAndStoreStats();
+    if (statsConnection) {
+      await collectAndStoreStats(statsConnection);
+    } else {
+      console.error("Stats DB connection not ready");
+    }
   } catch (err) {
     console.error("Scheduler Error:", err);
   }

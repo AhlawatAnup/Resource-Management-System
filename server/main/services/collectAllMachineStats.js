@@ -1,4 +1,5 @@
-const { MachineStat } = require('../database/machineStatsModel');
+const { getMachineStatModel } = require('../database/machineStatsModel');
+let MachineStat = null;
 const { machineStats } = require('../utils/dockerAPIs/docker.service');
 
 // Convert GiB/MiB strings to integer MiB
@@ -15,7 +16,10 @@ const machines = [
   { name: 'H100', url: process.env.MACHINE_H100 },
 ];
 
-async function collectAndStoreStats() {
+async function collectAndStoreStats(statsConnection) {
+  if (!MachineStat) {
+    MachineStat = getMachineStatModel(statsConnection);
+  }
   const allEntries = [];
 
   for (const machine of machines) {
