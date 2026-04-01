@@ -11,7 +11,7 @@ async function cleanupCollections() {
     const connection = mongoose.connection.db;
 
     // List of collections to delete
-    const collectionsToDrop = ["pushsubscriptions", "histories", "resourceRequests", "machineallotments", "machines", "sessions"];
+    const collectionsToDrop = [ "histories", "resourceRequests", "machineallotments", "machines", "sessions"];
 
     for (const collectionName of collectionsToDrop) {
       // Check if the collection exists before trying to drop it
