@@ -11,7 +11,7 @@
 body {
   font-family: "Rubik", sans-serif;
   background: #f8f9fa;
-  min-height: 100vh;
+  height: 100vh;
   margin: 0;
   display: flex;
 }
@@ -92,6 +92,7 @@ body {
   flex: 1;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 /* Top Navigation Bar */
@@ -180,6 +181,7 @@ body {
   padding: 0;
   max-width: 100%;
   margin: 0;
+  overflow-y: auto;
 }
 
 /* Page Header */
