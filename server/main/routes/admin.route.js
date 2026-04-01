@@ -7,7 +7,7 @@ const {
   getPendingTeachers,
   getAllTeachers,
   updateTeacherVerification,
-  unverifyTeacherIfPossible,
+  unverifyTeacher,
   getPendingStudents,
   getAllStudents,
   getRejectedTeachers,
@@ -22,7 +22,7 @@ const {
   deleteMachine,
   deleteResourceRequestByMig,
   UpdateAdminProfile,
-  unverifyStudentIfPossible,
+  unverifyStudentByAdmin,
   revokeResourceRequest,
 } = require("../controllers/admin.controller.js");
 
@@ -31,7 +31,6 @@ const {
   student_data,
   updateStudentVerification,
   updateResourceRequestVerification,
-  editResourceRequest,
   deleteStudentAndResources,
   getAllMachines,
   getMachineWiseActiveAllotments
@@ -68,7 +67,7 @@ router.get("/teachers/pending", getPendingTeachers);
 router.get("/teachers/rejected", getRejectedTeachers);
 router.get("/teacher_data/:teacher_id", teacher_data);
 router.put("/verify_teacher/:teacher_id", updateTeacherVerification);
-router.put("/unverify_teacher/:teacher_id", unverifyTeacherIfPossible);
+router.put("/unverify_teacher/:teacher_id", unverifyTeacher);
 
 // Student management routes
 router.get("/students", getAllStudents);
@@ -76,9 +75,8 @@ router.get("/students/pending", getPendingStudents);
 router.get("/students/rejected", getRejectedStudents);
 router.get("/student_data/:student_id", student_data);
 router.put("/verify_student/:student_id", updateStudentVerification);
-router.put("/edit_request/:request_id", editResourceRequest);
 router.delete("/delete_student/:studentId", deleteStudentAndResources); // Delete student and their resource requests (admin)
-router.put("/unverify_student/:student_id", unverifyStudentIfPossible);
+router.put("/unverify_student/:student_id", unverifyStudentByAdmin);
 
 // Resource request management routes
 router.get("/resource-requests", getAllResourceRequests);

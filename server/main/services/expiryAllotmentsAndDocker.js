@@ -2,9 +2,9 @@ const MachineAllotment = require("../database/machineAllotmentModel");
 const { saveAllotmentHistory } = require("../utils/machineHistory/historyHelper.js");
 const { stopUser, deleteUser, startUser } = require("../utils/dockerAPIs/docker.service.js");
 
-async function markExpiredAllotmentsDeleted() {
+async function markExpiredAllotmentsHistoryAndCleanupDocker() {
   const now = new Date();
-  console.log("~~~~~hit");
+  console.log("~~~~~hit: markExpiredAllotmentsHistoryAndCleanupDocker");
   try {
     const allotmentsToProcess = await MachineAllotment.find({
       $or: [
@@ -15,7 +15,6 @@ async function markExpiredAllotmentsDeleted() {
     .setOptions({ includeInactive: true })
     .populate("machineId");
     
-    console.log("~~~~~hit", allotmentsToProcess.length);
     if (!allotmentsToProcess.length) {
       console.log(`[${new Date().toISOString()}] No allotments to process`);
       return;
@@ -61,4 +60,4 @@ async function markExpiredAllotmentsDeleted() {
   }
 }
 
-module.exports = { markExpiredAllotmentsDeleted };
+module.exports = { markExpiredAllotmentsHistoryAndCleanupDocker };

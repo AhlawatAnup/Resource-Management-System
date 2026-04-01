@@ -57,153 +57,83 @@ const sendResourceRequestSubmittedEmail = async (studentEmail, studentName, requ
   });
 };
 
-// Verified by Teacher
-const sendResourceRequestVerifiedByTeacherEmail = async (
+// Verified Email (for both Teacher/Admin)
+const sendResourceRequestVerifiedEmail = async ({
   studentEmail,
   studentName,
   requestTitle,
-  teacherName
-) => {
+  startTime,
+  endTime,
+  migId,
+  duration,
+  attachments = [] 
+}) => {
+  const formatDate = (date) =>
+    new Date(date).toLocaleString("en-IN", {
+      timeZone: "Asia/Kolkata",
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+
   return sendEmail({
     to: studentEmail,
-    subject: 'Resource Request Update - Teacher Approved',
+    subject: `[VERIFIED] Your Resource Request is Approved`,
+    attachments, 
     html: `
       <div style="font-family: Arial, sans-serif; max-width:600px; margin:auto;">
-        <h3 style="color:#4CAF50;">✅ Teacher Approval Received</h3>
-
-        <p>Dear <strong>${studentName}</strong>,</p>
+        <h3 style="color:#4CAF50;">🎉 Congratulations, ${studentName}!</h3>
 
         <p>
-          Your resource request
-          <strong>"${requestTitle}"</strong>
-          has been approved by
-          <strong>${teacherName}</strong>.
+          Your resource request <strong>"${requestTitle}"</strong> has been verified and approved.
+          You can now use the allocated resources as needed.
         </p>
 
-        <div style="background-color:#e8f5e9; border:1px solid #c8e6c9; padding:12px; border-radius:6px; margin:16px 0;">
-          <p style="margin:0;">
-            The request is now pending <strong>administrator approval</strong>.
-            You will be notified once the admin completes the verification.
-          </p>
+        <div style="background-color:#f5f5f5; border:1px solid #ddd; padding:12px; border-radius:6px; margin:16px 0;">
+          <p style="margin:4px 0;"><strong>Start Time:</strong> ${formatDate(startTime)}</p>
+          <p style="margin:4px 0;"><strong>End Time:</strong> ${formatDate(endTime)}</p>
+          <p style="margin:4px 0;"><strong>Duration:</strong> ${duration} day(s)</p>
+          <p style="margin:4px 0;"><strong>MIG ID:</strong> ${migId}</p>
         </div>
 
-        <p>You can track the status from your dashboard.</p>
+        <p>
+          📄 An undertaking document is attached with this email. Please review it carefully.
+        </p>
+
+        <p>
+          Please log in to your dashboard for more details.
+        </p>
       </div>
     `
   });
 };
 
-
-// Rejected by Teacher
-const sendResourceRequestRejectedByTeacherEmail = async (
+// Rejected Email (for both Teacher/Admin)
+const sendResourceRequestRejectedEmail = async ({
   studentEmail,
   studentName,
   requestTitle
-) => {
+}) => {
   return sendEmail({
     to: studentEmail,
-    subject: '[REJECTED] Resource Request Update - Teacher Review Required',
+    subject: `[REJECTED] Your Resource Request Update`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width:600px; margin:auto;">
-        <h3 style="color:#f44336;">❌ Request Rejected by Teacher</h3>
-
-        <p>Dear <strong>${studentName}</strong>,</p>
+        <h3 style="color:#f44336;">❌ Update on Your Request, ${studentName}</h3>
 
         <p>
-          Your resource request
-          <strong>"${requestTitle}"</strong>
-          has been reviewed and rejected by the teacher.
+          Your resource request <strong>"${requestTitle}"</strong> has been reviewed and rejected.
         </p>
 
         <div style="background-color:#ffebee; border:1px solid #ffcdd2; padding:12px; border-radius:6px; margin:16px 0;">
           <p style="margin:0;">
-            You may submit a <strong>new resource request</strong> with corrected
-            or updated details for further review.
+            You may submit a <strong>new request</strong> with updated or corrected details for further review.
           </p>
         </div>
 
-        <p>Please review the requirements carefully before resubmitting.</p>
-      </div>
-    `
-  });
-};
-
-
-// Verified by Admin (VM credentials)
-const sendResourceRequestVerifiedByAdminEmail = async (
-  studentEmail,
-  studentName,
-  requestTitle,
-  vmCredentials,
-  requestUsername
-) => {
-  return sendEmail({
-    to: studentEmail,
-    subject: '[VERIFIED] Resource Request Approved - VM Access Granted',
-    html: `
-      <div style="font-family: Arial, sans-serif; max-width:600px; margin:auto;">
-        <h3 style="color:#4CAF50;">🎉 Resource Request Approved</h3>
-
-        <p>Dear <strong>${studentName}</strong>,</p>
-
-        <p>
-          Your resource request
-          <strong>"${requestTitle}"</strong>
-          has been fully approved by the administrator.
-          Your virtual machine is now ready to use.
-        </p>
-
-        <div style="background-color:#f5f5f5; border:1px solid #ddd; padding:15px; border-radius:6px; margin:20px 0;">
-          <p style="margin:0 0 8px 0;"><strong>VM Access Credentials</strong></p>
-          <p style="margin:4px 0;"><strong>Username:</strong> ${requestUsername || 'N/A'}</p>
-          <p style="margin:4px 0;"><strong>Password:</strong> ${vmCredentials.password}</p>
-          <p style="margin:4px 0;"><strong>IP Address:</strong> ${vmCredentials.ip}</p>
-          <p style="margin:4px 0;"><strong>MIG ID:</strong> ${vmCredentials.migId}</p>
-        </div>
-
-        <div style="background-color:#fff3cd; border:1px solid #ffeeba; padding:12px; border-radius:6px;">
-          <p style="margin:0;">
-            Please keep these credentials secure and use the resources responsibly.
-            These credentials are also available on the website after login.
-          </p>
-        </div>
-
-        <p>You can now start using the allocated resources.</p>
-      </div>
-    `
-  });
-};
-
-
-// Rejected by Admin
-const sendResourceRequestRejectedByAdminEmail = async (
-  studentEmail,
-  studentName,
-  requestTitle
-) => {
-  return sendEmail({
-    to: studentEmail,
-    subject: '[REJECTED] Resource Request Update - Admin Review',
-    html: `
-      <div style="font-family: Arial, sans-serif; max-width:600px; margin:auto;">
-        <h3 style="color:#f44336;">❌ Request Rejected by Admin</h3>
-
-        <p>Dear <strong>${studentName}</strong>,</p>
-
-        <p>
-          Your resource request
-          <strong>"${requestTitle}"</strong>
-          has been reviewed and rejected by the administrator.
-        </p>
-
-        <div style="background-color:#ffebee; border:1px solid #ffcdd2; padding:12px; border-radius:6px; margin:16px 0;">
-          <p style="margin:0;">
-            You may submit a <strong>new request</strong> with revised details
-            if you still require the resources.
-          </p>
-        </div>
-
-        <p>Please ensure all required information is accurate before resubmitting.</p>
+        <p>Please check the details carefully before resubmitting.</p>
       </div>
     `
   });
@@ -214,9 +144,7 @@ const sendResourceRequestRevokedByAdminEmail = async (
   studentEmail,
   studentName,
   requestTitle,
-  migId
 ) => {
-  const migLine = migId ? `<p style="margin:4px 0;"><strong>MIG ID:</strong> ${migId}</p>` : '';
 
   return sendEmail({
     to: studentEmail,
@@ -233,12 +161,107 @@ const sendResourceRequestRevokedByAdminEmail = async (
           has been revoked by the administrator.
         </p>
 
-        <div style="background-color:#ffebee; border:1px solid #ffcdd2; padding:12px; border-radius:6px; margin:16px 0;">
-          <p style="margin:0 0 8px 0;"><strong>Access Status:</strong> Removed</p>
-          ${migLine}
+        <p>If you still need resources, please submit a new request with updated details.</p>
+      </div>
+    `
+  });
+};
+
+// email for: allotment start today
+const sendResourceAllotmentStartedEmail = async ({
+  studentEmail,
+  studentName,
+  requestTitle,
+  startTime,
+}) => {
+  const formattedStartTime = new Date(startTime).toLocaleString("en-IN", {
+    timeZone: "Asia/Kolkata",
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+  return sendEmail({
+      to: studentEmail,
+      subject: '[CONFIRMATION] Your Resource Allotment Has Started',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width:600px; margin:auto;">
+          <h3 style="color:#4caf50;">✅ Resource Allotment Started</h3>
+
+          <p>Dear <strong>${studentName}</strong>,</p>
+
+          <p>
+            Your resource allotment for 
+            <strong>"${requestTitle}"</strong> 
+            has officially started.
+          </p>
+
+          <div style="background-color:#f5f5f5; border:1px solid #ddd; padding:12px; border-radius:6px; margin:16px 0;">
+            <p style="margin:0;"><strong>Start Time:</strong> ${formattedStartTime}</p>
+          </div>
+
+          <p>
+            Please <strong>login to your profile</strong> on the website to start using your resources.
+          </p>
+
+          <p style="color:#1976d2; font-size: 0.9em;">
+            If you face any technical issues, please report them to the administrator immediately.
+          </p>
+
+          <p>Regards,<br>
+          <strong>UIET Cluster Resource Management System</strong></p>
+        </div>
+      `
+  });
+};
+
+// Expiry Warning (same-day expiry reminder)
+const sendResourceAllotmentExpiryTodayEmail = async ({
+  studentEmail,
+  studentName,
+  requestTitle,
+  endTime,
+}) => {
+
+  const formattedEndTime = new Date(endTime).toLocaleString("en-IN", {
+    timeZone: "Asia/Kolkata",
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+
+  return sendEmail({
+    to: studentEmail,
+    subject: '[IMPORTANT] Resource Allotment Expiring Today',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width:600px; margin:auto;">
+        <h3 style="color:#ff9800;">⏳ Resource Allotment Expiring Today</h3>
+
+        <p>Dear <strong>${studentName}</strong>,</p>
+
+        <p>
+          Your resource allotment for 
+          <strong>"${requestTitle}"</strong> 
+          is scheduled to expire today.
+        </p>
+
+        <div style="background-color:#fff3e0; border:1px solid #ffe0b2; padding:12px; border-radius:6px; margin:16px 0;">
+          <p style="margin:0 0 8px 0;"><strong>Expiry Time:</strong> ${formattedEndTime}</p>
         </div>
 
-        <p>If you still need resources, please submit a new request with updated details.</p>
+        <p>
+          Please ensure that you save all required data from the machine before expiry.
+        </p>
+
+        <p style="color:#d32f2f;">
+          Any data loss after the expiry time will be your responsibility.
+        </p>
+
+        <p>Regards,</p>
+        <strong>UIET Cluster Resource Management System</strong></p>
       </div>
     `
   });
@@ -247,9 +270,9 @@ const sendResourceRequestRevokedByAdminEmail = async (
 
 module.exports = {
   sendResourceRequestSubmittedEmail,
-  sendResourceRequestVerifiedByTeacherEmail,
-  sendResourceRequestRejectedByTeacherEmail,
-  sendResourceRequestVerifiedByAdminEmail,
-  sendResourceRequestRejectedByAdminEmail,
-  sendResourceRequestRevokedByAdminEmail
+  sendResourceRequestVerifiedEmail,
+  sendResourceRequestRejectedEmail,
+  sendResourceRequestRevokedByAdminEmail,
+  sendResourceAllotmentStartedEmail,
+  sendResourceAllotmentExpiryTodayEmail,
 };

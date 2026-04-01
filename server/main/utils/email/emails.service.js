@@ -1,6 +1,5 @@
 module.exports = {
   ...require('./common/otp.email'),
-  ...require('./common/expiry.email'),
 
   ...require('./student/registration.email'),
   ...require('./student/profile.email'),

@@ -7,11 +7,12 @@ const Machine = require('../database/machineModel');
 const MachineAllotment = require("../database/machineAllotmentModel.js");
 const path = require("path");
 const publicPath = path.join(__dirname, "../../../public");
-const emailService = require("../utils/email/emails.service.js");
 const { notifyAdmin } = require('../utils/web-push-notifications/notifyAdmin.js');
 const { notifyTeacher } = require('../utils/web-push-notifications/notifyTeacher.js');
 const { notifyStudent } = require('../utils/web-push-notifications/notifyStudent.js');
 const { fetchMachineById, calculateAllotmentWindow, isValidDuration, deleteStudent } = require("../utils/common.utils.js");
+const emailHandler = require('../utils/email/emailHandler.js');
+
 
 exports.roleBasedDashboard = (req, res) => {
   if (!req.session.user) {
@@ -62,195 +63,113 @@ exports.student_data = async (req, res) => {
 };
 
 exports.updateStudentVerification = async (req, res) => {
-  const { stu_id, student_id } = req.params; // Support both parameter names
+  const { student_id } = req.params;
   const { is_verified } = req.body;
   const userRole = req.session.user?.role;
-
-  const studentId = stu_id || student_id; // Use whichever parameter is provided
-
-  // console.log(`${userRole} updating student verification`, studentId, "to", is_verified);
+  const userId = req.session.user?.id;
 
   try {
-    const student = await Student.findById(studentId);
+    const student = await Student.findById(student_id)
+      .populate({ path: "teacher", select: "name is_verified" })
+      .lean();
+
     if (!student) {
       return res.status(404).json({ error: "Student not found" });
     }
 
-    let updateData = {};
-
     if (userRole === "teacher") {
-      // Teacher verification logic
-      if (is_verified) {
-        // Teacher approves
-        updateData = {
-          teacher_verified: is_verified,
-          teacher_action: true
-        };
-      } else {
-        // Teacher rejects → delete the student account and all related resources
-        
-        // Get teacher name for rejection email
-        const teacher = await Teacher.findById(req.session.user.id);
-        const teacherName = teacher ? teacher.name : 'your teacher';
-        
-        // Send rejection email before deleting
-        emailService.sendStudentProfileRejectedByTeacherEmail(student.email, student.name, teacherName)
-          .then(result => console.log("Email sent for student profile rejected by teacher:", result))
-          .catch(error => console.error("Error sending rejection email:", error));
-        
-        notifyStudent(studentId, {
-          title: 'Student Profile Rejected by Teacher',
-          body: `Your profile has been rejected by your teacher.`
-        }).catch(err => {
-          console.error("Error sending student web-push notification:", err);
-        });
-
-        await deleteStudent(studentId);
-        
-        return res.json({ message: "Student account and associated resources have been deleted successfully" });
+      const teacher = await Teacher.findById(userId).lean();
+      if (!teacher) {
+        return res.status(404).json({ error: "Teacher not found" });
       }
-    } else if (userRole === "admin") {
-      // Admin verification logic
+
       if (is_verified) {
-        // Admin approves → set everything true
-        updateData = {
-          teacher_verified: true,
-          teacher_action: true,
-          admin_verified: true,
-          admin_action: true,
-          is_verified: true
-        };
-      } else {
-        // Admin rejects → delete the student account and all related resources
-        
-        // Send rejection email before deleting
-        emailService.sendStudentProfileRejectedByAdminEmail(student.email, student.name)
-          .then(result => console.log("Email sent for student profile rejected by admin:", result))
-          .catch(error => console.error("Error sending rejection email:", error));
-        
-        notifyStudent(studentId, {
-          title: 'Student Profile Rejected by Admin',
-          body: `Your profile has been rejected by admin.`
-        }).catch(err => {
-          console.error("Error sending student web-push notification:", err);
+        const updatedStudent = await Student.findByIdAndUpdate(
+          student_id,
+          {
+            teacher_verified: true,
+            teacher_action: true
+          },
+          { new: true }
+        );
+
+        emailHandler.handleSendAdminStudentVerificationPendingEmail(student, teacher);
+
+        notifyAdmin({
+          title: 'New Student Registered',
+          body: 'Requires admin verification.'
+        }).catch(console.error);
+
+        return res.json({
+          message: "Student approved by teacher",
+          student: updatedStudent
         });
+      } else {
+        await deleteStudent(student_id);
 
-        // Notify teacher about admin's rejection
-        Teacher.findById(student.teacher)
-          .then(teacher => {
-            if (teacher) {
-              emailService.sendTeacherStudentRejectedByAdminEmail(teacher.email, teacher.name, student.name)
-                .then(result => console.log("Teacher notification email sent:", result))
-                .catch(error => console.error("Error sending teacher notification:", error));
-            }
-          })
-          .catch(error => console.error("Error finding teacher:", error));
+        emailHandler.handleSendStudentProfileRejectedByTeacherEmail(student, teacher);
 
-        // Notify teacher about admin's verification (web-push)
-          notifyTeacher(student.teacher, {
-            title: 'Student Verification Rejected by Admin',
-            body: `A student under you has been rejected by the Admin.`
-          }).catch((pushErr) => {
-            console.error('[WebPush] Error in teacher notification block:', pushErr);
-          });
-        
-        await deleteStudent(studentId);
-        
-        return res.json({ message: "Student account and associated resources have been deleted successfully" });
+        return res.json({
+          message: "Student rejected and deleted successfully"
+        });
       }
-    } else {
-      return res.status(403).json({ error: "Unauthorized to update student verification" });
     }
+    else if (userRole === "admin") {
 
+      if (is_verified) {
+          const teacher = student.teacher;
+          if (!teacher) {
+            return res.status(404).json({ error: "Teacher for this studnet is not found" });
+          }
 
-    const updatedStudent = await Student.findByIdAndUpdate(
-      studentId,
-      updateData,
-      { new: true }
-    );
+          if (!teacher.is_verified) {
+            return res.status(400).json({ error: `Cannot verify student since its teacher: ${student.teacher.name} is not verified` });
+          }
+        const updatedStudent = await Student.findByIdAndUpdate(
+          student_id,
+          {
+            teacher_verified: true,
+            teacher_action: true,
+            admin_verified: true,
+            admin_action: true,
+            is_verified: true
+          },
+          { new: true }
+        );
 
-    // Send email notification after successful update
-    if (updatedStudent) {
-      
-      // Send emails 
-      if (userRole === "teacher") {
-        if (is_verified) {
-          // Get teacher details for emails
-          const teacher = await Teacher.findById(req.session.user.id);
-          const teacherName = teacher ? teacher.name : 'Teacher';
-          
-          emailService.sendStudentProfileVerifiedByTeacherEmail(updatedStudent.email, updatedStudent.name, teacherName)
-            .then(result => console.log("Email sent for student profile verified by teacher:", result))
-            .catch(error => console.error("Error sending verification email:", error));
-          
-          notifyStudent(studentId, {
-            title: 'Student Profile Verified by Teacher',
-            body: `Your profile has been verified by your teacher.`
-          }).catch(err => {
-            console.error("Error sending student web-push notification:", err);
-          });
+        emailHandler.handleSendStudentProfileVerifiedByAdminEmail(student);
 
-          // Notify admins that student verification is pending (email)
-          emailService.sendAdminStudentVerificationPendingEmail(
-            updatedStudent.name,
-            updatedStudent.email,
-            updatedStudent.rollNo,
-            teacherName
-          )
-            .then(result => console.log("Admin notification sent:", result))
-            .catch(error => console.error("Error sending admin notification:", error));
+        notifyStudent(student_id, {
+          title: 'Student Profile Verified by Admin',
+          body: 'Your profile has been verified by admin.'
+        }).catch(console.error);
 
-          // Notify admin that student verification is pending (web-push)
-          notifyAdmin({
-            title: 'New Student Registered',
-            body: 'Requires admin verification.'
-          }).catch(err => {
-            console.error('Error sending admin web push notification:', err);
-          });
-        }
-      } else if (userRole === "admin") {
-        if (is_verified) {
-          emailService.sendStudentProfileVerifiedByAdminEmail(updatedStudent.email, updatedStudent.name)
-            .then(result => console.log("Email sent for student profile verified by admin:", result))
-            .catch(error => console.error("Error sending verification email:", error));
-          
-          notifyStudent(studentId, {
-            title: 'Student Profile Verified by Admin',
-            body: `Your profile has been verified by admin.`
-          }).catch(err => {
-            console.error("Error sending student web-push notification:", err);
-          });
+        return res.json({
+          message: "Student fully verified",
+          student: updatedStudent
+        });
 
-          // Notify teacher about admin's verification
-          Teacher.findById(updatedStudent.teacher)
-            .then(teacher => {
-              if (teacher) {
-                emailService.sendTeacherStudentVerifiedByAdminEmail(teacher.email, teacher.name, updatedStudent.name)
-                  .then(result => console.log("Teacher notification email sent:", result))
-                  .catch(error => console.error("Error sending teacher notification:", error));
-              }
-            })
-            .catch(error => console.error("Error finding teacher:", error));
+      } else {
 
-          // Notify teacher about admin's verification (web-push)
-          notifyTeacher(student.teacher, {
-            title: 'Student Verification approved by Admin',
-            body: `A student under you has been verified by the Admin.`
-          }).catch((pushErr) => {
-            console.error('[WebPush] Error in teacher notification block:', pushErr);
-          });
-        }
+        await deleteStudent(student_id);
+
+        emailHandler.handleSendStudentProfileRejectedByAdminEmail(student);
+
+        return res.json({
+          message: "Student deleted by admin"
+        });
       }
     }
 
-    // console.log(`Student verification updated by ${userRole}:`, updatedStudent);
-    return res.json({
-      message: "Student verification status updated successfully",
-      student: { ...updatedStudent._doc }
+    return res.status(403).json({
+      error: "Unauthorized to update student verification"
     });
+
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: "Failed to update student verification" });
+    console.error("Update error:", err);
+    return res.status(500).json({
+      error: "Failed to update student verification"
+    });
   }
 };
 
@@ -288,7 +207,8 @@ exports.updateResourceRequestVerification = async (req, res) => {
     }
 
     try {
-      const existingRequest = await ResourceRequest.findById(request_id);
+      const existingRequest = await ResourceRequest.findById(request_id)
+      .populate("studentId");
 
       if (!existingRequest) {
         return res.status(404).json({ error: "Resource request not found" });
@@ -372,18 +292,27 @@ exports.updateResourceRequestVerification = async (req, res) => {
           endTime,
           status: "active"
         });
+        
+        emailHandler.handleSendResourceRequestVerifiedEmail({
+          student: existingRequest.studentId,
+          request: existingRequest,
+          machine,
+          startTime,
+          endTime,
+          duration
+        });
       }
-
+      
+      if (!is_verified) {
+        emailHandler.handleSendResourceRequestRejectedEmail(
+          existingRequest.studentId.email, 
+          existingRequest.studentId.name, 
+          existingRequest.title
+        )
+      } 
       return res.status(200).json({
         success: true,
         message: "Resource request verification updated successfully",
-        // request: updatedRequest,
-        // machine: {
-        //   _id: machine._id,
-        //   MIGID: machine.MIGID
-        // },
-        // lastAllotmentEndTime,
-        // allotment: createdAllotment
       });
 
     } catch (err) {
@@ -392,51 +321,6 @@ exports.updateResourceRequestVerification = async (req, res) => {
         error: "Failed to update resource request verification"
       });
     }
-};
-
-// Common function for editing a resource request by teacher or admin
-exports.editResourceRequest = async (req, res) => {
-  const role = req.session.user.role;
-  if (role !== "teacher" && role !== "admin") {
-    return res.status(403).json({ error: "Unauthorized" });
-  }
-  const requestId = req.params.request_id;
-  const updateFields = req.body;
-  // Only allow certain fields to be updated
-  const allowedFields = ["title", "purpose", "expiryDate", "cpuCores", "cpuRam", "gpuRam", "username"];
-  const updates = {};
-  for (const key of allowedFields) {
-    if (updateFields[key] !== undefined) {
-      updates[key] = updateFields[key];
-    }
-  }
-  if (updates.username !== undefined && !/^[A-Za-z0-9_-]+$/.test(updates.username)) {
-    return res.status(400).json({ error: "Username can only contain letters, numbers, hyphens (-), and underscores (_), with no spaces or special characters" });
-  }
-  updates.updatedAt = new Date();
-  updates.isEdited = true;
-  try {
-    const updatedRequest = await ResourceRequest.findByIdAndUpdate(requestId, updates, { new: true });
-    if (!updatedRequest) {
-      return res.status(404).json({ error: "Resource request not found" });
-    }
-
-    // Notify admin when teacher edits a student's resource request
-    // if (role === "teacher") {
-    //   notifyAdmin({
-    //     title: 'Teacher edited resource request',
-    //     body: 'UI triggering',
-    //     // type: 'ADMIN_RESOURCE_REQUEST_UPDATED'
-    //   }).catch(err => {
-    //     console.error('Error sending admin web push notification:', err);
-    //   });
-    // }
-
-    return res.json({ success: true, resourceRequest: updatedRequest });
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: "Failed to update resource request", details: err.message });
-  }
 };
 
 // Delete student and corresponding resource requests (for admin/teacher)

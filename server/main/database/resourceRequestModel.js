@@ -44,14 +44,6 @@ const resourceRequestSchema = new mongoose.Schema({
   // Edit tracking
   isEdited: { type: Boolean, default: false },
 
-  // Notification flags for expiry emails (7 and 2 days)
-  notified: {
-    type: {
-      day7: { type: Boolean, default: false },
-      day2: { type: Boolean, default: false }
-    },
-    default: () => ({ day7: false, day2: false })
-  },  
 });
 
 module.exports = mongoose.model("ResourceRequest", resourceRequestSchema, "resourceRequests");

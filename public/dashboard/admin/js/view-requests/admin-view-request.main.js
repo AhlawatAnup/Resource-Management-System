@@ -4,8 +4,7 @@ import {
   initHandler,
   copyHandler,
 } from './admin-view-request.handler.js';
-import { verifyAdminRequest, revokeAdminRequest } from './admin-view-request.service.js';
-import { showMachinePopup } from './admin-view-request.ui.js';
+import { verifyAdminRequest, revokeStudentRequest } from './admin-view-request.service.js';
 import { generatePassword, confirmAction, showToast } from './admin-view-request.utils.js';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -47,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
       try {
         const confirmed = await confirmAction('revoke');
         if (!confirmed) return;
-        await revokeAdminRequest(id);
+        await revokeStudentRequest(id);
         await loadRequestsHandler();
         showToast('Request revoked successfully!', 'success');
       } catch (err) {
@@ -71,12 +70,4 @@ document.addEventListener('DOMContentLoaded', () => {
     if (pwdEl) pwdEl.value = pwd;
   });
 
-
-  document.addEventListener('click', (e) => {
-  const btn = e.target.closest('.info-btn');
-  if (!btn) return;
-
-  const request = JSON.parse(btn.getAttribute('data-request') || '{}');
-  showMachinePopup(request, btn);
-});
 });

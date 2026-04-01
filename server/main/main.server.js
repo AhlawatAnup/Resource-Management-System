@@ -6,20 +6,23 @@ const bodyParser = require("body-parser");
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
 const connectDB = require("./database/db");
+const { connectStatsDB } = require("./database/connectStatsDB");
 const schedule = require("node-schedule");
 const { runBackup } = require("./services/backup");
 const pushSubscriptionRoutes = require("./routes/pushSubscription.route.js");
 const proxyMachineRoute = require("./proxy/routes/proxyMachine.route.js");
-const {
-  checkExpiringResourceRequests,
-} = require("./services/resourceExpiryNotifier");
+ const {sendAllotmentNotifications} = require("./services/resourceExpiryNotifier");
 const attachWebSocketProxy = require("./proxy/websocketProxy.js");
-const { markExpiredAllotmentsDeleted } = require("./services/expiryAllotmentsAndDocker.js"); // adjust path
+const { markExpiredAllotmentsHistoryAndCleanupDocker } = require("./services/expiryAllotmentsAndDocker.js"); // adjust path
 const { collectAndStoreStats } = require("./services/collectAllMachineStats.js");
 
+let statsConnection;
 
-// ✅ Connect to DB
+// ✅ Connect to DBs
 connectDB();
+connectStatsDB().then(conn => {
+  statsConnection = conn;
+});
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -116,9 +119,8 @@ app.use("/dashboard", noCache, requireAuth, dashboardRoutes);
 app.use("/push-subscription", requireAuth, pushSubscriptionRoutes);
 
 
-// const backupSchedule = "*/2 * * * *"; // every 2 minutes (example)
+// Schedule job for backup
 const backupSchedule = process.env.BACKUP_SCHEDULE || "0 3 * * *";
-
 schedule.scheduleJob(backupSchedule, async () => {
   try {
     const now = new Date();
@@ -131,30 +133,39 @@ schedule.scheduleJob(backupSchedule, async () => {
   }
 });
 
-const expiryNotifySchedule = process.env.EXPIRY_NOTIFY_SCHEDULE || "5 3 * * *";
+// Schedule job to go through each allotment and send email if today is the starting or expiry day
+const expiryNotifySchedule = process.env.EXPIRY_NOTIFY_SCHEDULE || "0 9 * * *";
 schedule.scheduleJob(expiryNotifySchedule, async () => {
   try {
-    const now = new Date();
-    const timeStr = now.toLocaleTimeString();
-    console.log(`🕒 ${timeStr} — checking for expiring resource requests...`);
-    await checkExpiringResourceRequests();
+    console.log("🕘 Running expiry check job...");
+    await sendAllotmentNotifications();
   } catch (error) {
     console.error("Scheduled expiry check failed:", error);
   }
 });
 
-// Schedule job to run every day at 00:00
+// Run expired allotments cleanup once on server start
+markExpiredAllotmentsHistoryAndCleanupDocker()
+  .then(() => console.log('Initial expired allotments cleanup done.'))
+  .catch(err => console.error('Initial expired allotments cleanup failed:', err));
+
+// Schedule job to go through all machine allotmetns: save history and restart machine using docker
 const expiryAllotmentsSchedule = process.env.EXPIRY_ALLOTMENTS_SCHEDULE;
 schedule.scheduleJob(expiryAllotmentsSchedule, async () => {
   console.log(`Expired allotments scheduler started...`);
-  await markExpiredAllotmentsDeleted();
+  await markExpiredAllotmentsHistoryAndCleanupDocker();
 });
 
-const machineStatsSchedule = process.env.MACHINE_STATS_SCHEDULE;
+// Schedule job for storing machine stats in seperate DB
+const machineStatsSchedule = process.env.MACHINE_STATS_SCHEDULE || "0 0 * * *";
 schedule.scheduleJob(machineStatsSchedule, async () => {
   console.log(`[${new Date().toLocaleTimeString()}] Starting stats collection...`);
   try {
-    await collectAndStoreStats();
+    if (statsConnection) {
+      await collectAndStoreStats(statsConnection);
+    } else {
+      console.error("Stats DB connection not ready");
+    }
   } catch (err) {
     console.error("Scheduler Error:", err);
   }
