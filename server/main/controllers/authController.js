@@ -204,13 +204,6 @@ exports.register = async (req, res) => {
           id: savedStudent._id,
         };
 
-        // Send registration success email to student
-        sendStudentRegistrationSuccessEmail(email, name)
-        .catch(err => {
-          console.error("Error sending student registration email:", err);
-        });
-
-
         // Notify teacher about new student registration
         sendTeacherStudentRegisteredEmail(
           teacher.email,
@@ -254,12 +247,6 @@ exports.register = async (req, res) => {
           role: req.session.role,
           id: teacher_id._id,
         };
-
-        // Send registration success email to teacher
-        sendTeacherRegistrationSuccessEmail(email, name)
-        .catch(err => {
-          console.error("Error sending teacher registration email:", err);
-        });
 
         // Notify admin about new teacher registration (email)
         sendAdminTeacherRegistrationEmail(name, email, branch)

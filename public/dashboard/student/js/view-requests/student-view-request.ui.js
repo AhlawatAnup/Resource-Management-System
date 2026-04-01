@@ -79,9 +79,6 @@ export function renderAllRequests(requests, onDelete, onReload) {
 
     container.innerHTML = sortedRequests.map(request => createRequestCard(request)).join('');
 
-    // Attach all event handlers
-    attachPasswordToggleHandlers();
-    attachCopyHandlers();
     attachDeleteHandlers(onDelete, onReload);
 }
 
@@ -130,6 +127,9 @@ function createRequestCard(request) {
 
     const canDelete = canDeleteRequest(request);
 
+    const isVerified = request.is_verified && request.machineId && request.machineId.MIGID;
+    const showTokenAndButtons = isVerified && request.isAllotmentActive;
+
     return `
         <div class="request-item detailed" data-status="${status}" style="position:relative; border:1px solid #ddd; border-radius:12px; padding:16px; margin-bottom:16px; background:#fff; box-shadow:0 2px 6px rgba(0,0,0,0.05);">
 
@@ -146,106 +146,60 @@ function createRequestCard(request) {
                 </div>
             </div>
 
+            <!-- MIGID and Allotment Time Display -->
+            ${(request.machineId && request.machineId.MIGID) ? `
+                <div class="request-migid" style="margin: 8px 0 0 0; color: #434343">
+                    <strong>MIGID:</strong> <span>${request.machineId.MIGID}</span>
+                </div>
+            ` : ''}
+            ${(request.machineId && request.machineId.gpuRam) ? `
+                <div class="request-gpuram" style="margin: 4px 0 0 0; color: #434343">
+                    <strong>GPU RAM:</strong> <span>${request.machineId.gpuRam} GB</span>
+                </div>
+            ` : ''}
+            ${(request.allotmentStartTime && request.allotmentEndTime) ? `
+                <div class="request-allotment-time" style="margin: 4px 0 0 0; color: #434343">
+                    <strong>Allotment:</strong> 
+                    <span>Start: ${formatDate(request.allotmentStartTime)}</span> &nbsp; | &nbsp; 
+                    <span>End: ${formatDate(request.allotmentEndTime)}</span>
+                </div>
+            ` : ''}
+
             <!-- Body -->
             <div class="request-body">
-                <div class="request-purpose">
-                    <h4>Username</h4>
-                    <p>${request.username}</p>
-                </div>
-
                 <div class="request-purpose">
                     <h4>Purpose</h4>
                     <p>${request.purpose}</p>
                 </div>
-                
-                <div class="request-specs">
-                    <h4>Resource Specifications</h4>
-                    <div class="specs-grid">
-                        <div class="spec-item">
-                            <div class="spec-label">GPU RAM</div>
-                            <div class="spec-value">${request.gpuRam} GB</div>
-                        </div>
-                        <div class="spec-item">
-                            <div class="spec-label">Duration</div>
-                            <div class="spec-value">Until ${formatDate(request.expiryDate)}</div>
-                        </div>
-
-                        ${renderCredentials(request)}
-                    </div>
-                </div>
             </div>
+
+            <!-- Token Section and Buttons -->
+            ${showTokenAndButtons ? `
+                <div class="request-token" id="token-field-${request._id}"
+                     style="margin:12px 0; padding:10px; background:#f6ffed; border-left:4px solid #52c41a; border-radius:6px; color:#237804; display: flex; align-items: center; gap: 10px;">
+                    ${request.token 
+                        ? `<strong>Token:</strong> 
+                           <span class="token-value" style="font-family:monospace;">${request.token}</span>
+                           <button class="copy-token-btn" data-token="${request.token}" title="Copy Token" style="margin-left:8px; padding:2px 8px; font-size:1.1em; border-radius:4px; border:1px solid #b7eb8f; background:#fff; color:#237804; cursor:pointer; display: flex; align-items: center;">
+                               <i class="fas fa-copy"></i>
+                           </button>`
+                        : `<span style="color:#999;">Token not generated yet</span>`
+                    }
+                </div>
+                
+                    <button class="access-machine-btn" 
+                            data-request-id="${request._id}" 
+                            data-migid="${request.machineId.MIGID}" 
+                            style="cursor:pointer">
+                        Access Machine
+                    </button>
+                    `
+                    : ''}
 
             <!-- Footer -->
-            <div class="request-footer" style="display:flex; justify-content:flex-end; gap:12px; margin-top:12px;">
-                <small style="color:#888;">Request ID: ${request._id}</small>
+            <div class="request-footer" 
+                 style="display:flex; justify-content:flex-end; gap:12px; margin-top:12px; align-items:center;">
                 <small style="color:#666;">Submitted: ${formatDate(request.createdAt)}</small>
-            </div>
-        </div>
-    `;
-}
-
-// ==============================
-// Credentials Section
-// ==============================
-
-function renderCredentials(request) {
-    if (!(request.teacher_verified && request.admin_verified && request.is_verified && request.vmCredentials && request.vmCredentials.password)) {
-        return '';
-    }
-
-    return `
-        <div class="request-credentials" style="background:#e6f7e6; border-radius:12px; width:30vw; padding:16px; margin:12px 0; box-shadow:0 2px 6px rgba(0,0,0,0.1);">
-            <h4 style="margin-bottom:12px; color:#2f6627;">Login Credentials</h4>
-            <div class="credentials-grid" style="display:flex; flex-direction:column; gap:10px;">
-                
-                <!-- Username -->
-                <div class="credential-item" style="display:flex; align-items:center; gap:10px; max-width:100%;">
-                    <strong style="width:80px;">Username:</strong>
-                    <span id="username-${request._id}" style="border:1px solid #c3e6c3; border-radius:6px; padding:6px 10px; background:#f0fff0; flex:1;">
-                        ${request.username}
-                    </span>
-                    <button type="button" class="copy-btn" data-copytarget="username-${request._id}" style="background:none; border:none; cursor:pointer; padding:0 6px; flex-shrink:0;">
-                        <span class="copy-label"><i class="fas fa-copy"></i></span>
-                    </button>
-                </div>
-
-                <!-- Password -->
-                <div class="credential-item" style="display:flex; align-items:flex-start; gap:10px; max-width:100%;">
-                    <strong style="width:80px;">Password:</strong>
-                    <div style="display:flex; align-items:center; border:1px solid #c3e6c3; border-radius:6px; padding:6px 10px; width:100%; background:#f0fff0;">
-                        <span class="masked-password" id="masked-pw-${request._id}" style="flex:1; white-space:normal; word-break:break-word;">
-                            ****************
-                        </span>
-                        <span class="real-password" id="real-pw-${request._id}" style="flex:1; display:none; white-space:normal; word-break:break-word;">
-                            ${request.vmCredentials.password}
-                        </span>
-                        <button type="button" class="toggle-pw-btn" data-pwid="${request._id}" style="background:none; border:none; cursor:pointer; padding:0 6px; flex-shrink:0;">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                    </div>
-                </div>
-
-                ${request.vmCredentials.ip ? `
-                <div class="credential-item" style="display:flex; align-items:center; gap:10px; max-width:100%;">
-                    <strong style="width:80px;">IP:</strong>
-                    <span id="ip-${request._id}" style="border:1px solid #c3e6c3; border-radius:6px; padding:6px 10px; background:#f0fff0; flex:1;">
-                        ${request.vmCredentials.ip}
-                    </span>
-                    <button type="button" class="copy-btn" data-copytarget="ip-${request._id}" style="background:none; border:none; cursor:pointer; padding:0 6px; flex-shrink:0;">
-                        <span class="copy-label"><i class="fas fa-copy"></i></span>
-                    </button>
-                </div>` : ''}
-
-                ${(request.machineId && request.machineId.MIGID) ? `
-                <div class="credential-item" style="display:flex; align-items:center; gap:10px; max-width:100%;">
-                    <strong style="width:80px;">MIG ID:</strong>
-                    <span id="migid-${request._id}" style="border:1px solid #c3e6c3; border-radius:6px; padding:6px 10px; background:#f0fff0; flex:1;">
-                        ${request.machineId.MIGID}
-                    </span>
-                    <button type="button" class="copy-btn" data-copytarget="migid-${request._id}" style="background:none; border:none; cursor:pointer; padding:0 6px; flex-shrink:0;">
-                        <span class="copy-label"><i class="fas fa-copy"></i></span>
-                    </button>
-                </div>` : ''}
             </div>
         </div>
     `;
@@ -254,58 +208,6 @@ function renderCredentials(request) {
 // ==============================
 // Event Handlers
 // ==============================
-
-function attachPasswordToggleHandlers() {
-    document.querySelectorAll('.toggle-pw-btn').forEach(btn => {
-        btn.addEventListener('click', function () {
-            const pwid = btn.getAttribute('data-pwid');
-            const masked = document.getElementById('masked-pw-' + pwid);
-            const real = document.getElementById('real-pw-' + pwid);
-            if (masked.style.display === 'none') {
-                masked.style.display = '';
-                real.style.display = 'none';
-                btn.innerHTML = '<i class="fas fa-eye"></i>';
-            } else {
-                masked.style.display = 'none';
-                real.style.display = '';
-                btn.innerHTML = '<i class="fas fa-eye-slash"></i>';
-            }
-        });
-    });
-}
-
-function attachCopyHandlers() {
-    document.querySelectorAll('.copy-btn').forEach(btn => {
-        btn.addEventListener('click', function () {
-            const targetId = btn.getAttribute('data-copytarget');
-            const targetElem = document.getElementById(targetId);
-            if (!targetElem) return;
-
-            const text = targetElem.textContent.trim();
-
-            const fallback = () => {
-                const tempInput = document.createElement('input');
-                tempInput.value = text;
-                document.body.appendChild(tempInput);
-                tempInput.select();
-                document.execCommand('copy');
-                document.body.removeChild(tempInput);
-            };
-
-            if (navigator.clipboard) {
-                navigator.clipboard.writeText(text).catch(fallback);
-            } else {
-                fallback();
-            }
-
-            const labelSpan = btn.querySelector('.copy-label');
-            if (!labelSpan) return;
-            const originalContent = labelSpan.innerHTML;
-            labelSpan.innerHTML = 'Copied!';
-            setTimeout(() => labelSpan.innerHTML = originalContent, 1200);
-        });
-    });
-}
 
 function attachDeleteHandlers(onDelete, onReload) {
     document.querySelectorAll('.delete-request-btn').forEach(btn => {
@@ -331,4 +233,5 @@ function attachDeleteHandlers(onDelete, onReload) {
             }
         });
     });
+
 }

@@ -15,6 +15,7 @@
     
     <link rel="stylesheet" href="/dashboard/student/style/student.dashboard.css" />
     <link rel="stylesheet" href="/dashboard/student/style/student.request.css" />
+    <link rel="stylesheet" href="/dashboard/common/style/allotments/machines-flexbar.css" />
     <link rel="stylesheet" href="/dashboard/student/style/confirmation-popup.css" />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
@@ -36,11 +37,15 @@
         </a>
         <a href="#" class="nav-item active">
           <i class="fas fa-plus-circle"></i>
-          Request Resources
+          Raise Resource Requests
         </a>
         <a href="/dashboard/student/view-requests" class="nav-item">
           <i class="fas fa-list"></i>
           View Resource Requests
+        </a>
+        <a href="/dashboard/student/allotments" class="nav-item">
+          <i class="fas fa-network-wired"></i>
+          Check Machine Availability
         </a>
         <a href="/dashboard/student/about-us" class="nav-item">
           <i class="fas fa-info-circle"></i>
@@ -100,36 +105,26 @@
                   <label for="title">Request Title:</label>
                   <input type="text" id="title" class="form-control" placeholder="e.g., Machine Learning Training Project" required>
                 </div>
-                <div class="form-group">
-                  <label for="username">Desired VM Username:</label>
-                  <input type="text" id="username" class="form-control" placeholder="e.g., your_preferred_username" required>
-                  <p style="color: #666; font-size: 0.85em;">Enter a username that will be assigned to your VM if approved.</p>
-                  <small style="color: #666; font-size: 0.85em;">Note: Username can contain only letters, numbers, hyphens (-), and underscores (_); no spaces or other special characters are allowed.</small>
-                </div>
                 
                 <div class="form-group">
                   <label for="purpose">Purpose/Description:</label>
                   <textarea id="purpose" class="form-control textarea" rows="4" placeholder="Please describe the purpose of your resource request and what you plan to accomplish..." required></textarea>
                 </div>
-                
-                <div class="form-group">
-                  <label for="expiry-date">Required Until (Expiry Date):</label>
-                  <input type="text" id="expiry-date" class="form-control" placeholder="Select date" required>
-                  <small style="color: #666; font-size: 0.85em;">Maximum 30 days</small>
-                </div>
-                
-                <div style="background: #f0f8ff; padding: 15px; border-radius: 8px; margin: 20px 0;">
-                  <h4 style="margin: 0 0 15px 0; color: #333; font-size: 1.1em;">
-                    <i class="fas fa-cube"></i> GPU Requirements
-                  </h4>
-                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                    <div class="form-group">
-                      <label for="gpu-ram">GPU RAM per GPU (GB):</label>
-                      <input type="number" id="gpu-ram" class="form-control" min="0" max="20" placeholder="e.g., 12" required>
-                    </div>
+
+                <div class="machines-bar-section">
+                  <h3><i class="fas fa-server"></i> Select desired machine</h3>
+                  <div id="machines-flexbar" class="machines-flexbar">
+                    <span class="machine-bar-loading">Loading machines...</span>
                   </div>
                 </div>
 
+                <input type="hidden" id="selected-machine-id" name="machineId" value="">
+
+                <div class="form-group">
+                  <label for="duration">Requested Duration (in days):</label>
+                  <input type="number" id="duration" class="form-control" min="1" max="15" placeholder="e.g., 4" required>
+                </div>
+                
                 <div class="declaration-section">
 
                   <h4>Important User Declarations</h4>

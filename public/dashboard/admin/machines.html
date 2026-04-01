@@ -16,6 +16,7 @@
   <link rel="stylesheet" href="/dashboard/admin/style/admin.table.css" />
   <link rel="stylesheet" href="/dashboard/admin/style/machines.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" />
+  <link rel="stylesheet" href="/dashboard/admin/style/admin.addMachineModal.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   </head>
   <body>
@@ -39,6 +40,10 @@
         <a href="#" class="nav-item active" id="machines-nav">
           <i class="fas fa-desktop"></i>
           Machines
+        </a>
+        <a href="/dashboard/admin/allotments" class="nav-item" id="view-requests-nav">
+          <i class="fas fa-network-wired"></i>
+          Check Machine Availability
         </a>
         <a href="/dashboard/admin/profile" class="nav-item" id="profile-nav">
           <i class="fas fa-user"></i>
@@ -67,7 +72,7 @@
       </nav>
       <!-- Page actions below header (right-aligned) -->
       <div class="page-actions machines-page-actions">
-        <!-- Filters (UI-only) placed to the left of the import button -->
+        <!-- Filters (UI-only) placed to the left of the add button -->
         <div class="machines-filters" aria-label="Machine filters">
           <div class="nav-group">
             <button class="status-btn active" data-filter="all" type="button">
@@ -84,10 +89,8 @@
             </button>
           </div>
         </div>
-        <div class="import-csv-wrapper">
+        <div class="add-machine-wrapper">
           <button id="addMachineBtn" class="add-machine-btn" type="button" aria-label="Add a machine">Add</button>
-          <button id="importCsvBtn" class="import-csv-btn" type="button" aria-label="Import machines from CSV">Import CSV</button>
-          <input id="importCsvInput" type="file" accept=".csv,text/csv" style="display:none" />
         </div>
       </div>
     </div>

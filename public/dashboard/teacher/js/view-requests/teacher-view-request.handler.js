@@ -1,5 +1,5 @@
-import { fetchResourceRequests, verifyRequest, editRequest } from './teacher-view-request.service.js';
-import { renderResourceRequests, showNotVerifiedMessage, showEmptyState, showNotification, showEditModalUI, hideEditModal, getEditFormData, setSubmitButtonState, setFieldError } from './teacher-view-request.ui.js';
+import { fetchResourceRequests, verifyRequest } from './teacher-view-request.service.js';
+import { renderResourceRequests, showNotVerifiedMessage, showEmptyState, showNotification, setSubmitButtonState, setFieldError } from './teacher-view-request.ui.js';
 import { filterRequestsList } from '../teacher.utils.js';
 import { initializePurposePanel, isValidUsername, logoutDirectly } from '../../../common/js/commons.js';
 
@@ -76,14 +76,10 @@ export async function updateRequestVerificationHandler(requestId, isVerified) {
     const { ok } = await verifyRequest(requestId, isVerified);
     if (!ok) throw new Error('Failed to update request verification');
 
-    const idx = resourceRequests.findIndex(r => r._id === requestId);
-    if (idx !== -1) {
-      resourceRequests[idx].teacher_verified = isVerified;
-      resourceRequests[idx].teacher_action = true;
-    }
-
-    filterRequestsHandler(document.getElementById('searchInput').value);
     showNotification(`Resource request ${isVerified ? 'approved' : 'declined'} successfully!`, 'success');
+    setTimeout(() => {
+      window.location.reload();
+    }, 1000);
 
   } catch (err) {
     console.error('Error updating request verification:', err);
@@ -91,62 +87,7 @@ export async function updateRequestVerificationHandler(requestId, isVerified) {
   }
 }
 
-// Show edit modal
-export function showEditModalHandler(requestId) {
-  const req = resourceRequests.find(r => r._id === requestId);
-  if (!req) return;
-  showEditModalUI(req);
-}
-
-// Submit edit request
-export async function submitEditRequestHandler(submitBtn) {
-  const { requestId, payload } = getEditFormData();
-
-  // Username validation
-  if (!isValidUsername(payload.username)) {
-    setFieldError('edit-username-error', 'Username can only contain letters, numbers, hyphens (-), and underscores (_), with no spaces or special characters');
-    return;
-  } else setFieldError('edit-username-error', '');
-
-  // Title length validation
-  if (payload.title.length > 50) {
-    setFieldError('edit-title-error', 'Title must not exceed 50 characters');
-    return;
-  } else setFieldError('edit-title-error', '');
-
-  try {
-    setSubmitButtonState(submitBtn, true);
-    const result = await editRequest(requestId, payload);
-
-    const idx = resourceRequests.findIndex(r => r._id === requestId);
-    if (idx !== -1) {
-      if (!result.resourceRequest.studentInfo && resourceRequests[idx].studentInfo) {
-        result.resourceRequest.studentInfo = resourceRequests[idx].studentInfo;
-      }
-      resourceRequests[idx] = result.resourceRequest;
-    }
-
-    filterRequestsHandler(document.getElementById('searchInput').value);
-    hideEditModal();
-    showNotification('Resource request updated successfully!', 'success');
-
-  } catch (err) {
-    console.error('Edit request error:', err);
-    showNotification(err.message || 'Failed to update resource request.', 'error');
-  } finally {
-    setSubmitButtonState(submitBtn, false);
-  }
-}
-
 // Initialize other UI components
 export function initUIComponentsHandler() {
   initializePurposePanel();
-
-  // Flatpickr for expiry date
-  flatpickr('#editExpiryDate', {
-    mode: 'single',
-    dateFormat: 'Y-m-d',
-    minDate: 'today',
-    enableTime: false
-  });
 }

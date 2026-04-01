@@ -1,69 +1,67 @@
-const ResourceRequest = require("../database/resourceRequestModel");
-const Student = require("../database/studentModel");
-const Admin = require("../database/adminModel");
-const { sendExpiringResourceEmail } = require("../utils/email/emails.service");
-const { notifyStudent } = require("../utils/web-push-notifications/notifyStudent");
+const emailService = require("../utils/email/emails.service.js");
+const MachineAllotment = require("../database/machineAllotmentModel");
 
-// Notification days before expiry
-const NOTIFY_DAYS = [7, 2];
-
-/**
- * Checks for resource requests expiring soon and sends notification emails to student and admin.
- * Sends emails 7 and 2 days before expiry, and marks as notified to avoid duplicates.
- */
-
-async function checkExpiringResourceRequests() {
+async function sendAllotmentNotifications() {
   try {
-    const now = new Date();
-    const admin = await Admin.findOne({});
-    const adminEmail = admin && admin.email;
+    const now = new Date(); 
 
-    for (const daysBefore of NOTIFY_DAYS) {
-      const from = new Date(now.getTime() + (daysBefore - 1) * 24 * 60 * 60 * 1000);
-      const to = new Date(now.getTime() + (daysBefore + 1) * 24 * 60 * 60 * 1000);
-      const flag = daysBefore === 7 ? 'day7' : 'day2';
+    const startOfTodayIST = new Date(now);
+    startOfTodayIST.setHours(0, 0, 0, 0);
 
-      // Find requests expiring in about 'daysBefore' days and not yet notified for that day
-      const expiringRequests = await ResourceRequest.find({
-        expiryDate: { $gte: from, $lte: to },
-        [`notified.${flag}`]: { $ne: true },
-        is_verified: true
+    const endOfTodayIST = new Date(now);
+    endOfTodayIST.setHours(23, 59, 59, 999);
+
+    const next24Hours = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+
+    // --- QUERY 1: STARTED TODAY (IST) ---
+    const startingToday = await MachineAllotment.find({
+      startTime: { $gte: startOfTodayIST, $lte: endOfTodayIST },
+      startNotified: false
+    }).populate({ path: "resourceRequestId", populate: { path: "studentId" } });
+
+    console.log(`[Notifications] Allotments starting today (IST): ${startingToday.length}`);
+
+    for (const allotment of startingToday) {
+      const student = allotment.resourceRequestId?.studentId;
+      if (!student?.email) continue;
+
+      await emailService.sendResourceAllotmentStartedEmail({
+        studentEmail: student.email,
+        studentName: student.name,
+        requestTitle: allotment.resourceRequestId.title,
+        startTime: allotment.startTime,
       });
 
-      for (const req of expiringRequests) {
-        try {
-          // Get student email
-          const student = await Student.findById(req.studentId || req.student);
-          if (!student || !student.email) continue;
-
-          // Send email to student and the admin
-          await sendExpiringResourceEmail({
-            studentEmail: student.email,
-            adminEmail,
-            resourceRequest: req,
-            expiryDate: req.expiryDate,
-          });
-
-          notifyStudent(student._id, {
-            title: "Resource Expiring Soon",
-            body: `Your resource "${req.title}" is expiring on ${req.expiryDate.toDateString()}`
-          }).catch(err => {
-            console.error("Error sending student web-push notification:", err);
-          });
-
-          // Mark as notified for this flag
-          req.notified = req.notified || {};
-          req.notified[flag] = true;
-          await req.save();
-        } catch (error) {
-          console.error(`Failed to process expiry notification for request ${req._id}:`, error.message);
-          // Continue with next request instead of crashing
-        }
-      }
+      allotment.startNotified = true;
+      await allotment.save();
     }
+
+    // --- QUERY 2: EXPIRING IN NEXT 24 HOURS ---
+    const expiringSoon = await MachineAllotment.find({
+      endTime: { $gte: now, $lt: next24Hours },
+      expiryNotified: false
+    }).populate({ path: "resourceRequestId", populate: { path: "studentId" } });
+
+    console.log(`[Notifications] Allotments expiring in next 24h: ${expiringSoon.length}`);
+
+    for (const allotment of expiringSoon) {
+      const student = allotment.resourceRequestId?.studentId;
+      if (!student?.email) continue;
+
+      await emailService.sendResourceAllotmentExpiryTodayEmail({
+        studentEmail: student.email,
+        studentName: student.name,
+        requestTitle: allotment.resourceRequestId.title,
+        endTime: allotment.endTime,
+      });
+
+      allotment.expiryNotified = true;
+      await allotment.save();
+    }
+
   } catch (err) {
-    console.error("Error checking expiring resource requests:", err);
+    console.error("Error in notification job:", err);
   }
 }
 
-module.exports = { checkExpiringResourceRequests };
+module.exports = { sendAllotmentNotifications };

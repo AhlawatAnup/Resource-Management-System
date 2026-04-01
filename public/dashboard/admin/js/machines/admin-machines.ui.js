@@ -1,13 +1,8 @@
 // ui.js
 
 // ---------------- INIT UI ----------------
-export function initUI({ onImportClick, onFileChange, onFilterChange, onAddClick }) {
-  const importBtn = document.getElementById('importCsvBtn');
-  const importInput = document.getElementById('importCsvInput');
+export function initUI({ onFilterChange, onAddClick }) {
   const addBtn = document.getElementById('addMachineBtn');
-
-  importBtn.addEventListener('click', onImportClick);
-  importInput.addEventListener('change', onFileChange);
 
   if (addBtn) addBtn.addEventListener('click', onAddClick);
 
@@ -20,7 +15,7 @@ export function initUI({ onImportClick, onFileChange, onFilterChange, onAddClick
     });
   });
 
-  return { importBtn, importInput };
+  return {};
 }
 
 
@@ -59,62 +54,70 @@ export function renderTable(wrapper, machines, handlers) {
 
   const thead = document.createElement('thead');
   const headerRow = document.createElement('tr');
-
-  ['MIGID', 'gpuRam', 'Assigned student', 'Edit'].forEach(h => {
+  ['MIGID', 'gpuRam', 'ram', 'ip:port', 'name', 'Action'].forEach(h => {
     const th = document.createElement('th');
     th.textContent = h;
     headerRow.appendChild(th);
   });
-
   thead.appendChild(headerRow);
   table.appendChild(thead);
 
   const tbody = document.createElement('tbody');
-
   machines.forEach((m, idx) => {
     const tr = document.createElement('tr');
-
     const rowId = `machine-row-${m._id || idx}`;
     tr.setAttribute('data-machine-row-id', rowId);
 
-    [m.MIGID, m.gpuRam].forEach(val => {
+    // Render the required columns in order, combining ip and port
+
+    // MIGID column (with user as title)
+    const migTd = document.createElement('td');
+    migTd.textContent = m.MIGID ?? '';
+    migTd.title = m.user ?? '-';
+    tr.appendChild(migTd);
+
+    // Remaining columns
+    const rowVals = [
+      m.gpuRam,
+      m.ram,
+      (m.ip && m.port ? `${m.ip}:${m.port}` : (m.ip || '')),
+      m.name
+    ];
+    rowVals.forEach(val => {
       const td = document.createElement('td');
       td.textContent = val === undefined ? '' : val;
       tr.appendChild(td);
     });
 
-    const assignedTd = document.createElement('td');
-    handlers.setAssignedText(m.assignedStudent, assignedTd);
-    tr.appendChild(assignedTd);
-
+    // Action buttons cell
     const actionTd = document.createElement('td');
-
-    // EDIT
-    const editBtn = createBtn('Edit', () => handlers.onEdit(m, tr, assignedTd));
-    actionTd.appendChild(editBtn);
-
-    // DELETE
+    // Delete button
     const deleteBtn = createBtn('Delete', () => handlers.onDelete(m, tr));
-    deleteBtn.style.marginLeft = '8px';
+    deleteBtn.title = 'Deleting this machine is irreversible. All related data will be lost!';
     actionTd.appendChild(deleteBtn);
-
-    // REVOKE
-    if (handlers.isAssigned(m)) {
-      const revokeBtn = createBtn('Revoke', () =>
-        handlers.onRevoke(m, assignedTd, revokeBtn)
-      );
-
-      revokeBtn.style.marginLeft = '8px';
-      revokeBtn.style.background = '#fa6251ff';
-      revokeBtn.style.color = '#fff';
-
-      actionTd.appendChild(revokeBtn);
+    let actionBtn;
+    if (m.isAvailable) {
+      actionBtn = createBtn('Disable', function () {
+        handlers.onRevoke(m, actionBtn, handlers.loadMachines);
+      });
+      actionBtn.style.background = '#fa6251ff';
+      actionBtn.title = 'Disabling this machine will prevent users from using it until it is re-enabled. New allotments cannot be made while disabled.';
+    } else {
+      actionBtn = createBtn('Enable', function () {
+        handlers.onEnable(m, actionBtn, handlers.loadMachines);
+      });
+      actionBtn.style.background = '#28a745';
+       actionBtn.title = 'Enabling this machine will allow users to use it again and new allotments can be made.';
     }
 
+    actionBtn.style.marginLeft = '8px';
+    actionBtn.style.color = '#fff';
+
+    actionTd.appendChild(actionBtn);
     tr.appendChild(actionTd);
+
     tbody.appendChild(tr);
   });
-
   table.appendChild(tbody);
   container.appendChild(table);
   wrapper.appendChild(container);
@@ -133,84 +136,84 @@ function createBtn(text, onClick) {
 
 
 // ---------------- EDIT MODAL ----------------
-export function ensureEditModal(onSubmit) {
-  if (document.getElementById('machineEditModal'))
-    return document.getElementById('machineEditModal');
+// export function ensureEditModal(onSubmit) {
+//   if (document.getElementById('machineEditModal'))
+//     return document.getElementById('machineEditModal');
 
-  const modal = document.createElement('div');
-  modal.id = 'machineEditModal';
+//   const modal = document.createElement('div');
+//   modal.id = 'machineEditModal';
 
-  Object.assign(modal.style, {
-    position: 'fixed',
-    left: '0',
-    top: '0',
-    right: '0',
-    bottom: '0',
-    background: 'rgba(0,0,0,0.4)',
-    display: 'none',
-    alignItems: 'center',
-    justifyContent: 'center'
-  });
+//   Object.assign(modal.style, {
+//     position: 'fixed',
+//     left: '0',
+//     top: '0',
+//     right: '0',
+//     bottom: '0',
+//     background: 'rgba(0,0,0,0.4)',
+//     display: 'none',
+//     alignItems: 'center',
+//     justifyContent: 'center'
+//   });
 
-  modal.innerHTML = `
-    <div style="background:#fff;padding:18px;border-radius:8px;max-width:480px;width:100%;">
-      <h3>Edit Machine</h3>
-      <form id="machineEditForm">
-        <input id="machineMIGID"/>
-        <input id="machineGpu"/>
-        <button type="button" id="machineEditCancel">Cancel</button>
-        <button type="submit" id="machineEditSave">Save</button>
-      </form>
-    </div>
-  `;
+//   modal.innerHTML = `
+//     <div style="background:#fff;padding:18px;border-radius:8px;max-width:480px;width:100%;">
+//       <h3>Edit Machine</h3>
+//       <form id="machineEditForm">
+//         <input id="machineMIGID"/>
+//         <input id="machineGpu"/>
+//         <button type="button" id="machineEditCancel">Cancel</button>
+//         <button type="submit" id="machineEditSave">Save</button>
+//       </form>
+//     </div>
+//   `;
 
-  document.body.appendChild(modal);
+//   document.body.appendChild(modal);
 
-  modal.querySelector('#machineEditCancel')
-    .addEventListener('click', closeEditModal);
+//   modal.querySelector('#machineEditCancel')
+//     .addEventListener('click', closeEditModal);
 
-  modal.querySelector('#machineEditForm')
-    .addEventListener('submit', (e) => {
-      e.preventDefault();
+//   modal.querySelector('#machineEditForm')
+//     .addEventListener('submit', (e) => {
+//       e.preventDefault();
 
-      onSubmit({
-        id: modal.dataset.machineId,
-        MIGID: modal.querySelector('#machineMIGID').value.trim(),
-        gpuRaw: modal.querySelector('#machineGpu').value.trim(),
-        rowSelector: modal.dataset.rowSelector
-      });
-    });
+//       onSubmit({
+//         id: modal.dataset.machineId,
+//         MIGID: modal.querySelector('#machineMIGID').value.trim(),
+//         gpuRaw: modal.querySelector('#machineGpu').value.trim(),
+//         rowSelector: modal.dataset.rowSelector
+//       });
+//     });
 
-  return modal;
-}
+//   return modal;
+// }
 
 
-export function openEditModal(modal, machine, tableRow) {
-  modal.style.display = 'flex';
+// export function openEditModal(modal, machine, tableRow) {
+//   modal.style.display = 'flex';
 
-  modal.dataset.machineId = machine._id || '';
+//   modal.dataset.machineId = machine._id || '';
 
-  const rowId = `machine-row-${machine._id || Math.random().toString(36).slice(2)}`;
-  tableRow.setAttribute('data-machine-row-id', rowId);
-  modal.dataset.rowSelector = `[data-machine-row-id="${rowId}"]`;
+//   const rowId = `machine-row-${machine._id || Math.random().toString(36).slice(2)}`;
+//   tableRow.setAttribute('data-machine-row-id', rowId);
+//   modal.dataset.rowSelector = `[data-machine-row-id="${rowId}"]`;
 
-  modal.querySelector('#machineMIGID').value = machine.MIGID || '';
-  modal.querySelector('#machineGpu').value =
-    machine.gpuRam ?? '';
-}
+//   modal.querySelector('#machineMIGID').value = machine.MIGID || '';
+//   modal.querySelector('#machineGpu').value =
+//     machine.gpuRam ?? '';
+// }
 
-export function closeEditModal() {
-  const modal = document.getElementById('machineEditModal');
-  if (!modal) return;
+// export function closeEditModal() {
+//   const modal = document.getElementById('machineEditModal');
+//   if (!modal) return;
 
-  modal.style.display = 'none';
+//   modal.style.display = 'none';
 
-  delete modal.dataset.machineId;
-  delete modal.dataset.rowSelector;
+//   delete modal.dataset.machineId;
+//   delete modal.dataset.rowSelector;
 
-  const form = modal.querySelector('#machineEditForm');
-  if (form) form.reset();
-}
+//   const form = modal.querySelector('#machineEditForm');
+//   if (form) form.reset();
+// }
 
 
 // ---------------- ADD MODAL ----------------
@@ -229,31 +232,72 @@ export function ensureAddModal(onSubmit) {
     alignItems: 'center',
     justifyContent: 'center'
   });
+modal.innerHTML = `
+  <div class="machine-modal">
+    <h2>Add Machine</h2>
 
-  modal.innerHTML = `
-    <div style="background:#fff;padding:18px;border-radius:8px;max-width:520px;width:100%;">
-      <h2 style="margin-top:0; margin-bottom:12px;">Edit Machine</h2>
-      <form id="machineAddForm">
-        <input id="addMIGID" placeholder="MIG ID" />
-      <input id="addGpuRam" placeholder="GPU RAM" />
+    <form id="machineAddForm">
+
+      <div class="form-group">
+        <label for="addMIGID">MIG ID</label>
+        <input id="addMIGID" placeholder="e.g. MIG-00123" />
+      </div>
+
+      <div class="form-group">
+        <label for="addGpuRam">GPU RAM (GB)</label>
+        <input id="addGpuRam" type="number" placeholder="e.g. 16" />
+      </div>
+
+      <div class="form-group">
+        <label for="addRam">System RAM (GB)</label>
+        <input id="addRam" type="number" placeholder="e.g. 64" />
+      </div>
+
+      <div class="form-group">
+        <label for="addIp">IP Address</label>
+        <input id="addIp" placeholder="e.g. 192.168.1.10" />
+      </div>
+
+      <div class="form-group">
+        <label for="addPort">Port</label>
+        <input id="addPort" type="number" placeholder="e.g. 22" />
+      </div>
+
+      <div class="form-group">
+        <label for="addUser">User</label>
+        <input id="addUser" placeholder="e.g. user8" />
+      </div>
+
+      <div class="form-group">
+        <label for="addName">Parent Machine Name</label>
+        <input id="addName" placeholder="e.g. H100" />
+      </div>
+
+      <div class="machine-modal-actions">
         <button type="button" id="machineAddCancel">Cancel</button>
         <button type="submit">Save</button>
-      </form>
-    </div>
-  `;
+      </div>
 
+    </form>
+  </div>
+`;
   document.body.appendChild(modal);
 
   modal.querySelector('#machineAddCancel')
-    .addEventListener('click', closeAddModal);
+  .addEventListener('click', closeAddModal);
 
   modal.querySelector('#machineAddForm')
     .addEventListener('submit', (e) => {
       e.preventDefault();
 
-      onSubmit({
+    onSubmit({
         MIGID: modal.querySelector('#addMIGID').value.trim(),
-        gpuRaw: modal.querySelector('#addGpuRam').value.trim()
+        gpuRaw: modal.querySelector('#addGpuRam').value.trim(),
+        ramRaw: modal.querySelector('#addRam').value.trim(),
+        ip: modal.querySelector('#addIp').value.trim(),
+        portRaw: modal.querySelector('#addPort').value.trim(),
+        user: modal.querySelector('#addUser').value.trim(),
+        name: modal.querySelector('#addName').value.trim(),
       });
     });
 

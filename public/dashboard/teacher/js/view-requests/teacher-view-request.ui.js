@@ -41,14 +41,10 @@ export function renderResourceRequests(requests) {
         </div>
       </td>
       <td>
-        <div class="resource-specs">
-          <div><strong>GPU:</strong> ${request.gpuRam}GB</div>
-        </div>
+        <span>${request.machineId && request.machineId.MIGID ? request.machineId.MIGID : '-'}</span>
       </td>
       <td>
-        <div class="expiry-date">
-          ${formatDate(request.expiryDate)}
-        </div>
+        <span>${request.duration ? request.duration : '-'}</span>
       </td>
       <td>
         <span class="badge ${statusInfo.class}">${statusInfo.text}</span>
@@ -104,48 +100,6 @@ export function showNotification(message, type) {
       document.body.removeChild(notification);
     }, 300);
   }, 3000);
-}
-
-// Populate and show edit modal
-export function showEditModalUI(request) {
-  const submitBtn = document.querySelector('#editRequestForm button[type="submit"]');
-
-  if (submitBtn) {
-    submitBtn.disabled = false;
-    submitBtn.style.opacity = '';
-    submitBtn.style.cursor = '';
-  }
-
-  document.getElementById('editRequestId').value = request._id;
-  document.getElementById('editTitle').value = request.title;
-  document.getElementById('editPurpose').value = request.purpose;
-  document.getElementById('editExpiryDate').value = request.expiryDate
-    ? request.expiryDate.split('T')[0]
-    : '';
-
-  document.getElementById('editGpuRam').value = request.gpuRam;
-  document.getElementById('editUsername').value = request.username || '';
-
-  document.getElementById('editRequestModal').style.display = 'block';
-}
-
-// Hide edit modal
-export function hideEditModal() {
-  document.getElementById('editRequestModal').style.display = 'none';
-}
-
-// Get edit form payload
-export function getEditFormData() {
-  return {
-    requestId: document.getElementById('editRequestId').value,
-    payload: {
-      title: document.getElementById('editTitle').value,
-      purpose: document.getElementById('editPurpose').value,
-      expiryDate: document.getElementById('editExpiryDate').value,
-      gpuRam: Number(document.getElementById('editGpuRam').value),
-      username: document.getElementById('editUsername').value
-    }
-  };
 }
 
 // Handle button loading state

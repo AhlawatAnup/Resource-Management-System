@@ -2,12 +2,13 @@
 import * as ui from './admin-machines.ui.js';
 import * as service from './admin-machines.service.js';
 import * as utils from './admin-machines.utils.js';
+import { handleLogout } from '../../../common/js/commons.js';  //for html logout
 import { 
-  handleImport, 
   handleDelete, 
   handleRevoke, 
-  handleEdit, 
-  handleEditSubmit, 
+  handleEnable,
+  // handleEdit, 
+  // handleEditSubmit, 
   handleAddSubmit 
 } from './admin-machines.handler.js';
 
@@ -18,8 +19,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const tableWrapper = ui.createTableWrapper();
 
   const uiRefs = ui.initUI({
-    onImportClick: () => uiRefs.importInput.click(),
-    onFileChange: (e) => handleImport(e, uiRefs, loadMachines),
     onFilterChange: (f) => {
       currentFilter = f;
       loadMachines(f);
@@ -52,9 +51,10 @@ document.addEventListener('DOMContentLoaded', () => {
             td.textContent = text;
           }
         },
-        onEdit: (machine, tr) => handleEdit(machine, tr, (data) => handleEditSubmit(data, loadMachines)),
+        // onEdit: (machine, tr) => handleEdit(machine, tr, (data) => handleEditSubmit(data, loadMachines)),
         onDelete: handleDelete,
-        onRevoke: (machine, assignedTd, revokeBtn) => handleRevoke(machine, assignedTd, revokeBtn, loadMachines)
+        onRevoke: (machine, revokeBtn) => handleRevoke(machine, revokeBtn, loadMachines),
+        onEnable: (machine, enableBtn) => handleEnable(machine, enableBtn, loadMachines)
       });
 
     } catch (err) {

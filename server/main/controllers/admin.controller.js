@@ -1,11 +1,14 @@
+const mongoose = require("mongoose");
 const Teacher = require("../database/teacherModel");
 const Student = require("../database/studentModel");
 const Admin = require("../database/adminModel");
 const Machine = require('../database/machineModel');
+const MachineAllotment = require("../database/machineAllotmentModel.js");
 const ResourceRequest = require("../database/resourceRequestModel");
 const emailService = require("../utils/email/emails.service.js");
 const {notifyTeacher} = require("../utils/web-push-notifications/notifyTeacher.js")
 const { notifyStudent } = require('../utils/web-push-notifications/notifyStudent.js');
+const { validateMachineInput, deleteTeacher, unverifyStudent, unverifyTeacher } = require('../utils/common.utils.js');
 const bcrypt = require('bcrypt');
 
 exports.admin_dashboard_data = async (req, res) => {
@@ -66,18 +69,13 @@ exports.updateTeacherVerification = async (req, res) => {
   const { teacher_id } = req.params;
   const { is_verified } = req.body;
 
-  // console.log("Updating teacher verification", teacher_id, "to", is_verified);
-
   try {
     const teacher = await Teacher.findById(teacher_id);
     if (!teacher) {
       return res.status(404).json({ error: "Teacher not found" });
     }
 
-    // Email notification for teacher profile verification/rejection
-
     if (is_verified) {
-      // Approve: Update teacher verification status
       const updatedTeacher = await Teacher.findByIdAndUpdate(
         teacher_id,
         {
@@ -115,11 +113,11 @@ exports.updateTeacherVerification = async (req, res) => {
       }).catch((pushErr) => {
         console.error('[WebPush] Error in teacher notification block:', pushErr);
       });
-      
-      // Delete the teacher account
-      await Teacher.findByIdAndDelete(teacher_id);
 
-      return res.json({ message: "Teacher account has been deleted successfully" });
+      // Use your cascade delete
+      await deleteTeacher(teacher_id);
+
+      return res.json({ message: "Teacher account and all related data deleted successfully" });
     }
   } catch (err) {
     console.error(err);
@@ -127,189 +125,45 @@ exports.updateTeacherVerification = async (req, res) => {
   }
 };
 
-// Teacher unverfication logic
-exports.unverifyTeacherIfPossible = async (req, res) => {
+exports.unverifyTeacher = async (req, res) => {
   const { teacher_id } = req.params;
 
   try {
-    const teacher = await Teacher.findById(teacher_id).select('students');
+    const teacher = await Teacher.findById(teacher_id);
     if (!teacher) {
       return res.status(404).json({ error: "Teacher not found" });
     }
 
-    const studentIds = Array.isArray(teacher.students) ? teacher.students : [];
-
-    // 1️⃣ Block if any student has allotted resource
-    if (studentIds.length > 0) {
-      const allottedRequests = await ResourceRequest.find({
-        studentId: { $in: studentIds },
-        is_verified: true
-      }).populate('studentId', 'rollNo name').select('studentId');
-
-      if (allottedRequests && allottedRequests.length > 0) {
-        // Extract roll numbers of students with allocated resources
-        const studentsWithResources = allottedRequests
-          .filter(req => req.studentId) // Filter out any null references
-          .map(req => ({
-            rollNo: req.studentId.rollNo,
-            name: req.studentId.name
-          }));
-
-        return res.status(400).json({
-          error: "Some students have allocated resources",
-          studentsWithResources: studentsWithResources
-        });
-      }
-    }
-
-    // 2️⃣ Delete ALL resource requests of students
-    if (studentIds.length > 0) {
-      await ResourceRequest.deleteMany({
-        studentId: { $in: studentIds }
-      });
-    }
-
-    // 3️⃣ Unverify teacher
-    const updatedTeacher = await Teacher.findByIdAndUpdate(
-      teacher_id,
-      {
-        is_verified: false,
-        verification_completed: false
-      },
-      { new: true }
-    );
-
-    // Send email to teacher about unverification
-    if (updatedTeacher) {
-      emailService.sendTeacherProfileUnverifiedByAdminEmail(updatedTeacher.email, updatedTeacher.name)
-        .then(result => console.log("Teacher unverification email sent:", result))
-        .catch(error => console.error("Error sending teacher unverification email:", error));
-    }
-
-      notifyTeacher(teacher_id, {
-        title: 'Profile Unverified by admin',
-        body: `Your profile has been unverified by the admin.`
-      }).catch((pushErr) => {
-        console.error('[WebPush] Error in teacher notification block:', pushErr);
-      });
-
-    // 4️⃣ Unverify all students and send them emails
-    if (studentIds.length > 0) {
-      // Fetch student details before updating
-      const students = await Student.find({ _id: { $in: studentIds } }).select('email name');
-      
-      // Update all students
-      await Student.updateMany(
-        { _id: { $in: studentIds } },
-        {
-          $set: {
-            teacher_verified: false,
-            teacher_action: false,
-            admin_verified: false,
-            admin_action: false,
-            is_verified: false
-          }
-        }
-      );
-      
-      // Send emails to all affected students
-      students.forEach(student => {
-        emailService.sendStudentUnverifiedDueToTeacherUnverificationEmail(
-          student.email,
-          student.name,
-          updatedTeacher?.name || teacher.name
-        )
-        .then(result => console.log(`Student unverification email sent to ${student.name}:`, result))
-        .catch(error => console.error(`Error sending email to ${student.name}:`, error));
-
-        notifyStudent(student._id, {
-          title: 'Student Profile unverified by Admin',
-          body: `Your profile has unverified due to unverification of your teacher`
-        }).catch(err => {
-          console.error("Error sending student web-push notification:", err);
-        });
-      });
-    }
+    // Unverify teacher and all its students
+    const result = await unverifyTeacher(teacher_id);
 
     return res.json({
       success: true,
-      message: "Teacher, students, and their resource requests have been reset successfully"
+      message: result.message
     });
 
   } catch (err) {
-    console.error(err);
+    console.error("Error in unverifyTeacher:", err);
     return res.status(500).json({ error: "Failed to unverify teacher" });
   }
 };
 
-exports.unverifyStudentIfPossible = async (req, res) => {
+exports.unverifyStudentByAdmin = async (req, res) => {
   const { student_id } = req.params;
 
   try {
-    const student = await Student.findById(student_id);
-    if (!student) {
-      return res.status(404).json({ error: "Student not found" });
-    }
+    const result = await unverifyStudent(student_id);
 
-    // 1️⃣ Block if student has any allotted resource
-    const allottedRequests = await ResourceRequest.find({
-      studentId: student_id,
-      is_verified: true
-    });
+    return res.status(200).json(result);
 
-    if (allottedRequests && allottedRequests.length > 0) {
-      return res.status(400).json({
-        error: "Student has allocated resources. Cannot unverify."
-      });
-    }
+  } catch (err) {
+    console.error("Unverify student error:", err.message);
 
-    // 2️⃣ Delete ALL resource requests of this student
-    await ResourceRequest.deleteMany({
-      studentId: student_id
-    });
-
-    // 3️⃣ Unverify student and clear resourceRequests array
-    const updatedStudent = await Student.findByIdAndUpdate(
-      student_id,
-      {
-        $set: {
-          teacher_verified: false,
-          teacher_action: false,
-          admin_verified: false,
-          admin_action: false,
-          is_verified: false,
-          resourceRequests: []
-        }
-      },
-      { new: true }
-    );
-
-    // Send email to student about unverification
-    if (updatedStudent) {
-      emailService.sendStudentProfileUnverifiedByAdminEmail(updatedStudent.email, updatedStudent.name)
-        .then(result => console.log("Student unverification email sent:", result))
-        .catch(error => console.error("Error sending student unverification email:", error));
-        
-      notifyStudent(student_id, {
-        title: 'Student Profile unverified by Admin',
-        body: `Your profile has been unverified by admin.`
-      }).catch(err => {
-        console.error("Error sending student web-push notification:", err);
-      });
-    }
-        
-    return res.status(200).json({
-      message: "Student unverified successfully"
-    });
-
-  } catch (error) {
-    console.error("Error unverifying student:", error);
-    res.status(500).json({
-      error: "Failed to unverify student"
+    return res.status(400).json({
+      error: err.message || "Failed to unverify student"
     });
   }
-};
-
+}
 
 exports.getPendingStudents = async (req, res) => {
   try {
@@ -377,47 +231,48 @@ exports.getRejectedStudents = async (req, res) => {
 
 exports.getAllResourceRequests = async (req, res) => {
   const role = req.session.user.role;
-  const uid = req.session.user.id;
-  // console.log("Admin requested all resource requests", uid);
 
   if (role !== "admin") {
     return res.status(403).json({ error: "Access denied. Admin role required." });
   }
 
   try {
-    // Find all resource requests from all students
     const resourceRequests = await ResourceRequest.find({})
       .populate({
-        path: 'studentId',
-        select: 'name rollNo email branch teacher',
-        populate: {
-          path: 'teacher',
-          select: 'name'
-        }
+        path: "studentId",
+        select: "name rollNo branch teacher",
+        populate: { path: "teacher", select: "name" }
       })
-      .sort({ createdAt: -1 }); // Most recent first
+      .populate({ path: "machineId", select: "MIGID user gpuRam ram ip port name" })
+      .sort({ createdAt: -1 });
 
-    // console.log(`Found ${resourceRequests.length} total resource requests for admin`);
-
-    // Format the data to include teacher info in the response
     const formattedRequests = resourceRequests
-      .filter(request => request.studentId)
-      .map(request => {
-        const teacher = request.studentId.teacher || null;
-        return {
-          ...request._doc,
-          studentInfo: {
-            _id: request.studentId._id,
-            name: request.studentId.name,
-            rollNo: request.studentId.rollNo,
-            email: request.studentId.email,
-            branch: request.studentId.branch
-          },
-          teacherInfo: teacher
-            ? { _id: teacher._id, name: teacher.name }
-            : { _id: null, name: "Unknown" }
-        };
-      });
+      .filter(r => r.studentId && r.machineId)
+      .map(r => ({
+        _id: r._id, // Add the MongoDB ObjectId for frontend actions
+        createdAt: r.createdAt, // Add creation date for frontend display
+        studentName: r.studentId.name,
+        rollNo: r.studentId.rollNo,
+        branch: r.studentId.branch,
+        teacherName: r.studentId.teacher ? r.studentId.teacher.name : "Unknown",
+        title: r.title,
+        purpose: r.purpose,
+        duration: r.duration,
+        migId: r.machineId.MIGID,  
+        user: r.machineId.user,  
+        gpuRam: r.machineId.gpuRam,  
+        ram: r.machineId.ram,  
+        ip: r.machineId.ip,  
+        port: r.machineId.port,  
+        name: r.machineId.name,  
+        status: {
+          teacher_action: r.teacher_action,
+          teacher_verified: r.teacher_verified,
+          admin_action: r.admin_action,
+          admin_verified: r.admin_verified,
+          is_verified: r.is_verified
+        }
+      }));
 
     return res.json({
       success: true,
@@ -565,48 +420,47 @@ exports.UpdateAdminIdentity = exports.UpdateAdminProfile;
 
 exports.getMachines = async (req, res) => {
   try {
-    // populate nested assignedStudent.studentId with student's name and rollNo
-    const machines = await Machine.find({})
-      .populate({ path: 'assignedStudent.studentId', select: 'name rollNo' })
-      .lean();
+   const machines = await Machine.find()
+  .setOptions({ includeUnavailable: true })
+  .lean(); //setOptions is needed coz of pre middleware
 
-    // normalize assignedStudent to include rollNumber and name for frontend
-    const normalized = machines.map(m => {
-      const copy = { ...m };
-      if (copy.assignedStudent && copy.assignedStudent.studentId) {
-        const s = copy.assignedStudent.studentId;
-        copy.assignedStudent = {
-          studentId: s._id,
-          rollNumber: s.rollNo || null,
-          name: s.name || null
-        };
-      } else {
-        copy.assignedStudent = null;
-      }
-      return copy;
+    return res.json({
+      ok: true,
+      machines
     });
 
-    return res.json({ ok: true, machines: normalized });
   } catch (err) {
     console.error('Failed to fetch machines', err);
-    return res.status(500).json({ error: 'Failed to fetch machines' });
+    return res.status(500).json({
+      error: 'Failed to fetch machines'
+    });
   }
 };
 
 // Create a new machine
 exports.createMachine = async (req, res) => {
   try {
-    const { MIGID, gpuRam } = req.body;
-    if (!MIGID || MIGID.trim() === '') return res.status(400).json({ error: 'MIGID is required' });
-    const gpu = (gpuRam === undefined || gpuRam === null || gpuRam === '') ? null : Number(gpuRam);
-    if (gpu === null || Number.isNaN(gpu) || gpu < 0) return res.status(400).json({ error: 'gpuRam must be a non-negative number' });
+    const { error, value } = validateMachineInput(req.body);
 
-    const machine = new Machine({ MIGID: MIGID.trim(), gpuRam: gpu, assignedStudent: null });
+    if (error) {
+      return res.status(400).json({ error });
+    }
+
+    const machine = new Machine(value);
     await machine.save();
-    return res.status(201).json({ ok: true, machine });
+
+    return res.status(201).json({
+      ok: true,
+      machine
+    });
+
   } catch (err) {
     console.error('Failed to create machine', err);
-    if (err.code === 11000) return res.status(409).json({ error: 'MIGID already exists' });
+
+    if (err.code === 11000) {
+      return res.status(409).json({ error: 'MIGID already exists' });
+    }
+
     return res.status(500).json({ error: 'Failed to create machine' });
   }
 };
@@ -639,100 +493,151 @@ async function deleteResourceRequestAndCleanup(resourceRequestId, studentId) {
 
 // Update a machine (MIGID, gpuRam, assignedStudent)
 // When unassigning, also deletes the associated resource request
-exports.updateMachine = async (req, res) => {
+exports.updateMachineAvailability = async (req, res) => {
   const { id } = req.params;
-  const { MIGID, gpuRam, assignedStudent } = req.body;
+  const { isAvailable } = req.body;
+
   try {
-    const update = {};
-    if (MIGID !== undefined) update.MIGID = MIGID;
-    if (gpuRam !== undefined) update.gpuRam = gpuRam;
-    if (assignedStudent !== undefined && assignedStudent === null) {
-      // Get the current machine to find resourceRequestId
-      const currentMachine = await Machine.findById(id);
-      if (currentMachine && currentMachine.assignedStudent && currentMachine.assignedStudent.resourceRequestId) {
-        const resourceRequestId = currentMachine.assignedStudent.resourceRequestId;
-        const studentId = currentMachine.assignedStudent.studentId;
-
-        // Notify student and teacher before revocation cleanup (async, non-blocking)
-        Student.findById(studentId).then(student => {
-          if (!student) return;
-          
-          ResourceRequest.findById(resourceRequestId).then(resourceRequest => {
-            if (!resourceRequest) return;
-            
-            // Send student notification email
-            emailService
-              .sendResourceRequestRevokedByAdminEmail(
-              student.email,
-              student.name,
-              resourceRequest.title,
-              currentMachine.MIGID
-            ).catch(err => console.error('Error sending student revocation email:', err));
-
-            notifyStudent(studentId, {
-              title: 'Resource Revoked by admin',
-              body: `Your resource has been revoked by admin`
-            }).catch(err => {
-              console.error("Error sending student web-push notification:", err);
-            });
-            
-            // Send teacher notification email
-            Teacher.findById(student.teacher).then(teacher => {
-              if (teacher) {
-                emailService.sendTeacherResourceRequestRevokedByAdminEmail(
-                  teacher.email,
-                  teacher.name,
-                  student.name,
-                  resourceRequest.title
-                ).catch(err => console.error('Error sending teacher notification email:', err));
-
-                // Notify teacher when admin revokes student resource allocation (web-push)
-                notifyTeacher(student.teacher, {
-                  title: 'Resource Allocation Revoked',
-                  body: `A student resource allocation has been revoked by the admin.`
-                }).catch(err => {
-                  console.error("Error sending teacher web-push notification:", err);
-                });
-              }
-            }).catch(err => console.error('Error finding teacher:', err));
-
-          }).catch(err => console.error('Error finding resource request:', err));
-        }).catch(err => console.error('Error finding student:', err));
-
-        // Delete the resource request and clean up references
-        try {
-          await deleteResourceRequestAndCleanup(resourceRequestId, studentId);
-        } catch (error) {
-          console.error("Deletion failed:", error);
-          return res.status(500).json({
-            success: false,
-            message: "Failed to revoke resource properly. Try again."
-          });
-        }
-      }
-
-      // Clear both studentId and resourceRequestId when unassigning
-      update.assignedStudent = { studentId: null, resourceRequestId: null };
-      update.isAssigned = false;
+    if (typeof isAvailable !== 'boolean') {
+      return res.status(400).json({
+        error: 'isAvailable must be a boolean (true or false)'
+      });
     }
-    const machine = await Machine.findByIdAndUpdate(id, update, { new: true }).lean();
-    if (!machine) return res.status(404).json({ error: 'Machine not found' });
-    return res.json({ ok: true, machine });
+
+    const machine = await Machine.findByIdAndUpdate(
+      id,
+      { isAvailable },
+      { new: true, includeUnavailable: true }
+    ).lean();
+
+    if (!machine) {
+      return res.status(404).json({ error: 'Machine not found' });
+    }
+
+    return res.json({
+      ok: true,
+      message: `Machine marked as ${isAvailable ? 'available' : 'unavailable'}`,
+      machine
+    });
+
   } catch (err) {
     console.error('Failed to update machine', err);
-    return res.status(500).json({ error: 'Failed to update machine' });
+    return res.status(500).json({
+      error: 'Failed to update machine'
+    });
   }
 };
 
 // Delete a machine
 exports.deleteMachine = async (req, res) => {
   const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ error: "Invalid machine ID" });
+  }
+
   try {
-    const result = await Machine.findByIdAndDelete(id);
-    if (!result) return res.status(404).json({ error: 'Machine not found' });
+    // Check if machine exists
+    const machine = await Machine.findOne({ _id: id })
+      .setOptions({ includeUnavailable: true });
+      
+    if (!machine) return res.status(404).json({ error: "Machine not found" });
+
+    // Check for active or future allotments first
+    const now = new Date();
+    const activeAllotment = await MachineAllotment.findOne({
+      machineId: id,
+      $or: [
+        { isActive: true },
+        { endTime: { $gte: now } } // future allotments
+      ]
+    });
+
+    if (activeAllotment) {
+      return res.status(400).json({
+        error: "Cannot delete machine with active or future allotments"
+      });
+    }
+
+    // Check if machine is disabled
+    if (machine.isAvailable) {
+      return res.status(400).json({
+        error: "Machine must be disabled before deletion"
+      });
+    }
+
+    // Safe to delete
+    // await Machine.findByIdAndUpdate(id, { isDeleted: true });
+    await Machine.findOneAndUpdate(
+      { _id: id },
+      { isDeleted: true },
+      { includeUnavailable: true }
+    );
     return res.json({ ok: true });
   } catch (err) {
-    console.error('Failed to delete machine', err);
-    return res.status(500).json({ error: 'Failed to delete machine' });
+    console.error("Failed to delete machine", err);
+    return res.status(500).json({ error: "Failed to delete machine" });
+  }
+};
+
+exports.revokeResourceRequest = async (req, res) => {
+  try {
+    const { requestId } = req.params;
+    console.log(requestId)
+
+    // 1. Validate ID
+    if (!mongoose.Types.ObjectId.isValid(requestId)) {
+      return res.status(400).json({ message: "Invalid requestId" });
+    }
+
+    // 2. Find request
+    const request = await ResourceRequest.findById(requestId).populate("studentId");
+
+    if (!request) {
+      return res.status(404).json({ message: "Request not found" });
+    }
+
+    if (!request.studentId) {
+      return res.status(404).json({ message: "Student not found for this request" });
+    }
+
+    // 3. Update request
+    request.is_verified = false;
+    request.admin_action = true;
+    request.admin_verified = false;
+
+    await request.save();
+
+    // 4. Deactivate matching allotments
+    const result = await MachineAllotment.updateMany(
+      {
+        resourceRequestId: requestId,
+        isActive: true,
+      },
+      {
+        $set: { isActive: false },
+      }
+    );
+
+    // 5. Send notification email to student
+    emailService.sendResourceRequestRevokedByAdminEmail(
+      request.studentId.email,
+      request.studentId.name,
+      request.title
+    )
+    .then(result => console.log("Resource revoked email sent to student:", result))
+    .catch(error => console.error("Error sending resource revoked email:", error));
+
+    return res.status(200).json({
+      message: "Request rejected, allotments deactivated, and student notified",
+      updatedCount: result.modifiedCount,
+    });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      message: "Server error",
+      error: error.message,
+    });
   }
 };

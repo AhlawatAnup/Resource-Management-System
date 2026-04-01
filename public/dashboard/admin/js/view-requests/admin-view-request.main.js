@@ -1,21 +1,11 @@
 import {
   loadRequestsHandler,
   filterHandler,
-  verifyHandler,
-  showEditHandler,
-  submitEditHandler,
   initHandler,
   copyHandler,
-  closeVerificationModalHandler,
-  closeEditModalHandler,
-  submitVerificationHandler
 } from './admin-view-request.handler.js';
-
-import { generatePassword } from './admin-view-request.utils.js';
-
-// Expose modal close handlers to window for inline onclick handlers
-window.closeVerificationModal = closeVerificationModalHandler;
-window.closeEditModal = closeEditModalHandler;
+import { verifyAdminRequest, revokeStudentRequest } from './admin-view-request.service.js';
+import { generatePassword, confirmAction, showToast } from './admin-view-request.utils.js';
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -28,15 +18,42 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // table actions
-  document.getElementById("requestsTableBody")?.addEventListener("click", (e) => {
-    const btn = e.target.closest('.approve-btn, .decline-btn, .edit-btn');
-    if (!btn) return;
+  document.getElementById("requestsTableBody")?.addEventListener("click", async (e) => {
+    const approveDeclineBtn = e.target.closest('.approve-btn, .decline-btn');
+    const revokeBtn = e.target.closest('.revoke-btn');
 
-    const id = btn.dataset.requestId;
-    const action = btn.dataset.action;
+    // Approve/Decline
+    if (approveDeclineBtn) {
+      const id = approveDeclineBtn.dataset.requestId;
+      const action = approveDeclineBtn.dataset.action;
+      if (!id || !action) return;
+      try {
+        const confirmed = await confirmAction(action);
+        if (!confirmed) return;
+        await verifyAdminRequest(id, action === 'approve');
+        await loadRequestsHandler();
+        showToast(`Request ${action}d successfully!`, 'success');
+      } catch (err) {
+        showToast(err.message || 'Failed to update request', 'error');
+      }
+      return;
+    }
 
-    if (action === 'edit') return showEditHandler(id);
-    verifyHandler(id, action === 'approve');
+    // Revoke
+    if (revokeBtn) {
+      const id = revokeBtn.dataset.requestId;
+      if (!id) return;
+      try {
+        const confirmed = await confirmAction('revoke');
+        if (!confirmed) return;
+        await revokeStudentRequest(id);
+        await loadRequestsHandler();
+        showToast('Request revoked successfully!', 'success');
+      } catch (err) {
+        showToast(err.message || 'Failed to revoke request', 'error');
+      }
+      return;
+    }
   });
 
   // copy
@@ -46,36 +63,11 @@ document.addEventListener('DOMContentLoaded', () => {
     copyHandler(btn.dataset.target);
   });
 
-  // edit submit
-  document.getElementById('editRequestForm')?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const btn = e.submitter;
-    await submitEditHandler(btn);
-  });
-
   // generate password
   document.getElementById('generateVmPasswordBtn')?.addEventListener('click', () => {
     const pwd = generatePassword(12);
     const pwdEl = document.getElementById('vmPassword');
     if (pwdEl) pwdEl.value = pwd;
-  });
-
-  // verification submit
-  document.getElementById('verificationForm')?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    const modal = document.getElementById('verificationModal');
-    const id = modal.getAttribute('data-request-id');
-
-    const credentials = {
-      username: document.getElementById('vmUsername').value.trim(),
-      password: document.getElementById('vmPassword').value.trim(),
-      ip: document.getElementById('vmIp').value.trim(),
-      migId: document.getElementById('vmMigId').value.trim()
-    };
-
-    closeVerificationModalHandler();
-    await submitVerificationHandler(id, true, credentials);
   });
 
 });

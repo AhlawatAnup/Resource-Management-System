@@ -42,27 +42,3 @@ export async function verifyRequest(requestId, isVerified) {
     data: result
   };
 }
-
-// Submit edited request
-export async function editRequest(requestId, payload) {
-  const response = await fetch(`/dashboard/teacher/edit_request/${requestId}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  });
-
-  let result;
-
-  try {
-    result = await response.json();
-  } catch (jsonErr) {
-    throw new Error('Invalid server response');
-  }
-
-  if (!response.ok || !result.success) {
-    const errorMsg = result && result.error ? result.error : 'Failed to edit request';
-    throw new Error(errorMsg);
-  }
-
-  return result;
-}

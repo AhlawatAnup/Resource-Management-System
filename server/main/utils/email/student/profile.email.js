@@ -1,23 +1,5 @@
 const sendEmail = require('../sendEmail');
 
-// Verified by Teacher
-const sendStudentProfileVerifiedByTeacherEmail = async (studentEmail, studentName, teacherName) => {
-  const html = `
-    <div style="font-family: Arial; max-width:600px; margin:auto;">
-      <h2 style="color:#4CAF50;">✅ Teacher Verification Complete</h2>
-      <p>Dear <strong>${studentName}</strong>,</p>
-      <p>Your profile has been verified by your assigned teacher.</p>
-      <p>Awaiting admin verification.</p>
-    </div>
-  `;
-
-  return sendEmail({
-    to: studentEmail,
-    subject: 'Profile Verification Update - Teacher Approved',
-    html
-  });
-};
-
 // Rejected by Teacher
 const sendStudentProfileRejectedByTeacherEmail = async (studentEmail, studentName, teacherName) => {
   const html = `
@@ -103,7 +85,7 @@ const sendStudentProfileUnverifiedByAdminEmail = async (studentEmail, studentNam
         <p><strong>Important:</strong></p>
         <ul>
           <li>Your verification status has been reset to unverified</li>
-          <li>All your pending resource requests have been removed</li>
+          <li>All your resource requests have been removed</li>
         </ul>
       </div>
       
@@ -152,7 +134,6 @@ const sendStudentUnverifiedDueToTeacherUnverificationEmail = async (studentEmail
 };
 
 module.exports = {
-  sendStudentProfileVerifiedByTeacherEmail,
   sendStudentProfileRejectedByTeacherEmail,
   sendStudentProfileVerifiedByAdminEmail,
   sendStudentProfileRejectedByAdminEmail,

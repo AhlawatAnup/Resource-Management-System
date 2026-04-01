@@ -2,6 +2,6 @@
 
 import { handleLoadViewRequests } from './student-view-request.handler.js';
 
-document.addEventListener('DOMContentLoaded', () => {
-    handleLoadViewRequests();
+document.addEventListener('DOMContentLoaded', async () => {
+    await handleLoadViewRequests();
 });

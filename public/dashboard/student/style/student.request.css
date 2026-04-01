@@ -539,3 +539,16 @@
   height: 18px;
   flex-shrink: 0;
 }
+
+/* Access Machine buttons */
+.access-machine-btn {
+    padding: 8px 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background: #f5f5f5;
+    cursor: pointer;
+}
+
+.access-machine-btn:hover {
+    background: #eaeaea;
+}

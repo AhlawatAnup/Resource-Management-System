@@ -1,7 +1,5 @@
 import {
   fetchAdminResourceRequests,
-  verifyAdminRequest,
-  editAdminRequest,
   fetchAvailableMachines
 } from './admin-view-request.service.js';
 
@@ -10,12 +8,7 @@ import {
   showEmptyState,
   showErrorState,
   showNotification,
-  showVerificationModalUI,
-  closeVerificationModalUI,
   populateMachinesSelectUI,
-  showEditModalUI,
-  closeEditModalUI,
-  getEditFormData,
   setSubmitButtonState,
   setFieldError,
   copyToClipboard
@@ -24,7 +17,6 @@ import {
 import {
   getRequestStatus,
   filterRequestsList,
-  buildEditPayload,
   mergeUpdatedRequest
 } from './admin-view-request.utils.js'
 
@@ -51,7 +43,14 @@ export async function loadRequestsHandler() {
 
     if (error) throw new Error();
 
-    resourceRequests = data.requests || [];
+
+    // Flatten status object into top-level for each request
+    resourceRequests = (data.requests || []).map(r => {
+      if (r.status && typeof r.status === 'object') {
+        return { ...r, ...r.status };
+      }
+      return r;
+    });
     filteredRequests = [...resourceRequests];
 
     render();
@@ -87,149 +86,9 @@ export function filterHandler(term) {
   render();
 }
 
-
-// ===== VERIFY =====
-export async function verifyHandler(requestId, isVerified) {
-  const request = resourceRequests.find(r => r._id === requestId);
-  if (!request) {
-    showNotification('Request not found.', 'error');
-    return;
-  }
-
-  // expiry check
-  if (isVerified) {
-    const d = new Date(request.expiryDate);
-    const now = new Date();
-    d.setHours(0,0,0,0);
-    now.setHours(0,0,0,0);
-
-    if (d < now) {
-      await Swal.fire({
-        icon: 'error',
-        title: 'Invalid Request',
-        text: 'The expiry date is in the past. Please update the expiry date to proceed'
-      });
-      return;
-    }
-
-    await openVerificationModalHandler(requestId);
-    return;
-  }
-
-  const res = await Swal.fire({
-    title: 'Are you sure?',
-    text: 'Decline request?',
-    icon: 'warning',
-    showCancelButton: true
-  });
-
-  if (!res.isConfirmed) return;
-
-  await submitVerificationHandler(requestId, false);
-}
-
-
-// ===== MODAL =====
-export async function openVerificationModalHandler(requestId) {
-  const request = resourceRequests.find(r => r._id === requestId);
-  if (!request) return;
-
-  showVerificationModalUI(request);
-
-  try {
-    const machines = await fetchAvailableMachines();
-    populateMachinesSelectUI(machines);
-  } catch (err) {
-    console.error(err);
-  }
-}
-
-export function closeVerificationModalHandler() {
-  closeVerificationModalUI();
-}
-
-export function closeEditModalHandler() {
-  closeEditModalUI();
-}
-
-
-// ===== SUBMIT VERIFY =====
-export async function submitVerificationHandler(requestId, isVerified, credentials = null) {
-  try {
-    await verifyAdminRequest(requestId, isVerified, credentials);
-
-    const idx = resourceRequests.findIndex(r => r._id === requestId);
-
-    if (idx !== -1) {
-      resourceRequests[idx].admin_verified = isVerified;
-      resourceRequests[idx].admin_action = true;
-
-      if (isVerified) {
-        resourceRequests[idx].teacher_verified = true;
-        resourceRequests[idx].teacher_action = true;
-        if (credentials) {
-          resourceRequests[idx].vmCredentials = credentials;
-        }
-      }
-    }
-
-    filterHandler(document.getElementById('searchInput').value);
-    showNotification(`Request ${isVerified ? 'approved' : 'declined'}`, 'success');
-
-  } catch (err) {
-    console.error(err);
-    showNotification('Failed to update request', 'error');
-  }
-}
-
-
-// ===== EDIT =====
-export function showEditHandler(id) {
-  const req = resourceRequests.find(r => r._id === id);
-  if (!req) return;
-  showEditModalUI(req);
-}
-
-export async function submitEditHandler(btn) {
-  const { requestId, formValues } = getEditFormData();
-
-  if (!isValidUsername(formValues.username)) {
-    setFieldError('edit-username-error', 'Invalid username');
-    return;
-  }
-
-  const payload = buildEditPayload(formValues);
-
-  try {
-    setSubmitButtonState(btn, true);
-
-    const result = await editAdminRequest(requestId, payload);
-
-    const idx = resourceRequests.findIndex(r => r._id === requestId);
-    if (idx !== -1) {
-      resourceRequests[idx] = mergeUpdatedRequest(resourceRequests[idx], result.resourceRequest);
-    }
-
-    filterHandler(document.getElementById('searchInput').value);
-    closeEditModalUI();
-    showNotification('Updated successfully', 'success');
-
-  } catch (err) {
-    showNotification(err.message, 'error');
-  } finally {
-    setSubmitButtonState(btn, false);
-  }
-}
-
-
 // ===== INIT =====
 export function initHandler() {
   initializePurposePanel();
-
-  flatpickr('#editExpiryDate', {
-    dateFormat: 'Y-m-d',
-    minDate: 'today'
-  });
 }
 
 
@@ -251,17 +110,26 @@ export async function copyHandler(targetId) {
 
 
 function getActionButtons(r) {
-  if (r.admin_action) {
+  // Use getRequestStatus for consistent status logic
+  const status = getRequestStatus(r);
+  if (status.class === 'declined') {
+    return '';
+  }
+  if (status.class === 'verified') {
+    return `<button class="icon-btn revoke-btn" data-request-id="${r._id}">Revoke</button>`;
+  }
+  if (status.class === 'pending-teacher') {
     return `
-      <button class="icon-btn edit-btn" data-request-id="${r._id}" data-action="edit"></button>
+      <button class="icon-btn approve-btn" data-request-id="${r._id}" data-action="approve" title="Approve">
+        <i class="fas fa-check"></i>
+      </button>
+
+      <button class="icon-btn decline-btn" data-request-id="${r._id}" data-action="decline" title="Decline">
+        <i class="fas fa-times"></i>
+      </button>
     `;
   }
-
-  return `
-    <button class="icon-btn approve-btn" data-request-id="${r._id}" data-action="approve"></button>
-    <button class="icon-btn decline-btn" data-request-id="${r._id}" data-action="decline"></button>
-    <button class="icon-btn edit-btn" data-request-id="${r._id}" data-action="edit"></button>
-  `;
+  return '';
 }
 
 // initAdminRefresh(loadRequestsHandler);

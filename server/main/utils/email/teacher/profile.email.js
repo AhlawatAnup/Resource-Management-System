@@ -91,7 +91,6 @@ const sendTeacherProfileUnverifiedByAdminEmail = async (teacherEmail, teacherNam
         <ul>
           <li>Your verification status has been reset to unverified</li>
           <li>All your students have also been unverified</li>
-          <li>All pending resource requests have been removed</li>
         </ul>
       </div>
 
