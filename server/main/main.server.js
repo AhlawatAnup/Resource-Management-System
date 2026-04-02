@@ -78,8 +78,17 @@ const sessionMiddleware = session({
 app.use(sessionMiddleware); 
 
 
-app.use(express.json()); // built-in JSON parser
-
+// ==============================================
+app.use("/home",express.json()); // built-in JSON parser
+app.use("/logout",express.json()); // built-in JSON parser
+app.use("/registration",express.json()); // built-in JSON parser
+app.use("/auth",express.json()); // built-in JSON parser
+app.use("/dashboard",express.json()); // built-in JSON parser
+app.use("/push-subscription",express.json()); // built-in JSON parser
+app.use('/proxy/set-session', express.json());
+app.use("/proxy/token", express.json());
+// app.use(express.json()); // built-in JSON parser
+// ===========================================
 
 
 // Homepage route → serve public/home/index.html
