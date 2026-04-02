@@ -64,7 +64,7 @@ const publicPath = path.join(__dirname, "../../public");
 // Serve static files from "public" folder
 app.use(express.static(publicPath));
 
-app.use(express.urlencoded({ extended: true })); // for form data
+// app.use(express.urlencoded({ extended: true })); // for form data
 
 const sessionMiddleware = session({
   secret: process.env.SESSION_SECRET,
@@ -82,7 +82,8 @@ const sessionMiddleware = session({
 app.use(sessionMiddleware);
 
 // ==============================================
-app.use("/", express.json());
+// SPECIFY THE PARSER SO THAT /NOTEBOOK BODY GET UNPARSED
+app.get("/", express.json());
 app.use("/logout", express.json());
 app.use("/registration", express.json());
 app.use("/auth", express.json());
