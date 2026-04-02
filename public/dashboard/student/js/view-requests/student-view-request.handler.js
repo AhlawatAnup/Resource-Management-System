@@ -131,7 +131,7 @@ function attachAccessMachineHandlers() {
         if (!migid || !requestId) return;
 
         try {
-            const res = await fetch('/proxy/set-session', {
+            const res = await fetch('/notebook/proxy/set-session', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include', // important for session
@@ -140,7 +140,7 @@ function attachAccessMachineHandlers() {
             const data = await res.json();
 
             if (res.ok) {
-                window.open('/', '_blank'); // open proxy only if session is set
+                window.open('/notebook', '_blank'); // open proxy only if session is set
             } else {
                 alert(data.message || 'Failed to initialize session');
             }

@@ -36,7 +36,7 @@ export async function fetchRequestAllotmentTime(requestId) {
 export async function fetchTokenForMigid(migid, requestId) {
     if (!migid) throw new Error('MIGID is required');
     if (!requestId) throw new Error('requestId is required');
-    const response = await fetch('/proxy/token', {
+    const response = await fetch('/notebook/proxy/token', {
         method: 'GET',
         credentials: 'include',
         headers: { 

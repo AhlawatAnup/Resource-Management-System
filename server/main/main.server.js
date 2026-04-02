@@ -11,16 +11,22 @@ const schedule = require("node-schedule");
 const { runBackup } = require("./services/backup");
 const pushSubscriptionRoutes = require("./routes/pushSubscription.route.js");
 const proxyMachineRoute = require("./proxy/routes/proxyMachine.route.js");
- const {sendAllotmentNotifications} = require("./services/resourceExpiryNotifier");
+const {
+  sendAllotmentNotifications,
+} = require("./services/resourceExpiryNotifier");
 const attachWebSocketProxy = require("./proxy/websocketProxy.js");
-const { markExpiredAllotmentsHistoryAndCleanupDocker } = require("./services/expiryAllotmentsAndDocker.js"); // adjust path
-const { collectAndStoreStats } = require("./services/collectAllMachineStats.js");
+const {
+  markExpiredAllotmentsHistoryAndCleanupDocker,
+} = require("./services/expiryAllotmentsAndDocker.js"); // adjust path
+const {
+  collectAndStoreStats,
+} = require("./services/collectAllMachineStats.js");
 
 let statsConnection;
 
 // ✅ Connect to DBs
 connectDB();
-connectStatsDB().then(conn => {
+connectStatsDB().then((conn) => {
   statsConnection = conn;
 });
 
@@ -58,8 +64,6 @@ const publicPath = path.join(__dirname, "../../public");
 // Serve static files from "public" folder
 app.use(express.static(publicPath));
 
-
-
 app.use(express.urlencoded({ extended: true })); // for form data
 
 const sessionMiddleware = session({
@@ -75,15 +79,22 @@ const sessionMiddleware = session({
 });
 
 // ✅ Session middleware
-app.use(sessionMiddleware); 
+app.use(sessionMiddleware);
 
-
-app.use(express.json()); // built-in JSON parser
-
-
+// ==============================================
+app.use("/", express.json());
+app.use("/logout", express.json());
+app.use("/registration", express.json());
+app.use("/auth", express.json());
+app.use("/dashboard", express.json());
+app.use("/push-subscription", express.json());
+app.use("/notebook/proxy/set-session", express.json());
+app.use("/notebook/proxy/token", express.json());
+// app.use(express.json()); // built-in JSON parser
+// ===========================================
 
 // Homepage route → serve public/home/index.html
-app.get("/home", noCache, preventAuth, (req, res) => {
+app.get("/", noCache, preventAuth, (req, res) => {
   res.sendFile(path.join(publicPath, "home", "home.html"));
 });
 
@@ -118,7 +129,6 @@ app.use("/dashboard", noCache, requireAuth, dashboardRoutes);
 // Push Subscription API
 app.use("/push-subscription", requireAuth, pushSubscriptionRoutes);
 
-
 // Schedule job for backup
 const backupSchedule = process.env.BACKUP_SCHEDULE || "0 3 * * *";
 schedule.scheduleJob(backupSchedule, async () => {
@@ -146,8 +156,10 @@ schedule.scheduleJob(expiryNotifySchedule, async () => {
 
 // Run expired allotments cleanup once on server start
 markExpiredAllotmentsHistoryAndCleanupDocker()
-  .then(() => console.log('Initial expired allotments cleanup done.'))
-  .catch(err => console.error('Initial expired allotments cleanup failed:', err));
+  .then(() => console.log("Initial expired allotments cleanup done."))
+  .catch((err) =>
+    console.error("Initial expired allotments cleanup failed:", err),
+  );
 
 // Schedule job to go through all machine allotmetns: save history and restart machine using docker
 const expiryAllotmentsSchedule = process.env.EXPIRY_ALLOTMENTS_SCHEDULE;
@@ -159,7 +171,9 @@ schedule.scheduleJob(expiryAllotmentsSchedule, async () => {
 // Schedule job for storing machine stats in seperate DB
 const machineStatsSchedule = process.env.MACHINE_STATS_SCHEDULE || "0 0 * * *";
 schedule.scheduleJob(machineStatsSchedule, async () => {
-  console.log(`[${new Date().toLocaleTimeString()}] Starting stats collection...`);
+  console.log(
+    `[${new Date().toLocaleTimeString()}] Starting stats collection...`,
+  );
   try {
     if (statsConnection) {
       await collectAndStoreStats(statsConnection);
@@ -171,9 +185,9 @@ schedule.scheduleJob(machineStatsSchedule, async () => {
   }
 });
 
-app.use("/", proxyMachineRoute);
+app.use("/notebook", proxyMachineRoute);
 
-const server=app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
 });
 
