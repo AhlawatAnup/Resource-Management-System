@@ -2,7 +2,7 @@
 
 import { logoutDirectly } from '../../../common/js/commons.js';
 import { registerServiceWorkerAndSubscribe } from '../../../common/js/notification.js';
-
+import { setupDarkMode } from '../../../common/js/darkmode/darkmode.js';
 import {
   loadAndRender,
   setupNavigation,
@@ -37,6 +37,9 @@ function initialize() {
   setupNavigation({ state, reload });
   setupActionHandlers({ reload });
   setupSearch({ state });
+
+  // Setup dark mode
+  setupDarkMode();
 
   // Initial load
   reload();

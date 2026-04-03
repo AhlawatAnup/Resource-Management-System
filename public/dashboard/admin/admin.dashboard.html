@@ -8,6 +8,7 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
       rel="stylesheet"
     />
+    <link rel="stylesheet" href="/dashboard/common/style/darkmode/darkmode-button.css">
     <script
       src="https://kit.fontawesome.com/e05e3e1522.js"
       crossorigin="anonymous"
@@ -108,9 +109,9 @@
         </div>
         
         <div class="nav-actions">
-          <div class="admin-info">
-            <span class="admin-name">Hello, Admin</span>
-          </div>
+          <button id="theme-toggle" class="theme-toggle" title="Dark Mode">
+            <i id="theme-icon" class="fa fa-moon"></i>
+          </button>
         </div>
       </nav>
 
@@ -145,7 +146,6 @@
               placeholder="Search users..."
               id="searchInput"
             />
-            <button onclick="toggleDarkMode()">🌙 Toggle Dark Mode</button>
           </div>
         </div>
 
@@ -169,9 +169,8 @@
     </div> <!-- End main-wrapper -->
 
     <!-- <script type="module" src="/dashboard/admin/js/admin.dashboard.js"></script> -->
-    <script type="module" src="/dashboard/admin/js/dashboard/admin-dashboard.main.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/darkreader/darkreader.min.js"></script>
-<script src="/dashboard/common/js/darkmode.js"></script>
+    <script type="module" src="/dashboard/admin/js/dashboard/admin-dashboard.main.js"></script>
 
   </body>
 </html>
