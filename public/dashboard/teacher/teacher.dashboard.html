@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <!-- importing darkmode files on top to avoid delay -->
+    <script src="https://cdn.jsdelivr.net/npm/darkreader/darkreader.min.js"></script>
+    <script src="/dashboard/common/js/darkmode/darkmode-init.js"></script>
+    <link rel="stylesheet" href="/dashboard/common/style/darkmode/darkmode-button.css">
+
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>U.I.E.T Resource Sharing</title>
@@ -62,6 +67,9 @@
           <h1 id="hello-user">Hello, Teacher</h1>
           <p>Track students progress here. Approve or Deny.</p>
         </div>
+        <button id="theme-toggle" class="theme-toggle" title="Dark Mode">
+          <i id="theme-icon" class="fa fa-moon"></i>
+        </button>
       </header>
 
       <!-- Teacher Profile Section -->

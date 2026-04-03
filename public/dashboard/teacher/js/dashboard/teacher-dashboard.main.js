@@ -7,9 +7,12 @@ import {
   handleStudentVerification
 } from './teacher-dashboard.handler.js';
 
+import { setupDarkMode } from '../../../common/js/darkmode/darkmode.js';
+
 
 // Init
 document.addEventListener('DOMContentLoaded', function () {
+  setupDarkMode()
   handleDashboardLoad();
   registerServiceWorkerAndSubscribe();
 });

@@ -1,6 +1,8 @@
 import { loadResourceRequestsHandler, filterRequestsHandler, updateRequestVerificationHandler, initUIComponentsHandler } from './teacher-view-request.handler.js';
+import { setupDarkMode } from '../../../common/js/darkmode/darkmode.js';
 
 document.addEventListener('DOMContentLoaded', () => {
+  setupDarkMode();
   // Initialize purpose panel & date pickers
   initUIComponentsHandler();
 
