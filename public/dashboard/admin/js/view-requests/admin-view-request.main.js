@@ -6,9 +6,10 @@ import {
 } from './admin-view-request.handler.js';
 import { verifyAdminRequest, revokeStudentRequest } from './admin-view-request.service.js';
 import { generatePassword, confirmAction, showToast } from './admin-view-request.utils.js';
+import { setupDarkMode } from '../../../common/js/darkmode/darkmode.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-
+  setupDarkMode();
   initHandler();
   loadRequestsHandler();
 

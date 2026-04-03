@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="https://cdn.jsdelivr.net/npm/darkreader/darkreader.min.js"></script>
+    <script src="/dashboard/common/js/darkmode/darkmode-init.js"></script>
+    <link rel="stylesheet" href="/dashboard/common/style/darkmode/darkmode-button.css">
+
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Allotments - U.I.E.T Resource Sharing</title>
@@ -8,7 +12,8 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
     <script src="https://kit.fontawesome.com/e05e3e1522.js" crossorigin="anonymous"></script>
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"> -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
 
     <link rel="stylesheet" href="/dashboard/admin/style/admin.dashboard.css" />
     <link rel="stylesheet" href="/dashboard/common/style/allotments/machines-flexbar.css" />
@@ -60,8 +65,13 @@
     <main class="main-content" style="padding: 24px;">
         <header class="page-header">
             <div class="header-info">
-                <h1 id="page-title">Resource Allotments</h1>
+                <h1 id="page-title">Check Machine Availability</h1>
                 <p>Select a machine to view its monthly availability.</p>
+            </div>
+            <div class="nav-actions">
+                <button id="theme-toggle" class="theme-toggle" title="Dark Mode">
+                    <i id="theme-icon" class="fa fa-moon"></i>
+                </button>
             </div>
         </header>
 

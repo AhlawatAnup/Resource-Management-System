@@ -3,6 +3,8 @@ import * as ui from './admin-machines.ui.js';
 import * as service from './admin-machines.service.js';
 import * as utils from './admin-machines.utils.js';
 import { handleLogout } from '../../../common/js/commons.js';  //for html logout
+import { setupDarkMode } from '../../../common/js/darkmode/darkmode.js';
+
 import { 
   handleDelete, 
   handleRevoke, 
@@ -13,6 +15,7 @@ import {
 } from './admin-machines.handler.js';
 
 document.addEventListener('DOMContentLoaded', () => {
+  setupDarkMode()
   let currentFilter = 'all';
 
   // ---------------- INIT UI ----------------
