@@ -110,14 +110,31 @@ export async function copyHandler(targetId) {
 
 
 function getActionButtons(r) {
-  // Use getRequestStatus for consistent status logic
   const status = getRequestStatus(r);
+
   if (status.class === 'expired' || status.class === 'declined') {
     return '';
   }
+
+  // Edit button ONLY when fully verified + active
+  const editButton =
+    r.is_verified === true && r.isActive === true
+      ? `<button class="icon-btn edit-btn" data-request-id="${r._id}" title="Edit">
+          <i class="fas fa-pen-to-square"></i>
+        </button>`
+      : "";
+
+  // VERIFIED
   if (status.class === 'verified') {
-    return `<button class="icon-btn revoke-btn" data-request-id="${r._id}">Revoke</button>`;
+    return `
+      ${editButton}
+      <button class="icon-btn revoke-btn" data-request-id="${r._id}">
+        Revoke
+      </button>
+    `;
   }
+
+  // PENDING TEACHER
   if (status.class === 'pending-teacher') {
     return `
       <button class="icon-btn approve-btn" data-request-id="${r._id}" data-action="approve" title="Approve">
