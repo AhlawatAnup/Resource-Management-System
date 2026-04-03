@@ -33,13 +33,11 @@ async function reload() {
 // Initialize App
 // -----------------------------
 function initialize() {
-  // Setup handlers
+  setupDarkMode();
+
   setupNavigation({ state, reload });
   setupActionHandlers({ reload });
   setupSearch({ state });
-
-  // Setup dark mode
-  setupDarkMode();
 
   // Initial load
   reload();
