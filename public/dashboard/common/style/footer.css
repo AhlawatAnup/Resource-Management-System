@@ -1,60 +1,68 @@
+/* ===== About Page Footer (override global footer) ===== */
 
-/* Footer styling (light, unobtrusive) */
-.site-footer {
-  /* default: footer participates in normal flow */
-  display: block;
-  width: 100%;
-  box-sizing: border-box;
-  padding: 1rem 0;
-}
-.site-footer .footer-content {
-  background: rgba(76, 79, 87, 0.438);
-  color: #ffffff;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  font-size: 0.85rem;
-  text-align: center;
-  line-height: 1.2;
-  margin: 0 auto;
-  max-width: 900px;
-}
-
-/* When footer is inside an about-panel card, make it visually part of the card */
-.about-panel > .site-footer {
+.about-panel .site-footer {
+  position: static;
+  transform: none;
+  margin-top: 20px;
   padding: 0;
+  text-align: center;
+  color: #6b7280; /* softer text for card */
 }
-.about-panel > .site-footer .footer-content {
+
+/* Container styling inside card */
+.about-panel .footer-content {
   background: transparent;
-  color: #6b7280;
   padding: 0;
   border-radius: 0;
-  text-align: center; 
-  max-width: none;
-  margin-top: 12px;
+  max-width: 100%;
+  margin: 0 auto;
 }
 
-/* When footer is inside the left-section (homepage), center it vertically and left-align container */
-.left-section > .site-footer {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: 2rem; /* small gap from bottom of left panel */
+/* Footer text spacing */
+.about-panel .footer-text {
+  margin-bottom: 6px;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+/* Collaboration text */
+.about-panel .collab-text {
+  margin-top: 6px;
+  margin-bottom: 4px;
+  font-size: 0.8rem;
+}
+
+/* Logos alignment */
+.about-panel .footer-logos {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;           /* smaller than homepage */
+  height: 2.5rem;      /* compact */
+}
+
+/* Image logo scaling */
+.about-panel .footer-logos img {
+  height: 100%;
   width: auto;
-  pointer-events: none;
-}
-.left-section > .site-footer .footer-content {
-  pointer-events: auto;
+  object-fit: contain;
 }
 
-@media (max-width: 768px) {
-  .logo {
-    top: 1rem;
-    left: 1rem;
-  }
-  .logo-img {
-    height: 40px;
-  }
-  .site-footer {
-    padding: 0.5rem 1rem;
-  }
+/* Telelabs logo text (dark version for light bg) */
+.about-panel .telelabs-text {
+  font-size: 0.9rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #374151;      /* 🔥 dark instead of white */
+  text-shadow: none;   /* remove glow */
+  display: flex;
+  align-items: center;
+}
+
+/* Copyright */
+.about-panel .footer-copy {
+  margin-top: 6px;
+  font-size: 0.75rem;
+  opacity: 0.7;
 }
