@@ -24,6 +24,7 @@ const {
   UpdateAdminProfile,
   unverifyStudentByAdmin,
   revokeResourceRequest,
+  extendAllotment,
 } = require("../controllers/admin.controller.js");
 
 const {
@@ -82,6 +83,7 @@ router.put("/unverify_student/:student_id", unverifyStudentByAdmin);
 router.get("/resource-requests", getAllResourceRequests);
 router.put("/verify_request/:request_id", updateResourceRequestVerification);
 router.post("/revoke/:requestId", revokeResourceRequest);
+router.patch("/extend/:requestId", extendAllotment);
 
 // Profile section routes
 router.get("/details", isAdmin, getAdminDetails);

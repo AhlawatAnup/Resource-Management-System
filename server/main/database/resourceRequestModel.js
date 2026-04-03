@@ -38,6 +38,11 @@ const resourceRequestSchema = new mongoose.Schema({
   admin_verified: { type: Boolean, default: false },
   is_verified: { type: Boolean, default: false },
 
+  isActive: {
+    type: Boolean,
+    default: true
+  },
+
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 

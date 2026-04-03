@@ -642,3 +642,68 @@ exports.revokeResourceRequest = async (req, res) => {
     });
   }
 };
+
+exports.extendAllotment = async (req, res) => {
+  try {
+    const { requestId } = req.params;
+    const { extraDuration } = req.body; // in days
+
+    // 1. Validate input
+    if (!extraDuration || extraDuration <= 0) {
+      return res.status(400).json({ message: "Invalid extension duration" });
+    }
+
+    // 2. Fetch request
+    const request = await ResourceRequest.findById(requestId);
+    if (!request) {
+      return res.status(404).json({ message: "Resource request not found" });
+    }
+
+    // 3. Fetch allotment
+    const allotment = await MachineAllotment.findOne({
+      resourceRequestId: requestId
+    });
+
+    if (!allotment) {
+      return res.status(404).json({ message: "Allotment not found" });
+    }
+
+    const currentEndTime = new Date(allotment.endTime); // UTC
+
+    // 4. Check future booking
+    const futureExists = await MachineAllotment.exists({
+      machineId: allotment.machineId,
+      startTime: { $gte: currentEndTime }
+    });
+
+    if (futureExists) {
+      return res.status(400).json({
+        message: "Cannot extend: Machine already booked for future"
+      });
+    }
+
+    // 5. Compute new end time (EPOCH SAFE)
+    const newEndTime = new Date(
+      currentEndTime.getTime() + extraDuration * 86400000 // 1 day = 86400000 ms
+    );
+
+    // 6. Update
+    request.duration += extraDuration;
+    request.updatedAt = new Date();
+
+    allotment.endTime = newEndTime;
+
+    await request.save();
+    await allotment.save();
+
+    return res.status(200).json({
+      message: "Allotment extended successfully",
+      newEndTime,   // UTC
+      newDuration: request.duration
+    });
+
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
