@@ -1,0 +1,24 @@
+/* User Manual */
+.info-box {
+  font-size: 0.85rem;
+  margin-top: 10px;
+}
+
+.docs-button {
+  width: 100%;
+  padding: 0.9rem;
+  margin-top: 1rem;
+  background: #4c63d2;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.info-box li {
+  color: #f73636;
+  font-weight: 500;
+}
