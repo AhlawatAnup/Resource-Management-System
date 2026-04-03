@@ -119,7 +119,7 @@ export function getStudentStatusClass(student) {
 }
 
 export function getRequestStatus(request) {
-    if (isRequestExpired(request)) {
+    if (request.isActive === false || isRequestExpired(request)) {
         return 'expired';
     }
     if (request.is_verified) {
@@ -219,7 +219,7 @@ export function sortRequestsByDate(requests) {
 }
 
 export function canDeleteRequest(request) {
-    return !request.teacher_action && !request.admin_action && !request.is_verified;
+    return !request.teacher_action && !request.admin_action && !request.is_verified && request.isActive !== false;
 }
 
 export function isValidDuration(duration) {

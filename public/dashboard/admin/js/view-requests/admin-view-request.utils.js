@@ -1,5 +1,10 @@
 // Get request status (ADMIN version - includes teacher + admin states)
 export function getRequestStatus(request) {
+  // 0. Check if expired (isActive: false)
+  if (request.isActive === false) {
+    return { text: "Expired", class: "expired" };
+  }
+
   // 1. FINAL → Fully verified
   if (request.is_verified) {
     return { text: "Verified", class: "verified" };

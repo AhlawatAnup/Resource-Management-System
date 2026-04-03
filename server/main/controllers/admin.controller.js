@@ -270,7 +270,8 @@ exports.getAllResourceRequests = async (req, res) => {
           teacher_verified: r.teacher_verified,
           admin_action: r.admin_action,
           admin_verified: r.admin_verified,
-          is_verified: r.is_verified
+          is_verified: r.is_verified,
+          isActive: r.isActive,
         }
       }));
 

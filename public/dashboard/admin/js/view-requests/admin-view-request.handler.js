@@ -112,7 +112,7 @@ export async function copyHandler(targetId) {
 function getActionButtons(r) {
   // Use getRequestStatus for consistent status logic
   const status = getRequestStatus(r);
-  if (status.class === 'declined') {
+  if (status.class === 'expired' || status.class === 'declined') {
     return '';
   }
   if (status.class === 'verified') {
