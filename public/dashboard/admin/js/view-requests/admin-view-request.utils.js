@@ -20,13 +20,13 @@ export function getRequestStatus(request) {
   }
 
   // 3. Any approval
-  if (request.teacher_action && request.teacher_verified) {
-    return { text: "Approved by Teacher", class: "verified" };
-  }
+  // if (request.teacher_action && request.teacher_verified) {
+  //   return { text: "Approved by Teacher", class: "verified" };
+  // }
 
-  if (request.admin_action && request.admin_verified) {
-    return { text: "Approved by Admin", class: "verified" };
-  }
+  // if (request.admin_action && request.admin_verified) {
+  //   return { text: "Approved by Admin", class: "verified" };
+  // }
 
   // 4. Default → Pending
   return { text: "Pending Teacher", class: "pending-teacher" };

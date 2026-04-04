@@ -93,12 +93,13 @@ export function getRequestStatus(request) {
     return { text: "Declined by Teacher", class: "declined" };
   } else if (request.admin_action && !request.admin_verified) {
     return { text: "Declined by Admin", class: "declined" };
-  } else if (request.teacher_verified && !request.admin_action) {
-    return { text: "Pending Admin", class: "pending-admin" };
-  } else if (!request.teacher_action) {
-    return { text: "Pending Teacher", class: "pending-teacher" };
+  // } else if (request.teacher_verified && !request.admin_action) {
+  //   return { text: "Pending Admin", class: "pending-admin" };
+  // } else if (!request.teacher_action) {
+  //   return { text: "Pending Teacher", class: "pending-teacher" };
   } else {
-    return { text: "Pending", class: "pending" };
+  // return { text: "Pending", class: "pending" };
+      return { text: "Pending Teacher", class: "pending-teacher" };
   }
 }
 
