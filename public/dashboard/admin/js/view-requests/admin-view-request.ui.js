@@ -1,3 +1,5 @@
+import { extendStudentRequest } from './admin-view-request.service.js';
+
 // Render resource requests table
 export function renderResourceRequests(requests, deps) {
   const {
@@ -195,4 +197,21 @@ export function setFieldError(id, message) {
 // Clipboard copy
 export function copyToClipboard(value) {
   return navigator.clipboard.writeText(value);
+}
+
+export function openEditModal(r) {
+  const modal = document.getElementById('editModal');
+
+  document.getElementById('editStudentName').value = r.studentName || '';
+  document.getElementById('editRollNo').value = r.rollNo || '';
+  document.getElementById('editTitle').value = r.title || '';
+  document.getElementById('editMigId').value = r.migId || '-';
+  document.getElementById('editDuration').value = r.duration || '-';
+  document.getElementById('editExtendDuration').value = ''; // reset input
+
+  modal.classList.remove('hidden');
+
+  document.getElementById('editCancelBtn').onclick = () => {
+    modal.classList.add('hidden');
+  };
 }

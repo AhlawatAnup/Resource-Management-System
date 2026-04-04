@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <!-- importing darkmode files on top to avoid delay -->
+    <script src="https://cdn.jsdelivr.net/npm/darkreader/darkreader.min.js"></script>
+    <script src="/dashboard/common/js/darkmode/darkmode-init.js"></script>
+    <link rel="stylesheet" href="/dashboard/common/style/darkmode/darkmode-button.css">
+
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>U.I.E.T Resource Sharing - Admin</title>
@@ -8,6 +13,7 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
       rel="stylesheet"
     />
+    <link rel="stylesheet" href="/dashboard/admin/style/admin.dashboard.css" />
     <script
       src="https://kit.fontawesome.com/e05e3e1522.js"
       crossorigin="anonymous"
@@ -15,7 +21,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
   </head>
-  <link rel="stylesheet" href="/dashboard/admin/style/admin.dashboard.css" />
+  
   <body>
     <!-- Sidebar -->
     <div class="sidebar">
@@ -42,6 +48,10 @@
         <a href="/dashboard/admin/allotments" class="nav-item" id="view-requests-nav">
           <i class="fas fa-network-wired"></i>
           Check Machine Availability
+        </a>
+        <a href="https://aicentre.gitbook.io/aicentre-docs" target="_blank" class="nav-item">
+          <i class="fas fa-book"></i>
+          User Manual
         </a>
         <a href="/dashboard/admin/profile" class="nav-item" id="view-requests-nav">
           <i class="fas fa-user"></i>
@@ -104,9 +114,9 @@
         </div>
         
         <div class="nav-actions">
-          <div class="admin-info">
-            <span class="admin-name">Hello, Admin</span>
-          </div>
+          <button id="theme-toggle" class="theme-toggle" title="Dark Mode">
+            <i id="theme-icon" class="fa fa-moon"></i>
+          </button>
         </div>
       </nav>
 
@@ -165,5 +175,6 @@
 
     <!-- <script type="module" src="/dashboard/admin/js/admin.dashboard.js"></script> -->
     <script type="module" src="/dashboard/admin/js/dashboard/admin-dashboard.main.js"></script>
+
   </body>
 </html>

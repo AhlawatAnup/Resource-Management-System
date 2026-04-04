@@ -2,7 +2,7 @@
 
 import { logoutDirectly } from '../../../common/js/commons.js';
 import { registerServiceWorkerAndSubscribe } from '../../../common/js/notification.js';
-
+import { setupDarkMode } from '../../../common/js/darkmode/darkmode.js';
 import {
   loadAndRender,
   setupNavigation,
@@ -33,7 +33,8 @@ async function reload() {
 // Initialize App
 // -----------------------------
 function initialize() {
-  // Setup handlers
+  setupDarkMode();
+
   setupNavigation({ state, reload });
   setupActionHandlers({ reload });
   setupSearch({ state });

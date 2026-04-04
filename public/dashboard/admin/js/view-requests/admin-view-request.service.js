@@ -79,3 +79,19 @@ export async function revokeStudentRequest(requestId) {
   }
   return res.json();
 }
+
+export async function extendStudentRequest(requestId, extraDuration) {
+  const res = await fetch(`/dashboard/admin/edit-resourceRequest/${requestId}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ extraDuration })
+  });
+
+  const data = await res.json(); // parse JSON response
+
+  if (!res.ok) {
+    throw new Error(data.message || 'Failed to extend request');
+  }
+
+  return data;
+}

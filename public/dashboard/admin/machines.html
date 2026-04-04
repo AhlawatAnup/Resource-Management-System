@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <!-- importing darkmode files on top to avoid delay -->
+    <script src="https://cdn.jsdelivr.net/npm/darkreader/darkreader.min.js"></script>
+    <script src="/dashboard/common/js/darkmode/darkmode-init.js"></script>
+    <link rel="stylesheet" href="/dashboard/common/style/darkmode/darkmode-button.css">
+
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>U.I.E.T Resource Sharing - Machines</title>
@@ -45,6 +50,10 @@
           <i class="fas fa-network-wired"></i>
           Check Machine Availability
         </a>
+        <a href="https://aicentre.gitbook.io/aicentre-docs" target="_blank" class="nav-item">
+          <i class="fas fa-book"></i>
+          User Manual
+        </a>
         <a href="/dashboard/admin/profile" class="nav-item" id="profile-nav">
           <i class="fas fa-user"></i>
           Profile
@@ -65,9 +74,9 @@
           <h2>Machines</h2>
         </div>
         <div class="nav-actions">
-          <div class="admin-info">
-            <span class="admin-name">Hello, Admin</span>
-          </div>
+          <button id="theme-toggle" class="theme-toggle" title="Dark Mode">
+            <i id="theme-icon" class="fa fa-moon"></i>
+          </button>
         </div>
       </nav>
       <!-- Page actions below header (right-aligned) -->

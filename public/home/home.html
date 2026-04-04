@@ -4,11 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AI Data Center Resource Management</title>
-    <base href="/">
+    <base href="/"/>
     <link rel="stylesheet" href="home/style/home.css" />
+    <link rel="stylesheet" href="home/style/home.usermanual.css" />
+    <link rel="stylesheet" href="home/style/home.footer.css" />
     <!-- <link rel="stylesheet" href="../dashboard/common/style/footer.css" /> -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" />
-    
+
 
   </head>
   <body>
@@ -23,16 +25,32 @@
           </h1>
         </div>
 
-        <div class="cloud-icon">
+        <!-- <div class="cloud-icon">
           <div class="cloud-storage"></div>
-        </div>
-      
+        </div> -->
+
         <!-- Footer placed inside left section so it can be centered here -->
-        <footer class="site-footer" style="text-align:center; color: #dbdbdbf0;">
+        <footer class="site-footer">
           <div class="footer-content">
-            <strong>Design, Developed and Maintained by:</strong>
-            <div>Sh. Satish Verma, Assistant Technical Officer, Department of Computer Science and Engineering.</div>
-            <div>© 2025 U.I.E.T. Panjab University. All rights reserved.</div>
+            <div class="footer-text">
+              <strong>Design, Developed and Maintained by:</strong><br />
+              Sh. Satish Verma, Assistant Technical Officer, Department of
+              Computer Science and Engineering.
+
+              <div class="collab-text">In collaboration with</div>
+
+              <div class="footer-logos">
+                <span class="telelabs-text">Telelabs</span>
+                <img
+                  src="/assets/images/logo_menthosa_white.png"
+                  alt="Menthosa Solutions"
+                />
+              </div>
+            </div>
+
+            <div class="footer-copy">
+              © 2025 U.I.E.T. Panjab University. All rights reserved.
+            </div>
           </div>
         </footer>
       </div>
@@ -115,6 +133,19 @@
           <button type="submit" class="login-button" id="sendOtpBtn">
             Send OTP
           </button>
+
+          <!-- User Manual -->
+          <div class="info-box">
+            <ul>
+              <li>
+                If you are a new user, please 
+                <a href="https://aicentre.gitbook.io/aicentre-docs" target="_blank">
+                  click here 
+                </a>
+                to read the user manual before proceeding.
+              </li>
+            </ul>
+          </div>
         </form>
       </div>
     </div>

@@ -1,4 +1,5 @@
 const MachineAllotment = require("../database/machineAllotmentModel");
+const ResourceRequest = require("../database/resourceRequestModel"); // 👈 ADD THIS
 const { saveAllotmentHistory } = require("../utils/machineHistory/historyHelper.js");
 const { stopUser, deleteUser, startUser } = require("../utils/dockerAPIs/docker.service.js");
 
@@ -43,9 +44,20 @@ async function markExpiredAllotmentsHistoryAndCleanupDocker() {
         const startData = await startUser(baseUrl, user);
         console.log(`[${new Date().toISOString()}] START response for ${user}:`, startData);
 
+        // Mark allotment inactive/deleted
         allotment.isDeleted = true;
         allotment.isActive = false;
         await allotment.save();
+
+        // ALSO mark related ResourceRequest inactive
+        if (allotment.resourceRequestId) {
+          await ResourceRequest.findByIdAndUpdate(
+            allotment.resourceRequestId,
+            { isActive: false },
+            { new: true }
+          );
+        }
+
         console.log(`[${new Date().toISOString()}] Allotment ${allotment._id} marked as deleted`);
 
       } catch (err) {

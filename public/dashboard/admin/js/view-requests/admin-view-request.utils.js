@@ -1,5 +1,10 @@
 // Get request status (ADMIN version - includes teacher + admin states)
 export function getRequestStatus(request) {
+  // 0. Check if expired (isActive: false)
+  if (request.isActive === false) {
+    return { text: "Expired", class: "expired" };
+  }
+
   // 1. FINAL → Fully verified
   if (request.is_verified) {
     return { text: "Verified", class: "verified" };
@@ -15,13 +20,13 @@ export function getRequestStatus(request) {
   }
 
   // 3. Any approval
-  if (request.teacher_action && request.teacher_verified) {
-    return { text: "Approved by Teacher", class: "verified" };
-  }
+  // if (request.teacher_action && request.teacher_verified) {
+  //   return { text: "Approved by Teacher", class: "verified" };
+  // }
 
-  if (request.admin_action && request.admin_verified) {
-    return { text: "Approved by Admin", class: "verified" };
-  }
+  // if (request.admin_action && request.admin_verified) {
+  //   return { text: "Approved by Admin", class: "verified" };
+  // }
 
   // 4. Default → Pending
   return { text: "Pending Teacher", class: "pending-teacher" };
@@ -95,4 +100,16 @@ export function showToast(message, type = 'success') {
     backgroundColor: bgColor,
     close: true
   }).showToast();
+}
+
+// Helper to read the duration input
+export function getEditDurationInput() {
+  const val = parseInt(document.getElementById('editExtendDuration').value, 10);
+  return val > 0 ? val : null;
+}
+
+// Helper to close modal
+export function closeEditModal() {
+  const modal = document.getElementById('editModal');
+  modal.classList.add('hidden');
 }

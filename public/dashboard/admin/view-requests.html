@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <!-- importing darkmode files on top to avoid delay -->
+    <script src="https://cdn.jsdelivr.net/npm/darkreader/darkreader.min.js"></script>
+    <script src="/dashboard/common/js/darkmode/darkmode-init.js"></script>
+    <link rel="stylesheet" href="/dashboard/common/style/darkmode/darkmode-button.css">
+
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>U.I.E.T Resource Sharing - Admin View Requests</title>
@@ -23,6 +28,7 @@
   <link rel="stylesheet" href="/dashboard/admin/style/admin.table.css" />
   <link rel="stylesheet" href="/dashboard/common/style/purpose-panel.css" />
   <link rel="stylesheet" href="/dashboard/admin/style/admin.viewRequests.infobtn.css" />
+  <link rel="stylesheet" href="/dashboard/admin/style/edit-resource-request.css" />
   <body>
     <!-- Sidebar -->
     <div class="sidebar">
@@ -50,6 +56,10 @@
           <i class="fas fa-network-wired"></i>
           Check Machine Availability
         </a>
+        <a href="https://aicentre.gitbook.io/aicentre-docs" target="_blank" class="nav-item">
+          <i class="fas fa-book"></i>
+          User Manual
+        </a>
         <a href="/dashboard/admin/profile" class="nav-item" id="view-requests-nav">
           <i class="fas fa-user"></i>
           Profile
@@ -72,9 +82,9 @@
         </div>
         
         <div class="nav-actions">
-          <div class="admin-info">
-            <span class="admin-name">Hello, Admin</span>
-          </div>
+          <button id="theme-toggle" class="theme-toggle" title="Dark Mode">
+            <i id="theme-icon" class="fa fa-moon"></i>
+          </button>
         </div>
       </nav>
 
@@ -137,6 +147,36 @@
       </div>
       <div class="purpose-panel-body">
         <textarea id="purposeText" readonly></textarea>
+      </div>
+    </div>
+
+    <!-- Resource Request edit modal (currently only for duration) -->
+    <div id="editModal" class="modal hidden">
+      <div class="modal-content">
+        <h3>Edit Request</h3>
+
+        <label>Student Name</label>
+        <input id="editStudentName" readonly />
+
+        <label>Roll No</label>
+        <input id="editRollNo" readonly />
+
+        <label>Title</label>
+        <input id="editTitle" readonly />
+
+        <label>MIG ID</label>
+        <input id="editMigId" readonly />
+
+        <label>Current Duration</label>
+        <input id="editDuration" readonly />
+
+        <label>Extend Duration (in days)</label>
+        <input id="editExtendDuration" placeholder="Enter number of days to extend the allotment (e.g., 2)" />
+
+        <div class="modal-actions">
+          <button id="editSubmitBtn">Save</button>
+          <button id="editCancelBtn">Cancel</button>
+        </div>
       </div>
     </div>
 

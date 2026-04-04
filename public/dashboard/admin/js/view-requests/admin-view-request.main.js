@@ -3,12 +3,15 @@ import {
   filterHandler,
   initHandler,
   copyHandler,
+  getRequestById,
 } from './admin-view-request.handler.js';
-import { verifyAdminRequest, revokeStudentRequest } from './admin-view-request.service.js';
-import { generatePassword, confirmAction, showToast } from './admin-view-request.utils.js';
+import { verifyAdminRequest, revokeStudentRequest, extendStudentRequest } from './admin-view-request.service.js';
+import { generatePassword, confirmAction, showToast , getEditDurationInput, closeEditModal} from './admin-view-request.utils.js';
+import { setupDarkMode } from '../../../common/js/darkmode/darkmode.js';
+import { openEditModal } from './admin-view-request.ui.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-
+  setupDarkMode();
   initHandler();
   loadRequestsHandler();
 
@@ -21,6 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById("requestsTableBody")?.addEventListener("click", async (e) => {
     const approveDeclineBtn = e.target.closest('.approve-btn, .decline-btn');
     const revokeBtn = e.target.closest('.revoke-btn');
+    const editBtn = e.target.closest('.edit-btn');
 
     // Approve/Decline
     if (approveDeclineBtn) {
@@ -52,6 +56,36 @@ document.addEventListener('DOMContentLoaded', () => {
       } catch (err) {
         showToast(err.message || 'Failed to revoke request', 'error');
       }
+      return;
+    }
+
+    // Edit
+    if (editBtn) {
+      const id = editBtn.dataset.requestId;
+      if (!id) return;
+
+      const request = getRequestById(id);
+      if (!request) return; 
+
+      openEditModal(request);
+
+      document.getElementById('editSubmitBtn').onclick = async () => {
+        const extend = getEditDurationInput();
+        if (!extend) {
+          showToast('Enter a valid positive number of days', 'error');
+          return;
+        }
+
+        try {
+          const result = await extendStudentRequest(id, extend);
+          closeEditModal();
+          await loadRequestsHandler();
+          showToast(result.message || 'Request extended successfully', 'success');
+        } catch (err) {
+          showToast(err.message || 'Failed to extend request', 'error');
+        }
+      };
+
       return;
     }
   });

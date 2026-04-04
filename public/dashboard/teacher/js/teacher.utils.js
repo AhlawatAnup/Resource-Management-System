@@ -85,18 +85,21 @@ export function getStudentStatusClassForTeacher(student) {
 
 // Get request status information
 export function getRequestStatus(request) {
-  if (request.is_verified) {
+  if (request.isActive === false) {
+    return { text: "Expired", class: "expired" };
+  } else if (request.is_verified) {
     return { text: "Approved", class: "verified" };
   } else if (request.teacher_action && !request.teacher_verified) {
     return { text: "Declined by Teacher", class: "declined" };
   } else if (request.admin_action && !request.admin_verified) {
     return { text: "Declined by Admin", class: "declined" };
-  } else if (request.teacher_verified && !request.admin_action) {
-    return { text: "Pending Admin", class: "pending-admin" };
-  } else if (!request.teacher_action) {
-    return { text: "Pending Teacher", class: "pending-teacher" };
+  // } else if (request.teacher_verified && !request.admin_action) {
+  //   return { text: "Pending Admin", class: "pending-admin" };
+  // } else if (!request.teacher_action) {
+  //   return { text: "Pending Teacher", class: "pending-teacher" };
   } else {
-    return { text: "Pending", class: "pending" };
+  // return { text: "Pending", class: "pending" };
+      return { text: "Pending Teacher", class: "pending-teacher" };
   }
 }
 

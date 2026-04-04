@@ -23,7 +23,7 @@ const resourceRequestSchema = new mongoose.Schema({
     type: Number,
     required: true,
     min: 1,
-    max: 15
+    // max: 15
   },
   version: {
     type: Number,
@@ -37,6 +37,11 @@ const resourceRequestSchema = new mongoose.Schema({
   admin_action: { type: Boolean, default: false },
   admin_verified: { type: Boolean, default: false },
   is_verified: { type: Boolean, default: false },
+
+  isActive: {
+    type: Boolean,
+    default: true
+  },
 
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },

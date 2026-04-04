@@ -6,9 +6,11 @@ import {
   onUsernameSubmit,
   onPasswordSubmit
 } from './admin-profile.handler.js';
+import { setupDarkMode } from '../../../common/js/darkmode/darkmode.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
   // Initialize UI and pass callbacks
+  setupDarkMode();
   const { emailDisplay, usernameDisplay } = initProfileUI({
     onEmailSubmit,
     onUsernameSubmit,
