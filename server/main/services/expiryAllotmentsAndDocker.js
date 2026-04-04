@@ -50,9 +50,9 @@ async function markExpiredAllotmentsHistoryAndCleanupDocker() {
         await allotment.save();
 
         // ALSO mark related ResourceRequest inactive
-        if (allotment.requestId) {
+        if (allotment.resourceRequestId) {
           await ResourceRequest.findByIdAndUpdate(
-            allotment.requestId,
+            allotment.resourceRequestId,
             { isActive: false },
             { new: true }
           );
