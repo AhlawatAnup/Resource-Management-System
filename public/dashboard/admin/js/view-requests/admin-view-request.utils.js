@@ -112,3 +112,53 @@ export function closeEditModal() {
   const modal = document.getElementById('editModal');
   modal.classList.add('hidden');
 }
+
+export function initMachineInfoTippy(tr, request) {
+  if (!request.migId) return;
+  const btn = tr.querySelector('.machine-info-btn');
+  if (!btn) return;
+
+  const machine = JSON.parse(btn.getAttribute('data-request'));
+  tippy(btn, {
+    content: `
+      <p><b>MIG ID:</b> ${machine.migId ?? '-'}</p>
+      <p><b>User:</b> ${machine.user ?? '-'}</p>
+      <p><b>GPU:</b> ${machine.gpuRam ?? '-'} GB</p>
+      <p><b>RAM:</b> ${machine.ram ?? '-'} GB</p>
+      <p><b>IP:</b> ${machine.ip ?? '-'}</p>
+      <p><b>Port:</b> ${machine.port ?? '-'}</p>
+      <p><b>Name:</b> ${machine.name ?? '-'}</p>
+    `,
+    allowHTML: true,
+    placement: 'right',
+    arrow: true,
+    animation: 'shift-away',
+    duration: [150, 50],
+    delay: [0, 0],
+    maxWidth: 250,
+    interactive: true,
+    hideOnClick: true,
+  });
+}
+
+export function initDurationTippy(tr, request, formatDate) {
+  if (!request.startTime) return;
+  const btn = tr.querySelector('.duration-info-btn');
+  if (!btn) return;
+
+  tippy(btn, {
+    content: `
+      <p><b>Start:</b> ${formatDate(request.startTime)}</p>
+      <p><b>End:</b> ${formatDate(request.endTime)}</p>
+    `,
+    allowHTML: true,
+    placement: 'right',
+    arrow: true,
+    animation: 'shift-away',
+    duration: [150, 50],
+    delay: [0, 0],
+    maxWidth: 220,
+    interactive: true,
+    hideOnClick: true,
+  });
+}
