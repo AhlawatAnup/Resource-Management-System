@@ -101,3 +101,15 @@ export function showToast(message, type = 'success') {
     close: true
   }).showToast();
 }
+
+// Helper to read the duration input
+export function getEditDurationInput() {
+  const val = parseInt(document.getElementById('editExtendDuration').value, 10);
+  return val > 0 ? val : null;
+}
+
+// Helper to close modal
+export function closeEditModal() {
+  const modal = document.getElementById('editModal');
+  modal.classList.add('hidden');
+}

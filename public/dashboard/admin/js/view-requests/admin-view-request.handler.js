@@ -153,4 +153,8 @@ export function handleEditClick(requestId) {
   openEditModal(request);
 }
 
+export function getRequestById(requestId) {
+  return resourceRequests.find(r => r._id === requestId);
+}
+
 // initAdminRefresh(loadRequestsHandler);

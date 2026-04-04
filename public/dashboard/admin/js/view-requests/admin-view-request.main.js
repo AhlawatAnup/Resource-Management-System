@@ -3,11 +3,12 @@ import {
   filterHandler,
   initHandler,
   copyHandler,
-  handleEditClick,
+  getRequestById,
 } from './admin-view-request.handler.js';
-import { verifyAdminRequest, revokeStudentRequest } from './admin-view-request.service.js';
-import { generatePassword, confirmAction, showToast } from './admin-view-request.utils.js';
+import { verifyAdminRequest, revokeStudentRequest, extendStudentRequest } from './admin-view-request.service.js';
+import { generatePassword, confirmAction, showToast , getEditDurationInput, closeEditModal} from './admin-view-request.utils.js';
 import { setupDarkMode } from '../../../common/js/darkmode/darkmode.js';
+import { openEditModal } from './admin-view-request.ui.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   setupDarkMode();
@@ -63,7 +64,28 @@ document.addEventListener('DOMContentLoaded', () => {
       const id = editBtn.dataset.requestId;
       if (!id) return;
 
-      handleEditClick(id);
+      const request = getRequestById(id);
+      if (!request) return; 
+
+      openEditModal(request);
+
+      document.getElementById('editSubmitBtn').onclick = async () => {
+        const extend = getEditDurationInput();
+        if (!extend) {
+          showToast('Enter a valid positive number of days', 'error');
+          return;
+        }
+
+        try {
+          const result = await extendStudentRequest(id, extend);
+          closeEditModal();
+          await loadRequestsHandler();
+          showToast(result.message || 'Request extended successfully', 'success');
+        } catch (err) {
+          showToast(err.message || 'Failed to extend request', 'error');
+        }
+      };
+
       return;
     }
   });

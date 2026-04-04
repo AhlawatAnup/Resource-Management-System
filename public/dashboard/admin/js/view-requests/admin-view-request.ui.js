@@ -207,25 +207,9 @@ export function openEditModal(r) {
   document.getElementById('editTitle').value = r.title || '';
   document.getElementById('editMigId').value = r.migId || '-';
   document.getElementById('editDuration').value = r.duration || '-';
+  document.getElementById('editExtendDuration').value = ''; // reset input
 
   modal.classList.remove('hidden');
-
-  document.getElementById('editSubmitBtn').onclick = async () => {
-    const extend = parseInt(document.getElementById('editExtendDuration').value, 10);
-    
-    if (!extend || extend <= 0) {
-      showNotification('Enter a valid positive number of days', 'error');
-      return;
-    }
-
-    try {
-      const result = await extendStudentRequest(r._id, extend);
-      modal.classList.add('hidden');
-      showNotification(result.message || 'Duration extended', 'success');
-    } catch (err) {
-      showNotification(err.message, 'error'); // show the backend error
-    }
-  };
 
   document.getElementById('editCancelBtn').onclick = () => {
     modal.classList.add('hidden');
