@@ -683,13 +683,16 @@ exports.extendAllotment = async (req, res) => {
       });
     }
 
-    // 5. Compute new end time (EPOCH SAFE)
+    // 5. Compute new end time
     const newEndTime = new Date(
       currentEndTime.getTime() + extraDuration * 86400000 // 1 day = 86400000 ms
     );
 
     // 6. Update
-    request.duration += extraDuration;
+    const extra = parseInt(extraDuration, 10);
+    const current = parseInt(request.duration, 10);
+
+    request.duration = current + extra;
     request.updatedAt = new Date();
 
     allotment.endTime = newEndTime;
