@@ -1,24 +1,23 @@
 // Get request status (ADMIN version - includes teacher + admin states)
 export function getRequestStatus(request) {
   // 0. Check if expired (isActive: false)
-  if (request.isActive === false) {
-    return { text: "Expired", class: "expired" };
-  }
-
-  // 1. FINAL → Fully verified
-  if (request.is_verified) {
-    return { text: "Verified", class: "verified" };
-  }
-
+  
   // 2. Any rejection (highest priority after final)
   if (request.teacher_action && !request.teacher_verified) {
     return { text: "Declined by Teacher", class: "declined" };
   }
-
+  
   if (request.admin_action && !request.admin_verified) {
     return { text: "Declined by Admin", class: "declined" };
   }
-
+  // 1. FINAL → Fully verified
+  if (request.is_verified && request.isActive==true) {
+    return { text: "Verified", class: "verified" };
+  }  
+  
+  if (request.isActive === false) {
+    return { text: "Expired", class: "expired" };
+  }
   // 3. Any approval
   // if (request.teacher_action && request.teacher_verified) {
   //   return { text: "Approved by Teacher", class: "verified" };
@@ -112,4 +111,54 @@ export function getEditDurationInput() {
 export function closeEditModal() {
   const modal = document.getElementById('editModal');
   modal.classList.add('hidden');
+}
+
+export function initMachineInfoTippy(tr, request) {
+  if (!request.migId) return;
+  const btn = tr.querySelector('.machine-info-btn');
+  if (!btn) return;
+
+  const machine = JSON.parse(btn.getAttribute('data-request'));
+  tippy(btn, {
+    content: `
+      <p><b>MIG ID:</b> ${machine.migId ?? '-'}</p>
+      <p><b>User:</b> ${machine.user ?? '-'}</p>
+      <p><b>GPU:</b> ${machine.gpuRam ?? '-'} GB</p>
+      <p><b>RAM:</b> ${machine.ram ?? '-'} GB</p>
+      <p><b>IP:</b> ${machine.ip ?? '-'}</p>
+      <p><b>Port:</b> ${machine.port ?? '-'}</p>
+      <p><b>Name:</b> ${machine.name ?? '-'}</p>
+    `,
+    allowHTML: true,
+    placement: 'right',
+    arrow: true,
+    animation: 'shift-away',
+    duration: [150, 50],
+    delay: [0, 0],
+    maxWidth: 250,
+    interactive: true,
+    hideOnClick: true,
+  });
+}
+
+export function initDurationTippy(tr, request, formatDate) {
+  if (!request.startTime) return;
+  const btn = tr.querySelector('.duration-info-btn');
+  if (!btn) return;
+
+  tippy(btn, {
+    content: `
+      <p><b>Start:</b> ${formatDate(request.startTime)}</p>
+      <p><b>End:</b> ${formatDate(request.endTime)}</p>
+    `,
+    allowHTML: true,
+    placement: 'right',
+    arrow: true,
+    animation: 'shift-away',
+    duration: [150, 50],
+    delay: [0, 0],
+    maxWidth: 220,
+    interactive: true,
+    hideOnClick: true,
+  });
 }

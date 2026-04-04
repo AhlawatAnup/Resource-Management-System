@@ -1,4 +1,4 @@
-import { extendStudentRequest } from './admin-view-request.service.js';
+import { initMachineInfoTippy, initDurationTippy } from './admin-view-request.utils.js';
 
 // Render resource requests table
 export function renderResourceRequests(requests, deps) {
@@ -50,12 +50,17 @@ export function renderResourceRequests(requests, deps) {
         </div>
       </td>
       <td>
-          <span>${request.duration ?? '-'}</span>
+        <span>${request.duration ?? '-'} day${request.duration > 1 ? 's' : ''}</span>
+        ${request.startTime ? `
+          <button class="duration-info-btn info-btn" title="Allotment Time">
+            <i class="fa fa-info-circle"></i>
+          </button>
+        ` : ''}
       </td>
       <td>
         <span>${request.migId ?? '-'}</span>
         ${request.migId ? `
-          <button class="info-btn" title="Machine Info" data-request='${JSON.stringify(request)}'>
+          <button class="machine-info-btn info-btn" title="Machine Info" data-request='${JSON.stringify(request)}'>
             <i class="fa fa-info-circle"></i>
           </button>
         ` : ''}
@@ -72,40 +77,8 @@ export function renderResourceRequests(requests, deps) {
 
     tbody.appendChild(tr);
     
-    // info-btn logic starts
-    if (request.migId) {
-      const infoBtn = tr.querySelector('.info-btn');
-      if (infoBtn) {
-        initializeMachineInfoTippy(infoBtn);
-      }
-    }
-    
-    function initializeMachineInfoTippy(infoBtn) {
-      const machine = JSON.parse(infoBtn.getAttribute('data-request'));
-      const htmlContent = `
-      <p><b>MIG ID:</b> ${machine.migId ?? '-'}</p>
-      <p><b>User:</b> ${machine.user ?? '-'}</p>
-      <p><b>GPU:</b> ${machine.gpuRam ?? '-'} GB</p>
-      <p><b>RAM:</b> ${machine.ram ?? '-'} GB</p>
-      <p><b>IP:</b> ${machine.ip ?? '-'}</p>
-      <p><b>Port:</b> ${machine.port ?? '-'}</p>
-      <p><b>Name:</b> ${machine.name ?? '-'}</p>
-      `;
-      
-      tippy(infoBtn, {
-        content: htmlContent,
-        allowHTML: true,
-        placement: 'right',
-        arrow: true,
-        animation: 'shift-away',
-        duration: [150, 50],
-        delay: [0, 0],
-        maxWidth: 250,
-        interactive: true,
-        hideOnClick: true,
-      });
-    }
-    // info-btn logic ends
+    initMachineInfoTippy(tr, request);
+    initDurationTippy(tr, request, formatDate);
   });
 }
 

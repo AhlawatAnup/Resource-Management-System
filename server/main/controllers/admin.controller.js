@@ -8,7 +8,7 @@ const ResourceRequest = require("../database/resourceRequestModel");
 const emailService = require("../utils/email/emails.service.js");
 const {notifyTeacher} = require("../utils/web-push-notifications/notifyTeacher.js")
 const { notifyStudent } = require('../utils/web-push-notifications/notifyStudent.js');
-const { validateMachineInput, deleteTeacher, unverifyStudent, unverifyTeacher } = require('../utils/common.utils.js');
+const { validateMachineInput, deleteTeacher, unverifyStudent, unverifyTeacher, getAllotmentMap } = require('../utils/common.utils.js');
 const bcrypt = require('bcrypt');
 
 exports.admin_dashboard_data = async (req, res) => {
@@ -246,11 +246,17 @@ exports.getAllResourceRequests = async (req, res) => {
       .populate({ path: "machineId", select: "MIGID user gpuRam ram ip port name" })
       .sort({ createdAt: -1 });
 
+    // Fetch all allotments for these requests in one query
+    const requestIds = resourceRequests.map(r => r._id);
+    const allotmentMap = await getAllotmentMap(requestIds);
+
     const formattedRequests = resourceRequests
       .filter(r => r.studentId && r.machineId)
-      .map(r => ({
-        _id: r._id, // Add the MongoDB ObjectId for frontend actions
-        createdAt: r.createdAt, // Add creation date for frontend display
+      .map(r => {
+      const allotment = allotmentMap[r._id.toString()];
+      return {
+        _id: r._id,
+        createdAt: r.createdAt,
         studentName: r.studentId.name,
         rollNo: r.studentId.rollNo,
         branch: r.studentId.branch,
@@ -265,6 +271,8 @@ exports.getAllResourceRequests = async (req, res) => {
         ip: r.machineId.ip,  
         port: r.machineId.port,  
         name: r.machineId.name,  
+        startTime: allotment?.startTime ?? null,
+        endTime: allotment?.endTime ?? null,
         status: {
           teacher_action: r.teacher_action,
           teacher_verified: r.teacher_verified,
@@ -273,7 +281,8 @@ exports.getAllResourceRequests = async (req, res) => {
           is_verified: r.is_verified,
           isActive: r.isActive,
         }
-      }));
+        };
+      });
 
     return res.json({
       success: true,
