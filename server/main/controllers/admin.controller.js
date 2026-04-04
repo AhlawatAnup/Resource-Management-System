@@ -606,6 +606,7 @@ exports.revokeResourceRequest = async (req, res) => {
     request.is_verified = false;
     request.admin_action = true;
     request.admin_verified = false;
+    request.isActive = false;
 
     await request.save();
 

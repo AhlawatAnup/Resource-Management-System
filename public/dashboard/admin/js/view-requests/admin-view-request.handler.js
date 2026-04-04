@@ -116,18 +116,13 @@ function getActionButtons(r) {
     return '';
   }
 
-  // Edit button ONLY when fully verified + active
-  const editButton =
-    r.is_verified === true && r.isActive === true
-      ? `<button class="icon-btn edit-btn" data-request-id="${r._id}" title="Edit">
-          <i class="fas fa-pen-to-square"></i>
-        </button>`
-      : "";
-
   // VERIFIED
   if (status.class === 'verified') {
     return `
-      ${editButton}
+      <button class="icon-btn edit-btn" data-request-id="${r._id}" title="Edit">
+        <i class="fas fa-pen-to-square"></i>
+      </button>
+  
       <button class="icon-btn revoke-btn" data-request-id="${r._id}">
         Revoke
       </button>
