@@ -1,0 +1,121 @@
+/* BACKDROP */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+/* MODAL BOX */
+.modal-content {
+  width: 60%;
+  max-width: 700px;
+  min-width: 320px;
+
+  background: var(--card-bg, #ffffff);
+  color: var(--text-color, #222);
+  border-radius: 14px;
+  padding: 22px 24px;
+
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  animation: modalFade 0.2s ease;
+}
+
+/* TITLE */
+.modal-content h3 {
+  margin: 0 0 5px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* LABEL */
+.modal-content label {
+  font-size: 12px;
+  opacity: 0.7;
+  margin-bottom: -6px;
+}
+
+/* INPUT */
+.modal-content input {
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  font-size: 13px;
+  outline: none;
+  transition: 0.2s;
+}
+
+/* READONLY STYLE */
+.modal-content input[readonly] {
+  background: #f5f5f5;
+  color: #666;
+  cursor: not-allowed;
+}
+
+/* FOCUS */
+.modal-content input:not([readonly]):focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0,123,255,0.15);
+}
+
+/* ACTIONS */
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+/* BUTTONS */
+.modal-actions button {
+  padding: 7px 14px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  transition: 0.2s;
+}
+
+/* PRIMARY */
+#editSubmitBtn {
+  background: #007bff;
+  color: white;
+}
+
+#editSubmitBtn:hover {
+  background: #0069d9;
+}
+
+/* SECONDARY */
+#editCancelBtn {
+  background: #e0e0e0;
+}
+
+#editCancelBtn:hover {
+  background: #d5d5d5;
+}
+
+/* ANIMATION */
+@keyframes modalFade {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}

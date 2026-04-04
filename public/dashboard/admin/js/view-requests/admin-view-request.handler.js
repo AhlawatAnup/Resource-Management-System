@@ -11,7 +11,8 @@ import {
   populateMachinesSelectUI,
   setSubmitButtonState,
   setFieldError,
-  copyToClipboard
+  copyToClipboard,
+  openEditModal,
 } from './admin-view-request.ui.js';
 
 import {
@@ -142,6 +143,14 @@ function getActionButtons(r) {
     `;
   }
   return '';
+}
+
+// ===== EDIT =====
+export function handleEditClick(requestId) {
+  const request = resourceRequests.find(r => r._id === requestId);
+  if (!request) return;
+
+  openEditModal(request);
 }
 
 // initAdminRefresh(loadRequestsHandler);

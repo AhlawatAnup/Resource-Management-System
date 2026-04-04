@@ -1,3 +1,5 @@
+import { extendStudentRequest } from './admin-view-request.service.js';
+
 // Render resource requests table
 export function renderResourceRequests(requests, deps) {
   const {
@@ -195,4 +197,37 @@ export function setFieldError(id, message) {
 // Clipboard copy
 export function copyToClipboard(value) {
   return navigator.clipboard.writeText(value);
+}
+
+export function openEditModal(r) {
+  const modal = document.getElementById('editModal');
+
+  document.getElementById('editStudentName').value = r.studentName || '';
+  document.getElementById('editRollNo').value = r.rollNo || '';
+  document.getElementById('editTitle').value = r.title || '';
+  document.getElementById('editMigId').value = r.migId || '-';
+  document.getElementById('editDuration').value = r.duration || '-';
+
+  modal.classList.remove('hidden');
+
+  document.getElementById('editSubmitBtn').onclick = async () => {
+    const extend = parseInt(document.getElementById('editExtendDuration').value, 10);
+    
+    if (!extend || extend <= 0) {
+      showNotification('Enter a valid positive number of days', 'error');
+      return;
+    }
+
+    try {
+      const result = await extendStudentRequest(r._id, extend);
+      modal.classList.add('hidden');
+      showNotification(result.message || 'Duration extended', 'success');
+    } catch (err) {
+      showNotification(err.message, 'error'); // show the backend error
+    }
+  };
+
+  document.getElementById('editCancelBtn').onclick = () => {
+    modal.classList.add('hidden');
+  };
 }

@@ -28,6 +28,7 @@
   <link rel="stylesheet" href="/dashboard/admin/style/admin.table.css" />
   <link rel="stylesheet" href="/dashboard/common/style/purpose-panel.css" />
   <link rel="stylesheet" href="/dashboard/admin/style/admin.viewRequests.infobtn.css" />
+  <link rel="stylesheet" href="/dashboard/admin/style/edit-resource-request.css" />
   <body>
     <!-- Sidebar -->
     <div class="sidebar">
@@ -146,6 +147,36 @@
       </div>
       <div class="purpose-panel-body">
         <textarea id="purposeText" readonly></textarea>
+      </div>
+    </div>
+
+    <!-- Resource Request edit modal (currently only for duration) -->
+    <div id="editModal" class="modal hidden">
+      <div class="modal-content">
+        <h3>Edit Request</h3>
+
+        <label>Student Name</label>
+        <input id="editStudentName" readonly />
+
+        <label>Roll No</label>
+        <input id="editRollNo" readonly />
+
+        <label>Title</label>
+        <input id="editTitle" readonly />
+
+        <label>MIG ID</label>
+        <input id="editMigId" readonly />
+
+        <label>Current Duration</label>
+        <input id="editDuration" readonly />
+
+        <label>Extend Duration (in days)</label>
+        <input id="editExtendDuration" placeholder="Enter number of days to extend the allotment (e.g., 2)" />
+
+        <div class="modal-actions">
+          <button id="editSubmitBtn">Save</button>
+          <button id="editCancelBtn">Cancel</button>
+        </div>
       </div>
     </div>
 

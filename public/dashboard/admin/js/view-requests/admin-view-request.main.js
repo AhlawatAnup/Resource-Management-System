@@ -3,6 +3,7 @@ import {
   filterHandler,
   initHandler,
   copyHandler,
+  handleEditClick,
 } from './admin-view-request.handler.js';
 import { verifyAdminRequest, revokeStudentRequest } from './admin-view-request.service.js';
 import { generatePassword, confirmAction, showToast } from './admin-view-request.utils.js';
@@ -22,6 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById("requestsTableBody")?.addEventListener("click", async (e) => {
     const approveDeclineBtn = e.target.closest('.approve-btn, .decline-btn');
     const revokeBtn = e.target.closest('.revoke-btn');
+    const editBtn = e.target.closest('.edit-btn');
 
     // Approve/Decline
     if (approveDeclineBtn) {
@@ -53,6 +55,15 @@ document.addEventListener('DOMContentLoaded', () => {
       } catch (err) {
         showToast(err.message || 'Failed to revoke request', 'error');
       }
+      return;
+    }
+
+    // Edit
+    if (editBtn) {
+      const id = editBtn.dataset.requestId;
+      if (!id) return;
+
+      handleEditClick(id);
       return;
     }
   });
