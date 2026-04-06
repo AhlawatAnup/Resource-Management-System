@@ -214,6 +214,38 @@ exports.updateResourceRequestVerification = async (req, res) => {
         return res.status(404).json({ error: "Resource request not found" });
       }
 
+      if (!is_verified) {
+        let updateData = {
+          is_verified: false,
+          updatedAt: new Date()
+        };
+
+        if (role === "teacher") {
+          updateData.teacher_action = true;
+          updateData.teacher_verified = false;
+        } else if (role === "admin") {
+          updateData.admin_action = true;
+          updateData.admin_verified = false;
+        }
+
+        await ResourceRequest.findByIdAndUpdate(
+          request_id, 
+          updateData,
+          { new: true }
+        );
+
+        emailHandler.handleSendResourceRequestRejectedEmail(
+          existingRequest.studentId.email,
+          existingRequest.studentId.name,
+          existingRequest.title
+        );
+
+        return res.status(200).json({
+          success: true,
+          message: "Resource request rejected successfully",
+        });
+      }
+
       const machineId = existingRequest.machineId;
 
       const durationInput = existingRequest.duration;
@@ -292,7 +324,7 @@ exports.updateResourceRequestVerification = async (req, res) => {
           endTime,
           status: "active"
         });
-        
+
         emailHandler.handleSendResourceRequestVerifiedEmail({
           student: existingRequest.studentId,
           request: existingRequest,
@@ -301,14 +333,6 @@ exports.updateResourceRequestVerification = async (req, res) => {
           endTime,
           duration
         });
-      }
-      
-      if (!is_verified) {
-        emailHandler.handleSendResourceRequestRejectedEmail(
-          existingRequest.studentId.email, 
-          existingRequest.studentId.name, 
-          existingRequest.title
-        )
       } 
       return res.status(200).json({
         success: true,
