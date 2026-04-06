@@ -194,6 +194,7 @@ exports.updateResourceRequestVerification = async (req, res) => {
   const role = req.session.user?.role;
   const request_id = req.params.request_id || req.body.request_id;
   const { is_verified } = req.body;
+  const { remarks } = req.body;
 
   if (!request_id) {
     return res.status(400).json({ error: "request_id is required" });
@@ -237,7 +238,8 @@ exports.updateResourceRequestVerification = async (req, res) => {
         emailHandler.handleSendResourceRequestRejectedEmail(
           existingRequest.studentId.email,
           existingRequest.studentId.name,
-          existingRequest.title
+          existingRequest.title,
+          remarks
         );
 
         return res.status(200).json({

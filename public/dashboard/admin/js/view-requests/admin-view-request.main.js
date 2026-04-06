@@ -6,7 +6,7 @@ import {
   getRequestById,
 } from './admin-view-request.handler.js';
 import { verifyAdminRequest, revokeStudentRequest, extendStudentRequest } from './admin-view-request.service.js';
-import { generatePassword, confirmAction, showToast , getEditDurationInput, closeEditModal} from './admin-view-request.utils.js';
+import { generatePassword, confirmAction, showToast , getEditDurationInput, closeEditModal, getRejectionRemarks} from './admin-view-request.utils.js';
 import { setupDarkMode } from '../../../common/js/darkmode/darkmode.js';
 import { openEditModal } from './admin-view-request.ui.js';
 
@@ -31,15 +31,27 @@ document.addEventListener('DOMContentLoaded', () => {
       const id = approveDeclineBtn.dataset.requestId;
       const action = approveDeclineBtn.dataset.action;
       if (!id || !action) return;
+
       try {
-        const confirmed = await confirmAction(action);
-        if (!confirmed) return;
-        await verifyAdminRequest(id, action === 'approve');
+        let remarks = "";
+
+        if (action === "decline") {
+          const result = await getRejectionRemarks();
+          if (result === null) return;
+          remarks = result;
+        } else {
+          const confirmed = await confirmAction(action);
+          if (!confirmed) return;
+        }
+
+        await verifyAdminRequest(id, action === 'approve', remarks);
         await loadRequestsHandler();
+
         showToast(`Request ${action}d successfully!`, 'success');
       } catch (err) {
         showToast(err.message || 'Failed to update request', 'error');
       }
+
       return;
     }
 

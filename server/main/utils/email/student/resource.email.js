@@ -114,7 +114,8 @@ const sendResourceRequestVerifiedEmail = async ({
 const sendResourceRequestRejectedEmail = async ({
   studentEmail,
   studentName,
-  requestTitle
+  requestTitle,
+  remarks
 }) => {
   return sendEmail({
     to: studentEmail,
@@ -127,6 +128,17 @@ const sendResourceRequestRejectedEmail = async ({
           Your resource request <strong>"${requestTitle}"</strong> has been reviewed and rejected.
         </p>
 
+        ${
+          remarks
+            ? `
+              <div style="background-color:#fff3e0; border:1px solid #ffcc80; padding:12px; border-radius:6px; margin:16px 0;">
+                <p style="margin:0;"><strong>Admin Remarks:</strong></p>
+                <p style="margin-top:8px;">${remarks}</p>
+              </div>
+              `
+                  : ""
+              }
+
         <div style="background-color:#ffebee; border:1px solid #ffcdd2; padding:12px; border-radius:6px; margin:16px 0;">
           <p style="margin:0;">
             You may submit a <strong>new request</strong> with updated or corrected details for further review.
@@ -138,7 +150,6 @@ const sendResourceRequestRejectedEmail = async ({
     `
   });
 };
-
 // Revoked by Admin (resource allocation removed)
 const sendResourceRequestRevokedByAdminEmail = async (
   studentEmail,

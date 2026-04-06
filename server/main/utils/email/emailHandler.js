@@ -156,12 +156,13 @@ async function handleSendResourceRequestVerifiedEmail({
 }
 
 // Handler for Rejected Email
-async function handleSendResourceRequestRejectedEmail(studentEmail, studentName, requestTitle) {
+async function handleSendResourceRequestRejectedEmail(studentEmail, studentName, requestTitle, remarks = "") {
   try {
     const result = await emailService.sendResourceRequestRejectedEmail({
       studentEmail,
       studentName,
-      requestTitle
+      requestTitle,
+      remarks
     });
 
   } catch (error) {
