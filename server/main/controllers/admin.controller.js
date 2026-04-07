@@ -243,7 +243,11 @@ exports.getAllResourceRequests = async (req, res) => {
         select: "name rollNo branch teacher",
         populate: { path: "teacher", select: "name" }
       })
-      .populate({ path: "machineId", select: "MIGID user gpuRam ram ip port name" })
+      .populate({ 
+        path: "machineId", 
+        select: "MIGID user gpuRam ram ip port name" ,
+        options: { includeUnavailable: true }  
+      })
       .sort({ createdAt: -1 });
 
     // Fetch all allotments for these requests in one query
