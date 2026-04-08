@@ -52,9 +52,9 @@ async function collectAndStoreStats(statsConnection) {
 
         allEntries.push({
           timestamp: new Date(),
-          parentMachine: machine.name,
-          MIGID,
-          user: c.user,
+
+          metadata: { MIGID },
+
           cpuPerc: parseFloat(c.CPUPerc),
           memUseMiB: parseToMiB(c.MemUse),
           memTotalMiB: parseToMiB(c.MemTotal),
