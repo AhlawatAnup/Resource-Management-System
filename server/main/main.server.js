@@ -130,6 +130,15 @@ app.use("/dashboard", noCache, requireAuth, dashboardRoutes);
 // Push Subscription API
 app.use("/push-subscription", requireAuth, pushSubscriptionRoutes);
 
+app.get("/whats-inside-the-machine", (req, res) => {
+  res.sendFile(
+    path.join(publicPath, "whatsInsideMachine", "ai_datacenter_docker_docs_versioned.html"),
+  );
+});
+
+
+//================================= schedule jobs ========================================
+
 // Schedule job for backup
 const backupSchedule = process.env.BACKUP_SCHEDULE || "0 3 * * *";
 schedule.scheduleJob(backupSchedule, async () => {

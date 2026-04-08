@@ -7,7 +7,9 @@ exports.getMachineByMigid = async (migid) => {
     const machine = await Machine.findOne(
       { MIGID: migid },
       { user: 1, ip: 1, port: 1, _id: 0 }
-    ).lean();
+    )
+    .setOptions({ includeUnavailable: true }) 
+    .lean();
     if (!machine) {
         throw new Error("Machine not found for MIGID: " + migid);
     }

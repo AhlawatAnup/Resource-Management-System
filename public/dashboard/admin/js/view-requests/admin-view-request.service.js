@@ -21,9 +21,10 @@ export async function fetchAdminResourceRequests() {
 
 
 // Verify (approve/decline) request with optional credentials
-export async function verifyAdminRequest(requestId, isVerified) {
+export async function verifyAdminRequest(requestId, isVerified, remarks = "") {
   const requestBody = {
     is_verified: isVerified,
+    remarks: remarks
   };
 
   const response = await fetch(`/dashboard/admin/verify_request/${requestId}`, {

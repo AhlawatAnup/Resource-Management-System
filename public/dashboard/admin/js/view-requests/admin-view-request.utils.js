@@ -89,6 +89,19 @@ export async function confirmAction(action) {
   return result.isConfirmed;
 }
 
+export async function getRejectionRemarks() {
+  const { isConfirmed, value } = await Swal.fire({
+    title: "Reject Request",
+    input: "textarea",
+    inputLabel: "Enter remarks (optional)",
+    inputPlaceholder: "Write reason for rejection...",
+    showCancelButton: true,
+    confirmButtonText: "Reject",
+  });
+
+  return isConfirmed ? (value || "") : null;
+}
+
 export function showToast(message, type = 'success') {
   const bgColor = type === 'success' ? '#4CAF50' : '#F44336';
   Toastify({
