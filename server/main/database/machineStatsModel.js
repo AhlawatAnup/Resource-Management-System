@@ -19,8 +19,6 @@ const MachineStatSchema = new mongoose.Schema({
   autoCreate: true
 });
 
-MachineStatSchema.index({ "metadata.MIGID": 1, timestamp: -1 });
-
 function getMachineStatModel(statsConnection) {
   return statsConnection.model('MachineStat', MachineStatSchema);
 }
