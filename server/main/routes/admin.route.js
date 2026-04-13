@@ -37,6 +37,8 @@ const {
   getMachineWiseActiveAllotments
 } = require("../controllers/common.controller.js");
 
+const {getMachineStats} = require("../controllers/reportGeneration.controller.js");
+
 const router = express.Router();
 const publicPath = path.join(__dirname, "../../../public");
 
@@ -99,5 +101,8 @@ router.delete('/machines/:id', isAdmin, deleteMachine);
 
 router.get('/get_machines', isAdmin, getAllMachines); //for allotments
 router.get('/allotments/:machineId', isAdmin, getMachineWiseActiveAllotments);
+
+//report generation
+router.get('/getStatsByMIGID', getMachineStats);
 
 module.exports = router;
