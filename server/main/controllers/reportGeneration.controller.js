@@ -3,13 +3,16 @@ const { getStatsConnection } = require('../database/connectStatsDB');
 const { getMachineStatModel } = require('../database/machineStatsModel');
 const MachineAllotment = require('../database/machineAllotmentModel');
 
-async function getMachineStats(req, res) {
+async function getStatsByResReqId(req, res) {
   try {
     const { resourceRequestId } = req.body;
 
     const allotment = await MachineAllotment.findOne({ resourceRequestId: new mongoose.Types.ObjectId(resourceRequestId) })
-      .populate('machineId')
-      .setOptions({ includeInactive: true });
+      .populate({
+        path: 'machineId',
+        options: { includeUnavailable: true }
+      })
+      .setOptions({ includeInactive: true, includeDeleted: true });
 
     if (!allotment) return res.status(404).json({ message: 'Allotment not found' });
 
@@ -29,4 +32,4 @@ async function getMachineStats(req, res) {
   }
 }
 
-module.exports = { getMachineStats };
+module.exports = { getStatsByResReqId };
