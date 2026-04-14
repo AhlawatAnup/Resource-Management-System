@@ -110,7 +110,7 @@ function getActionButtons(r) {
   if (status.class === 'expired') {
     return `
       <button class="icon-btn stats-report-btn" data-request-id="${r._id}">
-        Report
+        <i class="fa fa-bar-chart"></i>
       </button>
     `;
   }
@@ -126,8 +126,8 @@ function getActionButtons(r) {
         Revoke
       </button>
 
-      <button title="Generate machine usage report" class="icon-btn stats-report-btn" data-request-id="${r._id}">
-        Report
+      <button title="Machine usage report" class="icon-btn stats-report-btn" data-request-id="${r._id}">
+       <i class="fa fa-bar-chart"></i>
       </button>
     `;
   }
