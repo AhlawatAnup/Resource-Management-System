@@ -219,6 +219,26 @@ tbody td {
   transform: translateY(-1px);
 }
 
+.icon-btn.revoke-btn {
+  background-color: #ef4444;
+  color: white;
+}
+
+.icon-btn.revoke-btn:hover {
+  background-color: #dc2626;
+  transform: translateY(-1px);
+}
+
+.icon-btn.stats-report-btn {
+  background-color: #1db053;
+  color: white;
+}
+
+.icon-btn.stats-report-btn:hover {
+  background-color: #16a34a;
+  transform: translateY(-1px);
+}
+
 /* Fallback for when icons don't load */
 .icon-btn.approve-btn:not(:has(i))::after {
   content: "✓";

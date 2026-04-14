@@ -122,11 +122,11 @@ function getActionButtons(r) {
         <i class="fas fa-pen-to-square"></i>
       </button>
   
-      <button class="icon-btn revoke-btn" data-request-id="${r._id}">
+      <button title="Revoke student's access from machine" class="icon-btn revoke-btn" data-request-id="${r._id}">
         Revoke
       </button>
 
-      <button class="icon-btn stats-report-btn" data-request-id="${r._id}">
+      <button title="Generate machine usage report" class="icon-btn stats-report-btn" data-request-id="${r._id}">
         Report
       </button>
     `;
