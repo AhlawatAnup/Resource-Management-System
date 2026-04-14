@@ -396,7 +396,7 @@ async function getAllotmentMap(requestIds) {
   const allotments = await MachineAllotment.find(
     { resourceRequestId: { $in: requestIds } },
     { resourceRequestId: 1, startTime: 1, endTime: 1 }
-  ).setOptions({ includeInactive: true });
+  ).setOptions({ includeInactive: true, includeDeleted:true });
 
   const allotmentMap = {};
   for (const a of allotments) {
