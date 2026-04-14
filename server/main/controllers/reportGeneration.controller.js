@@ -35,17 +35,39 @@ async function getStatsByResReqId(req, res) {
       gpu: +((s.gpuVramMiB / s.gpuTotalMiB) * 100).toFixed(2)
     }));
 
+    const averagedData = averageByInterval(formatted, 60);
+
     res.json({
       migid,
       startTime,
       endTime,
-      data: formatted
+      data: averagedData
     });
 
   } catch (err) {
     console.error('getMachineStats error:', err);
     res.status(500).json({ message: 'Internal server error' });
   }
+}
+
+function averageByInterval(data, intervalMinutes = 60) {
+  const intervalMs = intervalMinutes * 60 * 1000;
+  const buckets = {};
+
+  for (const point of data) {
+    const key = Math.floor(new Date(point.timestamp).getTime() / intervalMs) * intervalMs;
+
+    if (!buckets[key]) buckets[key] = { timestamp: new Date(key), cpu: [], mem: [], gpu: [] };
+    buckets[key].cpu.push(point.cpu);
+    buckets[key].mem.push(point.mem);
+    buckets[key].gpu.push(point.gpu);
+  }
+
+  const avg = arr => +(arr.reduce((a, b) => a + b, 0) / arr.length).toFixed(2);
+
+  return Object.values(buckets)
+    .sort((a, b) => a.timestamp - b.timestamp)
+    .map(b => ({ timestamp: b.timestamp, cpu: avg(b.cpu), mem: avg(b.mem), gpu: avg(b.gpu) }));
 }
 
 module.exports = { getStatsByResReqId };
