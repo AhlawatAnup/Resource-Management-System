@@ -103,6 +103,6 @@ router.get('/get_machines', isAdmin, getAllMachines); //for allotments
 router.get('/allotments/:machineId', isAdmin, getMachineWiseActiveAllotments);
 
 //report generation
-router.get('/getStatsByResReqId', getStatsByResReqId);
+router.get('/getStatsByResReqId/:resourceRequestId', getStatsByResReqId);
 
 module.exports = router;

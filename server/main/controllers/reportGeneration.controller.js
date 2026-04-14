@@ -5,7 +5,7 @@ const MachineAllotment = require('../database/machineAllotmentModel');
 
 async function getStatsByResReqId(req, res) {
   try {
-    const { resourceRequestId } = req.body;
+    const { resourceRequestId } = req.params;
 
     const allotment = await MachineAllotment.findOne({ resourceRequestId: new mongoose.Types.ObjectId(resourceRequestId) })
       .populate({
