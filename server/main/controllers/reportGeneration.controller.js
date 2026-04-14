@@ -20,12 +20,28 @@ async function getStatsByResReqId(req, res) {
     const { startTime, endTime } = allotment;
 
     const MachineStat = getMachineStatModel(getStatsConnection());
-    const stats = await MachineStat.find({
+    const rawStats = await MachineStat.find({
       'metadata.MIGID': migid,
       timestamp: { $gte: startTime, $lte: endTime }
-    }).sort({ timestamp: 1 });
+    })
+      .sort({ timestamp: 1 })
+      .lean();
 
-    res.json({ migid, startTime, endTime, stats });
+    // Convert to % and clean structure
+    let formatted = rawStats.map(s => ({
+      timestamp: s.timestamp,
+      cpu: +(s.cpuPerc * 100).toFixed(2),
+      mem: +((s.memUseMiB / s.memTotalMiB) * 100).toFixed(2),
+      gpu: +((s.gpuVramMiB / s.gpuTotalMiB) * 100).toFixed(2)
+    }));
+
+    res.json({
+      migid,
+      startTime,
+      endTime,
+      data: formatted
+    });
+
   } catch (err) {
     console.error('getMachineStats error:', err);
     res.status(500).json({ message: 'Internal server error' });
