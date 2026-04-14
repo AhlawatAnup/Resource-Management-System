@@ -113,8 +113,16 @@ export async function copyHandler(targetId) {
 function getActionButtons(r) {
   const status = getRequestStatus(r);
 
-  if (status.class === 'expired' || status.class === 'declined') {
+  if (status.class === 'declined') {
     return '';
+  }
+
+  if (status.class === 'expired') {
+    return `
+      <button class="icon-btn stats-report-btn" data-request-id="${r._id}">
+        Report
+      </button>
+    `;
   }
 
   // VERIFIED
