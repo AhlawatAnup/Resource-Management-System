@@ -24,10 +24,7 @@ import {
 import {
   getInitials,
   getRandomNamedColor,
-  formatDate,
-  createViewMoreButton,
-  initializePurposePanel,
-  isValidUsername
+  formatDate
 } from '../../../common/js/commons.js';
 
 // import {initAdminRefresh} from'../pushNotifications-refreshUI/admin-refresh.js'
@@ -70,8 +67,7 @@ function render() {
     getActionButtons,
     getInitials,
     getRandomNamedColor,
-    formatDate,
-    createViewMoreButton
+    formatDate
   });
 }
 
@@ -86,12 +82,6 @@ export function filterHandler(term) {
   filteredRequests = filterRequestsList(resourceRequests, term);
   render();
 }
-
-// ===== INIT =====
-export function initHandler() {
-  initializePurposePanel();
-}
-
 
 // ===== COPY =====
 export async function copyHandler(targetId) {

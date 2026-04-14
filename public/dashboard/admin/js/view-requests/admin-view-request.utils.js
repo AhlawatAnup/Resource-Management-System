@@ -175,3 +175,22 @@ export function initDurationTippy(tr, request, formatDate) {
     hideOnClick: true,
   });
 }
+
+export function initTitleTippy(tr, request) {
+  if (!request.purpose) return;
+  const btn = tr.querySelector('.title-info-btn');
+  if (!btn) return;
+
+  tippy(btn, {
+    content: `<p><b>Purpose:</b> ${request.purpose}</p>`,
+    allowHTML: true,
+    placement: 'right',
+    arrow: true,
+    animation: 'shift-away',
+    duration: [150, 50],
+    delay: [0, 0],
+    maxWidth: 260,
+    interactive: true,
+    hideOnClick: true,
+  });
+}

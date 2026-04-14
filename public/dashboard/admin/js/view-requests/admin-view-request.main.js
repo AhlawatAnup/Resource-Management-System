@@ -1,7 +1,6 @@
 import {
   loadRequestsHandler,
   filterHandler,
-  initHandler,
   copyHandler,
   getRequestById,
 } from './admin-view-request.handler.js';
@@ -12,7 +11,6 @@ import { openEditModal } from './admin-view-request.ui.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   setupDarkMode();
-  initHandler();
   loadRequestsHandler();
 
   let statsChart = null;
