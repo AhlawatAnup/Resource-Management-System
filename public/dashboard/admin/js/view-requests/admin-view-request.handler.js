@@ -127,6 +127,10 @@ function getActionButtons(r) {
       <button class="icon-btn revoke-btn" data-request-id="${r._id}">
         Revoke
       </button>
+
+      <button class="icon-btn stats-report-btn" data-request-id="${r._id}">
+        Report
+      </button>
     `;
   }
 
