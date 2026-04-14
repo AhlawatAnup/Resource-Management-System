@@ -141,8 +141,8 @@ document.addEventListener('DOMContentLoaded', () => {
     modal.classList.remove("hidden");
 
     setTimeout(() => {
-      if (window.statsChart) {
-        window.statsChart.resize();
+      if (statsChart) {
+        statsChart.resize();
       }
     }, 200);
   }
