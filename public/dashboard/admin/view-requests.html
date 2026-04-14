@@ -6,6 +6,10 @@
     <script src="/dashboard/common/js/darkmode/darkmode-init.js"></script>
     <link rel="stylesheet" href="/dashboard/common/style/darkmode/darkmode-button.css">
 
+    <!-- stats CDN imports -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>U.I.E.T Resource Sharing - Admin View Requests</title>
@@ -29,6 +33,7 @@
   <link rel="stylesheet" href="/dashboard/common/style/purpose-panel.css" />
   <link rel="stylesheet" href="/dashboard/admin/style/admin.viewRequests.infobtn.css" />
   <link rel="stylesheet" href="/dashboard/admin/style/edit-resource-request.css" />
+  <link rel="stylesheet" href="/dashboard/admin/style/admin.viewRequests.statsPanel.css" />
   <body>
     <!-- Sidebar -->
     <div class="sidebar">
@@ -177,6 +182,24 @@
           <button id="editSubmitBtn">Save</button>
           <button id="editCancelBtn">Cancel</button>
         </div>
+      </div>
+    </div>
+
+    <!-- stats report modal -->
+    <div id="reportModal" class="report-modal hidden">
+      <div class="report-content">
+        
+        <div class="report-header">
+          <h2>Machine Usage Report</h2>
+          <button id="closeReportBtn">&times;</button>
+        </div>
+
+        <div class="report-body">
+          <div class="chart-container">
+            <canvas id="reportChart"></canvas>
+          </div>
+        </div>
+
       </div>
     </div>
 
