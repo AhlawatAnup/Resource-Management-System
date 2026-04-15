@@ -1,8 +1,6 @@
 .site-footer {
-  position: absolute;
-  bottom: 30px;
-  left: 50%;
-  transform: translateX(-50%);
+  position: static;
+  margin-top: auto;
   width: 100%;
   text-align: center;
   color: #dbdbdbf0;
@@ -65,4 +63,21 @@
   line-height: 1;
   display: flex;
   align-items: center;
+}
+
+@media (max-width: 768px) {
+  .site-footer {
+    margin-top: 1rem;
+    font-size: 0.85rem;
+  }
+
+  .footer-logos {
+    gap: 1.5rem;
+    height: auto;
+    flex-wrap: wrap;
+  }
+
+  .footer-logos img {
+    max-height: 2.5rem;
+  }
 }
