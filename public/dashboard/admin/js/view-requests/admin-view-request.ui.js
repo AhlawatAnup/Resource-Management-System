@@ -1,4 +1,4 @@
-import { initMachineInfoTippy, initDurationTippy } from './admin-view-request.utils.js';
+import { initMachineInfoTippy, initDurationTippy, initTitleTippy } from './admin-view-request.utils.js';
 
 // Render resource requests table
 export function renderResourceRequests(requests, deps) {
@@ -8,14 +8,13 @@ export function renderResourceRequests(requests, deps) {
     getInitials,
     getRandomNamedColor,
     formatDate,
-    createViewMoreButton
   } = deps;
 
   const tbody = document.getElementById("requestsTableBody");
 
   if (!requests || requests.length === 0) {
     tbody.innerHTML =
-      '<tr><td colspan="8" class="loading">No resource requests found.</td></tr>';
+      '<tr><td colspan="6" class="loading">No resource requests found.</td></tr>';
     return;
   }
 
@@ -39,14 +38,17 @@ export function renderResourceRequests(requests, deps) {
       </td>
       <td>
         <div class="request-title">
-          <p>${request.title}<p>
+          <p>
+            ${request.title}
+            ${
+              request.purpose ? `
+                <button class="title-info-btn info-btn" title="Request Purpose">
+                  <i class="fa fa-info-circle"></i>
+                </button>
+              ` : ""
+            }
+          <p>
           <div class="request-date">${formatDate ? formatDate(request.createdAt) : ''}</div>
-        </div>
-      </td>
-      <td>
-        <div class="purpose-text">
-          <span>${request.purpose.length > 20 ? request.purpose.substring(0, 20) + '...' : request.purpose}</span>
-          ${createViewMoreButton(request._id, request.purpose)}
         </div>
       </td>
       <td>
@@ -76,22 +78,21 @@ export function renderResourceRequests(requests, deps) {
     `;
 
     tbody.appendChild(tr);
-    
+    initTitleTippy(tr, request);
     initMachineInfoTippy(tr, request);
     initDurationTippy(tr, request, formatDate);
   });
 }
 
-
 // Empty + error states
 export function showEmptyState() {
   document.getElementById("requestsTableBody").innerHTML =
-    '<tr><td colspan="8" class="loading">No resource requests found.</td></tr>';
+    '<tr><td colspan="6" class="loading">No resource requests found.</td></tr>';
 }
 
 export function showErrorState() {
   document.getElementById("requestsTableBody").innerHTML =
-    '<tr><td colspan="8" class="loading">Error loading requests. Please refresh the page.</td></tr>';
+    '<tr><td colspan="6" class="loading">Error loading requests. Please refresh the page.</td></tr>';
 }
 
 

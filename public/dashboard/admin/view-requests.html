@@ -6,6 +6,10 @@
     <script src="/dashboard/common/js/darkmode/darkmode-init.js"></script>
     <link rel="stylesheet" href="/dashboard/common/style/darkmode/darkmode-button.css">
 
+    <!-- stats CDN imports -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>U.I.E.T Resource Sharing - Admin View Requests</title>
@@ -22,13 +26,13 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <!-- Toastify CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" />
-    
+
   </head>
   <link rel="stylesheet" href="/dashboard/admin/style/admin.dashboard.css" />
   <link rel="stylesheet" href="/dashboard/admin/style/admin.table.css" />
-  <link rel="stylesheet" href="/dashboard/common/style/purpose-panel.css" />
   <link rel="stylesheet" href="/dashboard/admin/style/admin.viewRequests.infobtn.css" />
   <link rel="stylesheet" href="/dashboard/admin/style/edit-resource-request.css" />
+  <link rel="stylesheet" href="/dashboard/admin/style/admin.viewRequests.statsPanel.css" />
   <body>
     <!-- Sidebar -->
     <div class="sidebar">
@@ -80,7 +84,7 @@
         <div class="nav-brand">
           <h2>Resource Requests Management</h2>
         </div>
-        
+
         <div class="nav-actions">
           <button id="theme-toggle" class="theme-toggle" title="Dark Mode">
             <i id="theme-icon" class="fa fa-moon"></i>
@@ -121,7 +125,6 @@
                 <tr>
                   <th class="sortable" data-sort="student">Student</th>
                   <th class="sortable" data-sort="title">Request Title</th>
-                  <th class="sortable" data-sort="purpose">Purpose</th>
                   <th class="sortable" data-sort="duration">Duration</th>
                   <th class="sortable" data-sort="migid">MIG ID</th>
                   <th class="sortable" data-sort="status">Status</th>
@@ -130,24 +133,13 @@
               </thead>
               <tbody id="requestsTableBody">
                 <tr>
-                  <td colspan="8" class="loading">Loading resource requests...</td>
+                  <td colspan="6" class="loading">Loading resource requests...</td>
                 </tr>
               </tbody>
             </table>
           </div>
         </div>
       </main>
-    </div>
-
-    <!-- Purpose View Panel -->
-    <div id="purposePanel" class="purpose-panel">
-      <div class="purpose-panel-header">
-        <span class="purpose-panel-title">Request Purpose</span>
-        <button class="purpose-panel-close" onclick="closePurposePanel()">&times;</button>
-      </div>
-      <div class="purpose-panel-body">
-        <textarea id="purposeText" readonly></textarea>
-      </div>
     </div>
 
     <!-- Resource Request edit modal (currently only for duration) -->
@@ -177,6 +169,24 @@
           <button id="editSubmitBtn">Save</button>
           <button id="editCancelBtn">Cancel</button>
         </div>
+      </div>
+    </div>
+
+    <!-- stats report modal -->
+    <div id="reportModal" class="report-modal hidden">
+      <div class="report-content">
+        
+        <div class="report-header">
+          <h2>Machine Usage Report</h2>
+          <button id="closeReportBtn">&times;</button>
+        </div>
+
+        <div class="report-body">
+          <div class="chart-container">
+            <canvas id="reportChart"></canvas>
+          </div>
+        </div>
+
       </div>
     </div>
 
