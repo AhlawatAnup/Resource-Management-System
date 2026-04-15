@@ -54,4 +54,9 @@ async function connectStatsDB() {
   }
 }
 
-module.exports = connectStatsDB;
+function getStatsConnection() {
+  if (!statsConnection) throw new Error("Stats DB not connected yet");
+  return statsConnection;
+}
+
+module.exports = { connectStatsDB, getStatsConnection };

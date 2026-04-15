@@ -24,10 +24,7 @@ import {
 import {
   getInitials,
   getRandomNamedColor,
-  formatDate,
-  createViewMoreButton,
-  initializePurposePanel,
-  isValidUsername
+  formatDate
 } from '../../../common/js/commons.js';
 
 // import {initAdminRefresh} from'../pushNotifications-refreshUI/admin-refresh.js'
@@ -70,8 +67,7 @@ function render() {
     getActionButtons,
     getInitials,
     getRandomNamedColor,
-    formatDate,
-    createViewMoreButton
+    formatDate
   });
 }
 
@@ -86,12 +82,6 @@ export function filterHandler(term) {
   filteredRequests = filterRequestsList(resourceRequests, term);
   render();
 }
-
-// ===== INIT =====
-export function initHandler() {
-  initializePurposePanel();
-}
-
 
 // ===== COPY =====
 export async function copyHandler(targetId) {
@@ -113,8 +103,16 @@ export async function copyHandler(targetId) {
 function getActionButtons(r) {
   const status = getRequestStatus(r);
 
-  if (status.class === 'expired' || status.class === 'declined') {
+  if (status.class === 'declined') {
     return '';
+  }
+
+  if (status.class === 'expired') {
+    return `
+      <button class="icon-btn stats-report-btn" data-request-id="${r._id}">
+        <i class="fa fa-bar-chart"></i>
+      </button>
+    `;
   }
 
   // VERIFIED
@@ -124,8 +122,12 @@ function getActionButtons(r) {
         <i class="fas fa-pen-to-square"></i>
       </button>
   
-      <button class="icon-btn revoke-btn" data-request-id="${r._id}">
+      <button title="Revoke student's access from machine" class="icon-btn revoke-btn" data-request-id="${r._id}">
         Revoke
+      </button>
+
+      <button title="Machine usage report" class="icon-btn stats-report-btn" data-request-id="${r._id}">
+       <i class="fa fa-bar-chart"></i>
       </button>
     `;
   }
