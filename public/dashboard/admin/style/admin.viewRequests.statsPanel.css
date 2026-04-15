@@ -47,9 +47,54 @@
 /* Body (chart area) */
 .report-body {
   flex: 1;
-  padding: 10px 12px 20px;
+  padding: 8px 10px 10px;
   box-sizing: border-box;
   min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.report-details {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+  flex: 0 0 auto;
+  padding: 2px 0 4px;
+}
+
+.detail-item {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  padding-right: 10px;
+  margin-right: 2px;
+  border-right: 1px solid #dddddd;
+  min-width: 0;
+}
+
+.detail-item:last-child {
+  border-right: none;
+  padding-right: 0;
+}
+
+.detail-label {
+  display: inline;
+  font-size: 10px;
+  font-weight: 600;
+  color: #606060;
+  margin-bottom: 0;
+  line-height: 1.2;
+}
+
+.detail-value {
+  display: inline;
+  font-size: 12px;
+  font-weight: 600;
+  color: #1f1f1f;
+  word-break: break-all;
+  line-height: 1.25;
 }
 
 /* Make chart fill space */
@@ -61,6 +106,30 @@
 .chart-container {
   position: relative;
   width: 100%;
-  height: 100%;
-  min-height: 400px; /* fallback */
+  flex: 1 1 auto;
+  min-height: 320px;
+}
+
+@media (max-width: 900px) {
+  .report-details {
+    gap: 4px 8px;
+  }
+
+  .detail-item {
+    padding-right: 8px;
+  }
+}
+
+@media (max-width: 600px) {
+  .detail-label {
+    font-size: 9px;
+  }
+
+  .detail-value {
+    font-size: 11px;
+  }
+
+  .chart-container {
+    min-height: 280px;
+  }
 }

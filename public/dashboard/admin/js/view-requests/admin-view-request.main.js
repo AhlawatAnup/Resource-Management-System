@@ -6,6 +6,7 @@ import {
   openReportModal,
   closeReportModal,
   renderStatsChart,
+  renderReportDetails,
 } from './admin-view-request.handler.js';
 import { verifyAdminRequest, revokeStudentRequest, extendStudentRequest } from './admin-view-request.service.js';
 import { generatePassword, confirmAction, showToast , getEditDurationInput, closeEditModal, getRejectionRemarks} from './admin-view-request.utils.js';
@@ -106,6 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (reportBtn) {
       const requestId = reportBtn.dataset.requestId;
       if (!requestId) return;
+      const request = getRequestById(requestId);
 
       try {
         showToast("Generating report...", "success");
@@ -123,6 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const data = await res.json();
 
+        renderReportDetails(request);
         openReportModal();
 
         renderStatsChart(data);

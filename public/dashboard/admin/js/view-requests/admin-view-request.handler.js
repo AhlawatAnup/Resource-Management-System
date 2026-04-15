@@ -160,6 +160,34 @@ export function getRequestById(requestId) {
   return resourceRequests.find(r => r._id === requestId);
 }
 
+export function renderReportDetails(request) {
+  const setText = (id, value) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = value;
+  };
+
+  if (!request) {
+    setText("reportStudentName", "-");
+    setText("reportRollNo", "-");
+    setText("reportMigId", "-");
+    setText("reportDuration", "-");
+    setText("reportStartTime", "-");
+    setText("reportEndTime", "-");
+    return;
+  }
+
+  const duration = Number.isFinite(request.duration)
+    ? `${request.duration} day${request.duration > 1 ? "s" : ""}`
+    : "-";
+
+  setText("reportStudentName", request.studentName || "-");
+  setText("reportRollNo", request.rollNo || "-");
+  setText("reportMigId", request.migId || "-");
+  setText("reportDuration", duration);
+  setText("reportStartTime", request.startTime ? formatDate(request.startTime) : "-");
+  setText("reportEndTime", request.endTime ? formatDate(request.endTime) : "-");
+}
+
 export function openReportModal() {
   const modal = document.getElementById("reportModal");
   modal.classList.remove("hidden");
