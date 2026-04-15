@@ -65,11 +65,14 @@ machineSchema.index(
 );
 
 machineSchema.pre(/^find/, function (next) {
-  // 1. ALWAYS filter out deleted documents (No way to bypass)
-  this.where({ isDeleted: { $ne: true } });
+  const { includeUnavailable, includeDeleted } = this.getOptions();
+
+  // 1. Only return available machines by default; set `includeDeleted: true` in options to bypass this filter
+  if (!includeDeleted) {
+    this.where({ isDeleted: { $ne: true } });
+  }
 
   // 2. Only return available machines by default; set `includeUnavailable: true` in options to bypass this filter
-  const { includeUnavailable } = this.getOptions();
   if (!includeUnavailable) {
     this.where({ isAvailable: true });
   }
