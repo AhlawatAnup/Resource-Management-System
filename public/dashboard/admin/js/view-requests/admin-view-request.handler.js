@@ -32,6 +32,7 @@ import {
 // ===== STATE =====
 let resourceRequests = [];
 let filteredRequests = [];
+let statsChart = null;
 
 
 // ===== LOAD =====
@@ -157,6 +158,123 @@ export function handleEditClick(requestId) {
 
 export function getRequestById(requestId) {
   return resourceRequests.find(r => r._id === requestId);
+}
+
+export function openReportModal() {
+  const modal = document.getElementById("reportModal");
+  modal.classList.remove("hidden");
+
+  setTimeout(() => {
+    if (statsChart) {
+      statsChart.resize();
+    }
+  }, 200);
+}
+
+export function closeReportModal() {
+  document.getElementById("reportModal").classList.add("hidden");
+}
+
+export function renderStatsChart(apiResponse) {
+  const getISTDayKey = (value) =>
+    new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Asia/Kolkata",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(new Date(value));
+
+  const formatISTDayLabel = (value) =>
+    new Intl.DateTimeFormat("en-IN", {
+      timeZone: "Asia/Kolkata",
+      day: "2-digit",
+      month: "short",
+    }).format(new Date(value));
+
+  const labels = apiResponse.data.map((d) => new Date(d.timestamp));
+
+  const chartData = {
+    labels,
+    datasets: [
+      {
+        label: "CPU %",
+        data: apiResponse.data.map((d) => d.cpu),
+        borderColor: "red",
+        tension: 0.3,
+      },
+      {
+        label: "Memory %",
+        data: apiResponse.data.map((d) => d.mem),
+        borderColor: "blue",
+        tension: 0.3,
+      },
+      {
+        label: "GPU %",
+        data: apiResponse.data.map((d) => d.gpu),
+        borderColor: "green",
+        tension: 0.3,
+      },
+    ],
+  };
+
+  const config = {
+    type: "line",
+    data: chartData,
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      layout: {
+        padding: { bottom: 8 },
+      },
+      interaction: { mode: "index", intersect: false },
+      plugins: {
+        legend: { position: "top" },
+        title: { display: true, text: "Machine Usage (%)" },
+        decimation: { enabled: false },
+      },
+      scales: {
+        x: {
+          type: "time",
+          time: { unit: "day" },
+          ticks: {
+            padding: 8,
+            maxRotation: 0,
+            callback: (value, index, ticks) => {
+              const currentDay = getISTDayKey(value);
+              if (index === 0) {
+                return formatISTDayLabel(value);
+              }
+
+              const previousDay = getISTDayKey(ticks[index - 1].value);
+              return currentDay !== previousDay
+                ? formatISTDayLabel(value)
+                : "";
+            },
+          },
+          title: {
+            display: true,
+            text: "Time",
+          },
+        },
+        y: {
+          min: 0,
+          max: 100,
+          title: {
+            display: true,
+            text: "Utilization (%)",
+          },
+        },
+      },
+    },
+  };
+
+  const ctx = document.getElementById("reportChart").getContext("2d");
+
+  if (statsChart) {
+    statsChart.destroy();
+  }
+
+  statsChart = new Chart(ctx, config);
 }
 
 // initAdminRefresh(loadRequestsHandler);
