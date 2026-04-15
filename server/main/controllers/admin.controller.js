@@ -246,7 +246,7 @@ exports.getAllResourceRequests = async (req, res) => {
       .populate({ 
         path: "machineId", 
         select: "MIGID user gpuRam ram ip port name" ,
-        options: { includeUnavailable: true }  
+        options: { includeUnavailable: true, includeDeleted: true}  
       })
       .sort({ createdAt: -1 });
 

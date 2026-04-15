@@ -14,7 +14,10 @@ async function markExpiredAllotmentsHistoryAndCleanupDocker() {
       ]
     })
     .setOptions({ includeInactive: true })
-    .populate("machineId");
+    .populate({
+      path: "machineId",
+      options: { includeDeleted: true, includeUnavailable: true }
+    });
     
     if (!allotmentsToProcess.length) {
       console.log(`[${new Date().toISOString()}] No allotments to process`);

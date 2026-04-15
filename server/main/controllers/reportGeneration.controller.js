@@ -10,7 +10,7 @@ async function getStatsByResReqId(req, res) {
     const allotment = await MachineAllotment.findOne({ resourceRequestId: new mongoose.Types.ObjectId(resourceRequestId) })
       .populate({
         path: 'machineId',
-        options: { includeUnavailable: true }
+        options: { includeUnavailable: true, includeDeleted:true }
       })
       .setOptions({ includeInactive: true, includeDeleted: true });
 
