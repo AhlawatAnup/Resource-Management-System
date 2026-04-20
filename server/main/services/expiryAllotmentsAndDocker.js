@@ -27,6 +27,27 @@ async function markExpiredAllotmentsHistoryAndCleanupDocker() {
     for (const allotment of allotmentsToProcess) {
       const machine = allotment.machineId;
 
+      const shouldSkipDockerCleanup = allotment.isActive === false && allotment.startTime > now;  //i.e. revoked by admin but the allotment hasn't started yet
+
+      if (shouldSkipDockerCleanup) {
+        allotment.isDeleted = true;
+        allotment.isActive = false;
+        await allotment.save();
+
+        if (allotment.resourceRequestId) {
+          await ResourceRequest.findByIdAndUpdate(
+            allotment.resourceRequestId,
+            { isActive: false },
+            { new: true }
+          );
+        }
+
+        console.log(
+          `[${new Date().toISOString()}] Skipped Docker cleanup for future inactive (revoked by admin) allotment ${allotment._id} and marked it deleted`
+        );
+        continue;
+      }
+
       if (!machine || !machine.user || !machine.ip) {
         console.warn(`[${new Date().toISOString()}] Skipping allotment ${allotment._id} - missing machine/user/ip`);
         continue;
