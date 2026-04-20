@@ -112,6 +112,24 @@ exports.submitResourceRequest = async (req, res) => {
       return res.status(404).json({ error: "Selected machine not found. Kindly refresh the page." });
     }
 
+    // Check for existing active allotment
+    const now = new Date();
+    const studentRequestIds = await ResourceRequest.find({ studentId }).distinct('_id');
+
+    if (studentRequestIds.length > 0) {
+      const activeAllotment = await MachineAllotment.findOne({
+        resourceRequestId: { $in: studentRequestIds },
+        isActive: true,
+        endTime: { $gte: now }
+      });
+
+      if (activeAllotment) {
+        return res.status(400).json({
+          error: "You already have an active allotment. Please submit a new request after your current allotment ends."
+        });
+      }
+    }
+
     // Check for existing pending request
     const existingPending = await ResourceRequest.findOne({
       studentId,
