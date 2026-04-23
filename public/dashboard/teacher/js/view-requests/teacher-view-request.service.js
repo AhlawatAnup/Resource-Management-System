@@ -1,9 +1,9 @@
 // Fetch resource requests from teacher dashboard
 export async function fetchResourceRequests() {
-  const response = await fetch("/dashboard/teacher/data", {
-    method: "GET",
+  const response = await fetch('/dashboard/teacher/data', {
+    method: 'GET',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
   });
 
@@ -15,7 +15,7 @@ export async function fetchResourceRequests() {
 
   return {
     error: false,
-    data
+    data,
   };
 }
 
@@ -24,9 +24,9 @@ export async function verifyRequest(requestId, isVerified) {
   const response = await fetch(`/dashboard/teacher/verify_request/${requestId}`, {
     method: 'PUT',
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ is_verified: isVerified })
+    body: JSON.stringify({ is_verified: isVerified }),
   });
 
   let result = null;
@@ -39,6 +39,6 @@ export async function verifyRequest(requestId, isVerified) {
 
   return {
     ok: response.ok,
-    data: result
+    data: result,
   };
 }

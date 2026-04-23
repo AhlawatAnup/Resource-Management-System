@@ -1,7 +1,7 @@
 // darkmode.js
 
 function configureDarkReaderFetch() {
-  if (typeof DarkReader?.setFetchMethod === "function" && typeof window.fetch === "function") {
+  if (typeof DarkReader?.setFetchMethod === 'function' && typeof window.fetch === 'function') {
     DarkReader.setFetchMethod(window.fetch.bind(window));
   }
 }
@@ -9,9 +9,9 @@ function configureDarkReaderFetch() {
 function initDarkMode() {
   configureDarkReaderFetch();
 
-  const saved = localStorage.getItem("dark-mode");
+  const saved = localStorage.getItem('dark-mode');
 
-  if (saved === "enabled") {
+  if (saved === 'enabled') {
     DarkReader.enable();
   } else {
     DarkReader.disable();
@@ -23,10 +23,10 @@ function toggleDarkMode() {
 
   if (DarkReader.isEnabled()) {
     DarkReader.disable();
-    localStorage.setItem("dark-mode", "disabled");
+    localStorage.setItem('dark-mode', 'disabled');
   } else {
     DarkReader.enable();
-    localStorage.setItem("dark-mode", "enabled");
+    localStorage.setItem('dark-mode', 'enabled');
   }
 }
 
@@ -34,8 +34,8 @@ function toggleDarkMode() {
 export function setupDarkMode() {
   initDarkMode();
 
-  const btn = document.getElementById("theme-toggle");
+  const btn = document.getElementById('theme-toggle');
   if (btn) {
-    btn.addEventListener("click", toggleDarkMode);
+    btn.addEventListener('click', toggleDarkMode);
   }
 }

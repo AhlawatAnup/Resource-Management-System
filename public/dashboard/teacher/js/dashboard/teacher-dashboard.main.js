@@ -1,31 +1,27 @@
-
 import { registerServiceWorkerAndSubscribe } from '../../../common/js/notification.js';
 
 import {
   handleDashboardLoad,
   filterStudent,
-  handleStudentVerification
+  handleStudentVerification,
 } from './teacher-dashboard.handler.js';
 
 import { setupDarkMode } from '../../../common/js/darkmode/darkmode.js';
 
-
 // Init
 document.addEventListener('DOMContentLoaded', function () {
-  setupDarkMode()
+  setupDarkMode();
   handleDashboardLoad();
   registerServiceWorkerAndSubscribe();
 });
 
-
 // Search
-document.getElementById("searchInput").addEventListener("input", (e) => {
+document.getElementById('searchInput').addEventListener('input', (e) => {
   filterStudent(e.target.value);
 });
 
-
 // Approve / Decline (event delegation)
-document.getElementById("contactTableBody").addEventListener("click", (e) => {
+document.getElementById('contactTableBody').addEventListener('click', (e) => {
   const button = e.target.closest('.approve-btn, .decline-btn');
 
   if (button) {

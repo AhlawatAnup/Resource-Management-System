@@ -40,7 +40,7 @@ const sendTeacherProfileVerifiedByAdminEmail = async (teacherEmail, teacherName)
   return sendEmail({
     to: teacherEmail,
     subject: '[VERIFIED] Teacher Profile Verified - Full Access Granted!',
-    html
+    html,
   });
 };
 
@@ -72,7 +72,7 @@ const sendTeacherProfileRejectedByAdminEmail = async (teacherEmail, teacherName)
   return sendEmail({
     to: teacherEmail,
     subject: '[REJECTED] Teacher Profile Verification Update - Admin Review',
-    html
+    html,
   });
 };
 
@@ -109,12 +109,12 @@ const sendTeacherProfileUnverifiedByAdminEmail = async (teacherEmail, teacherNam
   return sendEmail({
     to: teacherEmail,
     subject: '[ACTION REQUIRED] Profile Verification Reset - Action Required',
-    html
+    html,
   });
 };
 
 module.exports = {
   sendTeacherProfileVerifiedByAdminEmail,
   sendTeacherProfileRejectedByAdminEmail,
-  sendTeacherProfileUnverifiedByAdminEmail
+  sendTeacherProfileUnverifiedByAdminEmail,
 };

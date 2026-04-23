@@ -2,16 +2,24 @@ const sendEmail = require('../sendEmail');
 const { generateUndertakingPDF } = require('../common/undertakingPdfGenerator');
 
 // Submitted
-const sendResourceRequestSubmittedEmail = async (studentEmail, studentName, requestTitle, studentData = {}, purpose = '') => {
+const sendResourceRequestSubmittedEmail = async (
+  studentEmail,
+  studentName,
+  requestTitle,
+  studentData = {},
+  purpose = '',
+) => {
   // Generate undertaking PDF
   let attachments = [];
   try {
     const pdfBuffer = await generateUndertakingPDF(studentData, purpose);
-    attachments = [{
-      filename: 'Undertaking_AI_Data_Centre.pdf',
-      content: pdfBuffer,
-      contentType: 'application/pdf'
-    }];
+    attachments = [
+      {
+        filename: 'Undertaking_AI_Data_Centre.pdf',
+        content: pdfBuffer,
+        contentType: 'application/pdf',
+      },
+    ];
   } catch (error) {
     console.error('Failed to generate undertaking PDF:', error.message);
     // Continue sending email without attachment if PDF generation fails
@@ -53,7 +61,7 @@ const sendResourceRequestSubmittedEmail = async (studentEmail, studentName, requ
         </p>
       </div>
     `,
-    attachments
+    attachments,
   });
 };
 
@@ -66,22 +74,22 @@ const sendResourceRequestVerifiedEmail = async ({
   endTime,
   migId,
   duration,
-  attachments = [] 
+  attachments = [],
 }) => {
   const formatDate = (date) =>
-    new Date(date).toLocaleString("en-IN", {
-      timeZone: "Asia/Kolkata",
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit"
+    new Date(date).toLocaleString('en-IN', {
+      timeZone: 'Asia/Kolkata',
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
     });
 
   return sendEmail({
     to: studentEmail,
     subject: `[VERIFIED] Your Resource Request is Approved`,
-    attachments, 
+    attachments,
     html: `
       <div style="font-family: Arial, sans-serif; max-width:600px; margin:auto;">
         <h3 style="color:#4CAF50;">🎉 Congratulations, ${studentName}!</h3>
@@ -106,7 +114,7 @@ const sendResourceRequestVerifiedEmail = async ({
           Please log in to your dashboard for more details.
         </p>
       </div>
-    `
+    `,
   });
 };
 
@@ -115,7 +123,7 @@ const sendResourceRequestRejectedEmail = async ({
   studentEmail,
   studentName,
   requestTitle,
-  remarks
+  remarks,
 }) => {
   return sendEmail({
     to: studentEmail,
@@ -136,8 +144,8 @@ const sendResourceRequestRejectedEmail = async ({
                 <p style="margin-top:8px;">${remarks}</p>
               </div>
               `
-                  : ""
-              }
+            : ''
+        }
 
         <div style="background-color:#ffebee; border:1px solid #ffcdd2; padding:12px; border-radius:6px; margin:16px 0;">
           <p style="margin:0;">
@@ -147,16 +155,11 @@ const sendResourceRequestRejectedEmail = async ({
 
         <p>Please check the details carefully before resubmitting.</p>
       </div>
-    `
+    `,
   });
 };
 // Revoked by Admin (resource allocation removed)
-const sendResourceRequestRevokedByAdminEmail = async (
-  studentEmail,
-  studentName,
-  requestTitle,
-) => {
-
+const sendResourceRequestRevokedByAdminEmail = async (studentEmail, studentName, requestTitle) => {
   return sendEmail({
     to: studentEmail,
     subject: '[ATTENTION] Resource Allocation Revoked - Access Removed',
@@ -174,7 +177,7 @@ const sendResourceRequestRevokedByAdminEmail = async (
 
         <p>If you still need resources, please submit a new request with updated details.</p>
       </div>
-    `
+    `,
   });
 };
 
@@ -185,18 +188,18 @@ const sendResourceAllotmentStartedEmail = async ({
   requestTitle,
   startTime,
 }) => {
-  const formattedStartTime = new Date(startTime).toLocaleString("en-IN", {
-    timeZone: "Asia/Kolkata",
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit"
+  const formattedStartTime = new Date(startTime).toLocaleString('en-IN', {
+    timeZone: 'Asia/Kolkata',
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
   });
   return sendEmail({
-      to: studentEmail,
-      subject: '[CONFIRMATION] Your Resource Allotment Has Started',
-      html: `
+    to: studentEmail,
+    subject: '[CONFIRMATION] Your Resource Allotment Has Started',
+    html: `
         <div style="font-family: Arial, sans-serif; max-width:600px; margin:auto;">
           <h3 style="color:#4caf50;">✅ Resource Allotment Started</h3>
 
@@ -223,7 +226,7 @@ const sendResourceAllotmentStartedEmail = async ({
           <p>Regards,<br>
           <strong>UIET Cluster Resource Management System</strong></p>
         </div>
-      `
+      `,
   });
 };
 
@@ -234,14 +237,13 @@ const sendResourceAllotmentExpiryTodayEmail = async ({
   requestTitle,
   endTime,
 }) => {
-
-  const formattedEndTime = new Date(endTime).toLocaleString("en-IN", {
-    timeZone: "Asia/Kolkata",
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit"
+  const formattedEndTime = new Date(endTime).toLocaleString('en-IN', {
+    timeZone: 'Asia/Kolkata',
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
   });
 
   return sendEmail({
@@ -274,10 +276,9 @@ const sendResourceAllotmentExpiryTodayEmail = async ({
         <p>Regards,</p>
         <strong>UIET Cluster Resource Management System</strong></p>
       </div>
-    `
+    `,
   });
 };
-
 
 module.exports = {
   sendResourceRequestSubmittedEmail,

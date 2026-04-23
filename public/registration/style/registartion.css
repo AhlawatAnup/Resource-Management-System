@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
 
 * {
   margin: 0;
@@ -7,7 +7,7 @@
 }
 
 body {
-  font-family: "Rubik", sans-serif;
+  font-family: 'Rubik', sans-serif;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   min-height: 100vh;
   display: flex;
@@ -48,7 +48,7 @@ body {
 }
 
 .hero-section::before {
-  content: "";
+  content: '';
   position: absolute;
   width: 200%;
   height: 200%;
@@ -172,7 +172,7 @@ body {
 }
 
 .divider::before {
-  content: "";
+  content: '';
   position: absolute;
   top: 50%;
   left: 0;

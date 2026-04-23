@@ -3,5 +3,8 @@
   "editor.formatOnSave": true,
   "editor.formatOnType": false,
   "editor.formatOnPaste": false,
-  "files.autoSave": "afterDelay"
+  "files.autoSave": "afterDelay",
+  "workbench.editorAssociations": {
+    "*.md": "vscode.markdown.preview.editor"
+  }
 }

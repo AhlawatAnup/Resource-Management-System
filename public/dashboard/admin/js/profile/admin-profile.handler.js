@@ -1,15 +1,7 @@
 // profile.handler.js
 import { showError, showSuccess, toggleLoading } from './admin-profile.ui.js';
-import {
-  updateEmail,
-  updateUsername,
-  changePassword
-} from './admin-profile.service.js';
-import {
-  validateEmail,
-  validateUsername,
-  validatePassword
-} from './admin-profile.util.js';
+import { updateEmail, updateUsername, changePassword } from './admin-profile.service.js';
+import { validateEmail, validateUsername, validatePassword } from './admin-profile.util.js';
 
 export async function onEmailSubmit(newEmail, { displayEl, errorEl, modalEl, submitBtn }) {
   const error = validateEmail(newEmail);
@@ -51,7 +43,11 @@ export async function onUsernameSubmit(newUsername, { displayEl, errorEl, modalE
   }
 }
 
-export async function onPasswordSubmit(newPassword, confirmPassword, { errorEl, modalEl, submitBtn }) {
+export async function onPasswordSubmit(
+  newPassword,
+  confirmPassword,
+  { errorEl, modalEl, submitBtn },
+) {
   const error = validatePassword(newPassword, confirmPassword);
   if (error) return showError(errorEl, error);
 

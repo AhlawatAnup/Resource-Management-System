@@ -112,7 +112,7 @@ th.sortable:hover {
 }
 
 th.sortable::after {
-  content: "↕";
+  content: '↕';
   position: absolute;
   right: 8px;
   color: #cbd5e1;

@@ -3,7 +3,7 @@ import {
   getVerificationStatus,
   getStatusClass,
   getStudentVerificationStatusForTeacher,
-  getStudentStatusClassForTeacher
+  getStudentStatusClassForTeacher,
 } from '../teacher.utils.js';
 
 // Render teacher profile
@@ -30,7 +30,9 @@ export function renderTeacherProfile(teacherData) {
             </span>
           </div>
 
-          ${isPending ? `
+          ${
+            isPending
+              ? `
             <div class="pending-verification-note" style="
               background: #fff3cd; 
               border: 1px solid #ffeaa7; 
@@ -54,7 +56,9 @@ export function renderTeacherProfile(teacherData) {
                 Students will then be able to select you as their teacher.
               </div>
             </div>
-          ` : ''}
+          `
+              : ''
+          }
 
           <div class="teacher-info-grid">
             <div><strong>Email:</strong> ${teacherData.email || 'N/A'}</div>
@@ -71,8 +75,8 @@ export function renderTeacherProfile(teacherData) {
 
 // Render single student row
 export function renderStudentsTable(student) {
-  const tbody = document.getElementById("contactTableBody");
-  const tr = document.createElement("tr");
+  const tbody = document.getElementById('contactTableBody');
+  const tr = document.createElement('tr');
 
   const verificationStatus = getStudentVerificationStatusForTeacher(student);
   const statusClass = getStudentStatusClassForTeacher(student);
@@ -115,16 +119,18 @@ export function renderStudentsTable(student) {
 
     <td>
       <div class="owner-info">
-        ${student.teacher_action 
-          ? '<span style="color: #666; font-style: italic;">Action Completed</span>'
-          : `
+        ${
+          student.teacher_action
+            ? '<span style="color: #666; font-style: italic;">Action Completed</span>'
+            : `
             <button class="icon-btn approve-btn" title="Approve Student" data-student-id="${student._id}" data-action="approve">
               <i class="fa-solid fa-check"></i>
             </button>
             <button class="icon-btn decline-btn" title="Decline Student" data-student-id="${student._id}" data-action="decline">
               <i class="fa-solid fa-times"></i>
             </button>
-          `}
+          `
+        }
       </div>
     </td>
   `;

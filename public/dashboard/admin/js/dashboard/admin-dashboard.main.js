@@ -7,7 +7,7 @@ import {
   loadAndRender,
   setupNavigation,
   setupActionHandlers,
-  setupSearch
+  setupSearch,
 } from './admin-dashboard.handler.js';
 
 // -----------------------------
@@ -16,7 +16,7 @@ import {
 const state = {
   currentData: [],
   currentType: 'teacher',
-  currentStatus: 'all'
+  currentStatus: 'all',
 };
 
 // -----------------------------
@@ -25,7 +25,7 @@ const state = {
 async function reload() {
   await loadAndRender({
     state,
-    logout: logoutDirectly
+    logout: logoutDirectly,
   });
 }
 

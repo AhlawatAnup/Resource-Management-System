@@ -1,6 +1,6 @@
-const mongoose = require("mongoose");
-const Student = require("./studentModel");
-const emailService = require("../utils/email/emails.service.js");
+const mongoose = require('mongoose');
+const Student = require('./studentModel');
+const emailService = require('../utils/email/emails.service.js');
 
 const teacherSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
@@ -12,11 +12,11 @@ const teacherSchema = new mongoose.Schema({
   students: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Student",
+      ref: 'Student',
     },
   ],
   is_verified: { type: Boolean, default: false },
-  verification_completed: { type: Boolean, default: false }, 
+  verification_completed: { type: Boolean, default: false },
 });
 
-module.exports = mongoose.model("Teacher", teacherSchema);
+module.exports = mongoose.model('Teacher', teacherSchema);

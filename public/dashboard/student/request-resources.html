@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <!-- importing darkmode files on top to avoid delay -->
     <script src="https://cdn.jsdelivr.net/npm/darkreader/darkreader.min.js"></script>
     <script src="/dashboard/common/js/darkmode/darkmode-init.js"></script>
-    <link rel="stylesheet" href="/dashboard/common/style/darkmode/darkmode-button.css">
+    <link rel="stylesheet" href="/dashboard/common/style/darkmode/darkmode-button.css" />
 
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -13,11 +13,8 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
       rel="stylesheet"
     />
-    <script
-      src="https://kit.fontawesome.com/e05e3e1522.js"
-      crossorigin="anonymous"
-    ></script>
-    
+    <script src="https://kit.fontawesome.com/e05e3e1522.js" crossorigin="anonymous"></script>
+
     <link rel="stylesheet" href="/dashboard/student/style/student.dashboard.css" />
     <link rel="stylesheet" href="/dashboard/student/style/student.request.css" />
     <link rel="stylesheet" href="/dashboard/common/style/allotments/machines-flexbar.css" />
@@ -91,36 +88,50 @@
           </div>
 
           <!-- Verified User Section -->
-          <div id="verified-section" class="resources-page" style="display: none;">
+          <div id="verified-section" class="resources-page" style="display: none">
             <div class="verification-notice verified">
               <div class="notice-content">
                 <i class="fas fa-check-circle"></i>
                 <span>Welcome! You are verified and eligible to request resources</span>
               </div>
             </div>
-            
+
             <div class="resource-request-section">
               <h2>
                 <i class="fas fa-plus-circle"></i>
                 Request Compute Resources
               </h2>
-              
-              <div class="info-box tip" style="margin-bottom: 20px;">
-                <p class="tip-content" style="margin: 0;">
+
+              <div class="info-box tip" style="margin-bottom: 20px">
+                <p class="tip-content" style="margin: 0">
                   <i class="fas fa-info-circle"></i>
-                  <strong>Note:</strong> Only one pending request is allowed at a time. Please wait for your current request to be processed before submitting a new one or delete the request if there are no actions taken by teacher/admin.
+                  <strong>Note:</strong> Only one pending request is allowed at a time. Please wait
+                  for your current request to be processed before submitting a new one or delete the
+                  request if there are no actions taken by teacher/admin.
                 </p>
               </div>
-              
+
               <form id="resource-request-form">
                 <div class="form-group">
                   <label for="title">Request Title:</label>
-                  <input type="text" id="title" class="form-control" placeholder="e.g., Machine Learning Training Project" required>
+                  <input
+                    type="text"
+                    id="title"
+                    class="form-control"
+                    placeholder="e.g., Machine Learning Training Project"
+                    required
+                  />
                 </div>
-                
+
                 <div class="form-group">
                   <label for="purpose">Purpose/Description:</label>
-                  <textarea id="purpose" class="form-control textarea" rows="4" placeholder="Please describe the purpose of your resource request and what you plan to accomplish..." required></textarea>
+                  <textarea
+                    id="purpose"
+                    class="form-control textarea"
+                    rows="4"
+                    placeholder="Please describe the purpose of your resource request and what you plan to accomplish..."
+                    required
+                  ></textarea>
                 </div>
 
                 <div class="machines-bar-section">
@@ -130,55 +141,67 @@
                   </div>
                 </div>
 
-                <input type="hidden" id="selected-machine-id" name="machineId" value="">
+                <input type="hidden" id="selected-machine-id" name="machineId" value="" />
 
                 <div class="form-group">
                   <label for="duration">Requested Duration (in days):</label>
-                  <input type="number" id="duration" class="form-control" min="1" max="15" placeholder="e.g., 4" required>
+                  <input
+                    type="number"
+                    id="duration"
+                    class="form-control"
+                    min="1"
+                    max="15"
+                    placeholder="e.g., 4"
+                    required
+                  />
                 </div>
-                
-                <div class="declaration-section">
 
+                <div class="declaration-section">
                   <h4>Important User Declarations</h4>
 
                   <div class="declaration-item">
                     <label>
-                      <input type="checkbox" name="declaration" required>
+                      <input type="checkbox" name="declaration" required />
                       <span>
-                        I will use the AI Data Centre facilities responsibly and strictly for approved academic and research purposes only.
+                        I will use the AI Data Centre facilities responsibly and strictly for
+                        approved academic and research purposes only.
                       </span>
                     </label>
                   </div>
 
                   <div class="declaration-item">
                     <label>
-                      <input type="checkbox" name="declaration" required>
+                      <input type="checkbox" name="declaration" required />
                       <span>
-                        I will properly acknowledge the AI Data Centre, Design Innovation Centre (DIC), and all associated funding agencies in any publication, presentation, thesis, report, or IPR arising from the use of these resources.
+                        I will properly acknowledge the AI Data Centre, Design Innovation Centre
+                        (DIC), and all associated funding agencies in any publication, presentation,
+                        thesis, report, or IPR arising from the use of these resources.
                       </span>
                     </label>
                   </div>
 
                   <div class="declaration-item">
                     <label>
-                      <input type="checkbox" name="declaration" required>
+                      <input type="checkbox" name="declaration" required />
                       <span>
-                        I am responsible for the security of my data and will not store or process any unauthorized, sensitive, or classified information on the facility’s systems.
+                        I am responsible for the security of my data and will not store or process
+                        any unauthorized, sensitive, or classified information on the facility’s
+                        systems.
                       </span>
                     </label>
                   </div>
 
                   <div class="declaration-item">
                     <label>
-                      <input type="checkbox" name="declaration" required>
+                      <input type="checkbox" name="declaration" required />
                       <span>
-                        I agree to comply with all operational policies and accept responsibility for any damage caused due to negligence or misuse.
+                        I agree to comply with all operational policies and accept responsibility
+                        for any damage caused due to negligence or misuse.
                       </span>
                     </label>
                   </div>
-
                 </div>
-                
+
                 <button type="submit" class="btn-primary">
                   <i class="fas fa-paper-plane"></i>
                   Submit Resource Request
@@ -188,7 +211,7 @@
           </div>
 
           <!-- Unverified User Section -->
-          <div id="unverified-section" class="resources-page" style="display: none;">
+          <div id="unverified-section" class="resources-page" style="display: none">
             <div class="verification-notice pending">
               <div class="notice-content">
                 <i class="fas fa-exclamation-circle"></i>
@@ -196,13 +219,13 @@
               </div>
               <p>Your verification status: <span id="verification-status-text"></span></p>
             </div>
-            
+
             <div class="verification-info">
               <h2>
                 <i class="fas fa-info-circle"></i>
                 Resource Request Information
               </h2>
-              
+
               <div class="info-box warning">
                 <h3>Verification Process</h3>
                 <p>To request resources, you need to complete the verification process:</p>
@@ -211,13 +234,16 @@
                   <li>An admin needs to provide final verification</li>
                   <li>Once verified, you can request resources from the system</li>
                 </ol>
-                <p><strong>Current Status:</strong> <span id="verification-status-detail"></span></p>
+                <p>
+                  <strong>Current Status:</strong> <span id="verification-status-detail"></span>
+                </p>
               </div>
-              
+
               <div class="info-box tip">
                 <p class="tip-content">
                   <i class="fas fa-lightbulb"></i>
-                  <strong>Tip:</strong> Contact your assigned teacher or admin if you have questions about the verification process.
+                  <strong>Tip:</strong> Contact your assigned teacher or admin if you have questions
+                  about the verification process.
                 </p>
               </div>
             </div>
@@ -227,6 +253,9 @@
     </main>
 
     <!-- <script type="module" src="/dashboard/student/js/student.request.js"></script> -->
-    <script type="module" src="/dashboard/student/js/student-request/student-request.main.js"></script>
+    <script
+      type="module"
+      src="/dashboard/student/js/student-request/student-request.main.js"
+    ></script>
   </body>
 </html>

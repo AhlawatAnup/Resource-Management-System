@@ -27,7 +27,7 @@ const sendStudentRegistrationSuccessEmail = async (studentEmail, studentName) =>
   return sendEmail({
     to: studentEmail,
     subject: 'Registration Successful - Welcome to UIET Cluster Resource Sharing',
-    html
+    html,
   });
 };
 
