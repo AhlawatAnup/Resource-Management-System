@@ -1,0 +1,45 @@
+# SAMPLE ENV FILE FORMAT FOR THE SERVER TO RUN
+
+MODE=dev
+SESSION_SECRET=secret-key
+PORT=3000
+CLIENT_URL=http://localhost:${PORT}
+MONGO_URI=mongodb://localhost:27017/college_resources
+STATS_DB_URI=mongodb://localhost:27017/machine_monitoring
+ENFORCE_HTTPS=false
+
+# Email
+EMAIL_HOST=host
+EMAIL_PORT=port
+EMAIL_USER=abc@gmail.com
+EMAIL_PASS=pass
+EXPIRY_NOTIFY_SCHEDULE=5 3 * * *
+# EXPIRY_NOTIFY_SCHEDULE=*/1 * * * *
+
+# backup
+BACKUP_SCHEDULE=0 3 * * *
+MONGO_DB=college_resources
+BACKUP_BASE=/path-to-base
+MONGO_DUMP=/opt/homebrew/bin/mongodump
+RCLONE_PATH=/opt/homebrew/bin/rclone
+REMOTE_NAME=mygdrive
+REMOTE_PATH=MongoBackups
+
+# Web Push Notifications
+VAPID_PUBLIC_KEY=public-key
+VAPID_PRIVATE_KEY=private-key
+VAPID_SUBJECT=mailto:abc@gmail.com
+
+#PROXY
+TOKEN_SERVER_PORT=9999
+X_API_KEY=apy-key
+
+EXPIRY_ALLOTMENTS_SCHEDULE=0 0 * * *
+# EXPIRY_ALLOTMENTS_SCHEDULE=*/1 * * * *
+
+# Machine Stats
+MACHINE_STATS_SCHEDULE="*/1 * * * *"
+STATS_DB_URI=mongodb://localhost:27017/machine_monitoring
+
+MACHINE_A100=http://machine_ip-1:9999
+MACHINE_H100=http://machine-ip-2:9999

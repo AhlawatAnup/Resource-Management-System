@@ -1,15 +1,14 @@
 const transporter = require('./transporter');
 
 module.exports = async ({ to, subject, html, attachments = [] }) => {
-
-  if( process.env.mode=="dev") return;
+  if (process.env.mode == 'dev') return;
   try {
     const result = await transporter.sendMail({
       from: process.env.EMAIL_USER,
       to,
       subject,
       html,
-      attachments
+      attachments,
     });
     return result; // Return raw nodemailer response on success
   } catch (error) {

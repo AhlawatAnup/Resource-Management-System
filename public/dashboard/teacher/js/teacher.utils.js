@@ -28,78 +28,78 @@ export function getStatusColor(isVerified) {
 // Student verification status (teacher perspective)
 export function getStudentVerificationStatusForTeacher(student) {
   if (student.teacher_verified && student.admin_verified) {
-    return "Verified";
+    return 'Verified';
   }
 
   if (student.teacher_action && !student.admin_action) {
     if (student.teacher_verified) {
-      return "Pending on Admin";
+      return 'Pending on Admin';
     } else {
-      return "Declined by Teacher";
+      return 'Declined by Teacher';
     }
   }
 
   if (!student.teacher_action) {
-    return "Pending on Teacher";
+    return 'Pending on Teacher';
   }
 
   if (student.admin_action) {
     if (student.admin_verified) {
-      return "Verified";
+      return 'Verified';
     } else {
-      return "Declined by Admin";
+      return 'Declined by Admin';
     }
   }
 
-  return "Pending";
+  return 'Pending';
 }
 
 // Student status CSS class
 export function getStudentStatusClassForTeacher(student) {
   if (student.teacher_verified && student.admin_verified) {
-    return "verified";
+    return 'verified';
   }
 
   if (student.teacher_action && !student.admin_action) {
     if (student.teacher_verified) {
-      return "pending-admin";
+      return 'pending-admin';
     } else {
-      return "declined";
+      return 'declined';
     }
   }
 
   if (!student.teacher_action) {
-    return "pending-teacher";
+    return 'pending-teacher';
   }
 
   if (student.admin_action) {
     if (student.admin_verified) {
-      return "verified";
+      return 'verified';
     } else {
-      return "declined";
+      return 'declined';
     }
   }
 
-  return "pending";
+  return 'pending';
 }
 
 // Get request status information
 export function getRequestStatus(request) {
   if (request.isActive === false) {
-    return { text: "Expired", class: "expired" };
+    return { text: 'Expired', class: 'expired' };
   } else if (request.is_verified) {
-    return { text: "Approved", class: "verified" };
+    return { text: 'Approved', class: 'verified' };
   } else if (request.teacher_action && !request.teacher_verified) {
-    return { text: "Declined by Teacher", class: "declined" };
+    return { text: 'Declined by Teacher', class: 'declined' };
   } else if (request.admin_action && !request.admin_verified) {
-    return { text: "Declined by Admin", class: "declined" };
-  // } else if (request.teacher_verified && !request.admin_action) {
-  //   return { text: "Pending Admin", class: "pending-admin" };
-  // } else if (!request.teacher_action) {
-  //   return { text: "Pending Teacher", class: "pending-teacher" };
+    return { text: 'Declined by Admin', class: 'declined' };
+    // } else if (request.teacher_verified && !request.admin_action) {
+    //   return { text: "Pending Admin", class: "pending-admin" };
+    // } else if (!request.teacher_action) {
+    //   return { text: "Pending Teacher", class: "pending-teacher" };
   } else {
-  // return { text: "Pending", class: "pending" };
-      return { text: "Pending Teacher", class: "pending-teacher" };
+    // return { text: "Pending", class: "pending" };
+    return { text: 'Pending Teacher', class: 'pending-teacher' };
   }
 }
 
@@ -140,6 +140,6 @@ export function filterRequestsList(resourceRequests, searchTerm) {
       request.studentInfo.name.toLowerCase().includes(term) ||
       request.studentInfo.rollNo.toLowerCase().includes(term) ||
       request.title.toLowerCase().includes(term) ||
-      request.purpose.toLowerCase().includes(term)
+      request.purpose.toLowerCase().includes(term),
   );
 }

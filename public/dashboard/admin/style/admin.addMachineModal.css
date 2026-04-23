@@ -94,12 +94,12 @@
 }
 
 /* Save button */
-#machineAddForm button[type="submit"] {
+#machineAddForm button[type='submit'] {
   background: #2563eb;
   color: white;
 }
 
-#machineAddForm button[type="submit"]:hover {
+#machineAddForm button[type='submit']:hover {
   background: #1d4ed8;
 }
 

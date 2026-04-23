@@ -1,20 +1,24 @@
-import { getInitials, getRandomNamedColor, formatDate, createViewMoreButton } from '../../../common/js/commons.js';
+import {
+  getInitials,
+  getRandomNamedColor,
+  formatDate,
+  createViewMoreButton,
+} from '../../../common/js/commons.js';
 import { getRequestStatus, getActionButtons } from '../teacher.utils.js';
 
 // Render resource requests in table
 export function renderResourceRequests(requests) {
-  const tbody = document.getElementById("requestsTableBody");
+  const tbody = document.getElementById('requestsTableBody');
 
   if (!requests || requests.length === 0) {
-    tbody.innerHTML =
-      '<tr><td colspan="7" class="loading">No resource requests found.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" class="loading">No resource requests found.</td></tr>';
     return;
   }
 
-  tbody.innerHTML = "";
+  tbody.innerHTML = '';
 
   requests.forEach((request) => {
-    const tr = document.createElement("tr");
+    const tr = document.createElement('tr');
 
     const statusInfo = getRequestStatus(request);
 
@@ -62,16 +66,15 @@ export function renderResourceRequests(requests) {
 
 // Show "not verified" message
 export function showNotVerifiedMessage() {
-  const tbody = document.getElementById("requestsTableBody");
+  const tbody = document.getElementById('requestsTableBody');
   tbody.innerHTML =
     '<tr><td colspan="7" class="loading">Your account must be verified by admin to view resource requests</td></tr>';
 }
 
 // Show empty state
 export function showEmptyState() {
-  const tbody = document.getElementById("requestsTableBody");
-  tbody.innerHTML =
-    '<tr><td colspan="7" class="loading">No resource requests found.</td></tr>';
+  const tbody = document.getElementById('requestsTableBody');
+  tbody.innerHTML = '<tr><td colspan="7" class="loading">No resource requests found.</td></tr>';
 }
 
 // Toast notification

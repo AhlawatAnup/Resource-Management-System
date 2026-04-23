@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
-const ResourceRequest = require("./resourceRequestModel");
+const mongoose = require('mongoose');
+const ResourceRequest = require('./resourceRequestModel');
 
 const studentSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
@@ -12,18 +12,20 @@ const studentSchema = new mongoose.Schema({
   instituteAddress: { type: String, required: true },
   teacher: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Teacher",
+    ref: 'Teacher',
     required: true,
   },
-  resourceRequests: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "ResourceRequest"
-  }],
+  resourceRequests: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'ResourceRequest',
+    },
+  ],
   teacher_verified: { type: Boolean, default: false },
   teacher_action: { type: Boolean, default: false },
   admin_verified: { type: Boolean, default: false },
   admin_action: { type: Boolean, default: false },
-  is_verified: { type: Boolean, default: false }
+  is_verified: { type: Boolean, default: false },
 });
 
-module.exports = mongoose.model("Student", studentSchema);
+module.exports = mongoose.model('Student', studentSchema);

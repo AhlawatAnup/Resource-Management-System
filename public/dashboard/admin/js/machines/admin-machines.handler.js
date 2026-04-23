@@ -8,15 +8,17 @@ import * as utils from './admin-machines.utils.js';
  */
 export async function handleDelete(machine, tr) {
   if (utils.getAssignedStatus(machine)) {
-    Toastify({ 
-      text: "Cannot delete machine that is assigned.", 
-      duration: 3000, gravity: "top", position: "center", 
-      backgroundColor: "#ff6b6b" 
+    Toastify({
+      text: 'Cannot delete machine that is assigned.',
+      duration: 3000,
+      gravity: 'top',
+      position: 'center',
+      backgroundColor: '#ff6b6b',
     }).showToast();
     return;
   }
 
-  if (!await utils.machineConfirmDelete(machine)) return;
+  if (!(await utils.machineConfirmDelete(machine))) return;
 
   try {
     if (machine._id) {
@@ -32,9 +34,8 @@ export async function handleDelete(machine, tr) {
       title: 'Machine deleted successfully',
       showConfirmButton: false,
       timer: 3000,
-      timerProgressBar: true
+      timerProgressBar: true,
     });
-
   } catch (err) {
     Swal.fire({
       toast: true,
@@ -43,7 +44,7 @@ export async function handleDelete(machine, tr) {
       title: 'Delete failed: ' + err.message,
       showConfirmButton: false,
       timer: 3000,
-      timerProgressBar: true
+      timerProgressBar: true,
     });
   }
 }
@@ -64,7 +65,7 @@ export async function handleRevoke(machine, revokeBtn, loadMachines) {
       if (!value || value.trim().toUpperCase() !== 'CONFIRM') {
         return 'Please type CONFIRM';
       }
-    }
+    },
   });
 
   if (!result.isConfirmed) return;
@@ -81,15 +82,16 @@ export async function handleRevoke(machine, revokeBtn, loadMachines) {
     await loadMachines();
 
     Swal.fire('Machine marked as unavailable.', '', 'success');
-
   } catch (err) {
     revokeBtn.disabled = false;
     revokeBtn.textContent = originalText;
 
-    Toastify({ 
-      text: err.message, 
-      duration: 3000, gravity: "top", position: "center", 
-      backgroundColor: "#ff6b6b" 
+    Toastify({
+      text: err.message,
+      duration: 3000,
+      gravity: 'top',
+      position: 'center',
+      backgroundColor: '#ff6b6b',
     }).showToast();
   }
 }
@@ -99,10 +101,10 @@ export async function handleRevoke(machine, revokeBtn, loadMachines) {
  */
 // export function handleEdit(machine, tr, handleEditSubmit) {
 //   if (utils.getAssignedStatus(machine)) {
-//     Toastify({ 
-//       text: "Cannot edit assigned machine", 
-//       duration: 3000, gravity: "top", position: "center", 
-//       backgroundColor: "#ff6b6b" 
+//     Toastify({
+//       text: "Cannot edit assigned machine",
+//       duration: 3000, gravity: "top", position: "center",
+//       backgroundColor: "#ff6b6b"
 //     }).showToast();
 //     return;
 //   }
@@ -150,9 +152,17 @@ export async function handleRevoke(machine, revokeBtn, loadMachines) {
  */
 export async function handleAddSubmit(
   { MIGID, gpuRaw, ramRaw, ip, portRaw, user, name },
-  loadMachines
+  loadMachines,
 ) {
-  const { valid, errors, values } = utils.validateMachineAddFields({ MIGID, gpuRaw, ramRaw, ip, portRaw, user, name });
+  const { valid, errors, values } = utils.validateMachineAddFields({
+    MIGID,
+    gpuRaw,
+    ramRaw,
+    ip,
+    portRaw,
+    user,
+    name,
+  });
   if (!valid) {
     // Show first error found
     const firstError = Object.values(errors)[0];
@@ -175,16 +185,15 @@ export async function handleAddSubmit(
     Swal.fire({
       toast: true,
       icon: 'success',
-      title: 'Machine created successfully'
+      title: 'Machine created successfully',
     });
 
     loadMachines();
-
   } catch (err) {
     Swal.fire({
       toast: true,
       icon: 'error',
-      title: err.message
+      title: err.message,
     });
   }
 }
@@ -202,7 +211,7 @@ export async function handleEnable(machine, enableBtn, loadMachines) {
       if (!value || value.trim().toUpperCase() !== 'CONFIRM') {
         return 'Please type CONFIRM';
       }
-    }
+    },
   });
 
   if (!result.isConfirmed) return;
@@ -219,15 +228,16 @@ export async function handleEnable(machine, enableBtn, loadMachines) {
     await loadMachines();
 
     Swal.fire('Machine marked as available.', '', 'success');
-
   } catch (err) {
     enableBtn.disabled = false;
     enableBtn.textContent = originalText;
 
-    Toastify({ 
-      text: err.message, 
-      duration: 3000, gravity: "top", position: "center", 
-      backgroundColor: "#ff6b6b" 
+    Toastify({
+      text: err.message,
+      duration: 3000,
+      gravity: 'top',
+      position: 'center',
+      backgroundColor: '#ff6b6b',
     }).showToast();
   }
 }

@@ -1,29 +1,26 @@
-import { initMachineInfoTippy, initDurationTippy, initTitleTippy } from './admin-view-request.utils.js';
+import {
+  initMachineInfoTippy,
+  initDurationTippy,
+  initTitleTippy,
+} from './admin-view-request.utils.js';
 
 // Render resource requests table
 export function renderResourceRequests(requests, deps) {
-  const {
-    getRequestStatus,
-    getActionButtons,
-    getInitials,
-    getRandomNamedColor,
-    formatDate,
-  } = deps;
+  const { getRequestStatus, getActionButtons, getInitials, getRandomNamedColor, formatDate } = deps;
 
-  const tbody = document.getElementById("requestsTableBody");
+  const tbody = document.getElementById('requestsTableBody');
 
   if (!requests || requests.length === 0) {
-    tbody.innerHTML =
-      '<tr><td colspan="6" class="loading">No resource requests found.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" class="loading">No resource requests found.</td></tr>';
     return;
   }
 
-  tbody.innerHTML = "";
+  tbody.innerHTML = '';
 
   requests.forEach((request) => {
     const statusInfo = getRequestStatus(request);
 
-    const tr = document.createElement("tr");
+    const tr = document.createElement('tr');
 
     tr.innerHTML = `
       <td>
@@ -41,11 +38,13 @@ export function renderResourceRequests(requests, deps) {
           <p>
             ${request.title}
             ${
-              request.purpose ? `
+              request.purpose
+                ? `
                 <button class="title-info-btn info-btn" title="Request Purpose">
                   <i class="fa fa-info-circle"></i>
                 </button>
-              ` : ""
+              `
+                : ''
             }
           <p>
           <div class="request-date">${formatDate ? formatDate(request.createdAt) : ''}</div>
@@ -53,19 +52,27 @@ export function renderResourceRequests(requests, deps) {
       </td>
       <td>
         <span>${request.duration ?? '-'} day${request.duration > 1 ? 's' : ''}</span>
-        ${request.startTime ? `
+        ${
+          request.startTime
+            ? `
           <button class="duration-info-btn info-btn" title="Allotment Time">
             <i class="fa fa-info-circle"></i>
           </button>
-        ` : ''}
+        `
+            : ''
+        }
       </td>
       <td>
         <span>${request.migId ?? '-'}</span>
-        ${request.migId ? `
+        ${
+          request.migId
+            ? `
           <button class="machine-info-btn info-btn" title="Machine Info" data-request='${JSON.stringify(request)}'>
             <i class="fa fa-info-circle"></i>
           </button>
-        ` : ''}
+        `
+            : ''
+        }
       </td>
         <td>
         <span class="badge ${statusInfo.class}">${statusInfo.text}</span>
@@ -86,15 +93,14 @@ export function renderResourceRequests(requests, deps) {
 
 // Empty + error states
 export function showEmptyState() {
-  document.getElementById("requestsTableBody").innerHTML =
+  document.getElementById('requestsTableBody').innerHTML =
     '<tr><td colspan="6" class="loading">No resource requests found.</td></tr>';
 }
 
 export function showErrorState() {
-  document.getElementById("requestsTableBody").innerHTML =
+  document.getElementById('requestsTableBody').innerHTML =
     '<tr><td colspan="6" class="loading">Error loading requests. Please refresh the page.</td></tr>';
 }
-
 
 // Notification toast
 export function showNotification(message, type) {
@@ -129,8 +135,8 @@ export function populateMachinesSelectUI(machines) {
   const select = document.getElementById('vmMigId');
   if (!select) return;
 
-  const freeMachines = machines.filter(m => {
-    const isAssigned = (typeof m.isAssigned === 'boolean') ? m.isAssigned : !!m.assignedStudent;
+  const freeMachines = machines.filter((m) => {
+    const isAssigned = typeof m.isAssigned === 'boolean' ? m.isAssigned : !!m.assignedStudent;
     return !isAssigned;
   });
 
@@ -141,9 +147,9 @@ export function populateMachinesSelectUI(machines) {
 
   select.innerHTML =
     '<option value="" disabled selected>Select a machine</option>' +
-    freeMachines.map(m =>
-      `<option value="${m.MIGID}">${m.MIGID} (${m.gpuRam}GB GPU)</option>`
-    ).join('');
+    freeMachines
+      .map((m) => `<option value="${m.MIGID}">${m.MIGID} (${m.gpuRam}GB GPU)</option>`)
+      .join('');
 }
 // Button state
 export function setSubmitButtonState(button, isLoading) {
@@ -160,13 +166,11 @@ export function setSubmitButtonState(button, isLoading) {
   }
 }
 
-
 // Field error
 export function setFieldError(id, message) {
   const el = document.getElementById(id);
   if (el) el.textContent = message;
 }
-
 
 // Clipboard copy
 export function copyToClipboard(value) {

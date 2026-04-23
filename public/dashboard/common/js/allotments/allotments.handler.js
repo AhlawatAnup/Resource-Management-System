@@ -1,6 +1,6 @@
-import { AllotmentsUtils } from "./allotments.utils.js";
-import { PageUI } from "./allotments.ui.js";
-import { CalendarUI } from "./allotments-calendar.ui.js";
+import { AllotmentsUtils } from './allotments.utils.js';
+import { PageUI } from './allotments.ui.js';
+import { CalendarUI } from './allotments-calendar.ui.js';
 
 export function createAllotmentsHandler(machineService) {
   return {
@@ -9,7 +9,7 @@ export function createAllotmentsHandler(machineService) {
         const machines = await machineService.getMachines();
         PageUI.renderMachineList(machines, (machine) => this.loadMachineSchedule(machine));
       } catch (error) {
-        console.error("App Init Error:", error);
+        console.error('App Init Error:', error);
       }
     },
 
@@ -19,13 +19,13 @@ export function createAllotmentsHandler(machineService) {
       try {
         const data = await machineService.getAllotments(machine._id);
         const disabledDates = AllotmentsUtils.formatAllotments(data.allotments);
-        CalendarUI.init("#inline-calendar-anchor", disabledDates);
+        CalendarUI.init('#inline-calendar-anchor', disabledDates);
       } catch (error) {
-        console.error("Schedule Load Error:", error);
-        if (typeof Swal !== "undefined") {
-          Swal.fire("Error", "Unable to fetch machine schedule", "error");
+        console.error('Schedule Load Error:', error);
+        if (typeof Swal !== 'undefined') {
+          Swal.fire('Error', 'Unable to fetch machine schedule', 'error');
         }
       }
-    }
+    },
   };
 }

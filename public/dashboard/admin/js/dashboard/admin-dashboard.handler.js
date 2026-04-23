@@ -5,28 +5,17 @@ import {
   verifyTeacherService,
   verifyStudentService,
   unverifyTeacherService,
-  unverifyStudentService
+  unverifyStudentService,
 } from './admin-dashboard.service.js';
 
-import {
-  getEndpoint,
-  extractDataByTypeAndStatus,
-  filterData
-} from './admin-dashboard.utils.js';
+import { getEndpoint, extractDataByTypeAndStatus, filterData } from './admin-dashboard.utils.js';
 
-import {
-  renderPageHeader,
-  renderTableHeaders,
-  renderTable
-} from './admin-dashboard.ui.js';
+import { renderPageHeader, renderTableHeaders, renderTable } from './admin-dashboard.ui.js';
 
 // -----------------------------
 // Load & Render Flow
 // -----------------------------
-export async function loadAndRender({
-  state,
-  logout
-}) {
+export async function loadAndRender({ state, logout }) {
   renderPageHeader(state.currentType, state.currentStatus);
   renderTableHeaders(state.currentType, state.currentStatus);
 
@@ -35,16 +24,12 @@ export async function loadAndRender({
   const data = await fetchDashboardData(endpoint, { logout });
   if (!data) return;
 
-  state.currentData = extractDataByTypeAndStatus(
-    data,
-    state.currentType,
-    state.currentStatus
-  );
+  state.currentData = extractDataByTypeAndStatus(data, state.currentType, state.currentStatus);
 
   renderTable({
     data: state.currentData,
     currentType: state.currentType,
-    currentStatus: state.currentStatus
+    currentStatus: state.currentStatus,
   });
 }
 
@@ -55,9 +40,9 @@ export function setupNavigation({ state, reload }) {
   const typeButtons = document.querySelectorAll('.nav-btn[data-type]');
   const statusButtons = document.querySelectorAll('.status-btn[data-status]');
 
-  typeButtons.forEach(btn => {
+  typeButtons.forEach((btn) => {
     btn.addEventListener('click', () => {
-      typeButtons.forEach(b => b.classList.remove('active'));
+      typeButtons.forEach((b) => b.classList.remove('active'));
       btn.classList.add('active');
 
       state.currentType = btn.getAttribute('data-type');
@@ -65,9 +50,9 @@ export function setupNavigation({ state, reload }) {
     });
   });
 
-  statusButtons.forEach(btn => {
+  statusButtons.forEach((btn) => {
     btn.addEventListener('click', () => {
-      statusButtons.forEach(b => b.classList.remove('active'));
+      statusButtons.forEach((b) => b.classList.remove('active'));
       btn.classList.add('active');
 
       state.currentStatus = btn.getAttribute('data-status');
@@ -118,16 +103,12 @@ export function setupActionHandlers({ reload }) {
 // -----------------------------
 export function setupSearch({ state }) {
   document.getElementById('searchInput').addEventListener('input', (e) => {
-    const filtered = filterData(
-      state.currentData,
-      state.currentType,
-      e.target.value
-    );
+    const filtered = filterData(state.currentData, state.currentType, e.target.value);
 
     renderTable({
       data: filtered,
       currentType: state.currentType,
-      currentStatus: state.currentStatus
+      currentStatus: state.currentStatus,
     });
   });
 }
@@ -143,7 +124,7 @@ async function handleVerifyTeacher(id, isVerified, reload) {
     text: `Do you want to ${action} this teacher profile?`,
     icon: 'warning',
     showCancelButton: true,
-    confirmButtonText: `Yes, ${action}`
+    confirmButtonText: `Yes, ${action}`,
   });
 
   if (!result.isConfirmed) return;
@@ -157,7 +138,7 @@ async function handleVerifyTeacher(id, isVerified, reload) {
       Swal.fire({
         title: 'Success!',
         text: `Teacher ${action}d successfully!`,
-        icon: 'success'
+        icon: 'success',
       });
     } else {
       Swal.fire('Error', 'Failed to update teacher', 'error');
@@ -184,7 +165,7 @@ async function handleVerifyStudent(id, isVerified, reload) {
     confirmButtonColor: isVerified ? '#3085d6' : '#d33',
     cancelButtonColor: '#6c757d',
     confirmButtonText: isVerified ? 'Yes, approve' : 'Reject & Delete',
-    cancelButtonText: 'Cancel'
+    cancelButtonText: 'Cancel',
   });
   if (!result.isConfirmed) return;
 
@@ -211,9 +192,9 @@ async function handleVerifyStudent(id, isVerified, reload) {
 async function handleUnverifyStudent(id, reload) {
   const result = await Swal.fire({
     title: 'Are you sure?',
-    text: "Unverifying this student will permanently delete all their resource requests and machine allotments. Do you want to continue?",
+    text: 'Unverifying this student will permanently delete all their resource requests and machine allotments. Do you want to continue?',
     icon: 'warning',
-    showCancelButton: true
+    showCancelButton: true,
   });
 
   if (!result.isConfirmed) return;
@@ -244,7 +225,7 @@ async function handleUnverifyTeacher(id, reload) {
     title: 'Are you sure?',
     text: 'Unverify this teacher and all its students?',
     icon: 'warning',
-    showCancelButton: true
+    showCancelButton: true,
   });
 
   if (!result.isConfirmed) return;
@@ -261,14 +242,12 @@ async function handleUnverifyTeacher(id, reload) {
       const err = await response.json();
 
       if (err.studentsWithResources?.length) {
-        const list = err.studentsWithResources
-          .map(s => `• ${s.rollNo} - ${s.name}`)
-          .join('\n');
+        const list = err.studentsWithResources.map((s) => `• ${s.rollNo} - ${s.name}`).join('\n');
 
         Swal.fire({
           title: 'Cannot Unverify',
           html: `<pre>${list}</pre>`,
-          icon: 'error'
+          icon: 'error',
         });
       } else {
         Swal.fire('Error', err.error || 'Failed', 'error');

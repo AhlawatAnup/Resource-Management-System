@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <!-- importing darkmode files on top to avoid delay -->
     <script src="https://cdn.jsdelivr.net/npm/darkreader/darkreader.min.js"></script>
     <script src="/dashboard/common/js/darkmode/darkmode-init.js"></script>
-    <link rel="stylesheet" href="/dashboard/common/style/darkmode/darkmode-button.css">
+    <link rel="stylesheet" href="/dashboard/common/style/darkmode/darkmode-button.css" />
 
     <!-- stats CDN imports -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -17,16 +17,12 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
       rel="stylesheet"
     />
-    <script
-      src="https://kit.fontawesome.com/e05e3e1522.js"
-      crossorigin="anonymous"
-    ></script>
+    <script src="https://kit.fontawesome.com/e05e3e1522.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <!-- Toastify CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" />
-
   </head>
   <link rel="stylesheet" href="/dashboard/admin/style/admin.dashboard.css" />
   <link rel="stylesheet" href="/dashboard/admin/style/admin.table.css" />
@@ -163,7 +159,10 @@
         <input id="editDuration" readonly />
 
         <label>Extend Duration (in days)</label>
-        <input id="editExtendDuration" placeholder="Enter number of days to extend the allotment (e.g., 2)" />
+        <input
+          id="editExtendDuration"
+          placeholder="Enter number of days to extend the allotment (e.g., 2)"
+        />
 
         <div class="modal-actions">
           <button id="editSubmitBtn">Save</button>
@@ -175,7 +174,6 @@
     <!-- stats report modal -->
     <div id="reportModal" class="report-modal hidden">
       <div class="report-content">
-        
         <div class="report-header">
           <h2>Machine Usage Report</h2>
           <button id="closeReportBtn">&times;</button>
@@ -213,17 +211,19 @@
             <canvas id="reportChart"></canvas>
           </div>
         </div>
-
       </div>
     </div>
 
     <!-- <script type="module" src="/dashboard/admin/js/admin-view-requests.js"></script> -->
-    <script type="module" src="/dashboard/admin/js/view-requests/admin-view-request.main.js"></script>
+    <script
+      type="module"
+      src="/dashboard/admin/js/view-requests/admin-view-request.main.js"
+    ></script>
     <!-- Toastify JS -->
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
     <script src="https://unpkg.com/@popperjs/core@2"></script>
     <script src="https://unpkg.com/tippy.js@6"></script>
-    <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css" />
   </body>
 </html>

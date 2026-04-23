@@ -1,9 +1,9 @@
-const emailService = require("../../utils/email/emails.service");
+const emailService = require('../../utils/email/emails.service');
 const Student = require('../../database/studentModel.js');
 const Teacher = require('../../database/teacherModel.js');
 const { notifyStudent } = require('../../utils/web-push-notifications/notifyStudent.js');
 const { notifyTeacher } = require('../../utils/web-push-notifications/notifyTeacher.js');
-const { generateUndertakingPDF } = require("../email/common/undertakingPdfGenerator.js");
+const { generateUndertakingPDF } = require('../email/common/undertakingPdfGenerator.js');
 
 function handleSendStudentProfileUnverifiedByAdminEmail(updatedStudent, studentId) {
   if (!updatedStudent) return;
@@ -11,19 +11,19 @@ function handleSendStudentProfileUnverifiedByAdminEmail(updatedStudent, studentI
   try {
     const emailResult = emailService.sendStudentProfileUnverifiedByAdminEmail(
       updatedStudent.email,
-      updatedStudent.name
+      updatedStudent.name,
     );
   } catch (error) {
-    console.error("Error sending student unverification email:", error);
+    console.error('Error sending student unverification email:', error);
   }
 
-try {
+  try {
     notifyStudent(studentId, {
       title: 'Student Profile unverified by Admin',
-      body: 'Your profile has been unverified by admin.'
+      body: 'Your profile has been unverified by admin.',
     });
   } catch (err) {
-    console.error("Error sending student web-push notification:", err);
+    console.error('Error sending student web-push notification:', err);
   }
 }
 
@@ -37,11 +37,11 @@ async function handleSendStudentProfileRejectedByTeacherEmail(student, teacher) 
     const emailResult = await emailService.sendStudentProfileRejectedByTeacherEmail(
       student.email,
       student.name,
-      teacherName
+      teacherName,
     );
-    console.log("Email sent for student profile rejected by teacher:", emailResult);
+    console.log('Email sent for student profile rejected by teacher:', emailResult);
   } catch (error) {
-    console.error("Error sending rejection email:", error);
+    console.error('Error sending rejection email:', error);
   }
 }
 
@@ -51,12 +51,12 @@ async function handleSendStudentProfileRejectedByAdminEmail(student) {
   try {
     const emailResult = await emailService.sendStudentProfileRejectedByAdminEmail(
       student.email,
-      student.name
+      student.name,
     );
 
-    console.log("Email sent for student profile rejected by admin:", emailResult);
+    console.log('Email sent for student profile rejected by admin:', emailResult);
   } catch (error) {
-    console.error("Error sending admin rejection email:", error);
+    console.error('Error sending admin rejection email:', error);
   }
 }
 
@@ -66,15 +66,12 @@ async function handleSendStudentProfileVerifiedByAdminEmail(student) {
   try {
     const emailResult = await emailService.sendStudentProfileVerifiedByAdminEmail(
       student.email,
-      student.name
+      student.name,
     );
 
-    console.log(
-      "Email sent for student profile verified by admin:",
-      emailResult
-    );
+    console.log('Email sent for student profile verified by admin:', emailResult);
   } catch (error) {
-    console.error("Error sending student profile verified by admin email:", error);
+    console.error('Error sending student profile verified by admin email:', error);
   }
 }
 
@@ -88,13 +85,12 @@ async function handleSendAdminStudentVerificationPendingEmail(student, teacher) 
       name,
       email,
       rollNo,
-      teacher.name
+      teacher.name,
     );
 
-    console.log("Admin notified of student verification pending:", result);
-
+    console.log('Admin notified of student verification pending:', result);
   } catch (error) {
-    console.error("Error sending admin verification pending email:", error);
+    console.error('Error sending admin verification pending email:', error);
   }
 }
 
@@ -104,7 +100,7 @@ async function handleSendResourceRequestVerifiedEmail({
   machine,
   startTime,
   endTime,
-  duration
+  duration,
 }) {
   const studentEmail = student?.email;
   const studentName = student?.name;
@@ -126,7 +122,7 @@ async function handleSendResourceRequestVerifiedEmail({
       rollNo: studentRollNo,
       branch: studentBranch,
       instituteName: studentInstituteName,
-      instituteAddress: studentInstituteAddress
+      instituteAddress: studentInstituteAddress,
     };
 
     const pdfBuffer = await generateUndertakingPDF(studentData, purpose);
@@ -141,32 +137,35 @@ async function handleSendResourceRequestVerifiedEmail({
       duration,
       attachments: [
         {
-          filename: "undertaking.pdf",
+          filename: 'undertaking.pdf',
           content: pdfBuffer,
-          contentType: "application/pdf"
-        }
-      ]
+          contentType: 'application/pdf',
+        },
+      ],
     });
 
     return result;
-
   } catch (error) {
-    console.error("Error sending verified email:", error);
+    console.error('Error sending verified email:', error);
   }
 }
 
 // Handler for Rejected Email
-async function handleSendResourceRequestRejectedEmail(studentEmail, studentName, requestTitle, remarks = "") {
+async function handleSendResourceRequestRejectedEmail(
+  studentEmail,
+  studentName,
+  requestTitle,
+  remarks = '',
+) {
   try {
     const result = await emailService.sendResourceRequestRejectedEmail({
       studentEmail,
       studentName,
       requestTitle,
-      remarks
+      remarks,
     });
-
   } catch (error) {
-    console.error("Error sending rejected email:", error);
+    console.error('Error sending rejected email:', error);
   }
 }
 
@@ -175,27 +174,26 @@ function handleSendTeacherProfileUnverifiedByAdminEmail(updatedTeacher, teacherI
 
   try {
     // 1️⃣ Send teacher unverification email
-    emailService.sendTeacherProfileUnverifiedByAdminEmail(
-      updatedTeacher.email,
-      updatedTeacher.name
-    ).then(result => {
-      console.log(`Teacher unverification email sent to ${updatedTeacher.name}:`, result);
-    }).catch(error => {
-      console.error("Error sending teacher unverification email:", error);
-    });
+    emailService
+      .sendTeacherProfileUnverifiedByAdminEmail(updatedTeacher.email, updatedTeacher.name)
+      .then((result) => {
+        console.log(`Teacher unverification email sent to ${updatedTeacher.name}:`, result);
+      })
+      .catch((error) => {
+        console.error('Error sending teacher unverification email:', error);
+      });
 
     // 2️⃣ Send web-push notification to teacher
     try {
       notifyTeacher(teacherId, {
         title: 'Profile Unverified by Admin',
-        body: 'Your profile has been unverified by the admin.'
+        body: 'Your profile has been unverified by the admin.',
       });
     } catch (err) {
-      console.error("Error sending teacher web-push notification:", err);
+      console.error('Error sending teacher web-push notification:', err);
     }
-
   } catch (err) {
-    console.error("Error in handleSendTeacherProfileUnverifiedByAdminEmail:", err);
+    console.error('Error in handleSendTeacherProfileUnverifiedByAdminEmail:', err);
   }
 }
 
@@ -209,5 +207,5 @@ module.exports = {
   handleSendAdminStudentVerificationPendingEmail,
   handleSendResourceRequestVerifiedEmail,
   handleSendResourceRequestRejectedEmail,
-  handleSendTeacherProfileUnverifiedByAdminEmail
+  handleSendTeacherProfileUnverifiedByAdminEmail,
 };

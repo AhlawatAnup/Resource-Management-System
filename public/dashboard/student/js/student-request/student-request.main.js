@@ -5,6 +5,6 @@ import { setupDarkMode } from '../../../common/js/darkmode/darkmode.js';
 
 // App initialization
 document.addEventListener('DOMContentLoaded', () => {
-    setupDarkMode();
-    handleLoadRequestResources();
+  setupDarkMode();
+  handleLoadRequestResources();
 });

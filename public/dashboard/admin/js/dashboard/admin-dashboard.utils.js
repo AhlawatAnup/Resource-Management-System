@@ -28,7 +28,7 @@ export function extractDataByTypeAndStatus(data, currentType, currentStatus) {
       return data.teachers || [];
     }
     if (currentStatus === 'verified') {
-      return (data.teachers || []).filter(t => t.is_verified);
+      return (data.teachers || []).filter((t) => t.is_verified);
     }
     if (currentStatus === 'rejected') {
       return data.teachers || [];
@@ -41,7 +41,7 @@ export function extractDataByTypeAndStatus(data, currentType, currentStatus) {
       return data.students || [];
     }
     if (currentStatus === 'verified') {
-      return (data.students || []).filter(s => s.is_verified);
+      return (data.students || []).filter((s) => s.is_verified);
     }
     if (currentStatus === 'rejected') {
       return data.students || [];
@@ -73,7 +73,7 @@ export function getTableHeaders(currentType, currentStatus) {
       'Teacher',
       'Institute',
       'Status',
-      'Actions'
+      'Actions',
     ];
   }
 }
@@ -104,7 +104,7 @@ export function getPageHeaderContent(currentType, currentStatus) {
   return {
     title: `${statusText} ${typeText}`,
     subtitle: subtitleText,
-    countLabel: statusText
+    countLabel: statusText,
   };
 }
 
@@ -168,11 +168,15 @@ export function getStudentStatusShort(student) {
 export function getTeacherStatus(teacher) {
   const statusClass = teacher.is_verified
     ? 'verified'
-    : (teacher.verification_completed ? 'rejected' : 'pending');
+    : teacher.verification_completed
+      ? 'rejected'
+      : 'pending';
 
   const statusText = teacher.is_verified
     ? 'Verified'
-    : (teacher.verification_completed ? 'Rejected' : 'Pending');
+    : teacher.verification_completed
+      ? 'Rejected'
+      : 'Pending';
 
   return { statusClass, statusText };
 }
@@ -184,17 +188,19 @@ export function filterData(data, currentType, searchTerm) {
   const term = searchTerm.toLowerCase();
 
   if (currentType === 'teacher') {
-    return data.filter(item =>
-      item.name?.toLowerCase().includes(term) ||
-      item.email?.toLowerCase().includes(term) ||
-      item.branch?.toLowerCase().includes(term)
+    return data.filter(
+      (item) =>
+        item.name?.toLowerCase().includes(term) ||
+        item.email?.toLowerCase().includes(term) ||
+        item.branch?.toLowerCase().includes(term),
     );
   }
 
-  return data.filter(item =>
-    item.name?.toLowerCase().includes(term) ||
-    item.email?.toLowerCase().includes(term) ||
-    item.rollNo?.toLowerCase().includes(term) ||
-    item.teacher?.name?.toLowerCase().includes(term)
+  return data.filter(
+    (item) =>
+      item.name?.toLowerCase().includes(term) ||
+      item.email?.toLowerCase().includes(term) ||
+      item.rollNo?.toLowerCase().includes(term) ||
+      item.teacher?.name?.toLowerCase().includes(term),
   );
 }

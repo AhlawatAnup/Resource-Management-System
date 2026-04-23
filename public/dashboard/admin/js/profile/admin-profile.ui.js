@@ -1,11 +1,9 @@
 // ui/profileUI.js
-function $(id) { return document.getElementById(id); }
+function $(id) {
+  return document.getElementById(id);
+}
 
-export function initProfileUI({
-  onEmailSubmit,
-  onUsernameSubmit,
-  onPasswordSubmit
-}) {
+export function initProfileUI({ onEmailSubmit, onUsernameSubmit, onPasswordSubmit }) {
   // ------------------ EMAIL ------------------
   const emailModal = $('edit-email-modal');
   const emailOpenBtn = $('edit-email-btn');
@@ -32,7 +30,7 @@ export function initProfileUI({
       displayEl: emailDisplay,
       errorEl: emailErrorDiv,
       modalEl: emailModal,
-      submitBtn: emailSubmitBtn
+      submitBtn: emailSubmitBtn,
     });
   });
 
@@ -62,7 +60,7 @@ export function initProfileUI({
       displayEl: usernameDisplay,
       errorEl: usernameErrorDiv,
       modalEl: usernameModal,
-      submitBtn: usernameSubmitBtn
+      submitBtn: usernameSubmitBtn,
     });
   });
 
@@ -89,21 +87,17 @@ export function initProfileUI({
 
   passwordSubmitBtn.addEventListener('click', (e) => {
     e.preventDefault();
-    onPasswordSubmit?.(
-      passwordNewInput.value.trim(),
-      passwordConfirmInput.value.trim(),
-      {
-        errorEl: passwordErrorDiv,
-        modalEl: passwordModal,
-        submitBtn: passwordSubmitBtn
-      }
-    );
+    onPasswordSubmit?.(passwordNewInput.value.trim(), passwordConfirmInput.value.trim(), {
+      errorEl: passwordErrorDiv,
+      modalEl: passwordModal,
+      submitBtn: passwordSubmitBtn,
+    });
   });
 
   // Return helpers if you want
   return {
     emailDisplay,
-    usernameDisplay
+    usernameDisplay,
   };
 }
 

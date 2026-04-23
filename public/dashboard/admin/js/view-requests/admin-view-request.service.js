@@ -1,9 +1,9 @@
 // Fetch all resource requests (admin)
 export async function fetchAdminResourceRequests() {
-  const response = await fetch("/dashboard/admin/resource-requests", {
-    method: "GET",
+  const response = await fetch('/dashboard/admin/resource-requests', {
+    method: 'GET',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
   });
 
@@ -15,24 +15,23 @@ export async function fetchAdminResourceRequests() {
 
   return {
     error: false,
-    data
+    data,
   };
 }
 
-
 // Verify (approve/decline) request with optional credentials
-export async function verifyAdminRequest(requestId, isVerified, remarks = "") {
+export async function verifyAdminRequest(requestId, isVerified, remarks = '') {
   const requestBody = {
     is_verified: isVerified,
-    remarks: remarks
+    remarks: remarks,
   };
 
   const response = await fetch(`/dashboard/admin/verify_request/${requestId}`, {
     method: 'PUT',
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
     },
-    body: JSON.stringify(requestBody)
+    body: JSON.stringify(requestBody),
   });
 
   if (!response.ok) {
@@ -57,7 +56,7 @@ export async function verifyAdminRequest(requestId, isVerified, remarks = "") {
 // Fetch available machines
 export async function fetchAvailableMachines() {
   const response = await fetch('/dashboard/admin/machines', {
-    credentials: 'include'
+    credentials: 'include',
   });
 
   if (!response.ok) {
@@ -72,7 +71,7 @@ export async function fetchAvailableMachines() {
 export async function revokeStudentRequest(requestId) {
   const res = await fetch(`/dashboard/admin/revoke/${requestId}`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' }
+    headers: { 'Content-Type': 'application/json' },
   });
   if (!res.ok) {
     const errText = await res.text();
@@ -85,7 +84,7 @@ export async function extendStudentRequest(requestId, extraDuration) {
   const res = await fetch(`/dashboard/admin/edit-resourceRequest/${requestId}`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ extraDuration })
+    body: JSON.stringify({ extraDuration }),
   });
 
   const data = await res.json(); // parse JSON response

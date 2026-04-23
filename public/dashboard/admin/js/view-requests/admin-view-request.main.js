@@ -8,8 +8,19 @@ import {
   renderStatsChart,
   renderReportDetails,
 } from './admin-view-request.handler.js';
-import { verifyAdminRequest, revokeStudentRequest, extendStudentRequest } from './admin-view-request.service.js';
-import { generatePassword, confirmAction, showToast , getEditDurationInput, closeEditModal, getRejectionRemarks} from './admin-view-request.utils.js';
+import {
+  verifyAdminRequest,
+  revokeStudentRequest,
+  extendStudentRequest,
+} from './admin-view-request.service.js';
+import {
+  generatePassword,
+  confirmAction,
+  showToast,
+  getEditDurationInput,
+  closeEditModal,
+  getRejectionRemarks,
+} from './admin-view-request.utils.js';
 import { setupDarkMode } from '../../../common/js/darkmode/darkmode.js';
 import { openEditModal } from './admin-view-request.ui.js';
 
@@ -18,12 +29,12 @@ document.addEventListener('DOMContentLoaded', () => {
   loadRequestsHandler();
 
   // search
-  document.getElementById("searchInput")?.addEventListener("input", (e) => {
+  document.getElementById('searchInput')?.addEventListener('input', (e) => {
     filterHandler(e.target.value);
   });
 
   // table actions
-  document.getElementById("requestsTableBody")?.addEventListener("click", async (e) => {
+  document.getElementById('requestsTableBody')?.addEventListener('click', async (e) => {
     const approveDeclineBtn = e.target.closest('.approve-btn, .decline-btn');
     const revokeBtn = e.target.closest('.revoke-btn');
     const editBtn = e.target.closest('.edit-btn');
@@ -36,9 +47,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!id || !action) return;
 
       try {
-        let remarks = "";
+        let remarks = '';
 
-        if (action === "decline") {
+        if (action === 'decline') {
           const result = await getRejectionRemarks();
           if (result === null) return;
           remarks = result;
@@ -80,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!id) return;
 
       const request = getRequestById(id);
-      if (!request) return; 
+      if (!request) return;
 
       openEditModal(request);
 
@@ -110,17 +121,14 @@ document.addEventListener('DOMContentLoaded', () => {
       const request = getRequestById(requestId);
 
       try {
-        showToast("Generating report...", "success");
+        showToast('Generating report...', 'success');
 
-        const res = await fetch(
-          `/dashboard/admin/getStatsByResReqId/${requestId}`,
-          {
-            method: "GET",
-          },
-        );
+        const res = await fetch(`/dashboard/admin/getStatsByResReqId/${requestId}`, {
+          method: 'GET',
+        });
 
         if (!res.ok) {
-          throw new Error("Failed to fetch report data");
+          throw new Error('Failed to fetch report data');
         }
 
         const data = await res.json();
@@ -129,16 +137,15 @@ document.addEventListener('DOMContentLoaded', () => {
         openReportModal();
 
         renderStatsChart(data);
-
       } catch (err) {
-        showToast(err.message || "Failed to generate report", "error");
+        showToast(err.message || 'Failed to generate report', 'error');
       }
 
       return;
     }
   });
 
-  document.getElementById("closeReportBtn")?.addEventListener("click", () => {
+  document.getElementById('closeReportBtn')?.addEventListener('click', () => {
     closeReportModal();
   });
 
@@ -155,5 +162,4 @@ document.addEventListener('DOMContentLoaded', () => {
     const pwdEl = document.getElementById('vmPassword');
     if (pwdEl) pwdEl.value = pwd;
   });
-
 });

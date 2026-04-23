@@ -6,14 +6,10 @@ import {
   getEmptyMessage,
   getStudentStatus,
   getStudentStatusShort,
-  getTeacherStatus
+  getTeacherStatus,
 } from './admin-dashboard.utils.js';
 
-import {
-  getInitials,
-  getRandomNamedColor,
-  formatDate
-} from '../../../common/js/commons.js';
+import { getInitials, getRandomNamedColor, formatDate } from '../../../common/js/commons.js';
 
 // -----------------------------
 // Header UI
@@ -37,7 +33,7 @@ export function renderTableHeaders(currentType, currentStatus) {
   const headersContainer = document.getElementById('table-headers');
   const headers = getTableHeaders(currentType, currentStatus);
 
-  headersContainer.innerHTML = headers.map(h => `<th>${h}</th>`).join('');
+  headersContainer.innerHTML = headers.map((h) => `<th>${h}</th>`).join('');
 }
 
 // -----------------------------
@@ -53,12 +49,7 @@ export function renderEmptyState(currentType, currentStatus) {
 // -----------------------------
 // Main Table Renderer
 // -----------------------------
-export function renderTable({
-  data,
-  currentType,
-  currentStatus,
-  actions
-}) {
+export function renderTable({ data, currentType, currentStatus, actions }) {
   const tbody = document.getElementById('dataTableBody');
   const countElement = document.getElementById('current-count');
 
@@ -71,7 +62,7 @@ export function renderTable({
 
   tbody.innerHTML = '';
 
-  data.forEach(item => {
+  data.forEach((item) => {
     const tr = document.createElement('tr');
 
     if (currentType === 'teacher') {
