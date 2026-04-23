@@ -36,7 +36,7 @@ thead th:hover {
 }
 
 thead th.sortable::after {
-  content: "↕";
+  content: '↕';
   position: absolute;
   right: 8px;
   color: #cbd5e1;
@@ -81,12 +81,24 @@ tbody td {
   font-size: 13px;
 }
 
-.avatar.blue { background: #3b82f6; }
-.avatar.green { background: #10b981; }
-.avatar.purple { background: #8b5cf6; }
-.avatar.pink { background: #ec4899; }
-.avatar.orange { background: #f59e0b; }
-.avatar.red { background: #ef4444; }
+.avatar.blue {
+  background: #3b82f6;
+}
+.avatar.green {
+  background: #10b981;
+}
+.avatar.purple {
+  background: #8b5cf6;
+}
+.avatar.pink {
+  background: #ec4899;
+}
+.avatar.orange {
+  background: #f59e0b;
+}
+.avatar.red {
+  background: #ef4444;
+}
 
 .contact-details h4 {
   margin: 0 0 1px 0;
@@ -241,19 +253,19 @@ tbody td {
 
 /* Fallback for when icons don't load */
 .icon-btn.approve-btn:not(:has(i))::after {
-  content: "✓";
+  content: '✓';
   font-size: 14px;
   font-weight: bold;
 }
 
 .icon-btn.decline-btn:not(:has(i))::after {
-  content: "✕";
+  content: '✕';
   font-size: 14px;
   font-weight: bold;
 }
 
 .icon-btn.edit-btn:not(:has(i))::after {
-  content: "✎";
+  content: '✎';
   font-size: 14px;
   font-weight: bold;
 }
@@ -263,20 +275,20 @@ tbody td {
   .table-container {
     overflow-x: auto;
   }
-  
+
   table {
     min-width: 600px;
   }
-  
+
   thead th,
   tbody td {
     padding: 12px 16px;
   }
-  
+
   .contact-info {
     gap: 8px;
   }
-  
+
   .avatar {
     width: 32px;
     height: 32px;
@@ -361,12 +373,12 @@ thead th.sortable:hover {
 }
 
 thead th.sort-asc::after {
-  content: "↑";
+  content: '↑';
   color: #4f46e5;
 }
 
 thead th.sort-desc::after {
-  content: "↓";
+  content: '↓';
   color: #4f46e5;
 }
 
@@ -376,7 +388,7 @@ thead th.sort-desc::after {
     flex-direction: column;
     gap: 4px;
   }
-  
+
   .btn {
     width: 100%;
     justify-content: center;
@@ -439,7 +451,6 @@ thead th.sort-desc::after {
   font-size: 12px;
   color: #374151;
 }
-
 
 .field-label {
   color: #6b7280;

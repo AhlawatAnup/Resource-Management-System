@@ -1,24 +1,21 @@
-const MachineAllotment = require("../database/machineAllotmentModel");
-const ResourceRequest = require("../database/resourceRequestModel"); // 👈 ADD THIS
-const { saveAllotmentHistory } = require("../utils/machineHistory/historyHelper.js");
-const { stopUser, deleteUser, startUser } = require("../utils/dockerAPIs/docker.service.js");
+const MachineAllotment = require('../database/machineAllotmentModel');
+const ResourceRequest = require('../database/resourceRequestModel'); // 👈 ADD THIS
+const { saveAllotmentHistory } = require('../utils/machineHistory/historyHelper.js');
+const { stopUser, deleteUser, startUser } = require('../utils/dockerAPIs/docker.service.js');
 
 async function markExpiredAllotmentsHistoryAndCleanupDocker() {
   const now = new Date();
-  console.log("~~~~~hit: markExpiredAllotmentsHistoryAndCleanupDocker");
+  console.log('~~~~~hit: markExpiredAllotmentsHistoryAndCleanupDocker');
   try {
     const allotmentsToProcess = await MachineAllotment.find({
-      $or: [
-        { isActive: false },
-        { isActive: true, endTime: { $lt: now } }
-      ]
+      $or: [{ isActive: false }, { isActive: true, endTime: { $lt: now } }],
     })
-    .setOptions({ includeInactive: true })
-    .populate({
-      path: "machineId",
-      options: { includeDeleted: true, includeUnavailable: true }
-    });
-    
+      .setOptions({ includeInactive: true })
+      .populate({
+        path: 'machineId',
+        options: { includeDeleted: true, includeUnavailable: true },
+      });
+
     if (!allotmentsToProcess.length) {
       console.log(`[${new Date().toISOString()}] No allotments to process`);
       return;
@@ -27,7 +24,7 @@ async function markExpiredAllotmentsHistoryAndCleanupDocker() {
     for (const allotment of allotmentsToProcess) {
       const machine = allotment.machineId;
 
-      const shouldSkipDockerCleanup = allotment.isActive === false && allotment.startTime > now;  //i.e. revoked by admin but the allotment hasn't started yet
+      const shouldSkipDockerCleanup = allotment.isActive === false && allotment.startTime > now; //i.e. revoked by admin but the allotment hasn't started yet
 
       if (shouldSkipDockerCleanup) {
         allotment.isDeleted = true;
@@ -38,18 +35,20 @@ async function markExpiredAllotmentsHistoryAndCleanupDocker() {
           await ResourceRequest.findByIdAndUpdate(
             allotment.resourceRequestId,
             { isActive: false },
-            { new: true }
+            { new: true },
           );
         }
 
         console.log(
-          `[${new Date().toISOString()}] Skipped Docker cleanup for future inactive (revoked by admin) allotment ${allotment._id} and marked it deleted`
+          `[${new Date().toISOString()}] Skipped Docker cleanup for future inactive (revoked by admin) allotment ${allotment._id} and marked it deleted`,
         );
         continue;
       }
 
       if (!machine || !machine.user || !machine.ip) {
-        console.warn(`[${new Date().toISOString()}] Skipping allotment ${allotment._id} - missing machine/user/ip`);
+        console.warn(
+          `[${new Date().toISOString()}] Skipping allotment ${allotment._id} - missing machine/user/ip`,
+        );
         continue;
       }
 
@@ -78,21 +77,25 @@ async function markExpiredAllotmentsHistoryAndCleanupDocker() {
           await ResourceRequest.findByIdAndUpdate(
             allotment.resourceRequestId,
             { isActive: false },
-            { new: true }
+            { new: true },
           );
         }
 
         console.log(`[${new Date().toISOString()}] Allotment ${allotment._id} marked as deleted`);
-
       } catch (err) {
-        console.error(`[${new Date().toISOString()}] Error processing allotment ${allotment._id}:`, err.message);
+        console.error(
+          `[${new Date().toISOString()}] Error processing allotment ${allotment._id}:`,
+          err.message,
+        );
       }
     }
 
     console.log(`[${new Date().toISOString()}] Finished processing all expired allotments`);
-
   } catch (err) {
-    console.error(`[${new Date().toISOString()}] Error fetching expired/inactive allotments:`, err.message);
+    console.error(
+      `[${new Date().toISOString()}] Error fetching expired/inactive allotments:`,
+      err.message,
+    );
   }
 }
 

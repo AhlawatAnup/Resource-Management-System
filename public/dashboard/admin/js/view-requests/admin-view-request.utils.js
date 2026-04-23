@@ -1,22 +1,22 @@
 // Get request status (ADMIN version - includes teacher + admin states)
 export function getRequestStatus(request) {
   // 0. Check if expired (isActive: false)
-  
+
   // 2. Any rejection (highest priority after final)
   if (request.teacher_action && !request.teacher_verified) {
-    return { text: "Declined by Teacher", class: "declined" };
+    return { text: 'Declined by Teacher', class: 'declined' };
   }
-  
+
   if (request.admin_action && !request.admin_verified) {
-    return { text: "Declined by Admin", class: "declined" };
+    return { text: 'Declined by Admin', class: 'declined' };
   }
   // 1. FINAL → Fully verified
-  if (request.is_verified && request.isActive==true) {
-    return { text: "Verified", class: "verified" };
-  }  
-  
+  if (request.is_verified && request.isActive == true) {
+    return { text: 'Verified', class: 'verified' };
+  }
+
   if (request.isActive === false) {
-    return { text: "Expired", class: "expired" };
+    return { text: 'Expired', class: 'expired' };
   }
   // 3. Any approval
   // if (request.teacher_action && request.teacher_verified) {
@@ -28,9 +28,8 @@ export function getRequestStatus(request) {
   // }
 
   // 4. Default → Pending
-  return { text: "Pending Teacher", class: "pending-teacher" };
+  return { text: 'Pending Teacher', class: 'pending-teacher' };
 }
-
 
 // Filter requests (pure function)
 export function filterRequestsList(requests, searchTerm) {
@@ -40,15 +39,15 @@ export function filterRequestsList(requests, searchTerm) {
 
   const term = searchTerm.toLowerCase();
 
-  return requests.filter((request) =>
-    request.studentName?.toLowerCase().includes(term) ||
-    request.rollNo?.toLowerCase().includes(term) ||
-    request.teacherName?.toLowerCase().includes(term) ||
-    request.title?.toLowerCase().includes(term) ||
-    request.purpose?.toLowerCase().includes(term)
+  return requests.filter(
+    (request) =>
+      request.studentName?.toLowerCase().includes(term) ||
+      request.rollNo?.toLowerCase().includes(term) ||
+      request.teacherName?.toLowerCase().includes(term) ||
+      request.title?.toLowerCase().includes(term) ||
+      request.purpose?.toLowerCase().includes(term),
   );
 }
-
 
 // Merge updated request safely (preserve missing nested data)
 export function mergeUpdatedRequest(oldRequest, updatedRequest) {
@@ -64,7 +63,6 @@ export function mergeUpdatedRequest(oldRequest, updatedRequest) {
 
   return merged;
 }
-
 
 // Generate a secure random password
 export function generatePassword(length = 12) {
@@ -84,22 +82,22 @@ export async function confirmAction(action) {
     confirmButtonText: 'Yes',
     cancelButtonText: 'No',
     focusCancel: true,
-    reverseButtons: true
+    reverseButtons: true,
   });
   return result.isConfirmed;
 }
 
 export async function getRejectionRemarks() {
   const { isConfirmed, value } = await Swal.fire({
-    title: "Reject Request",
-    input: "textarea",
-    inputLabel: "Enter remarks (optional)",
-    inputPlaceholder: "Write reason for rejection...",
+    title: 'Reject Request',
+    input: 'textarea',
+    inputLabel: 'Enter remarks (optional)',
+    inputPlaceholder: 'Write reason for rejection...',
     showCancelButton: true,
-    confirmButtonText: "Reject",
+    confirmButtonText: 'Reject',
   });
 
-  return isConfirmed ? (value || "") : null;
+  return isConfirmed ? value || '' : null;
 }
 
 export function showToast(message, type = 'success') {
@@ -107,10 +105,10 @@ export function showToast(message, type = 'success') {
   Toastify({
     text: message,
     duration: type === 'success' ? 2000 : 2500,
-    gravity: "top",
-    position: "right",
+    gravity: 'top',
+    position: 'right',
     backgroundColor: bgColor,
-    close: true
+    close: true,
   }).showToast();
 }
 

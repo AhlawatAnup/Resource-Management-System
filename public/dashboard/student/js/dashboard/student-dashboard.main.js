@@ -3,7 +3,7 @@ import { registerServiceWorkerAndSubscribe } from '../../../common/js/notificati
 import { setupDarkMode } from '../../../common/js/darkmode/darkmode.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-    setupDarkMode();
-    loadStudentDetails();
-    registerServiceWorkerAndSubscribe();
+  setupDarkMode();
+  loadStudentDetails();
+  registerServiceWorkerAndSubscribe();
 });

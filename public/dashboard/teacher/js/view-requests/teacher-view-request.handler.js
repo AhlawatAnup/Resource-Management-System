@@ -1,7 +1,18 @@
 import { fetchResourceRequests, verifyRequest } from './teacher-view-request.service.js';
-import { renderResourceRequests, showNotVerifiedMessage, showEmptyState, showNotification, setSubmitButtonState, setFieldError } from './teacher-view-request.ui.js';
+import {
+  renderResourceRequests,
+  showNotVerifiedMessage,
+  showEmptyState,
+  showNotification,
+  setSubmitButtonState,
+  setFieldError,
+} from './teacher-view-request.ui.js';
 import { filterRequestsList } from '../teacher.utils.js';
-import { initializePurposePanel, isValidUsername, logoutDirectly } from '../../../common/js/commons.js';
+import {
+  initializePurposePanel,
+  isValidUsername,
+  logoutDirectly,
+} from '../../../common/js/commons.js';
 
 // Local state
 let resourceRequests = [];
@@ -13,13 +24,13 @@ export async function loadResourceRequestsHandler() {
   try {
     const { error, data } = await fetchResourceRequests();
     if (error) {
-    //   if (data === 404) logoutDirectly();
+      //   if (data === 404) logoutDirectly();
       return;
     }
 
     teacherVerificationStatus = {
       is_verified: data.is_verified,
-      verification_completed: data.verification_completed
+      verification_completed: data.verification_completed,
     };
 
     if (!teacherVerificationStatus.is_verified) {
@@ -31,9 +42,8 @@ export async function loadResourceRequestsHandler() {
     filteredRequests = [...resourceRequests];
 
     renderResourceRequests(filteredRequests);
-
   } catch (err) {
-    console.error("Error fetching resource requests:", err);
+    console.error('Error fetching resource requests:', err);
     // logoutDirectly();
   }
 }
@@ -68,7 +78,7 @@ export async function updateRequestVerificationHandler(requestId, isVerified) {
       cancelButtonText: 'Cancel',
       draggable: true,
       scrollbarPadding: false,
-      heightAuto: false
+      heightAuto: false,
     });
 
     if (!result_confirmation.isConfirmed) return;
@@ -76,11 +86,13 @@ export async function updateRequestVerificationHandler(requestId, isVerified) {
     const { ok } = await verifyRequest(requestId, isVerified);
     if (!ok) throw new Error('Failed to update request verification');
 
-    showNotification(`Resource request ${isVerified ? 'approved' : 'declined'} successfully!`, 'success');
+    showNotification(
+      `Resource request ${isVerified ? 'approved' : 'declined'} successfully!`,
+      'success',
+    );
     setTimeout(() => {
       window.location.reload();
     }, 1000);
-
   } catch (err) {
     console.error('Error updating request verification:', err);
     showNotification('Failed to update request verification. Please try again.', 'error');

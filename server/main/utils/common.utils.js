@@ -1,9 +1,9 @@
-const mongoose = require("mongoose");
-const Student = require("../database/studentModel.js");
-const Teacher = require("../database/teacherModel.js");
-const ResourceRequest = require("../database/resourceRequestModel");
-const Machine = require("../database/machineModel");
-const MachineAllotment = require("../database/machineAllotmentModel.js");
+const mongoose = require('mongoose');
+const Student = require('../database/studentModel.js');
+const Teacher = require('../database/teacherModel.js');
+const ResourceRequest = require('../database/resourceRequestModel');
+const Machine = require('../database/machineModel');
+const MachineAllotment = require('../database/machineAllotmentModel.js');
 const { saveAllotmentHistory } = require('./machineHistory/historyHelper.js');
 const emailHandler = require('../utils/email/emailHandler.js');
 
@@ -13,9 +13,7 @@ const isValidDuration = function (duration) {
 
 const fetchMachineById = async (machineId) => {
   if (!mongoose.Types.ObjectId.isValid(machineId)) return null;
-  return Machine.findById(machineId)
-    .select("_id MIGID gpuRam")
-    .lean();
+  return Machine.findById(machineId).select('_id MIGID gpuRam').lean();
 };
 
 // IST offset in ms
@@ -28,7 +26,7 @@ const getISTDateParts = (date) => {
   return {
     year: istTime.getUTCFullYear(),
     month: istTime.getUTCMonth(),
-    day: istTime.getUTCDate()
+    day: istTime.getUTCDate(),
   };
 };
 
@@ -45,7 +43,7 @@ const getNextISTDay = (date) => {
   return {
     year,
     month,
-    day: day + 1
+    day: day + 1,
   };
 };
 
@@ -68,15 +66,7 @@ const calculateAllotmentWindow = (lastEndTime, durationDays) => {
 };
 
 const validateMachineInput = (body) => {
-  let {
-    MIGID,
-    gpuRam,
-    ram,
-    ip,
-    port,
-    user,
-    name,
-  } = body;
+  let { MIGID, gpuRam, ram, ip, port, user, name } = body;
 
   // --- Trim strings ---
   MIGID = MIGID?.trim();
@@ -129,44 +119,40 @@ const validateMachineInput = (body) => {
       port: machinePort,
       user,
       name,
-    }
+    },
   };
 };
 
 const deleteStudentDependencies = async (student) => {
   try {
-    console.log("delete student dependcies called")
+    console.log('delete student dependcies called');
     if (!student) {
-      throw new Error("Student object is required");
+      throw new Error('Student object is required');
     }
 
     // 1️⃣ Fetch all resource request IDs
     const requests = await ResourceRequest.find({ studentId: student._id }).select('_id');
-    const requestIds = requests.map(r => r._id);
+    const requestIds = requests.map((r) => r._id);
 
     // 2️⃣ Delete MachineAllotments
     await MachineAllotment.deleteMany({
-      resourceRequestId: { $in: requestIds }
+      resourceRequestId: { $in: requestIds },
     });
 
     // 3️⃣ Delete ResourceRequests
     await ResourceRequest.deleteMany({
-      _id: { $in: requestIds }
+      _id: { $in: requestIds },
     });
 
     // 4️⃣ Clear student's resourceRequests array
-    await Student.updateOne(
-      { _id: student._id },
-      { $set: { resourceRequests: [] } }
-    );
+    await Student.updateOne({ _id: student._id }, { $set: { resourceRequests: [] } });
 
     return {
       success: true,
-      message: "Student dependencies deleted & references cleared"
+      message: 'Student dependencies deleted & references cleared',
     };
-
   } catch (err) {
-    console.error("Error deleting student dependencies:", err.message);
+    console.error('Error deleting student dependencies:', err.message);
     throw err;
   }
 };
@@ -181,24 +167,23 @@ const resetStudentVerificationFlags = async (studentId) => {
           teacher_action: false,
           admin_verified: false,
           admin_action: false,
-          is_verified: false
-        }
+          is_verified: false,
+        },
       },
-      { new: true } 
+      { new: true },
     );
 
     if (!updatedStudent) {
-      throw new Error("Student not found");
+      throw new Error('Student not found');
     }
 
     return {
       success: true,
-      message: "Student verification flags reset",
-      data: updatedStudent
+      message: 'Student verification flags reset',
+      data: updatedStudent,
     };
-
   } catch (err) {
-    console.error("Error resetting student flags:", err.message);
+    console.error('Error resetting student flags:', err.message);
     throw err;
   }
 };
@@ -206,7 +191,7 @@ const resetStudentVerificationFlags = async (studentId) => {
 const unverifyStudent = async (studentId) => {
   try {
     if (!studentId) {
-      throw new Error("studentId is required");
+      throw new Error('studentId is required');
     }
 
     await makeMachineHistory(studentId);
@@ -215,7 +200,7 @@ const unverifyStudent = async (studentId) => {
     const student = await Student.findById(studentId);
 
     if (!student) {
-      throw new Error("Student not found");
+      throw new Error('Student not found');
     }
 
     // 2️. Delete all dependencies (requests + allotments + clear array)
@@ -223,28 +208,24 @@ const unverifyStudent = async (studentId) => {
 
     // 3️. Reset verification flags on student
     const updatedStudent = await resetStudentVerificationFlags(studentId);
-    
+
     // 4. Send unverfication email, push notification
     emailHandler.handleSendStudentProfileUnverifiedByAdminEmail(student, studentId);
 
     return {
       success: true,
-      message: "Student unverified successfully",
-      data: updatedStudent
+      message: 'Student unverified successfully',
+      data: updatedStudent,
     };
-
   } catch (err) {
-    console.error("Error unverifying student:", err.message);
+    console.error('Error unverifying student:', err.message);
     throw err;
   }
 };
 
 const removeStudentFromTeachers = async (studentId) => {
   try {
-    await Teacher.updateMany(
-      { students: studentId },
-      { $pull: { students: studentId } }
-    );
+    await Teacher.updateMany({ students: studentId }, { $pull: { students: studentId } });
     console.log(`Removed student ${studentId} from all teachers`);
   } catch (err) {
     console.error(`Failed to remove student ${studentId} from teachers:`, err);
@@ -252,16 +233,15 @@ const removeStudentFromTeachers = async (studentId) => {
 };
 
 const deleteStudent = async (studentId) => {
-  console.log("detle student called")
+  console.log('detle student called');
   try {
-
     if (!studentId) {
-      throw new Error("Student ID is required");
+      throw new Error('Student ID is required');
     }
 
     const student = await Student.findById(studentId);
     if (!student) {
-      throw new Error("Student not found");
+      throw new Error('Student not found');
     }
 
     await removeStudentFromTeachers(studentId);
@@ -271,12 +251,11 @@ const deleteStudent = async (studentId) => {
 
     return {
       success: true,
-      message: "Student and related data deleted successfully"
+      message: 'Student and related data deleted successfully',
     };
-
   } catch (err) {
-    console.error("Error deleting student:", err.message);
-    throw new Error(err.message || "Failed to delete student");
+    console.error('Error deleting student:', err.message);
+    throw new Error(err.message || 'Failed to delete student');
   }
 };
 
@@ -284,58 +263,53 @@ const resetTeacherVerificationFlags = async (teacherId) => {
   const updatedTeacher = await Teacher.findByIdAndUpdate(
     teacherId,
     { $set: { is_verified: false, verification_completed: false } },
-    { new: true }
+    { new: true },
   );
 
-  if (!updatedTeacher) throw new Error("Teacher not found");
+  if (!updatedTeacher) throw new Error('Teacher not found');
   return updatedTeacher;
 };
 
 const unverifyTeacher = async (teacherId) => {
   try {
-    const teacher = await Teacher.findById(teacherId).populate("students");
-    if (!teacher) throw new Error("Teacher not found");
+    const teacher = await Teacher.findById(teacherId).populate('students');
+    if (!teacher) throw new Error('Teacher not found');
 
     // Reset teacher flags
     await resetTeacherVerificationFlags(teacherId);
 
     // Unverify all students its students
     await Promise.all(
-      teacher.students.map(student => unverifyStudent(student._id, teacher.name))
+      teacher.students.map((student) => unverifyStudent(student._id, teacher.name)),
     );
 
     // Send teacher email & notification
-    emailHandler.handleSendTeacherProfileUnverifiedByAdminEmail(
-      teacher,
-      teacherId
-    );
+    emailHandler.handleSendTeacherProfileUnverifiedByAdminEmail(teacher, teacherId);
 
     return {
       success: true,
-      message: `Teacher ${teacher.name} and all ${teacher.students.length} students unverified successfully`
+      message: `Teacher ${teacher.name} and all ${teacher.students.length} students unverified successfully`,
     };
-
   } catch (err) {
-    console.error("Error unverifying teacher:", err.message);
+    console.error('Error unverifying teacher:', err.message);
     throw err;
   }
 };
 
 const deleteTeacher = async (teacherId) => {
-
-  console.log("detle teacher called")
+  console.log('detle teacher called');
   if (!teacherId) {
-    throw new Error("Teacher ID is required");
+    throw new Error('Teacher ID is required');
   }
 
   if (!mongoose.Types.ObjectId.isValid(teacherId)) {
-    throw new Error("Invalid Teacher ID");
+    throw new Error('Invalid Teacher ID');
   }
 
   // 1. Get teacher
   const teacher = await Teacher.findById(teacherId);
   if (!teacher) {
-    throw new Error("Teacher not found");
+    throw new Error('Teacher not found');
   }
 
   const studentIds = teacher.students || [];
@@ -348,46 +322,45 @@ const deleteTeacher = async (teacherId) => {
   // 3. Delete teacher
   await Teacher.deleteOne({ _id: teacherId });
 
-  return "Teacher and all associated students deleted successfully";
+  return 'Teacher and all associated students deleted successfully';
 };
 
 const makeMachineHistory = async (studentId) => {
   try {
     if (!studentId) {
-      throw new Error("stunvdentId is required");
+      throw new Error('stunvdentId is required');
     }
 
     // 1️⃣ Fetch student with resourceRequests
-    const student = await Student.findById(studentId).select("resourceRequests");
+    const student = await Student.findById(studentId).select('resourceRequests');
 
     if (!student) {
-      throw new Error("Student not found");
+      throw new Error('Student not found');
     }
 
     if (!student.resourceRequests || student.resourceRequests.length === 0) {
       return {
         success: true,
-        message: "No resource requests found for student"
+        message: 'No resource requests found for student',
       };
     }
 
     // 2️⃣ Fetch all allotments linked to those resource requests
     const allotments = await MachineAllotment.find({
-      resourceRequestId: { $in: student.resourceRequests }
+      resourceRequestId: { $in: student.resourceRequests },
     }).setOptions({ includeInactive: true });
 
     // 3️⃣ Save history for each allotment
     for (const allotment of allotments) {
-      await saveAllotmentHistory(allotment, "system");
+      await saveAllotmentHistory(allotment, 'system');
     }
 
     return {
       success: true,
-      message: "Machine history created successfully"
+      message: 'Machine history created successfully',
     };
-
   } catch (err) {
-    console.error("Error creating machine history:", err.message);
+    console.error('Error creating machine history:', err.message);
     throw err;
   }
 };
@@ -395,8 +368,8 @@ const makeMachineHistory = async (studentId) => {
 async function getAllotmentMap(requestIds) {
   const allotments = await MachineAllotment.find(
     { resourceRequestId: { $in: requestIds } },
-    { resourceRequestId: 1, startTime: 1, endTime: 1 }
-  ).setOptions({ includeInactive: true, includeDeleted:true });
+    { resourceRequestId: 1, startTime: 1, endTime: 1 },
+  ).setOptions({ includeInactive: true, includeDeleted: true });
 
   const allotmentMap = {};
   for (const a of allotments) {

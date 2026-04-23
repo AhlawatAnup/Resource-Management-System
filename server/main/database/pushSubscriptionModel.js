@@ -5,21 +5,21 @@ const pushSubscriptionSchema = new Schema({
   user_id: {
     type: Schema.Types.ObjectId,
     required: true,
-    refPath: 'userModel'
+    refPath: 'userModel',
   },
   userModel: {
     type: String,
     required: true,
-    enum: ['Admin', 'Teacher', 'Student']
+    enum: ['Admin', 'Teacher', 'Student'],
   },
   subscription: {
     type: Object,
-    required: true
+    required: true,
   },
   createdAt: {
     type: Date,
-    default: Date.now
-  }
+    default: Date.now,
+  },
 });
 
 module.exports = mongoose.model('PushSubscription', pushSubscriptionSchema);

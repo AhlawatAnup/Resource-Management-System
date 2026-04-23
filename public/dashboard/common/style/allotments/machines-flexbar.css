@@ -1,70 +1,70 @@
 /* Available Machines Flex Bar */
 .machines-bar-section {
-    margin-bottom: 24px;
+  margin-bottom: 24px;
 }
 
 .machines-bar-section h3 {
-    font-size: 1em;
-    font-weight: 600;
-    color: #555;
-    margin: 0 0 10px 0;
-    display: flex;
-    align-items: center;
-    gap: 6px;
+  font-size: 1em;
+  font-weight: 600;
+  color: #555;
+  margin: 0 0 10px 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .machines-bar-section h3 i {
-    color: #4CAF50;
+  color: #4caf50;
 }
 
 .machines-flexbar {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .machine-bar-item {
-    background: #f5f5f5;
-    border: 1.5px solid #e0e0e0;
-    border-radius: 8px;
-    padding: 8px 14px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2px;
-    min-width: 72px;
-    cursor: pointer;
-    user-select: none;
+  background: #f5f5f5;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 8px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 72px;
+  cursor: pointer;
+  user-select: none;
 }
 
 .machine-bar-item:hover {
-    border-color: #e0e0e0;
-    background: #f5f5f5;
+  border-color: #e0e0e0;
+  background: #f5f5f5;
 }
 
 .machine-bar-item.selected {
-    background: #e8f5e9;
-    border-color: #4CAF50;
+  background: #e8f5e9;
+  border-color: #4caf50;
 }
 
 .machine-bar-item.selected .migid {
-    color: #2e7d32;
+  color: #2e7d32;
 }
 
 .machine-bar-item .migid {
-    font-weight: 700;
-    font-size: 0.9em;
-    color: #333;
+  font-weight: 700;
+  font-size: 0.9em;
+  color: #333;
 }
 
 .machine-bar-item .gpuram {
-    font-size: 0.78em;
-    color: #777;
+  font-size: 0.78em;
+  color: #777;
 }
 
 .machine-bar-empty,
 .machine-bar-loading {
-    font-size: 0.9em;
-    color: #999;
-    font-style: italic;
+  font-size: 0.9em;
+  color: #999;
+  font-style: italic;
 }

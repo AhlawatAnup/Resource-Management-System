@@ -6,9 +6,9 @@
   margin-top: 20px;
   padding: 12px 10px;
   text-align: center;
-  background-color: #47494d;   /* dark panel */
-  color: #e5e7eb;              /* main light text */
-  border-radius: 8px;          /* optional nice panel look */
+  background-color: #47494d; /* dark panel */
+  color: #e5e7eb; /* main light text */
+  border-radius: 8px; /* optional nice panel look */
 }
 
 /* Container styling inside card */
@@ -25,7 +25,7 @@
   margin-bottom: 6px;
   font-size: 0.85rem;
   line-height: 1.4;
-  color: #e5e7eb;              /* ensure readable */
+  color: #e5e7eb; /* ensure readable */
 }
 
 /* Collaboration text */
@@ -33,7 +33,7 @@
   margin-top: 6px;
   margin-bottom: 4px;
   font-size: 0.8rem;
-  color: #d1d5db;              /* slightly muted */
+  color: #d1d5db; /* slightly muted */
 }
 
 /* Logos alignment */
@@ -41,7 +41,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 1.5rem;                /* balanced spacing */
+  gap: 1.5rem; /* balanced spacing */
   height: 2.5rem;
   margin-top: 4px;
 }
@@ -51,7 +51,7 @@
   height: 100%;
   width: auto;
   object-fit: contain;
-  filter: brightness(1.1);    /* slight boost for visibility */
+  filter: brightness(1.1); /* slight boost for visibility */
 }
 
 /* Telelabs logo text */
@@ -60,7 +60,7 @@
   font-weight: 800;
   letter-spacing: 1px;
   text-transform: uppercase;
-  color: #ffffff;             /* bright for contrast */
+  color: #ffffff; /* bright for contrast */
   display: flex;
   align-items: center;
 }

@@ -4,14 +4,13 @@ const PushSubscription = require('../../database/pushSubscriptionModel');
 
 const vapidKeys = {
   publicKey: process.env.VAPID_PUBLIC_KEY,
-  privateKey: process.env.VAPID_PRIVATE_KEY
+  privateKey: process.env.VAPID_PRIVATE_KEY,
 };
-
 
 webpush.setVapidDetails(
   `mailto:${process.env.EMAIL_USER}`,
   vapidKeys.publicKey,
-  vapidKeys.privateKey
+  vapidKeys.privateKey,
 );
 
 async function notifyStudent(studentId, payload) {

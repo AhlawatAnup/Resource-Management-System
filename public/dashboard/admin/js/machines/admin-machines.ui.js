@@ -7,9 +7,9 @@ export function initUI({ onFilterChange, onAddClick }) {
   if (addBtn) addBtn.addEventListener('click', onAddClick);
 
   const filterButtons = document.querySelectorAll('.machines-filters .status-btn');
-  filterButtons.forEach(btn => {
+  filterButtons.forEach((btn) => {
     btn.addEventListener('click', () => {
-      filterButtons.forEach(b => b.classList.remove('active'));
+      filterButtons.forEach((b) => b.classList.remove('active'));
       btn.classList.add('active');
       onFilterChange(btn.dataset.filter || 'all');
     });
@@ -17,7 +17,6 @@ export function initUI({ onFilterChange, onAddClick }) {
 
   return {};
 }
-
 
 // ---------------- TABLE WRAPPER ----------------
 export function createTableWrapper() {
@@ -37,7 +36,6 @@ export function createTableWrapper() {
   return tableWrapper;
 }
 
-
 // ---------------- TABLE RENDER ----------------
 export function renderTable(wrapper, machines, handlers) {
   wrapper.innerHTML = '';
@@ -54,7 +52,7 @@ export function renderTable(wrapper, machines, handlers) {
 
   const thead = document.createElement('thead');
   const headerRow = document.createElement('tr');
-  ['MIGID', 'gpuRam', 'ram', 'ip:port', 'name', 'Action'].forEach(h => {
+  ['MIGID', 'gpuRam', 'ram', 'ip:port', 'name', 'Action'].forEach((h) => {
     const th = document.createElement('th');
     th.textContent = h;
     headerRow.appendChild(th);
@@ -77,13 +75,8 @@ export function renderTable(wrapper, machines, handlers) {
     tr.appendChild(migTd);
 
     // Remaining columns
-    const rowVals = [
-      m.gpuRam,
-      m.ram,
-      (m.ip && m.port ? `${m.ip}:${m.port}` : (m.ip || '')),
-      m.name
-    ];
-    rowVals.forEach(val => {
+    const rowVals = [m.gpuRam, m.ram, m.ip && m.port ? `${m.ip}:${m.port}` : m.ip || '', m.name];
+    rowVals.forEach((val) => {
       const td = document.createElement('td');
       td.textContent = val === undefined ? '' : val;
       tr.appendChild(td);
@@ -101,13 +94,15 @@ export function renderTable(wrapper, machines, handlers) {
         handlers.onRevoke(m, actionBtn, handlers.loadMachines);
       });
       actionBtn.style.background = '#fa6251ff';
-      actionBtn.title = 'Disabling this machine will prevent users from using it until it is re-enabled. New allotments cannot be made while disabled.';
+      actionBtn.title =
+        'Disabling this machine will prevent users from using it until it is re-enabled. New allotments cannot be made while disabled.';
     } else {
       actionBtn = createBtn('Enable', function () {
         handlers.onEnable(m, actionBtn, handlers.loadMachines);
       });
       actionBtn.style.background = '#28a745';
-       actionBtn.title = 'Enabling this machine will allow users to use it again and new allotments can be made.';
+      actionBtn.title =
+        'Enabling this machine will allow users to use it again and new allotments can be made.';
     }
 
     actionBtn.style.marginLeft = '8px';
@@ -123,7 +118,6 @@ export function renderTable(wrapper, machines, handlers) {
   wrapper.appendChild(container);
 }
 
-
 // ---------------- BUTTON HELPER ----------------
 function createBtn(text, onClick) {
   const btn = document.createElement('button');
@@ -133,7 +127,6 @@ function createBtn(text, onClick) {
   btn.addEventListener('click', onClick);
   return btn;
 }
-
 
 // ---------------- EDIT MODAL ----------------
 // export function ensureEditModal(onSubmit) {
@@ -187,7 +180,6 @@ function createBtn(text, onClick) {
 //   return modal;
 // }
 
-
 // export function openEditModal(modal, machine, tableRow) {
 //   modal.style.display = 'flex';
 
@@ -215,11 +207,9 @@ function createBtn(text, onClick) {
 //   if (form) form.reset();
 // }
 
-
 // ---------------- ADD MODAL ----------------
 export function ensureAddModal(onSubmit) {
-  if (document.getElementById('machineAddModal'))
-    return document.getElementById('machineAddModal');
+  if (document.getElementById('machineAddModal')) return document.getElementById('machineAddModal');
 
   const modal = document.createElement('div');
   modal.id = 'machineAddModal';
@@ -230,9 +220,9 @@ export function ensureAddModal(onSubmit) {
     background: 'rgba(0,0,0,0.4)',
     display: 'none',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   });
-modal.innerHTML = `
+  modal.innerHTML = `
   <div class="machine-modal">
     <h2>Add Machine</h2>
 
@@ -283,23 +273,21 @@ modal.innerHTML = `
 `;
   document.body.appendChild(modal);
 
-  modal.querySelector('#machineAddCancel')
-  .addEventListener('click', closeAddModal);
+  modal.querySelector('#machineAddCancel').addEventListener('click', closeAddModal);
 
-  modal.querySelector('#machineAddForm')
-    .addEventListener('submit', (e) => {
-      e.preventDefault();
+  modal.querySelector('#machineAddForm').addEventListener('submit', (e) => {
+    e.preventDefault();
 
     onSubmit({
-        MIGID: modal.querySelector('#addMIGID').value.trim(),
-        gpuRaw: modal.querySelector('#addGpuRam').value.trim(),
-        ramRaw: modal.querySelector('#addRam').value.trim(),
-        ip: modal.querySelector('#addIp').value.trim(),
-        portRaw: modal.querySelector('#addPort').value.trim(),
-        user: modal.querySelector('#addUser').value.trim(),
-        name: modal.querySelector('#addName').value.trim(),
-      });
+      MIGID: modal.querySelector('#addMIGID').value.trim(),
+      gpuRaw: modal.querySelector('#addGpuRam').value.trim(),
+      ramRaw: modal.querySelector('#addRam').value.trim(),
+      ip: modal.querySelector('#addIp').value.trim(),
+      portRaw: modal.querySelector('#addPort').value.trim(),
+      user: modal.querySelector('#addUser').value.trim(),
+      name: modal.querySelector('#addName').value.trim(),
     });
+  });
 
   modal.addEventListener('click', (e) => {
     if (e.target === modal) closeAddModal();
@@ -307,7 +295,6 @@ modal.innerHTML = `
 
   return modal;
 }
-
 
 export function openAddModal(modal) {
   modal.style.display = 'flex';

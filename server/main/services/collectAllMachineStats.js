@@ -34,13 +34,11 @@ async function collectAndStoreStats(statsConnection) {
       // Fetch all Machine docs for this parent machine in one query
       const machineRecords = await Machine.find(
         { name: machine.name },
-        { user: 1, MIGID: 1 }
+        { user: 1, MIGID: 1 },
       ).setOptions({ includeUnavailable: true });
 
       // Build a user -> MIGID lookup map
-      const userToMIGID = Object.fromEntries(
-        machineRecords.map(m => [m.user, m.MIGID])
-      );
+      const userToMIGID = Object.fromEntries(machineRecords.map((m) => [m.user, m.MIGID]));
 
       for (const c of data.containers) {
         const MIGID = userToMIGID[c.user];
@@ -62,7 +60,6 @@ async function collectAndStoreStats(statsConnection) {
           gpuTotalMiB: parseToMiB(c.GPUTotal),
         });
       }
-
     } catch (err) {
       console.error(`Could not fetch stats from ${machine.name}:`, err.message);
     }

@@ -1,8 +1,8 @@
 /* sidebar, header: template css */
-@import url("https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
 
 body {
-  font-family: "Rubik", sans-serif;
+  font-family: 'Rubik', sans-serif;
   background: #f8f9fa;
   min-height: 100vh;
   margin: 0;
@@ -112,7 +112,8 @@ body {
   gap: 4px;
 }
 
-.nav-btn, .status-btn {
+.nav-btn,
+.status-btn {
   background: transparent;
   border: none;
   padding: 10px 16px;
@@ -128,12 +129,14 @@ body {
   white-space: nowrap;
 }
 
-.nav-btn:hover, .status-btn:hover {
+.nav-btn:hover,
+.status-btn:hover {
   background: #e5e7eb;
   color: #374151;
 }
 
-.nav-btn.active, .status-btn.active {
+.nav-btn.active,
+.status-btn.active {
   background: white;
   color: #1f2937;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
@@ -179,13 +182,18 @@ body {
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 6px 18px rgba(6,95,70,0.12), inset 0 -1px 0 rgba(0,0,0,0.06);
-  transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease;
+  box-shadow:
+    0 6px 18px rgba(6, 95, 70, 0.12),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.06);
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease,
+    opacity 0.12s ease;
 }
 
 .import-csv-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 8px 22px rgba(6,95,70,0.14);
+  box-shadow: 0 8px 22px rgba(6, 95, 70, 0.14);
 }
 
 .import-csv-btn:active {

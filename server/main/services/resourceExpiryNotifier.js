@@ -1,9 +1,9 @@
-const emailService = require("../utils/email/emails.service.js");
-const MachineAllotment = require("../database/machineAllotmentModel");
+const emailService = require('../utils/email/emails.service.js');
+const MachineAllotment = require('../database/machineAllotmentModel');
 
 async function sendAllotmentNotifications() {
   try {
-    const now = new Date(); 
+    const now = new Date();
 
     const startOfTodayIST = new Date(now);
     startOfTodayIST.setHours(0, 0, 0, 0);
@@ -16,8 +16,8 @@ async function sendAllotmentNotifications() {
     // --- QUERY 1: STARTED TODAY (IST) ---
     const startingToday = await MachineAllotment.find({
       startTime: { $gte: startOfTodayIST, $lte: endOfTodayIST },
-      startNotified: false
-    }).populate({ path: "resourceRequestId", populate: { path: "studentId" } });
+      startNotified: false,
+    }).populate({ path: 'resourceRequestId', populate: { path: 'studentId' } });
 
     console.log(`[Notifications] Allotments starting today (IST): ${startingToday.length}`);
 
@@ -39,8 +39,8 @@ async function sendAllotmentNotifications() {
     // --- QUERY 2: EXPIRING IN NEXT 24 HOURS ---
     const expiringSoon = await MachineAllotment.find({
       endTime: { $gte: now, $lt: next24Hours },
-      expiryNotified: false
-    }).populate({ path: "resourceRequestId", populate: { path: "studentId" } });
+      expiryNotified: false,
+    }).populate({ path: 'resourceRequestId', populate: { path: 'studentId' } });
 
     console.log(`[Notifications] Allotments expiring in next 24h: ${expiringSoon.length}`);
 
@@ -58,9 +58,8 @@ async function sendAllotmentNotifications() {
       allotment.expiryNotified = true;
       await allotment.save();
     }
-
   } catch (err) {
-    console.error("Error in notification job:", err);
+    console.error('Error in notification job:', err);
   }
 }
 

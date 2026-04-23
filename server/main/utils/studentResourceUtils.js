@@ -2,7 +2,7 @@ const Student = require('../database/studentModel');
 const ResourceRequest = require('../database/resourceRequestModel');
 
 /**
- * Utility functions to manage the bidirectional relationship between 
+ * Utility functions to manage the bidirectional relationship between
  * students and their resource requests
  */
 
@@ -11,10 +11,9 @@ const ResourceRequest = require('../database/resourceRequestModel');
  */
 async function addResourceRequestToStudent(studentId, resourceRequestId) {
   try {
-    await Student.findByIdAndUpdate(
-      studentId,
-      { $addToSet: { resourceRequests: resourceRequestId } }
-    );
+    await Student.findByIdAndUpdate(studentId, {
+      $addToSet: { resourceRequests: resourceRequestId },
+    });
     // console.log(`Added resource request ${resourceRequestId} to student ${studentId}`);
     return true;
   } catch (error) {

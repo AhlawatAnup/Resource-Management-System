@@ -2,7 +2,12 @@ const sendEmail = require('../sendEmail');
 const { generateUndertakingPDF } = require('../common/undertakingPdfGenerator');
 
 // 1. Notify teacher when a student registers under them
-const sendTeacherStudentRegisteredEmail = async (teacherEmail, teacherName, studentName, studentRollNo) => {
+const sendTeacherStudentRegisteredEmail = async (
+  teacherEmail,
+  teacherName,
+  studentName,
+  studentRollNo,
+) => {
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <h2 style="color: #2196F3;">👨‍🎓 New Student Registration</h2>
@@ -42,12 +47,19 @@ const sendTeacherStudentRegisteredEmail = async (teacherEmail, teacherName, stud
   return sendEmail({
     to: teacherEmail,
     subject: '[ACTION REQUIRED] New Student Registration - Verification Required',
-    html
+    html,
   });
 };
 
 // 2. Notify teacher when a student under them raises a resource request
-const sendTeacherStudentResourceRequestEmail = async (teacherEmail, teacherName, studentName, resourceTitle, studentData = {}, purpose = '') => {
+const sendTeacherStudentResourceRequestEmail = async (
+  teacherEmail,
+  teacherName,
+  studentName,
+  resourceTitle,
+  studentData = {},
+  purpose = '',
+) => {
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <h2 style="color: #FF9800;">🖥️ New Resource Request</h2>
@@ -87,7 +99,7 @@ const sendTeacherStudentResourceRequestEmail = async (teacherEmail, teacherName,
   return sendEmail({
     to: teacherEmail,
     subject: '[ACTION REQUIRED] New Resource Request - Student Verification Required',
-    html
+    html,
   });
 };
 
@@ -130,7 +142,7 @@ const sendTeacherStudentVerifiedByAdminEmail = async (teacherEmail, teacherName,
   return sendEmail({
     to: teacherEmail,
     subject: 'Student Profile Verified by Admin',
-    html
+    html,
   });
 };
 
@@ -170,12 +182,17 @@ const sendTeacherStudentRejectedByAdminEmail = async (teacherEmail, teacherName,
   return sendEmail({
     to: teacherEmail,
     subject: 'Student Profile Rejected by Admin - Notification',
-    html
+    html,
   });
 };
 
 // 5. Notify teacher when admin accepts student resource request
-const sendTeacherResourceRequestVerifiedByAdminEmail = async (teacherEmail, teacherName, studentName, resourceTitle) => {
+const sendTeacherResourceRequestVerifiedByAdminEmail = async (
+  teacherEmail,
+  teacherName,
+  studentName,
+  resourceTitle,
+) => {
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <h2 style="color: #4CAF50;">✅ Resource Request Approved by Admin</h2>
@@ -213,12 +230,17 @@ const sendTeacherResourceRequestVerifiedByAdminEmail = async (teacherEmail, teac
   return sendEmail({
     to: teacherEmail,
     subject: '[VERIFIED] Student Resource Request Approved by Admin',
-    html
+    html,
   });
 };
 
 // 6. Notify teacher when admin rejects student resource request
-const sendTeacherResourceRequestRejectedByAdminEmail = async (teacherEmail, teacherName, studentName, resourceTitle) => {
+const sendTeacherResourceRequestRejectedByAdminEmail = async (
+  teacherEmail,
+  teacherName,
+  studentName,
+  resourceTitle,
+) => {
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <h2 style="color: #f44336;">❌ Resource Request Rejected by Admin</h2>
@@ -253,12 +275,17 @@ const sendTeacherResourceRequestRejectedByAdminEmail = async (teacherEmail, teac
   return sendEmail({
     to: teacherEmail,
     subject: '[INFO] Student Resource Request Rejected by Admin',
-    html
+    html,
   });
 };
 
 // 7. Notify teacher when admin revokes student resource allocation
-const sendTeacherResourceRequestRevokedByAdminEmail = async (teacherEmail, teacherName, studentName, resourceTitle) => {
+const sendTeacherResourceRequestRevokedByAdminEmail = async (
+  teacherEmail,
+  teacherName,
+  studentName,
+  resourceTitle,
+) => {
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <h2 style="color: #f44336;">⚠️ Resource Allocation Revoked</h2>
@@ -293,7 +320,7 @@ const sendTeacherResourceRequestRevokedByAdminEmail = async (teacherEmail, teach
   return sendEmail({
     to: teacherEmail,
     subject: '[ATTENTION] Student Resource Allocation Revoked by Admin',
-    html
+    html,
   });
 };
 
@@ -304,5 +331,5 @@ module.exports = {
   sendTeacherStudentRejectedByAdminEmail,
   sendTeacherResourceRequestVerifiedByAdminEmail,
   sendTeacherResourceRequestRejectedByAdminEmail,
-  sendTeacherResourceRequestRevokedByAdminEmail
+  sendTeacherResourceRequestRevokedByAdminEmail,
 };

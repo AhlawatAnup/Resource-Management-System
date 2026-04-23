@@ -3,7 +3,7 @@
 // ---------------- FETCH MACHINES ----------------
 export async function fetchMachines() {
   const resp = await fetch('/dashboard/admin/machines', {
-    credentials: 'include'
+    credentials: 'include',
   });
 
   if (!resp.ok) {
@@ -13,12 +13,11 @@ export async function fetchMachines() {
   return resp.json();
 }
 
-
 // ---------------- DELETE MACHINE ----------------
 export async function deleteMachine(id) {
   const resp = await fetch(`/dashboard/admin/machines/${id}`, {
     method: 'DELETE',
-    credentials: 'include'
+    credentials: 'include',
   });
 
   if (!resp.ok) {
@@ -28,7 +27,6 @@ export async function deleteMachine(id) {
 
   return true;
 }
-
 
 // ---------------- UPDATE MACHINE ----------------
 // export async function updateMachine(id, data) {
@@ -47,14 +45,13 @@ export async function deleteMachine(id) {
 //   return true;
 // }
 
-
 // ---------------- CREATE MACHINE ----------------
 export async function createMachine(data) {
   const resp = await fetch('/dashboard/admin/create-machine', {
     method: 'POST',
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
+    body: JSON.stringify(data),
   });
 
   const json = await resp.json();
@@ -66,14 +63,13 @@ export async function createMachine(data) {
   return json;
 }
 
-
 // ---------------- REVOKE ASSIGNMENT ----------------
 export async function updateMachineAvailability(id, data) {
   const resp = await fetch(`/dashboard/admin/machines/${id}`, {
     method: 'PUT',
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
+    body: JSON.stringify(data),
   });
 
   if (!resp.ok) {

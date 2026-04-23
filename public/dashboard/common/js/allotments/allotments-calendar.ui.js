@@ -12,7 +12,7 @@ export const CalendarUI = {
     return {
       bg: `hsl(${h}, 70%, 90%)`,
       border: `hsl(${h}, 70%, 80%)`,
-      text: `hsl(${h}, 80%, 25%)`
+      text: `hsl(${h}, 80%, 25%)`,
     };
   },
 
@@ -58,14 +58,14 @@ export const CalendarUI = {
     this.instance = flatpickr(selector, {
       inline: true,
       disable: [...disabledDates, isPastDate],
-      dateFormat: "Y-m-d",
-      monthSelectorType: "static",
+      dateFormat: 'Y-m-d',
+      monthSelectorType: 'static',
       clickOpens: false,
       allowInput: false,
       onDayCreate: (dObj, dStr, fp, dayElem) => {
         const isCurrentMonthDay =
-          !dayElem.classList.contains("prevMonthDay") &&
-          !dayElem.classList.contains("nextMonthDay");
+          !dayElem.classList.contains('prevMonthDay') &&
+          !dayElem.classList.contains('nextMonthDay');
 
         if (!isCurrentMonthDay) {
           return;
@@ -75,33 +75,33 @@ export const CalendarUI = {
 
         if (bookedEntry) {
           const colors = this.getColorForAllotment(bookedEntry);
-          dayElem.classList.add("booked-date");
+          dayElem.classList.add('booked-date');
           dayElem.style.backgroundColor = colors.bg;
           dayElem.style.color = colors.text;
           dayElem.style.borderColor = colors.border;
-          dayElem.style.opacity = "1";
-          dayElem.style.textDecoration = "line-through";
-          dayElem.style.textDecorationThickness = "3px";
+          dayElem.style.opacity = '1';
+          dayElem.style.textDecoration = 'line-through';
+          dayElem.style.textDecorationThickness = '3px';
         }
 
         if (isPastDate(dayElem.dateObj)) {
-          dayElem.classList.add("past-date");
-          dayElem.style.backgroundColor = "#f3f4f6";
-          dayElem.style.color = "#9ca3af";
-          dayElem.style.borderColor = "transparent";
+          dayElem.classList.add('past-date');
+          dayElem.style.backgroundColor = '#f3f4f6';
+          dayElem.style.color = '#9ca3af';
+          dayElem.style.borderColor = 'transparent';
         }
 
         if (!bookedEntry && !isPastDate(dayElem.dateObj)) {
-          dayElem.classList.add("free-date");
-          dayElem.style.backgroundColor = "#a7f3d0";
-          dayElem.style.color = "#065f46";
-          dayElem.style.borderColor = "#02a865";
+          dayElem.classList.add('free-date');
+          dayElem.style.backgroundColor = '#a7f3d0';
+          dayElem.style.color = '#065f46';
+          dayElem.style.borderColor = '#02a865';
         }
 
-        if (!dayElem.classList.contains("flatpickr-disabled")) {
-          dayElem.style.cursor = "default";
+        if (!dayElem.classList.contains('flatpickr-disabled')) {
+          dayElem.style.cursor = 'default';
         }
-      }
+      },
     });
-  }
+  },
 };

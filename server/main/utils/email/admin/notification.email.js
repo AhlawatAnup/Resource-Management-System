@@ -15,7 +15,7 @@ const sendToAdmin = async (subject, html) => {
     return sendEmail({
       to: admin.email,
       subject,
-      html
+      html,
     });
   } catch (err) {
     console.error('Error sending notification to admin:', err);
@@ -65,7 +65,12 @@ const sendAdminTeacherRegistrationEmail = async (teacherName, teacherEmail, teac
 };
 
 // 2. Notify admin when student verification is approved by teacher (pending admin approval)
-const sendAdminStudentVerificationPendingEmail = async (studentName, studentEmail, studentRollNo, teacherName) => {
+const sendAdminStudentVerificationPendingEmail = async (
+  studentName,
+  studentEmail,
+  studentRollNo,
+  teacherName,
+) => {
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <h2 style="color: #FF9800;">👤 Student Verification Pending Admin Approval</h2>
@@ -99,7 +104,10 @@ const sendAdminStudentVerificationPendingEmail = async (studentName, studentEmai
     </div>
   `;
 
-  return sendToAdmin('[ACTION REQUIRED] Student Verification Pending - Admin Approval Required', html);
+  return sendToAdmin(
+    '[ACTION REQUIRED] Student Verification Pending - Admin Approval Required',
+    html,
+  );
 };
 
 // 3. Notify admin when resource request is approved by teacher (pending admin approval)
@@ -108,9 +116,11 @@ const sendAdminResourceRequestPendingEmail = async (
   studentEmail,
   resourceTitle,
   teacherName,
-  requestedGpuRam
+  requestedGpuRam,
 ) => {
-  const gpuLine = requestedGpuRam ? `<p><strong>Requested GPU RAM:</strong> ${requestedGpuRam} GB</p>` : '';
+  const gpuLine = requestedGpuRam
+    ? `<p><strong>Requested GPU RAM:</strong> ${requestedGpuRam} GB</p>`
+    : '';
 
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -152,7 +162,10 @@ const sendAdminResourceRequestPendingEmail = async (
     </div>
   `;
 
-  return sendToAdmin('[ACTION REQUIRED] Resource Request Pending - Admin Allocation Required', html);
+  return sendToAdmin(
+    '[ACTION REQUIRED] Resource Request Pending - Admin Allocation Required',
+    html,
+  );
 };
 
 // 4. Notify admin when their username is changed
@@ -234,10 +247,9 @@ const sendAdminEmailChangeSecurityAlertEmail = async (oldEmail, newEmail) => {
   return sendEmail({
     to: oldEmail,
     subject: '[ATTENTION] Your account email was updated',
-    html
+    html,
   });
 };
-
 
 // 6. Send confirmation email to new email when admin email is changed
 const sendAdminEmailChangeConfirmationEmail = async (newEmail, changedAtTime) => {
@@ -277,7 +289,7 @@ const sendAdminEmailChangeConfirmationEmail = async (newEmail, changedAtTime) =>
   return sendEmail({
     to: newEmail,
     subject: 'Email Change Confirmation',
-    html
+    html,
   });
 };
 
@@ -287,5 +299,5 @@ module.exports = {
   sendAdminResourceRequestPendingEmail,
   sendAdminUsernameChangeEmail,
   sendAdminEmailChangeSecurityAlertEmail,
-  sendAdminEmailChangeConfirmationEmail
+  sendAdminEmailChangeConfirmationEmail,
 };

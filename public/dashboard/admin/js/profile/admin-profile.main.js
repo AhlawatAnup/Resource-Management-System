@@ -1,11 +1,7 @@
 // profile.main.js
 import { initProfileUI, showError } from './admin-profile.ui.js';
 import { fetchAdminProfile } from './admin-profile.service.js';
-import {
-  onEmailSubmit,
-  onUsernameSubmit,
-  onPasswordSubmit
-} from './admin-profile.handler.js';
+import { onEmailSubmit, onUsernameSubmit, onPasswordSubmit } from './admin-profile.handler.js';
 import { setupDarkMode } from '../../../common/js/darkmode/darkmode.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -14,7 +10,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const { emailDisplay, usernameDisplay } = initProfileUI({
     onEmailSubmit,
     onUsernameSubmit,
-    onPasswordSubmit
+    onPasswordSubmit,
   });
 
   // ------------------ Load admin profile ------------------

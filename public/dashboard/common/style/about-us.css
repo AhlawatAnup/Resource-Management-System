@@ -2,7 +2,7 @@
 .about-panel {
   background: #ffffff;
   border-radius: 12px;
-  box-shadow: 0 6px 20px rgba(31,41,55,0.08);
+  box-shadow: 0 6px 20px rgba(31, 41, 55, 0.08);
   padding: 32px;
   margin: 20px auto;
 }
@@ -29,7 +29,7 @@
 /* Visual separator placed after about text blocks */
 .about-separator {
   height: 1px;
-  background: linear-gradient(90deg, rgba(0,0,0,0.06), rgba(0,0,0,0.12), rgba(0,0,0,0.06));
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.06), rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.06));
   margin: 20px 0 28px 0;
   border-radius: 2px;
 }

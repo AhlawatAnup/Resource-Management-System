@@ -33,7 +33,7 @@ export async function verifyTeacherService(teacherId, isVerified) {
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ is_verified: isVerified })
+    body: JSON.stringify({ is_verified: isVerified }),
   });
 
   return response;
@@ -48,7 +48,7 @@ export async function verifyStudentService(studentId, isVerified) {
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ is_verified: isVerified })
+    body: JSON.stringify({ is_verified: isVerified }),
   });
 
   return response;
@@ -62,7 +62,7 @@ export async function unverifyStudentService(studentId) {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
-    }
+    },
   });
 
   return response;
@@ -76,7 +76,7 @@ export async function unverifyTeacherService(teacherId) {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
-    }
+    },
   });
 
   return response;

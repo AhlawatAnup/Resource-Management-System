@@ -14,13 +14,14 @@ exports.savePushSubscription = async (req, res) => {
       return res.status(400).json({ error: 'Subscription object is required' });
     }
     const user_id = req.session.user.id;
-    const userModel = req.session.user.role.charAt(0).toUpperCase() + req.session.user.role.slice(1); // Admin/Teacher/Student
+    const userModel =
+      req.session.user.role.charAt(0).toUpperCase() + req.session.user.role.slice(1); // Admin/Teacher/Student
 
     // Upsert: update if exists, else create
     const saved = await PushSubscription.findOneAndUpdate(
       { user_id, userModel },
       { subscription },
-      { upsert: true, new: true, setDefaultsOnInsert: true }
+      { upsert: true, new: true, setDefaultsOnInsert: true },
     );
     return res.json({ message: 'Push subscription saved', data: saved });
   } catch (error) {

@@ -3,49 +3,47 @@
 import { showConfirmationPopup } from './confirmation-popup.js';
 
 export function renderResourcesPage(student, verificationStatus, onSubmitHandler) {
-    const isVerified = student.teacher_verified && student.admin_verified;
+  const isVerified = student.teacher_verified && student.admin_verified;
 
-    const loadingSection = document.getElementById('loading-section');
-    const verifiedSection = document.getElementById('verified-section');
-    const unverifiedSection = document.getElementById('unverified-section');
+  const loadingSection = document.getElementById('loading-section');
+  const verifiedSection = document.getElementById('verified-section');
+  const unverifiedSection = document.getElementById('unverified-section');
 
-    if (!verifiedSection || !unverifiedSection) return;
+  if (!verifiedSection || !unverifiedSection) return;
 
-    // Hide loading
-    if (loadingSection) loadingSection.style.display = 'none';
+  // Hide loading
+  if (loadingSection) loadingSection.style.display = 'none';
 
-    if (isVerified) {
-        verifiedSection.style.display = 'block';
-        unverifiedSection.style.display = 'none';
+  if (isVerified) {
+    verifiedSection.style.display = 'block';
+    unverifiedSection.style.display = 'none';
 
-        // Attach submit handler - show confirmation popup first
-        const form = document.getElementById('resource-request-form');
-        if (form) {
-            form.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const purposeField = document.getElementById('purpose');
-                const purpose = purposeField ? purposeField.value : '';
-                showConfirmationPopup(onSubmitHandler, e, student, purpose);
-            });
-        }
-
-    } else {
-        verifiedSection.style.display = 'none';
-        unverifiedSection.style.display = 'block';
-
-        // Populate verification status text
-        const statusText = document.getElementById('verification-status-text');
-        const statusDetail = document.getElementById('verification-status-detail');
-        if (statusText) statusText.textContent = verificationStatus;
-        if (statusDetail) statusDetail.textContent = verificationStatus;
+    // Attach submit handler - show confirmation popup first
+    const form = document.getElementById('resource-request-form');
+    if (form) {
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const purposeField = document.getElementById('purpose');
+        const purpose = purposeField ? purposeField.value : '';
+        showConfirmationPopup(onSubmitHandler, e, student, purpose);
+      });
     }
-}
+  } else {
+    verifiedSection.style.display = 'none';
+    unverifiedSection.style.display = 'block';
 
+    // Populate verification status text
+    const statusText = document.getElementById('verification-status-text');
+    const statusDetail = document.getElementById('verification-status-detail');
+    if (statusText) statusText.textContent = verificationStatus;
+    if (statusDetail) statusDetail.textContent = verificationStatus;
+  }
+}
 
 // Notifications (UI only)
 export function showErrorNotification(message) {
-    const notification = document.createElement('div');
-    notification.style.cssText = `
+  const notification = document.createElement('div');
+  notification.style.cssText = `
         position: fixed;
         top: 20px;
         right: 20px;
@@ -57,17 +55,17 @@ export function showErrorNotification(message) {
         z-index: 1000;
         font-weight: 600;
     `;
-    notification.innerHTML = `<i class="fas fa-exclamation-circle" style="margin-right: 8px;"></i>${message}`;
-    document.body.appendChild(notification);
+  notification.innerHTML = `<i class="fas fa-exclamation-circle" style="margin-right: 8px;"></i>${message}`;
+  document.body.appendChild(notification);
 
-    setTimeout(() => {
-        notification.remove();
-    }, 5000);
+  setTimeout(() => {
+    notification.remove();
+  }, 5000);
 }
 
 export function showSuccessMessage(message) {
-    const notification = document.createElement('div');
-    notification.style.cssText = `
+  const notification = document.createElement('div');
+  notification.style.cssText = `
         position: fixed;
         top: 20px;
         right: 20px;
@@ -79,11 +77,11 @@ export function showSuccessMessage(message) {
         z-index: 1000;
         font-weight: 600;
     `;
-    notification.innerHTML = `<i class="fas fa-check-circle" style="margin-right: 8px;"></i>${message}`;
-    
-    document.body.appendChild(notification);
-    
-    setTimeout(() => {
-        notification.remove();
-    }, 5000);
+  notification.innerHTML = `<i class="fas fa-check-circle" style="margin-right: 8px;"></i>${message}`;
+
+  document.body.appendChild(notification);
+
+  setTimeout(() => {
+    notification.remove();
+  }, 5000);
 }

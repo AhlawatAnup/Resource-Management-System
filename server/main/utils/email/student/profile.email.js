@@ -14,7 +14,7 @@ const sendStudentProfileRejectedByTeacherEmail = async (studentEmail, studentNam
   return sendEmail({
     to: studentEmail,
     subject: '[REJECTED] Profile Verification Update - Teacher Review Required',
-    html
+    html,
   });
 };
 
@@ -32,7 +32,7 @@ const sendStudentProfileVerifiedByAdminEmail = async (studentEmail, studentName)
   return sendEmail({
     to: studentEmail,
     subject: '[VERIFIED] Profile Fully Verified - Access Granted!',
-    html
+    html,
   });
 };
 
@@ -50,12 +50,16 @@ const sendStudentProfileRejectedByAdminEmail = async (studentEmail, studentName)
   return sendEmail({
     to: studentEmail,
     subject: '[REJECTED] Profile Verification Update - Admin Review',
-    html
+    html,
   });
 };
 
 // Deleted due to Teacher Account Deletion
-const sendStudentAccountDeletedDueToTeacherDeletionEmail = async (studentEmail, studentName, teacherName) => {
+const sendStudentAccountDeletedDueToTeacherDeletionEmail = async (
+  studentEmail,
+  studentName,
+  teacherName,
+) => {
   const html = `
     <div style="font-family: Arial; max-width:600px; margin:auto;">
       <h2 style="color:#f44336;">⚠️ Account Deleted - Teacher Account Removed</h2>
@@ -69,7 +73,7 @@ const sendStudentAccountDeletedDueToTeacherDeletionEmail = async (studentEmail, 
   return sendEmail({
     to: studentEmail,
     subject: '[ATTENTION] Account Deleted - Teacher Account Removed',
-    html
+    html,
   });
 };
 
@@ -99,12 +103,16 @@ const sendStudentProfileUnverifiedByAdminEmail = async (studentEmail, studentNam
   return sendEmail({
     to: studentEmail,
     subject: '[ACTION REQUIRED] Profile Verification Reset - Action Required',
-    html
+    html,
   });
 };
 
 // Student unverified due to teacher unverification
-const sendStudentUnverifiedDueToTeacherUnverificationEmail = async (studentEmail, studentName, teacherName) => {
+const sendStudentUnverifiedDueToTeacherUnverificationEmail = async (
+  studentEmail,
+  studentName,
+  teacherName,
+) => {
   const html = `
     <div style="font-family: Arial; max-width:600px; margin:auto;">
       <h2 style="color:#ff9800;">⚠️ Profile Verification Reset - Teacher Unverified</h2>
@@ -129,7 +137,7 @@ const sendStudentUnverifiedDueToTeacherUnverificationEmail = async (studentEmail
   return sendEmail({
     to: studentEmail,
     subject: '[ATTENTION] Profile Verification Reset - Teacher Status Changed',
-    html
+    html,
   });
 };
 
@@ -139,5 +147,5 @@ module.exports = {
   sendStudentProfileRejectedByAdminEmail,
   sendStudentAccountDeletedDueToTeacherDeletionEmail,
   sendStudentProfileUnverifiedByAdminEmail,
-  sendStudentUnverifiedDueToTeacherUnverificationEmail
+  sendStudentUnverifiedDueToTeacherUnverificationEmail,
 };

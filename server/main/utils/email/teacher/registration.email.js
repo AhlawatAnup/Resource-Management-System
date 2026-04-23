@@ -41,7 +41,7 @@ const sendTeacherRegistrationSuccessEmail = async (teacherEmail, teacherName) =>
   return sendEmail({
     to: teacherEmail,
     subject: 'Teacher Registration Successful - Pending Admin Verification',
-    html
+    html,
   });
 };
 

@@ -1,21 +1,21 @@
 // confirmation-popup.js
 
 export function showConfirmationPopup(onSubmitHandler, originalEvent, student = {}, purpose = '') {
-    const currentDate = new Date().toLocaleDateString('en-IN', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-    });
+  const currentDate = new Date().toLocaleDateString('en-IN', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  });
 
-    // Create overlay
-    const overlay = document.createElement('div');
-    overlay.className = 'confirmation-popup-overlay';
+  // Create overlay
+  const overlay = document.createElement('div');
+  overlay.className = 'confirmation-popup-overlay';
 
-    // Create popup
-    const popup = document.createElement('div');
-    popup.className = 'confirmation-popup';
+  // Create popup
+  const popup = document.createElement('div');
+  popup.className = 'confirmation-popup';
 
-    popup.innerHTML = `
+  popup.innerHTML = `
         <h3 class="confirmation-popup__title">Undertaking for Use of AI Data Centre Facilities at Panjab University, Chandigarh</h3>
         <div class="confirmation-popup__content">
 
@@ -118,24 +118,24 @@ export function showConfirmationPopup(onSubmitHandler, originalEvent, student = 
         </div>
     `;
 
-    overlay.appendChild(popup);
-    document.body.appendChild(overlay);
+  overlay.appendChild(popup);
+  document.body.appendChild(overlay);
 
-    // Cancel button handler
-    document.getElementById('popup-cancel-btn').addEventListener('click', () => {
-        overlay.remove();
-    });
+  // Cancel button handler
+  document.getElementById('popup-cancel-btn').addEventListener('click', () => {
+    overlay.remove();
+  });
 
-    // Close on overlay click
-    overlay.addEventListener('click', (e) => {
-        if (e.target === overlay) {
-            overlay.remove();
-        }
-    });
+  // Close on overlay click
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) {
+      overlay.remove();
+    }
+  });
 
-    // Submit button handler - calls the actual submit handler
-    document.getElementById('popup-submit-btn').addEventListener('click', () => {
-        overlay.remove();
-        onSubmitHandler(originalEvent);
-    });
+  // Submit button handler - calls the actual submit handler
+  document.getElementById('popup-submit-btn').addEventListener('click', () => {
+    overlay.remove();
+    onSubmitHandler(originalEvent);
+  });
 }

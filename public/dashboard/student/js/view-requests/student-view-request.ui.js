@@ -2,11 +2,11 @@
 
 import { formatDate } from '../../../common/js/commons.js';
 import {
-    getRequestStatus,
-    getRequestStatusText,
-    getRequestStatusClass,
-    getRequestStatusIcon,
-    canDeleteRequest
+  getRequestStatus,
+  getRequestStatusText,
+  getRequestStatusClass,
+  getRequestStatusIcon,
+  canDeleteRequest,
 } from '../student.utils.js';
 
 // ==============================
@@ -14,9 +14,9 @@ import {
 // ==============================
 
 export function renderRequestsPageStructure(onFilterChange) {
-    const container = document.getElementById('requests-content');
+  const container = document.getElementById('requests-content');
 
-    container.innerHTML = `
+  container.innerHTML = `
         <div class="requests-page">
             <div id="all-requests" class="resource-request-section">
                 <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
@@ -42,12 +42,12 @@ export function renderRequestsPageStructure(onFilterChange) {
         </div>
     `;
 
-    const statusFilter = document.getElementById('status-filter');
-    if (statusFilter) {
-        statusFilter.addEventListener('change', function () {
-            onFilterChange(this.value);
-        });
-    }
+  const statusFilter = document.getElementById('status-filter');
+  if (statusFilter) {
+    statusFilter.addEventListener('change', function () {
+      onFilterChange(this.value);
+    });
+  }
 }
 
 // ==============================
@@ -55,10 +55,10 @@ export function renderRequestsPageStructure(onFilterChange) {
 // ==============================
 
 export function renderAllRequests(requests, onDelete, onReload) {
-    const container = document.getElementById('all-requests-list');
+  const container = document.getElementById('all-requests-list');
 
-    if (!requests || requests.length === 0) {
-        container.innerHTML = `
+  if (!requests || requests.length === 0) {
+    container.innerHTML = `
             <div class="no-requests">
                 <div class="empty-state">
                     <i class="fas fa-inbox" style="font-size: 4em; color: #ddd; margin-bottom: 20px;"></i>
@@ -71,15 +71,17 @@ export function renderAllRequests(requests, onDelete, onReload) {
                 </div>
             </div>
         `;
-        return;
-    }
+    return;
+  }
 
-    // Sort requests by creation date (newest first)
-    const sortedRequests = [...requests].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  // Sort requests by creation date (newest first)
+  const sortedRequests = [...requests].sort(
+    (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
+  );
 
-    container.innerHTML = sortedRequests.map(request => createRequestCard(request)).join('');
+  container.innerHTML = sortedRequests.map((request) => createRequestCard(request)).join('');
 
-    attachDeleteHandlers(onDelete, onReload);
+  attachDeleteHandlers(onDelete, onReload);
 }
 
 // ==============================
@@ -87,31 +89,34 @@ export function renderAllRequests(requests, onDelete, onReload) {
 // ==============================
 
 export function filterRequests(status) {
-    const requestItems = document.querySelectorAll('.request-item.detailed');
+  const requestItems = document.querySelectorAll('.request-item.detailed');
 
-    requestItems.forEach(item => {
-        if (status === 'all' || item.dataset.status === status) {
-            item.style.display = 'block';
-        } else {
-            item.style.display = 'none';
-        }
-    });
-
-    // Update the count display
-    const visibleItems = document.querySelectorAll('.request-item.detailed:not([style*="display: none"])').length;
-    const totalItems = requestItems.length;
-
-    let filterInfo = document.getElementById('filter-info');
-    if (!filterInfo) {
-        filterInfo = document.createElement('div');
-        filterInfo.id = 'filter-info';
-        filterInfo.style.cssText = 'margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 6px; color: #666; font-size: 0.9em;';
-        const list = document.getElementById('all-requests-list');
-        list.insertBefore(filterInfo, list.firstChild);
+  requestItems.forEach((item) => {
+    if (status === 'all' || item.dataset.status === status) {
+      item.style.display = 'block';
+    } else {
+      item.style.display = 'none';
     }
+  });
 
-    const statusText = status === 'all' ? 'All' : status.charAt(0).toUpperCase() + status.slice(1);
-    filterInfo.innerHTML = `Showing ${visibleItems} of ${totalItems} requests (${statusText})`;
+  // Update the count display
+  const visibleItems = document.querySelectorAll(
+    '.request-item.detailed:not([style*="display: none"])',
+  ).length;
+  const totalItems = requestItems.length;
+
+  let filterInfo = document.getElementById('filter-info');
+  if (!filterInfo) {
+    filterInfo = document.createElement('div');
+    filterInfo.id = 'filter-info';
+    filterInfo.style.cssText =
+      'margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 6px; color: #666; font-size: 0.9em;';
+    const list = document.getElementById('all-requests-list');
+    list.insertBefore(filterInfo, list.firstChild);
+  }
+
+  const statusText = status === 'all' ? 'All' : status.charAt(0).toUpperCase() + status.slice(1);
+  filterInfo.innerHTML = `Showing ${visibleItems} of ${totalItems} requests (${statusText})`;
 }
 
 // ==============================
@@ -119,18 +124,20 @@ export function filterRequests(status) {
 // ==============================
 
 function createRequestCard(request) {
-    const status = getRequestStatus(request);
-    const statusText = getRequestStatusText(request);
-    const statusClass = getRequestStatusClass(request);
-    const statusIcon = getRequestStatusIcon(request);
-    const editedBadge = request.isEdited ? '<span class="edited-badge" style="margin-left: 8px; color: #ff7a45; font-size: 0.85em; font-weight: 500;">(edited by teacher/admin)</span>' : '';
+  const status = getRequestStatus(request);
+  const statusText = getRequestStatusText(request);
+  const statusClass = getRequestStatusClass(request);
+  const statusIcon = getRequestStatusIcon(request);
+  const editedBadge = request.isEdited
+    ? '<span class="edited-badge" style="margin-left: 8px; color: #ff7a45; font-size: 0.85em; font-weight: 500;">(edited by teacher/admin)</span>'
+    : '';
 
-    const canDelete = canDeleteRequest(request);
+  const canDelete = canDeleteRequest(request);
 
-    const isVerified = request.is_verified && request.machineId && request.machineId.MIGID;
-    const showTokenAndButtons = isVerified && request.isAllotmentActive;
+  const isVerified = request.is_verified && request.machineId && request.machineId.MIGID;
+  const showTokenAndButtons = isVerified && request.isAllotmentActive;
 
-    return `
+  return `
         <div class="request-item detailed" data-status="${status}" style="position:relative; border:1px solid #ddd; border-radius:12px; padding:16px; margin-bottom:16px; background:#fff; box-shadow:0 2px 6px rgba(0,0,0,0.05);">
 
             <!-- Delete Button Top-Right -->
@@ -147,23 +154,35 @@ function createRequestCard(request) {
             </div>
 
             <!-- MIGID and Allotment Time Display -->
-            ${(request.machineId && request.machineId.MIGID) ? `
+            ${
+              request.machineId && request.machineId.MIGID
+                ? `
                 <div class="request-migid" style="margin: 8px 0 0 0; color: #434343">
                     <strong>MIGID:</strong> <span>${request.machineId.MIGID}</span>
                 </div>
-            ` : ''}
-            ${(request.machineId && request.machineId.gpuRam) ? `
+            `
+                : ''
+            }
+            ${
+              request.machineId && request.machineId.gpuRam
+                ? `
                 <div class="request-gpuram" style="margin: 4px 0 0 0; color: #434343">
                     <strong>GPU RAM:</strong> <span>${request.machineId.gpuRam} GB</span>
                 </div>
-            ` : ''}
-            ${(request.allotmentStartTime && request.allotmentEndTime) ? `
+            `
+                : ''
+            }
+            ${
+              request.allotmentStartTime && request.allotmentEndTime
+                ? `
                 <div class="request-allotment-time" style="margin: 4px 0 0 0; color: #434343">
                     <strong>Allotment:</strong> 
                     <span>Start: ${formatDate(request.allotmentStartTime)}</span> &nbsp; | &nbsp; 
                     <span>End: ${formatDate(request.allotmentEndTime)}</span>
                 </div>
-            ` : ''}
+            `
+                : ''
+            }
 
             <!-- Body -->
             <div class="request-body">
@@ -174,10 +193,13 @@ function createRequestCard(request) {
             </div>
 
             <!-- Token Section and Buttons -->
-            ${showTokenAndButtons ? `
+            ${
+              showTokenAndButtons
+                ? `
                 <div class="request-token" id="token-field-${request._id}"
                      style="margin:12px 0; padding:10px; background:#f6ffed; border-left:4px solid #52c41a; border-radius:6px; color:#237804; display: flex; align-items: center; gap: 10px;">
-                    ${request.token 
+                    ${
+                      request.token
                         ? `<strong>Token:</strong> 
                            <span class="token-value" style="font-family:monospace;">${request.token}</span>
                            <button class="copy-token-btn" data-token="${request.token}" title="Copy Token" style="margin-left:8px; padding:2px 8px; font-size:1.1em; border-radius:4px; border:1px solid #b7eb8f; background:#fff; color:#237804; cursor:pointer; display: flex; align-items: center;">
@@ -194,7 +216,8 @@ function createRequestCard(request) {
                         Access Machine
                     </button>
                     `
-                    : ''}
+                : ''
+            }
 
             <!-- Footer -->
             <div class="request-footer" 
@@ -210,28 +233,27 @@ function createRequestCard(request) {
 // ==============================
 
 function attachDeleteHandlers(onDelete, onReload) {
-    document.querySelectorAll('.delete-request-btn').forEach(btn => {
-        btn.addEventListener('click', async function () {
-            const requestId = btn.getAttribute('data-request-id');
-            const result = await Swal.fire({
-                title: 'Are you sure?',
-                text: 'Do you want to delete this request?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Delete',
-                cancelButtonText: 'Cancel',
-                draggable: true,
-                scrollbarPadding: false,
-                heightAuto: false
-            });
+  document.querySelectorAll('.delete-request-btn').forEach((btn) => {
+    btn.addEventListener('click', async function () {
+      const requestId = btn.getAttribute('data-request-id');
+      const result = await Swal.fire({
+        title: 'Are you sure?',
+        text: 'Do you want to delete this request?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Delete',
+        cancelButtonText: 'Cancel',
+        draggable: true,
+        scrollbarPadding: false,
+        heightAuto: false,
+      });
 
-            if (result.isConfirmed) {
-                await onDelete(requestId);
-                onReload();
-            }
-        });
+      if (result.isConfirmed) {
+        await onDelete(requestId);
+        onReload();
+      }
     });
-
+  });
 }
