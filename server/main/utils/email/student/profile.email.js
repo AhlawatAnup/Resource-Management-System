@@ -8,6 +8,10 @@ const sendStudentProfileRejectedByTeacherEmail = async (studentEmail, studentNam
       <p>Dear <strong>${studentName}</strong>,</p>
       <p>Your profile has been rejected by ${teacherName}.</p>
       <p>Your account has been deleted. Please register again.</p>
+
+      <a href="https://aicentre.puchd.ac.in" style="font-family: Arial, sans-serif;background:#1b1e1f;padding :15px; text-decoration: none;; color: white;margin:5px;">
+          Visit Platform
+      </a>
     </div>
   `;
 
@@ -26,6 +30,10 @@ const sendStudentProfileVerifiedByAdminEmail = async (studentEmail, studentName)
       <p>Dear <strong>${studentName}</strong>,</p>
       <p>Your profile has been verified by the admin. You now have full system access.</p>
       <p>You can now raise resource requests</p>
+
+      <a href="https://aicentre.puchd.ac.in" style="font-family: Arial, sans-serif;background:#1b1e1f;padding :15px; text-decoration: none;; color: white;margin:5px;">
+          Visit Platform
+      </a>
     </div>
   `;
 
@@ -44,6 +52,9 @@ const sendStudentProfileRejectedByAdminEmail = async (studentEmail, studentName)
       <p>Dear <strong>${studentName}</strong>,</p>
       <p>Your profile was rejected by the administrator.</p>
       <p>Please complete a fresh registration.</p>
+      <a href="https://aicentre.puchd.ac.in" style="font-family: Arial, sans-serif;background:#1b1e1f;padding :15px; text-decoration: none;; color: white;margin:5px;">
+          Visit Platform
+      </a>
     </div>
   `;
 
