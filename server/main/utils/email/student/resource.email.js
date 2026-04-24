@@ -113,6 +113,10 @@ const sendResourceRequestVerifiedEmail = async ({
         <p>
           Please log in to your dashboard for more details.
         </p>
+
+        <a href="https://aicentre.puchd.ac.in" style="font-family: Arial, sans-serif;background:#1b1e1f;padding :15px; text-decoration: none;; color: white;margin:5px;">
+          Visit Platform
+        </a>
       </div>
     `,
   });
@@ -154,6 +158,11 @@ const sendResourceRequestRejectedEmail = async ({
         </div>
 
         <p>Please check the details carefully before resubmitting.</p>
+
+        <a href="https://aicentre.puchd.ac.in" style="font-family: Arial, sans-serif;background:#1b1e1f;padding :15px; text-decoration: none;; color: white;margin:5px;">
+          Visit Platform
+        </a>
+
       </div>
     `,
   });
@@ -176,6 +185,10 @@ const sendResourceRequestRevokedByAdminEmail = async (studentEmail, studentName,
         </p>
 
         <p>If you still need resources, please submit a new request with updated details.</p>
+
+        <a href="https://aicentre.puchd.ac.in" style="font-family: Arial, sans-serif;background:#1b1e1f;padding :15px; text-decoration: none;; color: white;margin:5px;">
+          Visit Platform
+        </a>
       </div>
     `,
   });
@@ -222,6 +235,11 @@ const sendResourceAllotmentStartedEmail = async ({
           <p style="color:#1976d2; font-size: 0.9em;">
             If you face any technical issues, please report them to the administrator immediately.
           </p>
+
+          <a href="https://aicentre.puchd.ac.in" style="font-family: Arial, sans-serif;background:#1b1e1f;padding :15px; text-decoration: none;; color: white;margin:5px;">
+          Visit Platform
+          </a>
+
 
           <p>Regards,<br>
           <strong>UIET Cluster Resource Management System</strong></p>
@@ -272,6 +290,10 @@ const sendResourceAllotmentExpiryTodayEmail = async ({
         <p style="color:#d32f2f;">
           Any data loss after the expiry time will be your responsibility.
         </p>
+
+        <a href="https://aicentre.puchd.ac.in" style="font-family: Arial, sans-serif;background:#1b1e1f;padding :15px; text-decoration: none;; color: white;margin:5px;">
+          Visit Platform
+        </a>
 
         <p>Regards,</p>
         <strong>UIET Cluster Resource Management System</strong></p>

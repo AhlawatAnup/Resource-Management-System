@@ -27,6 +27,10 @@ const sendTeacherProfileVerifiedByAdminEmail = async (teacherEmail, teacherName)
         </ul>
       </div>
 
+      <a href="https://aicentre.puchd.ac.in" style="font-family: Arial, sans-serif;background:#1b1e1f;padding :15px; text-decoration: none;; color: white;margin:5px;">
+          Visit Platform
+      </a>
+
       <p>Best regards,<br>
       <strong>UIET Cluster Resource Management System</strong></p>
 
