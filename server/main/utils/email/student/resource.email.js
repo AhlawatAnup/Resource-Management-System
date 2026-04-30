@@ -114,9 +114,9 @@ const sendResourceRequestVerifiedEmail = async ({
           Please log in to your dashboard for more details.
         </p>
 
-        <a href="https://aicentre.puchd.ac.in" style="font-family: Arial, sans-serif;background:#1b1e1f;padding :15px; text-decoration: none;; color: white;margin:5px;">
-          Visit Platform
-        </a>
+    <a href="https://aicentre.puchd.ac.in" style="font-family: Arial, sans-serif;background:#1b1e1f;padding :15px; text-decoration: none; color: white; margin-block:2rem; position: relative;  justify-content: center; display: flex;">
+         Go to Website
+      </a>
       </div>
     `,
   });
@@ -159,9 +159,9 @@ const sendResourceRequestRejectedEmail = async ({
 
         <p>Please check the details carefully before resubmitting.</p>
 
-        <a href="https://aicentre.puchd.ac.in" style="font-family: Arial, sans-serif;background:#1b1e1f;padding :15px; text-decoration: none;; color: white;margin:5px;">
-          Visit Platform
-        </a>
+    <a href="https://aicentre.puchd.ac.in" style="font-family: Arial, sans-serif;background:#1b1e1f;padding :15px; text-decoration: none; color: white; margin-block:2rem; position: relative;  justify-content: center; display: flex;">
+         Go to Website
+      </a>
 
       </div>
     `,
@@ -186,9 +186,9 @@ const sendResourceRequestRevokedByAdminEmail = async (studentEmail, studentName,
 
         <p>If you still need resources, please submit a new request with updated details.</p>
 
-        <a href="https://aicentre.puchd.ac.in" style="font-family: Arial, sans-serif;background:#1b1e1f;padding :15px; text-decoration: none;; color: white;margin:5px;">
-          Visit Platform
-        </a>
+    <a href="https://aicentre.puchd.ac.in" style="font-family: Arial, sans-serif;background:#1b1e1f;padding :15px; text-decoration: none; color: white; margin-block:2rem; position: relative;  justify-content: center; display: flex;">
+         Go to Website
+      </a>
       </div>
     `,
   });
@@ -236,9 +236,9 @@ const sendResourceAllotmentStartedEmail = async ({
             If you face any technical issues, please report them to the administrator immediately.
           </p>
 
-          <a href="https://aicentre.puchd.ac.in" style="font-family: Arial, sans-serif;background:#1b1e1f;padding :15px; text-decoration: none;; color: white;margin:5px;">
-          Visit Platform
-          </a>
+    <a href="https://aicentre.puchd.ac.in" style="font-family: Arial, sans-serif;background:#1b1e1f;padding :15px; text-decoration: none; color: white; margin-block:2rem; position: relative;  justify-content: center; display: flex;">
+         Go to Website
+      </a>
 
 
           <p>Regards,<br>
@@ -291,9 +291,9 @@ const sendResourceAllotmentExpiryTodayEmail = async ({
           Any data loss after the expiry time will be your responsibility.
         </p>
 
-        <a href="https://aicentre.puchd.ac.in" style="font-family: Arial, sans-serif;background:#1b1e1f;padding :15px; text-decoration: none;; color: white;margin:5px;">
-          Visit Platform
-        </a>
+    <a href="https://aicentre.puchd.ac.in" style="font-family: Arial, sans-serif;background:#1b1e1f;padding :15px; text-decoration: none; color: white; margin-block:2rem; position: relative;  justify-content: center; display: flex;">
+         Go to Website
+      </a>
 
         <p>Regards,</p>
         <strong>UIET Cluster Resource Management System</strong></p>

@@ -27,8 +27,8 @@ const sendTeacherProfileVerifiedByAdminEmail = async (teacherEmail, teacherName)
         </ul>
       </div>
 
-      <a href="https://aicentre.puchd.ac.in" style="font-family: Arial, sans-serif;background:#1b1e1f;padding :15px; text-decoration: none;; color: white;margin:5px;">
-          Visit Platform
+    <a href="https://aicentre.puchd.ac.in" style="font-family: Arial, sans-serif;background:#1b1e1f;padding :15px; text-decoration: none; color: white; margin-block:2rem; position: relative;  justify-content: center; display: flex;">
+         Go to Website
       </a>
 
       <p>Best regards,<br>
