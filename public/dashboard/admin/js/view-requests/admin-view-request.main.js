@@ -37,10 +37,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (isReload) {
     // only restore on reload
-    savedStatus = sessionStorage.getItem('selectedStatus') || 'active';
+    savedStatus = localStorage.getItem('selectedStatus') || 'active';
   } else {
     // coming from another page → RESET
-    sessionStorage.removeItem('selectedStatus');
+    localStorage.removeItem('selectedStatus');
   }
 
   setStatusFilter(savedStatus);
@@ -69,8 +69,8 @@ document.addEventListener('DOMContentLoaded', () => {
       // add active to clicked
       btn.classList.add('active');
 
-      // 🔥 SAVE TO LOCAL STORAGE
-      sessionStorage.setItem('selectedStatus', status);
+      // SAVE TO LOCAL STORAGE
+      localStorage.setItem('selectedStatus', status);
 
       setStatusFilter(status);
     });

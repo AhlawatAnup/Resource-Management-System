@@ -37,6 +37,33 @@ let expiredRequests = [];
 let rejectedRequests = [];
 let statsChart = null;
 
+function getUIStatus(r) {
+  const now = new Date();
+
+  // Any rejection (teacher OR admin)
+  if ((r.teacher_action && !r.teacher_verified) || (r.admin_action && !r.admin_verified)) {
+    return 'rejected';
+  }
+
+  // Fully approved
+  if (r.teacher_verified || r.admin_verified) {
+    if (r.startTime && r.endTime) {
+      const start = new Date(r.startTime);
+      const end = new Date(r.endTime);
+
+      if (now < start) return 'upcoming'; // not started yet
+      if (now >= start && now <= end) return 'active'; // currently running
+      if (now > end) return 'expired'; // finished
+    }
+
+    //Fallback if no time exists
+    return 'active';
+  }
+
+  //Still waiting for approvals
+  return 'upcoming';
+}
+
 // ===== LOAD =====
 export async function loadRequestsHandler() {
   try {
@@ -55,33 +82,6 @@ export async function loadRequestsHandler() {
     expiredRequests = [];
     rejectedRequests = [];
     activeRequests = [];
-
-    function getUIStatus(r) {
-      const now = new Date();
-
-      // Any rejection (teacher OR admin)
-      if ((r.teacher_action && !r.teacher_verified) || (r.admin_action && !r.admin_verified)) {
-        return 'rejected';
-      }
-
-      // Fully approved
-      if (r.teacher_verified || r.admin_verified) {
-        if (r.startTime && r.endTime) {
-          const start = new Date(r.startTime);
-          const end = new Date(r.endTime);
-
-          if (now < start) return 'upcoming'; // not started yet
-          if (now >= start && now <= end) return 'active'; // currently running
-          if (now > end) return 'expired'; // finished
-        }
-
-        //Fallback if no time exists
-        return 'active';
-      }
-
-      //Still waiting for approvals
-      return 'upcoming';
-    }
 
     resourceRequests.forEach((r) => {
       const status = getUIStatus(r);
@@ -154,13 +154,10 @@ export async function copyHandler(targetId) {
 }
 
 function getActionButtons(r) {
-  const status = getRequestStatus(r);
+  const status = getUIStatus(r);
 
-  if (status.class === 'declined') {
-    return '';
-  }
-
-  if (status.class === 'expired') {
+  // EXPIRED → only report
+  if (status === 'expired') {
     return `
       <button class="icon-btn stats-report-btn" data-request-id="${r._id}">
         <i class="fa fa-bar-chart"></i>
@@ -168,35 +165,36 @@ function getActionButtons(r) {
     `;
   }
 
-  // VERIFIED
-  if (status.class === 'verified') {
+  // UPCOMING → edit + revoke
+  if (status === 'upcoming') {
     return `
-      <button class="icon-btn edit-btn" data-request-id="${r._id}" title="Edit">
+      <button class="icon-btn edit-btn" data-request-id="${r._id}">
         <i class="fas fa-pen-to-square"></i>
       </button>
-  
-      <button title="Revoke student's access from machine" class="icon-btn revoke-btn" data-request-id="${r._id}">
+
+      <button class="icon-btn revoke-btn" data-request-id="${r._id}">
+        Revoke
+      </button>
+    `;
+  }
+
+  //  ACTIVE → all 3
+  if (status === 'active') {
+    return `
+      <button class="icon-btn edit-btn" data-request-id="${r._id}">
+        <i class="fas fa-pen-to-square"></i>
+      </button>
+
+      <button class="icon-btn revoke-btn" data-request-id="${r._id}">
         Revoke
       </button>
 
-      <button title="Machine usage report" class="icon-btn stats-report-btn" data-request-id="${r._id}">
-       <i class="fa fa-bar-chart"></i>
+      <button class="icon-btn stats-report-btn" data-request-id="${r._id}">
+        <i class="fa fa-bar-chart"></i>
       </button>
     `;
   }
 
-  // PENDING TEACHER
-  if (status.class === 'pending-teacher') {
-    return `
-      <button class="icon-btn approve-btn" data-request-id="${r._id}" data-action="approve" title="Approve">
-        <i class="fas fa-check"></i>
-      </button>
-
-      <button class="icon-btn decline-btn" data-request-id="${r._id}" data-action="decline" title="Decline">
-        <i class="fas fa-times"></i>
-      </button>
-    `;
-  }
   return '';
 }
 
