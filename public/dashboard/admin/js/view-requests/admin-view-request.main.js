@@ -23,16 +23,58 @@ import {
 } from './admin-view-request.utils.js';
 import { setupDarkMode } from '../../../common/js/darkmode/darkmode.js';
 import { openEditModal } from './admin-view-request.ui.js';
+import { setStatusFilter } from './admin-view-request.handler.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   setupDarkMode();
   loadRequestsHandler();
 
+  //Handling Navigation
+  const navEntry = performance.getEntriesByType('navigation')[0];
+  const isReload = navEntry && navEntry.type === 'reload';
+
+  let savedStatus = 'active';
+
+  if (isReload) {
+    // only restore on reload
+    savedStatus = sessionStorage.getItem('selectedStatus') || 'active';
+  } else {
+    // coming from another page → RESET
+    sessionStorage.removeItem('selectedStatus');
+  }
+
+  setStatusFilter(savedStatus);
+
+  // set active button UI
+  document.querySelectorAll('.status-btn').forEach((btn) => {
+    btn.classList.remove('active');
+
+    if (btn.dataset.status === savedStatus) {
+      btn.classList.add('active');
+    }
+  });
   // search
   document.getElementById('searchInput')?.addEventListener('input', (e) => {
     filterHandler(e.target.value);
   });
 
+  //Filter
+  document.querySelectorAll('.status-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const status = btn.dataset.status;
+
+      // remove active from all
+      document.querySelectorAll('.status-btn').forEach((b) => b.classList.remove('active'));
+
+      // add active to clicked
+      btn.classList.add('active');
+
+      // 🔥 SAVE TO LOCAL STORAGE
+      sessionStorage.setItem('selectedStatus', status);
+
+      setStatusFilter(status);
+    });
+  });
   // table actions
   document.getElementById('requestsTableBody')?.addEventListener('click', async (e) => {
     const approveDeclineBtn = e.target.closest('.approve-btn, .decline-btn');
