@@ -7,7 +7,6 @@
 ![Python](https://img.shields.io/badge/Python-3.x-blue?style=flat-square&logo=python)
 ![License](https://img.shields.io/badge/license-GPLv3-blue.svg)
 
-
 ## Introduction
 
 This project is an open-source resource management system designed to help organizations efficiently host, allocate, and monitor their CPU and GPU infrastructure. It enables institutions to bring their compute resources online, manage user access, and maintain full visibility over usage—without relying on expensive proprietary software.
@@ -105,9 +104,7 @@ Designed to grow with your needs:
 - Suitable for small labs to large institutional clusters
 - Easily adaptable to increasing workloads and users
 
-
 ---
-
 
 # 🚀 Project Setup Guide
 
@@ -138,22 +135,24 @@ Designed to grow with your needs:
 
 Ensure the following are installed before proceeding:
 
-| Tool | Version | Purpose |
-|------|---------|---------|
-| **Node.js** | v16 or higher | Runtime environment |
-| **npm** | Bundled with Node | Package manager |
-| **MongoDB** | Local instance | Primary database |
-| **Python** | 3.x | Jupyter Notebook backend |
-| **Git** | Latest stable | Version control |
+| Tool        | Version           | Purpose                  |
+| ----------- | ----------------- | ------------------------ |
+| **Node.js** | v16 or higher     | Runtime environment      |
+| **npm**     | Bundled with Node | Package manager          |
+| **MongoDB** | Local instance    | Primary database         |
+| **Python**  | 3.x               | Jupyter Notebook backend |
+| **Git**     | Latest stable     | Version control          |
 
 ---
 
 ## 🍴 1. Fork & Clone Repository
 
 ### Step 1 — Fork
+
 Go to the original repository on GitHub and click **Fork** to copy it to your account.
 
 ### Step 2 — Clone & Enter Directory
+
 ```bash
 git clone <your-forked-repo-url>
 cd <project-folder>
@@ -174,6 +173,7 @@ npm install
 This project uses a `.env` file for all sensitive configuration.
 
 ### Create the file
+
 ```bash
 cp sample.env .env
 ```
@@ -194,11 +194,13 @@ STATS_DB_URI=mongodb://localhost:27017/machine_monitoring
 ### 🔔 Web Push (VAPID Keys)
 
 Generate your keys first:
+
 ```bash
 npx web-push generate-vapid-keys
 ```
 
 Then paste the output into `.env`:
+
 ```env
 VAPID_PUBLIC_KEY=your_public_key
 VAPID_PRIVATE_KEY=your_private_key
@@ -232,6 +234,7 @@ JUPYTER_SERVER_URL=your_jupyter_server_url
 ## 🧠 4. Setup Jupyter Server
 
 ### Install JupyterLab
+
 ```bash
 pip install jupyterlab
 ```
@@ -239,6 +242,7 @@ pip install jupyterlab
 ### Start the server
 
 #### 🍎 macOS / Linux
+
 ```bash
 python -m jupyter notebook \
   --ip=0.0.0.0 \
@@ -251,6 +255,7 @@ python -m jupyter notebook \
 ```
 
 #### 🪟 Windows
+
 ```bash
 python -m jupyter notebook --ip=0.0.0.0 --port=8888 --NotebookApp.base_url='/notebook' --NotebookApp.token='your-token' --NotebookApp.password='' --NotebookApp.allow_origin='*' --no-browse
 ```
@@ -346,6 +351,7 @@ This project is initialized by following these steps in order:
 ---
 
 > 🎯 **Project is fully set up and ready for development.**
+
 ---
 
 <p align="center">

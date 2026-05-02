@@ -31,10 +31,9 @@ let currentStatus = 'all';
 let resourceRequests = [];
 let filteredRequests = [];
 
-
 let upcomingRequests = [];
 let activeRequests = [];
-let expiredRequests=[];
+let expiredRequests = [];
 let rejectedRequests = [];
 let statsChart = null;
 
@@ -55,46 +54,42 @@ export async function loadRequestsHandler() {
     upcomingRequests = [];
     expiredRequests = [];
     rejectedRequests = [];
-    activeRequests= [];
+    activeRequests = [];
 
-  function getUIStatus(r) {
-  const now = new Date();
+    function getUIStatus(r) {
+      const now = new Date();
 
-  // Any rejection (teacher OR admin)
-  if (
-    (r.teacher_action && !r.teacher_verified) ||
-    (r.admin_action && !r.admin_verified)
-  ) {
-    return 'rejected';
-  }
+      // Any rejection (teacher OR admin)
+      if ((r.teacher_action && !r.teacher_verified) || (r.admin_action && !r.admin_verified)) {
+        return 'rejected';
+      }
 
-  // Fully approved
-  if (r.teacher_verified || r.admin_verified) {
-    if (r.startTime && r.endTime) {
-      const start = new Date(r.startTime);
-      const end = new Date(r.endTime);
+      // Fully approved
+      if (r.teacher_verified || r.admin_verified) {
+        if (r.startTime && r.endTime) {
+          const start = new Date(r.startTime);
+          const end = new Date(r.endTime);
 
-      if (now < start) return 'upcoming';   // not started yet
-      if (now >= start && now <= end) return 'active'; // currently running
-      if (now > end) return 'expired';      // finished
+          if (now < start) return 'upcoming'; // not started yet
+          if (now >= start && now <= end) return 'active'; // currently running
+          if (now > end) return 'expired'; // finished
+        }
+
+        //Fallback if no time exists
+        return 'active';
+      }
+
+      //Still waiting for approvals
+      return 'upcoming';
     }
 
-    //Fallback if no time exists
-    return 'active';
-  }
+    resourceRequests.forEach((r) => {
+      const status = getUIStatus(r);
 
-   //Still waiting for approvals
-  return 'upcoming';
-}
-
-   resourceRequests.forEach((r) => {
-   const status = getUIStatus(r);
-
-  
- if (status === 'upcoming') upcomingRequests.push(r);
-else if (status === 'active') activeRequests.push(r);
-else if (status === 'expired') expiredRequests.push(r);
-else if (status === 'rejected') rejectedRequests.push(r);
+      if (status === 'upcoming') upcomingRequests.push(r);
+      else if (status === 'active') activeRequests.push(r);
+      else if (status === 'expired') expiredRequests.push(r);
+      else if (status === 'rejected') rejectedRequests.push(r);
     });
     filteredRequests = [...resourceRequests];
 
@@ -105,7 +100,7 @@ else if (status === 'rejected') rejectedRequests.push(r);
   }
 }
 
-  export function setStatusFilter(status) {
+export function setStatusFilter(status) {
   currentStatus = status;
   render();
 }
@@ -114,14 +109,14 @@ else if (status === 'rejected') rejectedRequests.push(r);
 function render() {
   let baseData = [];
 
-if (currentStatus === 'all') baseData = resourceRequests;
-else if (currentStatus === 'upcoming') baseData = upcomingRequests;
-else if (currentStatus === 'expired') baseData = expiredRequests;
-else if (currentStatus === 'rejected') baseData = rejectedRequests;
-else if(currentStatus==='active') baseData=activeRequests;
+  if (currentStatus === 'all') baseData = resourceRequests;
+  else if (currentStatus === 'upcoming') baseData = upcomingRequests;
+  else if (currentStatus === 'expired') baseData = expiredRequests;
+  else if (currentStatus === 'rejected') baseData = rejectedRequests;
+  else if (currentStatus === 'active') baseData = activeRequests;
 
-// apply search on selected set
-const data = filterRequestsList(baseData, document.getElementById('searchInput')?.value || '');
+  // apply search on selected set
+  const data = filterRequestsList(baseData, document.getElementById('searchInput')?.value || '');
   renderResourceRequests(data, {
     getRequestStatus,
     getActionButtons,
@@ -359,7 +354,5 @@ export function renderStatsChart(apiResponse) {
 
   statsChart = new Chart(ctx, config);
 }
-
-
 
 // initAdminRefresh(loadRequestsHandler);
