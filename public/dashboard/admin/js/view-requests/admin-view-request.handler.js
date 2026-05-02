@@ -26,8 +26,16 @@ import { getInitials, getRandomNamedColor, formatDate } from '../../../common/js
 // import {initAdminRefresh} from'../pushNotifications-refreshUI/admin-refresh.js'
 
 // ===== STATE =====
+let currentStatus = 'all';
+
 let resourceRequests = [];
 let filteredRequests = [];
+
+
+let upcomingRequests = [];
+let activeRequests = [];
+let expiredRequests=[];
+let rejectedRequests = [];
 let statsChart = null;
 
 // ===== LOAD =====
@@ -44,6 +52,50 @@ export async function loadRequestsHandler() {
       }
       return r;
     });
+    upcomingRequests = [];
+    expiredRequests = [];
+    rejectedRequests = [];
+    activeRequests= [];
+
+  function getUIStatus(r) {
+  const now = new Date();
+
+  // Any rejection (teacher OR admin)
+  if (
+    (r.teacher_action && !r.teacher_verified) ||
+    (r.admin_action && !r.admin_verified)
+  ) {
+    return 'rejected';
+  }
+
+  // Fully approved
+  if (r.teacher_verified || r.admin_verified) {
+    if (r.startTime && r.endTime) {
+      const start = new Date(r.startTime);
+      const end = new Date(r.endTime);
+
+      if (now < start) return 'upcoming';   // not started yet
+      if (now >= start && now <= end) return 'active'; // currently running
+      if (now > end) return 'expired';      // finished
+    }
+
+    //Fallback if no time exists
+    return 'active';
+  }
+
+   //Still waiting for approvals
+  return 'upcoming';
+}
+
+   resourceRequests.forEach((r) => {
+   const status = getUIStatus(r);
+
+  
+ if (status === 'upcoming') upcomingRequests.push(r);
+else if (status === 'active') activeRequests.push(r);
+else if (status === 'expired') expiredRequests.push(r);
+else if (status === 'rejected') rejectedRequests.push(r);
+    });
     filteredRequests = [...resourceRequests];
 
     render();
@@ -53,9 +105,24 @@ export async function loadRequestsHandler() {
   }
 }
 
+  export function setStatusFilter(status) {
+  currentStatus = status;
+  render();
+}
+
 // ===== RENDER =====
 function render() {
-  renderResourceRequests(filteredRequests, {
+  let baseData = [];
+
+if (currentStatus === 'all') baseData = resourceRequests;
+else if (currentStatus === 'upcoming') baseData = upcomingRequests;
+else if (currentStatus === 'expired') baseData = expiredRequests;
+else if (currentStatus === 'rejected') baseData = rejectedRequests;
+else if(currentStatus==='active') baseData=activeRequests;
+
+// apply search on selected set
+const data = filterRequestsList(baseData, document.getElementById('searchInput')?.value || '');
+  renderResourceRequests(data, {
     getRequestStatus,
     getActionButtons,
     getInitials,
@@ -292,5 +359,7 @@ export function renderStatsChart(apiResponse) {
 
   statsChart = new Chart(ctx, config);
 }
+
+
 
 // initAdminRefresh(loadRequestsHandler);
