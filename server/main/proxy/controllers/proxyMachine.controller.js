@@ -199,7 +199,9 @@ const proxyMiddleware = createProxyMiddleware({
       if (res && typeof res.status === 'function') {
         // Normal HTTP response
         if (!res.headersSent) {
-          res.status(502).json({ error: 'Jupyter unreachable', detail: err.message });
+          res.status(502).json({
+            error: 'Error... Machine Unreacheble. Please Contact Admin.',
+          });
         }
       } else if (res && typeof res.end === 'function') {
         // WebSocket socket — just close it cleanly
