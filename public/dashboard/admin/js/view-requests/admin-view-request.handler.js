@@ -186,7 +186,7 @@ function getActionButtons(r) {
          isPending
            ? `
         <button class="icon-btn approve-btn" data-request-id="${r._id}" data-action='approve'>
-          Approve
+          
         </button>
       `
            : ''
@@ -194,8 +194,8 @@ function getActionButtons(r) {
        ${
         isPending? 
         `<button class="icon-btn decline-btn" data-request-id="${r._id}" data-action='decline'>
-        Remove
-      </button>`:``
+      
+         </button>`:``
        }
       <button class="icon-btn edit-btn" data-request-id="${r._id}">
         <i class="fas fa-pen-to-square"></i>
