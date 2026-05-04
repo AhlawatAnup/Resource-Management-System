@@ -191,13 +191,20 @@ function getActionButtons(r) {
       `
            : ''
        }
+       ${
+        isPending? 
+        `<button class="icon-btn decline-btn" data-request-id="${r._id}" data-action='decline'>
+        Remove
+      </button>`:``
+       }
       <button class="icon-btn edit-btn" data-request-id="${r._id}">
         <i class="fas fa-pen-to-square"></i>
       </button>
-
-      <button class="icon-btn revoke-btn" data-request-id="${r._id}">
+      ${!isPending ? 
+      `<button class="icon-btn revoke-btn" data-request-id="${r._id}">
         Revoke
-      </button>
+      </button>`:``
+      }
        ${
          !isPending
            ? `<button class="icon-btn stats-report-btn" data-request-id="${r._id}">
