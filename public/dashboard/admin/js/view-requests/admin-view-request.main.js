@@ -58,6 +58,24 @@ document.addEventListener('DOMContentLoaded', () => {
     filterHandler(e.target.value);
   });
 
+// AUTO FOCUS SEARCH ON TYPING
+document.addEventListener('keydown', (e) => {
+  const searchInput = document.getElementById('searchInput');
+
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+  if (
+    document.activeElement.tagName === 'INPUT' ||
+    document.activeElement.tagName === 'TEXTAREA'
+  ) {
+    return;
+  }
+
+  if (e.key.length === 1) {
+    searchInput.focus();
+  }
+});
+
   //Filter
   document.querySelectorAll('.status-btn').forEach((btn) => {
     btn.addEventListener('click', () => {
