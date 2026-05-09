@@ -117,6 +117,11 @@ function render() {
 
   // apply search on selected set
   const data = filterRequestsList(baseData, document.getElementById('searchInput')?.value || '');
+  document.getElementById('current-count').textContent = data.length;
+
+  document.getElementById('current-label').textContent =
+  currentStatus.charAt(0).toUpperCase() + currentStatus.slice(1);
+  
   renderResourceRequests(data, {
     getRequestStatus,
     getActionButtons,

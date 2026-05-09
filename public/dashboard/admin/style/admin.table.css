@@ -1,7 +1,7 @@
 /* Table Styles */
 .table-container {
   background: white;
-  border-radius: 12px;
+  border-radius:0;
   overflow: hidden;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }

@@ -250,9 +250,10 @@ body {
 /* Search Container */
 .search-container {
   position: relative;
+  width: 500px;
+  margin: 10px auto;
   display: flex;
   align-items: center;
-  max-width: 400px;
 }
 
 .search-icon {
@@ -278,7 +279,10 @@ body {
 
 .search-input:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: #60a5fa;
+  box-shadow:
+    0 0 0 3px rgba(96, 165, 250, 0.15),
+    0 4px 12px rgba(59, 130, 246, 0.12);
 }
 
 /* Admin-specific styles */

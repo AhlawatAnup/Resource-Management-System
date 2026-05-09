@@ -111,6 +111,23 @@ export function setupSearch({ state }) {
       currentStatus: state.currentStatus,
     });
   });
+   // AUTO FOCUS SEARCH WHEN USER STARTS TYPING
+  document.addEventListener('keydown', (e) => {
+    const searchInput = document.getElementById('searchInput');
+
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+    if (
+      document.activeElement.tagName === 'INPUT' ||
+      document.activeElement.tagName === 'TEXTAREA'
+    ) {
+      return;
+    }
+
+    if (e.key.length === 1) {
+      searchInput.focus();
+    }
+  });
 }
 
 // -----------------------------
