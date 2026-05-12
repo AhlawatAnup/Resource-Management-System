@@ -68,44 +68,25 @@
     <div class="main-wrapper">
       <nav class="top-nav">
         <div class="nav-brand">
-          <h2>Machines</h2>
+          <h2>All Machines</h2>
         </div>
-        <div class="nav-actions">
+          <div class="nav-actions">
+          <button
+        id="addMachineBtn"
+        class="add-machine-btn"
+        type="button"
+         aria-label="Add a machine"
+         >
+        <i class="fas fa-plus"></i>
+         Add Machine
+         </button>
+
           <button id="theme-toggle" class="theme-toggle" title="Dark Mode">
             <i id="theme-icon" class="fa fa-moon"></i>
           </button>
         </div>
       </nav>
-      <!-- Page actions below header (right-aligned) -->
-      <div class="page-actions machines-page-actions">
-        <!-- Filters (UI-only) placed to the left of the add button -->
-        <div class="machines-filters" aria-label="Machine filters">
-          <div class="nav-group">
-            <button class="status-btn active" data-filter="all" type="button">
-              <i class="fas fa-list"></i>
-              All
-            </button>
-            <button class="status-btn" data-filter="free" type="button">
-              <i class="fas fa-circle-notch"></i>
-              Free resources
-            </button>
-            <button class="status-btn" data-filter="assigned" type="button">
-              <i class="fas fa-user"></i>
-              Assigned resources
-            </button>
-          </div>
-        </div>
-        <div class="add-machine-wrapper">
-          <button
-            id="addMachineBtn"
-            class="add-machine-btn"
-            type="button"
-            aria-label="Add a machine"
-          >
-            Add
-          </button>
-        </div>
-      </div>
+     
     </div>
     <!-- Header Ends-->
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>

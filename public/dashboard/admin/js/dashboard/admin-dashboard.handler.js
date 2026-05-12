@@ -10,13 +10,13 @@ import {
 
 import { getEndpoint, extractDataByTypeAndStatus, filterData } from './admin-dashboard.utils.js';
 
-import { renderPageHeader, renderTableHeaders, renderTable } from './admin-dashboard.ui.js';
+import {  renderTableHeaders, renderTable, updateStatusCounts } from './admin-dashboard.ui.js';
 
 // -----------------------------
 // Load & Render Flow
 // -----------------------------
 export async function loadAndRender({ state, logout }) {
-  renderPageHeader(state.currentType, state.currentStatus);
+
   renderTableHeaders(state.currentType, state.currentStatus);
 
   const endpoint = getEndpoint(state.currentType, state.currentStatus);
@@ -25,6 +25,17 @@ export async function loadAndRender({ state, logout }) {
   if (!data) return;
 
   state.currentData = extractDataByTypeAndStatus(data, state.currentType, state.currentStatus);
+
+  // FETCH COMPLETE DATA FOR COUNTS
+const allEndpoint =
+  state.currentType === 'teacher'
+    ? '/dashboard/admin/teachers'
+    : '/dashboard/admin/students';
+
+const allData = await fetchDashboardData(allEndpoint, { logout });
+if(allData){
+  updateStatusCounts(allData, state.currentType);
+}
 
   renderTable({
     data: state.currentData,

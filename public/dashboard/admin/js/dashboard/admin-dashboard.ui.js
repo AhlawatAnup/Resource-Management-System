@@ -11,20 +11,6 @@ import {
 
 import { getInitials, getRandomNamedColor, formatDate } from '../../../common/js/commons.js';
 
-// -----------------------------
-// Header UI
-// -----------------------------
-export function renderPageHeader(currentType, currentStatus) {
-  const title = document.getElementById('page-title');
-  const subtitle = document.getElementById('page-subtitle');
-  const countLabel = document.getElementById('current-label');
-
-  const content = getPageHeaderContent(currentType, currentStatus);
-
-  title.textContent = content.title;
-  subtitle.textContent = content.subtitle;
-  countLabel.textContent = content.countLabel;
-}
 
 // -----------------------------
 // Table Headers
@@ -51,9 +37,6 @@ export function renderEmptyState(currentType, currentStatus) {
 // -----------------------------
 export function renderTable({ data, currentType, currentStatus, actions }) {
   const tbody = document.getElementById('dataTableBody');
-  const countElement = document.getElementById('current-count');
-
-  countElement.textContent = data.length;
 
   if (!data.length) {
     renderEmptyState(currentType, currentStatus);
@@ -263,4 +246,31 @@ function renderRejectedStudentRow(student) {
     <td><span class="badge ${status.class}">${status.text}</span></td>
     <td><span class="action-completed">Action Completed</span></td>
   `;
+}
+//Status Count
+export function updateStatusCounts(data, currentType) {
+  let items = [];
+
+  if (currentType === 'teacher') {
+    items = data.teachers || [];
+  } else {
+    items = data.students || [];
+  }
+
+  const all = items.length;
+
+  const verified = items.filter((i) => i.is_verified).length || 0;
+
+  const rejected = items.filter(
+    (i) =>
+      (i.verification_completed && !i.is_verified) ||
+      (i.admin_action && !i.admin_verified)
+  ).length || 0;
+
+  const unverified = all - verified - rejected || 0;
+
+  document.getElementById('all-count').textContent = all;
+  document.getElementById('verified-count').textContent = verified;
+  document.getElementById('rejected-count').textContent = rejected;
+  document.getElementById('unverified-count').textContent = unverified;
 }

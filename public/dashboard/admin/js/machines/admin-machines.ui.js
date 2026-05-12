@@ -22,7 +22,7 @@ export function initUI({ onFilterChange, onAddClick }) {
 export function createTableWrapper() {
   const tableWrapper = document.createElement('div');
   tableWrapper.id = 'machinesTableWrapper';
-  tableWrapper.style.margin = '16px 24px';
+  tableWrapper.style.margin = '16px 0px';
 
   const pageActions = document.querySelector('.page-actions');
 
