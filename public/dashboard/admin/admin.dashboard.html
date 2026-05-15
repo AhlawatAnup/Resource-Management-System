@@ -96,18 +96,22 @@
               <button class="status-btn active" data-status="all">
                 <i class="fas fa-users"></i>
                 All
+                <span class="count-badge" id="all-count">0</span>
               </button>
               <button class="status-btn" data-status="unverified">
                 <i class="fas fa-user-clock"></i>
                 Unverified
+                <span class="count-badge" id="unverified-count">0</span>
               </button>
               <button class="status-btn" data-status="verified">
                 <i class="fas fa-user-check"></i>
                 Verified
+                <span class="count-badge" id="verified-count">0</span>
               </button>
               <button class="status-btn" data-status="rejected">
                 <i class="fas fa-user-times"></i>
                 Rejected
+                <span class="count-badge" id="rejected-count">0</span>
               </button>
             </div>
           </div>
@@ -122,18 +126,7 @@
 
       <main class="main-content">
     <main class="main-content">
-      <header class="page-header">
-        <div class="header-info">
-          <h1 id="page-title">Unverified Teachers</h1>
-          <p id="page-subtitle">Manage teacher verification requests</p>
-        </div>
-        <div class="header-stats">
-          <div class="stat-item">
-            <span class="stat-number" id="current-count">0</span>
-            <span class="stat-label" id="current-label">Pending</span>
-          </div>
-        </div>
-      </header>
+      
 
       <div class="content">
         <div class="table">

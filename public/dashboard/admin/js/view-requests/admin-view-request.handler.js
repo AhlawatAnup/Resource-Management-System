@@ -117,10 +117,15 @@ function render() {
 
   // apply search on selected set
   const data = filterRequestsList(baseData, document.getElementById('searchInput')?.value || '');
-  document.getElementById('current-count').textContent = data.length;
+document.getElementById('all-count').textContent = resourceRequests.length;
 
-  document.getElementById('current-label').textContent =
-  currentStatus.charAt(0).toUpperCase() + currentStatus.slice(1);
+document.getElementById('active-count').textContent = activeRequests.length;
+
+document.getElementById('upcoming-count').textContent = upcomingRequests.length;
+
+document.getElementById('expired-count').textContent = expiredRequests.length;
+
+document.getElementById('rejected-count').textContent = rejectedRequests.length;
   
   renderResourceRequests(data, {
     getRequestStatus,
