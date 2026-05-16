@@ -52,42 +52,36 @@ async function markExpiredAllotmentsHistoryAndCleanupDocker() {
         continue;
       }
 
-      try {
-        await saveAllotmentHistory(allotment, 'system');
+      // REMOVING TRY/CATCH
+      await saveAllotmentHistory(allotment, 'system');
 
-        const baseUrl = `http://${machine.ip}:${process.env.TOKEN_SERVER_PORT}`;
-        const { user } = machine;
+      const baseUrl = `http://${machine.ip}:${process.env.TOKEN_SERVER_PORT}`;
+      const { user } = machine;
 
-        const stopData = await stopUser(baseUrl, user);
-        console.log(`[${new Date().toISOString()}] STOP response for ${user}:`, stopData);
+      const stopData = await stopUser(baseUrl, user);
+      console.log(`[${new Date().toISOString()}] STOP response for ${user}:`, stopData);
 
-        const deleteData = await deleteUser(baseUrl, user);
-        console.log(`[${new Date().toISOString()}] DELETE response for ${user}:`, deleteData);
+      const deleteData = await deleteUser(baseUrl, user);
+      console.log(`[${new Date().toISOString()}] DELETE response for ${user}:`, deleteData);
 
-        const startData = await startUser(baseUrl, user);
-        console.log(`[${new Date().toISOString()}] START response for ${user}:`, startData);
+      const startData = await startUser(baseUrl, user);
+      console.log(`[${new Date().toISOString()}] START response for ${user}:`, startData);
 
-        // Mark allotment inactive/deleted
-        allotment.isDeleted = true;
-        allotment.isActive = false;
-        await allotment.save();
+      // Mark allotment inactive/deleted
+      allotment.isDeleted = true;
+      allotment.isActive = false;
+      await allotment.save();
 
-        // ALSO mark related ResourceRequest inactive
-        if (allotment.resourceRequestId) {
-          await ResourceRequest.findByIdAndUpdate(
-            allotment.resourceRequestId,
-            { isActive: false },
-            { new: true },
-          );
-        }
-
-        console.log(`[${new Date().toISOString()}] Allotment ${allotment._id} marked as deleted`);
-      } catch (err) {
-        console.error(
-          `[${new Date().toISOString()}] Error processing allotment ${allotment._id}:`,
-          err.message,
+      // ALSO mark related ResourceRequest inactive
+      if (allotment.resourceRequestId) {
+        await ResourceRequest.findByIdAndUpdate(
+          allotment.resourceRequestId,
+          { isActive: false },
+          { new: true },
         );
       }
+
+      console.log(`[${new Date().toISOString()}] Allotment ${allotment._id} marked as deleted`);
     }
 
     console.log(`[${new Date().toISOString()}] Finished processing all expired allotments`);

@@ -135,16 +135,16 @@
 }
 
 .count-badge {
-  padding:2px 4px;
+  padding: 2px 4px;
   border-radius: 999px;
   font-size: 10px;
   font-weight: 600;
-  background: rgba(0,0,0,0.08);
+  background: rgba(0, 0, 0, 0.08);
 }
 
 /* All */
 #all-count {
-   color: #64748b;
+  color: #64748b;
   background: rgba(148, 163, 184, 0.18);
 }
 

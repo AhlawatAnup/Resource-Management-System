@@ -369,7 +369,7 @@ function isDateInPast(date) {
 exports.getAllMachines = async (req, res) => {
   try {
     const machines = await Machine.find({}) //fetches isAvailable:true only due to pre middleware
-      .select('_id MIGID gpuRam')
+      .select('MIGID name  gpuRam ram')
       .lean();
 
     if (!machines.length) {
@@ -395,10 +395,16 @@ exports.getMachineWiseActiveAllotments = async (req, res) => {
       machineId,
       isActive: true,
     })
+      .populate({
+        path: 'resourceRequestId',
+        select: 'studentId',
+        populate: {
+          path: 'studentId',
+          select: 'name',
+        },
+      })
       .select('resourceRequestId startTime endTime status')
       .lean();
-
-    console.log(allotments);
 
     const response = { machine, allotments };
     if (!allotments.length) {
