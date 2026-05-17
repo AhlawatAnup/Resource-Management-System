@@ -15,8 +15,8 @@ export const PageUI = {
 ">
 
   <p style="
-    font-size: 16px;
-    font-weight: 700;
+    font-size: 14px;
+    font-weight: 400;
     color: #111827;
     margin: 0 0 18px 0;
   ">
@@ -195,6 +195,6 @@ export const PageUI = {
 
     if (placeholder) placeholder.style.display = 'none';
     if (calendarView) calendarView.style.display = 'flex';
-    if (machineTitle) machineTitle.innerText = `Schedule: ${machineName}`;
+    if (machineTitle) machineTitle.innerText = `${machineName}`;
   },
 };
