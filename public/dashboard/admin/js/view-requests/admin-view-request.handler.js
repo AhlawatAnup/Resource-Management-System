@@ -117,16 +117,16 @@ function render() {
 
   // apply search on selected set
   const data = filterRequestsList(baseData, document.getElementById('searchInput')?.value || '');
-document.getElementById('all-count').textContent = resourceRequests.length;
+  document.getElementById('all-count').textContent = resourceRequests.length;
 
-document.getElementById('active-count').textContent = activeRequests.length;
+  document.getElementById('active-count').textContent = activeRequests.length;
 
-document.getElementById('upcoming-count').textContent = upcomingRequests.length;
+  document.getElementById('upcoming-count').textContent = upcomingRequests.length;
 
-document.getElementById('expired-count').textContent = expiredRequests.length;
+  document.getElementById('expired-count').textContent = expiredRequests.length;
 
-document.getElementById('rejected-count').textContent = rejectedRequests.length;
-  
+  document.getElementById('rejected-count').textContent = rejectedRequests.length;
+
   renderResourceRequests(data, {
     getRequestStatus,
     getActionButtons,
@@ -202,18 +202,21 @@ function getActionButtons(r) {
            : ''
        }
        ${
-        isPending? 
-        `<button class="icon-btn decline-btn" data-request-id="${r._id}" data-action='decline'>
+         isPending
+           ? `<button class="icon-btn decline-btn" data-request-id="${r._id}" data-action='decline'>
       
-         </button>`:``
+         </button>`
+           : ``
        }
       <button class="icon-btn edit-btn" data-request-id="${r._id}">
         <i class="fas fa-pen-to-square"></i>
       </button>
-      ${!isPending ? 
-      `<button class="icon-btn revoke-btn" data-request-id="${r._id}">
+      ${
+        !isPending
+          ? `<button class="icon-btn revoke-btn" data-request-id="${r._id}">
         Revoke
-      </button>`:``
+      </button>`
+          : ``
       }
        ${
          !isPending

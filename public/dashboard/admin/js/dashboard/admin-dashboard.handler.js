@@ -10,13 +10,12 @@ import {
 
 import { getEndpoint, extractDataByTypeAndStatus, filterData } from './admin-dashboard.utils.js';
 
-import {  renderTableHeaders, renderTable, updateStatusCounts } from './admin-dashboard.ui.js';
+import { renderTableHeaders, renderTable, updateStatusCounts } from './admin-dashboard.ui.js';
 
 // -----------------------------
 // Load & Render Flow
 // -----------------------------
 export async function loadAndRender({ state, logout }) {
-
   renderTableHeaders(state.currentType, state.currentStatus);
 
   const endpoint = getEndpoint(state.currentType, state.currentStatus);
@@ -27,15 +26,13 @@ export async function loadAndRender({ state, logout }) {
   state.currentData = extractDataByTypeAndStatus(data, state.currentType, state.currentStatus);
 
   // FETCH COMPLETE DATA FOR COUNTS
-const allEndpoint =
-  state.currentType === 'teacher'
-    ? '/dashboard/admin/teachers'
-    : '/dashboard/admin/students';
+  const allEndpoint =
+    state.currentType === 'teacher' ? '/dashboard/admin/teachers' : '/dashboard/admin/students';
 
-const allData = await fetchDashboardData(allEndpoint, { logout });
-if(allData){
-  updateStatusCounts(allData, state.currentType);
-}
+  const allData = await fetchDashboardData(allEndpoint, { logout });
+  if (allData) {
+    updateStatusCounts(allData, state.currentType);
+  }
 
   renderTable({
     data: state.currentData,
@@ -122,7 +119,7 @@ export function setupSearch({ state }) {
       currentStatus: state.currentStatus,
     });
   });
-   // AUTO FOCUS SEARCH WHEN USER STARTS TYPING
+  // AUTO FOCUS SEARCH WHEN USER STARTS TYPING
   document.addEventListener('keydown', (e) => {
     const searchInput = document.getElementById('searchInput');
 

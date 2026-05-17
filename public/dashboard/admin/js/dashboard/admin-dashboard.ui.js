@@ -11,7 +11,6 @@ import {
 
 import { getInitials, getRandomNamedColor, formatDate } from '../../../common/js/commons.js';
 
-
 // -----------------------------
 // Table Headers
 // -----------------------------
@@ -261,11 +260,10 @@ export function updateStatusCounts(data, currentType) {
 
   const verified = items.filter((i) => i.is_verified).length || 0;
 
-  const rejected = items.filter(
-    (i) =>
-      (i.verification_completed && !i.is_verified) ||
-      (i.admin_action && !i.admin_verified)
-  ).length || 0;
+  const rejected =
+    items.filter(
+      (i) => (i.verification_completed && !i.is_verified) || (i.admin_action && !i.admin_verified),
+    ).length || 0;
 
   const unverified = all - verified - rejected || 0;
 

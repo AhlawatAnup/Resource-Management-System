@@ -17,7 +17,11 @@
     <script src="https://kit.fontawesome.com/e05e3e1522.js" crossorigin="anonymous"></script>
 
     <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"> -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css" />
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css" /> -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css"
+      rel="stylesheet"
+    />
 
     <link rel="stylesheet" href="/dashboard/admin/style/admin.dashboard.css" />
     <link rel="stylesheet" href="/dashboard/common/style/allotments/machines-flexbar.css" />
@@ -25,7 +29,8 @@
     <link rel="stylesheet" href="/dashboard/common/style/allotments/allotments.css" />
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
   </head>
   <body>
     <div class="sidebar">
@@ -76,91 +81,55 @@
             </button>
           </div>
         </header> -->
-         <nav class="top-nav">
-        <div class="nav-brand">
-          <h2>Check Machine Availabilty</h2>
-        </div>
+        <nav class="top-nav">
+          <div class="nav-brand">
+            <h2>Check Machine Availabilty</h2>
+          </div>
           <div class="nav-actions">
+            <button id="theme-toggle" class="theme-toggle" title="Dark Mode">
+              <i id="theme-icon" class="fa fa-moon"></i>
+            </button>
+          </div>
+        </nav>
 
-          <button id="theme-toggle" class="theme-toggle" title="Dark Mode">
-            <i id="theme-icon" class="fa fa-moon"></i>
-          </button>
-        </div>
-      </nav>
-
-        <div class="container" style="background: none; box-shadow: none; margin-top: 10px;">
+        <div class="container" style="background: none; box-shadow: none; margin-top: 10px">
           <div class="allotments-page-layout">
-            <div class="machines-side-panel">
-              <div class="machines-bar-section">
-                <h3><i class="fas fa-server"></i> Machines</h3>
-                <div id="machines-flexbar" class="machines-flexbar">
-                  <span class="machine-bar-loading">Loading machines...</span>
-                </div>
-              </div>
+            <div id="machines-flexbar" class="machines-flexbar">
+              <span class="machine-bar-loading">Loading machines...</span>
             </div>
 
             <div class="allotments-main-panel">
-              <div
-                class="allotments-card"
-                style="
-                  width: 100%;
-                  min-height: 500px;
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                  background: #fff;
-                  border-radius: 12px;
-                "
-              >
-                <div id="allotments-content" style="width: 100%">
+              <div id="allotments-content" style="width: 100%">
+                <div
+                  id="placeholder-text"
+                  class="allotments-placeholder"
+                  style="text-align: center; color: #888"
+                >
+                  <i
+                    class="fas fa-calendar-alt"
+                    style="font-size: 3rem; margin-bottom: 15px; display: block"
+                  ></i>
+                  <p>Please select a machine from the left panel to view the schedule.</p>
+                </div>
+
+                <div id="calendar-view" style="display: none; text-align: center; width: 100%">
+                  <h2 id="selected-machine-name" style="color: #333; font-weight: 600"></h2>
+
+                  <div id="inline-calendar-anchor"></div>
+
                   <div
-                    id="placeholder-text"
-                    class="allotments-placeholder"
-                    style="text-align: center; color: #888"
+                    class="calendar-legend"
+                    style="
+                      display: flex;
+                      justify-content: center;
+                      gap: 30px;
+                      border-top: 1px solid #eee;
+                      padding-top: 20px;
+                    "
                   >
-                    <i
-                      class="fas fa-calendar-alt"
-                      style="font-size: 3rem; margin-bottom: 15px; display: block"
-                    ></i>
-                    <p>Please select a machine from the left panel to view the schedule.</p>
-                  </div>
-
-                  <div id="calendar-view" style="display: none; text-align: center; width: 100%">
-                    <h2
-                      id="selected-machine-name"
-                      style="margin-bottom: 20px; color: #333; font-weight: 600"
-                    ></h2>
-
-                    <div id="inline-calendar-anchor"></div>
-
-                    <div
-                      class="calendar-legend"
-                      style="
-                        margin-top: 25px;
-                        display: flex;
-                        justify-content: center;
-                        gap: 30px;
-                        border-top: 1px solid #eee;
-                        padding-top: 20px;
-                      "
-                    >
-                      <div style="display: flex; align-items: center; gap: 8px; font-size: 0.9rem">
-                        <!-- <span style="width: 15px; height: 15px; background: #fff1f2; border: 1px solid #fecdd3; border-radius: 3px; display: inline-block;"></span> -->
-                        <!-- <span style="color: #b45359;">Allotted (Occupied)</span> -->
-                      </div>
-                      <div style="display: flex; align-items: center; gap: 8px; font-size: 0.9rem">
-                        <span
-                          style="
-                            width: 15px;
-                            height: 15px;
-                            background: #f0fdf4;
-                            border: 1px solid #bbf7d0;
-                            border-radius: 3px;
-                            display: inline-block;
-                          "
-                        ></span>
-                        <span style="color: #2f6b3b; font-weight: 600">Free Slot</span>
-                      </div>
+                    <div style="display: flex; align-items: center; gap: 8px; font-size: 0.9rem">
+                      <!-- <span style="width: 15px; height: 15px; background: #fff1f2; border: 1px solid #fecdd3; border-radius: 3px; display: inline-block;"></span> -->
+                      <!-- <span style="color: #b45359;">Allotted (Occupied)</span> -->
                     </div>
                   </div>
                 </div>
