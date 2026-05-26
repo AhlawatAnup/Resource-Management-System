@@ -1,0 +1,61 @@
+/* 
+
+----SEARCH BAR----
+---=TABLE --------
+
+  HOW TO CALL 
+
+  <div class="rms-table">
+    <div class="search-container">   </div>
+    <table>    </table>
+  </div>
+
+*/
+
+.rms-table {
+  flex: 1;
+  padding: 0;
+  max-width: 100%;
+  margin: 0;
+  overflow-y: auto;
+
+  .search-container {
+    position: relative;
+    width: 500px;
+    margin: 10px auto;
+    display: flex;
+    align-items: center;
+
+    svg {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 20px;
+      height: 20px;
+      color: #94a3b8;
+      z-index: 1;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 15px 12px 45px;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      font-size: 14px;
+      background: white;
+      transition: border-color 0.3s ease;
+
+      &:focus {
+        outline: none;
+        border-color: #60a5fa;
+        box-shadow:
+          0 0 0 3px rgba(96, 165, 250, 0.15),
+          0 4px 12px rgba(59, 130, 246, 0.12);
+      }
+    }
+  }
+
+  table {
+  }
+}

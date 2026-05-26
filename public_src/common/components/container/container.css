@@ -1,0 +1,131 @@
+.rms-container {
+  width: 100vw;
+  height: 100vh;
+  /* background: aqua; */
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: grid;
+  grid-template-columns: 250px auto;
+
+  /* SIDE BAR */
+
+  aside {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid #e5e7eb;
+
+    .logo {
+      display: flex;
+      align-items: center;
+      padding: 0 2rem 3rem;
+      font-size: 2.4rem;
+      font-weight: bold;
+      color: #333;
+
+      img {
+        width: 3rem; /* visual size inside the 40x40 container */
+        height: 3rem;
+        object-fit: contain;
+        display: block; /* remove inline-gap */
+        margin-left: 20px;
+        margin-right: 20px;
+      }
+    }
+
+    nav {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+      flex: 1;
+      padding: 1rem 0rem;
+
+      .dummy {
+        flex: 1;
+      }
+
+      a {
+        display: flex;
+        gap: 1.5rem;
+        align-items: center;
+        padding: 1.5rem 2rem;
+        color: #64748b;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        font-weight: 400;
+        font-size: 1.5rem;
+
+        &:hover,
+        &.active {
+          background: #f1f5f9;
+          color: #1e293b;
+          cursor: pointer;
+        }
+      }
+    }
+  }
+
+  main {
+    height: 100vh;
+    overflow: hidden;
+
+    .main {
+      height: 100vh;
+      overflow: hidden;
+
+      /* HEADER */
+      .header {
+        border-bottom: 1px solid #e5e7eb;
+        padding: 0 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 70px;
+
+        h2 {
+          font-size: 20px;
+          font-weight: 600;
+          color: #1f2937;
+          margin: 0;
+        }
+
+        .nav-section {
+          display: flex;
+          align-items: center;
+          background: #f3f4f6;
+          padding: 0.6rem 0.9rem;
+          border-radius: 0.8rem;
+          gap: 0.4rem;
+
+          button {
+            background: transparent;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: #6b7280;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+
+            &:hover {
+              background: black;
+              color: white;
+            }
+
+            &.active {
+              background: white;
+              color: #1f2937;
+              box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -30,11 +30,13 @@ exports.roleBasedDashboard = (req, res) => {
   // You can customize which HTML to send based on role
   switch (role.toLowerCase()) {
     case 'student':
-      return res.sendFile(path.join(publicPath, 'dashboard/student', 'student.dashboard.html'));
+      // return res.sendFile(path.join(publicPath, 'dashboard/student', 'student.dashboard.html'));
+      return res.sendFile(path.join(publicPath, 'student.pack', 'student.html'));
     case 'teacher':
       return res.sendFile(path.join(publicPath, 'dashboard/teacher', 'teacher.dashboard.html'));
     case 'admin':
-      return res.sendFile(path.join(publicPath, 'dashboard/admin', 'admin.dashboard.html'));
+      // return res.sendFile(path.join(publicPath, 'dashboard/admin', 'admin.dashboard.html'));
+      return res.sendFile(path.join(publicPath, 'admin.pack', 'admin.html'));
   }
 };
 

@@ -1,10 +1,11 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <!-- importing darkmode files on top to avoid delay -->
     <script src="https://cdn.jsdelivr.net/npm/darkreader/darkreader.min.js"></script>
     <script src="/dashboard/common/js/darkmode/darkmode-init.js"></script>
-    <link rel="stylesheet" href="/dashboard/common/style/darkmode/darkmode-button.css">
+
+    <link rel="stylesheet" href="/dashboard/common/style/darkmode/darkmode-button.css" />
 
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -14,14 +15,10 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/dashboard/admin/style/admin.dashboard.css" />
-    <script
-      src="https://kit.fontawesome.com/e05e3e1522.js"
-      crossorigin="anonymous"
-    ></script>
+    <script src="https://kit.fontawesome.com/e05e3e1522.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
   </head>
-  
+
   <body>
     <!-- Sidebar -->
     <div class="sidebar">
@@ -74,7 +71,7 @@
         <div class="nav-brand">
           <h2>User Management</h2>
         </div>
-        
+
         <div class="nav-controls">
           <!-- Part A: User Type Selection -->
           <div class="nav-section">
@@ -89,7 +86,7 @@
               </button>
             </div>
           </div>
-          
+
           <!-- Part B: Status Filter -->
           <div class="nav-section">
             <div class="nav-group">
@@ -116,7 +113,7 @@
             </div>
           </div>
         </div>
-        
+
         <div class="nav-actions">
           <button id="theme-toggle" class="theme-toggle" title="Dark Mode">
             <i id="theme-icon" class="fa fa-moon"></i>
@@ -125,50 +122,45 @@
       </nav>
 
       <main class="main-content">
-    <main class="main-content">
-      
-
-      <div class="content">
-        <div class="table">
-          <div class="search-container">
-            <svg class="search-icon" viewBox="0 0 20 20" fill="currentColor">
-              <path
-                fill-rule="evenodd"
-                d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                clip-rule="evenodd"
+        <div class="content">
+          <div class="table">
+            <div class="search-container">
+              <svg class="search-icon" viewBox="0 0 20 20" fill="currentColor">
+                <path
+                  fill-rule="evenodd"
+                  d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              <input
+                type="text"
+                class="search-input"
+                placeholder="Search users..."
+                id="searchInput"
               />
-            </svg>
-            <input
-              type="text"
-              class="search-input"
-              placeholder="Search users..."
-              id="searchInput"
-            />
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr id="table-headers">
+                  <!-- Headers will be dynamically updated based on selection -->
+                </tr>
+              </thead>
+              <tbody id="dataTableBody">
+                <tr>
+                  <td colspan="6" class="loading">Loading...</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
-
-        <div class="table-container">
-          <table>
-            <thead>
-              <tr id="table-headers">
-                <!-- Headers will be dynamically updated based on selection -->
-              </tr>
-            </thead>
-            <tbody id="dataTableBody">
-              <tr>
-                <td colspan="6" class="loading">Loading...</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </main>
-    
+      </main>
     </div>
-     <!-- End main-wrapper -->
+    <!-- End main-wrapper -->
 
     <!-- <script type="module" src="/dashboard/admin/js/admin.dashboard.js"></script> -->
     <script type="module" src="/dashboard/admin/js/dashboard/admin-dashboard.main.js"></script>
-
   </body>
 </html>

@@ -1,12 +1,14 @@
 {
-  "name": "uiet-cluster-resource-sharing",
-  "version": "1.0.0",
+  "name": "Resource Management System",
+  "version": "1.0.2",
   "description": "",
   "main": "index.js",
   "scripts": {
     "dev": "nodemon server/main/main.server.js",
     "format": "prettier --write .",
-    "check-format": "prettier --check ."
+    "check-format": "prettier --check .",
+    "web-build": "webpack --config webpack.config.js",
+    "web-watch": "webpack --watch"
   },
   "repository": {
     "type": "git",
@@ -32,6 +34,7 @@
     "express-session": "^1.18.2",
     "http-proxy": "^1.18.1",
     "http-proxy-middleware": "^3.0.5",
+    "mini-css-extract-plugin": "^2.10.2",
     "mongoose": "^8.18.1",
     "multer": "^2.0.2",
     "node-schedule": "^2.1.1",
@@ -40,7 +43,19 @@
     "web-push": "^3.6.7"
   },
   "devDependencies": {
+    "@babel/core": "^7.29.7",
+    "@babel/preset-env": "^7.29.7",
+    "babel-loader": "^10.1.1",
+    "cheerio": "^1.2.0",
+    "css-loader": "^7.1.4",
+    "html-minifier-terser": "^7.2.0",
     "nodemon": "^3.1.10",
-    "prettier": "^3.8.3"
+    "prettier": "^3.8.3",
+    "style-loader": "^3.3.4",
+    "terser-webpack-plugin": "^5.6.0",
+    "webpack": "^5.91.0",
+    "webpack-bundle-analyzer": "^5.3.0",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^5.0.4"
   }
 }
