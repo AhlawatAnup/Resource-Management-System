@@ -29,6 +29,10 @@
   <link rel="stylesheet" href="/dashboard/admin/style/admin.viewRequests.infobtn.css" />
   <link rel="stylesheet" href="/dashboard/admin/style/edit-resource-request.css" />
   <link rel="stylesheet" href="/dashboard/admin/style/admin.viewRequests.statsPanel.css" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700&display=swap" rel="stylesheet">
   <body>
     <!-- Sidebar -->
     <div class="sidebar">
@@ -274,41 +278,125 @@
     <div id="reportModal" class="report-modal hidden">
       <div class="report-content">
         <div class="report-header">
-          <h2>Machine Usage Report</h2>
-          <button id="closeReportBtn">&times;</button>
-        </div>
+  <div class="report-title-section">
+    <div class="report-icon">
+      <i class="fas fa-chart-line"></i>
+    </div>
+
+    <div>
+      <h2>Machine Usage Report</h2>
+
+      <p class="report-subtitle">
+        Resource utilization analytics and monitoring
+      </p>
+    </div>
+  </div>
+
+  <button id="closeReportBtn">
+    <i class="fas fa-times"></i>
+  </button>
+</div>
 
         <div class="report-body">
-          <div class="report-details" id="reportDetails">
-            <div class="detail-item">
-              <span class="detail-label">Student Name</span>
-              <span class="detail-value" id="reportStudentName">-</span>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label">Roll Number</span>
-              <span class="detail-value" id="reportRollNo">-</span>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label">MIG ID</span>
-              <span class="detail-value" id="reportMigId">-</span>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label">Duration</span>
-              <span class="detail-value" id="reportDuration">-</span>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label">Start Time</span>
-              <span class="detail-value" id="reportStartTime">-</span>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label">End Time</span>
-              <span class="detail-value" id="reportEndTime">-</span>
-            </div>
-          </div>
+         <div class="report-details" id="reportDetails">
+
+  <div class="detail-card">
+    <div class="detail-icon student">
+      <i class="fas fa-user"></i>
+    </div>
+
+    <div class="detail-content">
+      <span class="detail-label">Student</span>
+      <span class="detail-value" id="reportStudentName">-</span>
+    </div>
+  </div>
+
+  <div class="detail-card">
+    <div class="detail-icon roll">
+      <i class="fas fa-id-card"></i>
+    </div>
+
+    <div class="detail-content">
+      <span class="detail-label">Roll No</span>
+      <span class="detail-value" id="reportRollNo">-</span>
+    </div>
+  </div>
+
+  <div class="detail-card">
+    <div class="detail-icon mig">
+      <i class="fas fa-microchip"></i>
+    </div>
+
+    <div class="detail-content">
+      <span class="detail-label">MIG ID</span>
+      <span class="detail-value" id="reportMigId">-</span>
+    </div>
+  </div>
+
+  <div class="detail-card">
+    <div class="detail-icon duration">
+      <i class="fas fa-calendar-alt"></i>
+    </div>
+
+    <div class="detail-content">
+      <span class="detail-label">Duration</span>
+      <span class="detail-value" id="reportDuration">-</span>
+    </div>
+  </div>
+
+  <div class="detail-card">
+    <div class="detail-icon start">
+      <i class="fas fa-clock"></i>
+    </div>
+
+    <div class="detail-content">
+      <span class="detail-label">Start</span>
+      <span class="detail-value" id="reportStartTime">-</span>
+    </div>
+  </div>
+
+  <div class="detail-card">
+    <div class="detail-icon end">
+      <i class="fas fa-hourglass-end"></i>
+    </div>
+
+    <div class="detail-content">
+      <span class="detail-label">End</span>
+      <span class="detail-value" id="reportEndTime">-</span>
+    </div>
+  </div>
+
+</div>
 
           <div class="chart-container">
-            <canvas id="reportChart"></canvas>
-          </div>
+
+  <div class="chart-topbar">
+
+  
+    <div class="chart-legend">
+
+      <div class="legend-pill cpu-pill">
+        <span class="legend-dot"></span>
+        CPU
+      </div>
+
+      <div class="legend-pill memory-pill">
+        <span class="legend-dot"></span>
+        Memory
+      </div>
+
+      <div class="legend-pill gpu-pill">
+        <span class="legend-dot"></span>
+        GPU
+      </div>
+
+    </div>
+
+  </div>
+
+  <canvas id="reportChart"></canvas>
+
+</div>
         </div>
       </div>
     </div>

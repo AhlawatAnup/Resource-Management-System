@@ -31,9 +31,7 @@
 .allotments-main-panel {
   flex: 1;
   min-width: 0;
-
   padding-left: 24px;
-
   display: flex;
   flex-direction: column;
   justify-content: flex-start;

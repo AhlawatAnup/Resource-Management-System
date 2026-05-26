@@ -304,33 +304,114 @@ export function renderStatsChart(apiResponse) {
     }).format(new Date(value));
 
   const labels = apiResponse.data.map((d) => new Date(d.timestamp));
+  const ctx = document.getElementById('reportChart').getContext('2d');
+  const gradientCPU = ctx.createLinearGradient(0, 0, 0, 400);
 
+  gradientCPU.addColorStop(0, 'rgba(132,204,22,0.045)');
+  gradientCPU.addColorStop(1, 'rgba(132,204,22,0)');
+
+  const gradientMemory = ctx.createLinearGradient(0, 0, 0, 400);
+
+  gradientMemory.addColorStop(0, 'rgba(14,165,233,0.14)');
+  gradientMemory.addColorStop(1, 'rgba(14,165,233,0)');
+
+  const gradientGPU = ctx.createLinearGradient(0, 0, 0, 400);
+
+  gradientGPU.addColorStop(0, 'rgba(249,115,22,0.14)');
+  gradientGPU.addColorStop(1, 'rgba(249,115,22,0)');
   const chartData = {
     labels,
     datasets: [
       {
         label: 'CPU %',
-        data: apiResponse.data.map((d) => d.cpu),
-        borderColor: 'red',
+
+        data: apiResponse.data.map((d) => Math.min(d.cpu, 100)),
+
+        borderColor: '#84CC16',
+
+        backgroundColor: gradientCPU,
+        fill: true,
         tension: 0.3,
+        borderWidth: 3,
+        pointRadius:  (ctx) => ctx.raw >= 100 ? 0 : 3,
+        pointHoverRadius: (ctx) => ctx.raw >= 100 ? 0 : 6,
+        pointBorderWidth: 2,
+        pointHoverBorderWidth: 2,
+        pointBackgroundColor: '#ffffff',
+        pointBorderColor: '#84CC16',
+        pointHoverBackgroundColor: '#84CC16',
+        pointHoverBorderColor: '#ffffff',
+        pointHitRadius: 18,
+        shadowColor: 'rgba(132,204,22,0.45)',
       },
       {
         label: 'Memory %',
-        data: apiResponse.data.map((d) => d.mem),
-        borderColor: 'blue',
+        data: apiResponse.data.map((d) => Math.min(d.mem, 100)),
+        borderColor: '#0EA5E9',
+        backgroundColor: gradientMemory,
+        fill: false,
         tension: 0.3,
+        borderWidth: 3,
+        pointRadius: (ctx) => ctx.raw >= 100 ? 0 : 3,
+        pointHoverRadius:  (ctx) => ctx.raw >= 100 ? 0 : 6,
+        pointBorderWidth: 2,
+        pointHoverBorderWidth: 2,
+        pointBackgroundColor: '#ffffff',
+        pointBorderColor: '#0EA5E9',
+        pointHoverBackgroundColor: '#0EA5E9',
+        pointHoverBorderColor: '#ffffff',
+        pointHitRadius: 18,
+        shadowColor: 'rgba(14,165,233,0.45)',
       },
       {
         label: 'GPU %',
-        data: apiResponse.data.map((d) => d.gpu),
-        borderColor: 'green',
+        data: apiResponse.data.map((d) => Math.min(d.gpu, 100)),
+        borderColor: '#F97316',
+        backgroundColor: gradientGPU,
+        fill: false,
         tension: 0.3,
+        borderWidth: 3,
+        pointRadius: (ctx) => ctx.raw >= 100 ? 0 : 3,
+        pointHoverRadius: (ctx) => ctx.raw >= 100 ? 0 : 6,
+        pointBorderWidth: 2,
+        pointHoverBorderWidth: 2,
+        pointBackgroundColor: '#ffffff',
+        pointBorderColor: '#F97316',
+        pointHoverBackgroundColor: '#F97316',
+        pointHoverBorderColor: '#ffffff',
+        pointHitRadius: 18,
+        shadowColor: 'rgba(249,115,22,0.45)',
       },
     ],
+  };
+  Chart.defaults.elements.line.borderJoinStyle = 'round';
+  Chart.defaults.elements.line.borderCapStyle = 'round';
+
+  const glowLinePlugin = {
+    id: 'glowLinePlugin',
+
+    beforeDatasetDraw(chart, args) {
+      const { ctx } = chart;
+
+      ctx.save();
+
+      ctx.shadowBlur = 4;
+
+      ctx.shadowColor = chart.data.datasets[args.index].shadowColor;
+
+      ctx.shadowOffsetX = 0;
+
+      ctx.shadowOffsetY = 0;
+    },
+
+    afterDatasetDraw(chart) {
+      chart.ctx.restore();
+    },
   };
 
   const config = {
     type: 'line',
+    plugins: [glowLinePlugin],
     data: chartData,
     options: {
       responsive: true,
@@ -340,13 +421,18 @@ export function renderStatsChart(apiResponse) {
       },
       interaction: { mode: 'index', intersect: false },
       plugins: {
-        legend: { position: 'top' },
-        title: { display: true, text: 'Machine Usage (%)' },
+        legend: { display: false },
+        title: { display: false },
         decimation: { enabled: false },
       },
       scales: {
         x: {
           type: 'time',
+          grid: {
+            color: 'rgba(127,127,127,0.10)',
+            drawBorder: false,
+            tickLength: 0,
+          },
           time: { unit: 'day' },
           ticks: {
             padding: 8,
@@ -369,6 +455,11 @@ export function renderStatsChart(apiResponse) {
         y: {
           min: 0,
           max: 100,
+          grid: {
+            color: 'rgba(127,127,127,0.10)',
+            drawBorder: false,
+            tickLength: 0,
+          },
           title: {
             display: true,
             text: 'Utilization (%)',
@@ -378,13 +469,37 @@ export function renderStatsChart(apiResponse) {
     },
   };
 
-  const ctx = document.getElementById('reportChart').getContext('2d');
-
   if (statsChart) {
     statsChart.destroy();
   }
 
   statsChart = new Chart(ctx, config);
+  setupLegendToggle();
+  function setupLegendToggle() {
+    const legendMap = [
+      { selector: '.cpu-pill', datasetIndex: 0 },
+      { selector: '.memory-pill', datasetIndex: 1 },
+      { selector: '.gpu-pill', datasetIndex: 2 },
+    ];
+
+    legendMap.forEach(({ selector, datasetIndex }) => {
+      const btn = document.querySelector(selector);
+
+      if (!btn) return;
+
+      btn.onclick = () => {
+        const meta = statsChart.getDatasetMeta(datasetIndex);
+
+        // toggle visibility
+        meta.hidden = meta.hidden === null ? true : !meta.hidden;
+
+        // toggle cut style
+        btn.classList.toggle('disabled', meta.hidden);
+
+        statsChart.update();
+      };
+    });
+  }
 }
 
 // initAdminRefresh(loadRequestsHandler);
