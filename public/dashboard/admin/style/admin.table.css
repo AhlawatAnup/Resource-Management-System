@@ -81,24 +81,6 @@ tbody td {
   font-size: 13px;
 }
 
-.avatar.blue {
-  background: #3b82f6;
-}
-.avatar.green {
-  background: #10b981;
-}
-.avatar.purple {
-  background: #8b5cf6;
-}
-.avatar.pink {
-  background: #ec4899;
-}
-.avatar.orange {
-  background: #f59e0b;
-}
-.avatar.red {
-  background: #ef4444;
-}
 
 .contact-details h4 {
   margin: 0 0 1px 0;

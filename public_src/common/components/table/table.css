@@ -56,6 +56,99 @@
     }
   }
 
+  /* TABLE HERE ALL TABLES */
   table {
+    width: 100%;
+    border-collapse: collapse;
+
+    thead {
+      background: #f8fafc;
+    }
+
+    thead th {
+      padding: 10px 12px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #64748b;
+      border-bottom: 1px solid #e2e8f0;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+
+      &:hover {
+        background-color: #f1f5f9;
+      }
+
+      &.sortable::after {
+        content: '↕';
+        position: absolute;
+        right: 8px;
+        color: #cbd5e1;
+        font-size: 10px;
+      }
+    }
+
+    tbody tr {
+      border-bottom: 1px solid #f1f5f9;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background-color: #f8fafc;
+      }
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+
+    tbody td {
+      padding: 12px 12px;
+      vertical-align: middle;
+      font-size: 13px;
+    }
+
+    /* EXTRA CLASSES  */
+    /* Contact Info Styles */
+    .contact-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      font-size: 13px;
+
+      &.blue {
+        background: #3b82f6;
+      }
+      &.green {
+        background: #10b981;
+      }
+      &.purple {
+        background: #8b5cf6;
+      }
+      &.pink {
+        background: #ec4899;
+      }
+      &.orange {
+        background: #f59e0b;
+      }
+      &.red {
+        background: #ef4444;
+      }
+    }
   }
 }
