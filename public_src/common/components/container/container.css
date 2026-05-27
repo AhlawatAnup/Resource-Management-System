@@ -89,6 +89,16 @@
           color: #1f2937;
           margin: 0;
         }
+      .add-machine-btn{
+           margin-right: 8px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            background: #10b981;
+            color: #fff;
+             border: none;
+             cursor: pointer;
+             font-weight: 600;
+            }
 
         .nav-section {
           display: flex;
@@ -128,4 +138,20 @@
       }
     }
   }
+}
+
+.theme-toggle {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  color: #333;
+  transition: all 0.2s ease;
+}
+
+/* Hover effect */
+.theme-toggle:hover {
+  background: rgba(0, 0, 0, 0.08);
 }
