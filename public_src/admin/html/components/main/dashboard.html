@@ -17,25 +17,26 @@
 
     <!-- Part B: Status Filter -->
     <div class="nav-section">
-      <button class="status-btn active" data-status="all">
+      <button class="status-btn active" data-status="2">
         <i class="fas fa-users"></i>
         All
-        <span class="count-badge" id="all-count">0</span>
+        <span class="count-badge all"></span>
       </button>
-      <button class="status-btn" data-status="unverified">
-        <i class="fas fa-user-clock"></i>
-        Unverified
-        <span class="count-badge" id="unverified-count">0</span>
-      </button>
-      <button class="status-btn" data-status="verified">
+      <button class="status-btn" data-status="1">
         <i class="fas fa-user-check"></i>
         Verified
-        <span class="count-badge" id="verified-count">0</span>
+        <span class="count-badge verified"></span>
       </button>
-      <button class="status-btn" data-status="rejected">
+      <button class="status-btn" data-status="0">
+        <i class="fas fa-user-clock"></i>
+        Unverified
+        <span class="count-badge unverified"></span>
+      </button>
+
+      <button class="status-btn" data-status="3">
         <i class="fas fa-user-times"></i>
         Rejected
-        <span class="count-badge" id="rejected-count">0</span>
+        <span class="count-badge rejected"></span>
       </button>
     </div>
     <div class="nav-actions">
@@ -63,47 +64,9 @@
     <!-- TABLE -->
     <table>
       <thead>
-        <tr id="table-headers">
-          <th>Name</th>
-          <th>Email</th>
-          <th>Phone</th>
-          <th>Branch</th>
-          <th>Students</th>
-          <th>Status</th>
-          <th>Actions</th>
-        </tr>
+        <tr id="table-headers"></tr>
       </thead>
-      <tbody id="dashboard-tbody">
-        <!-- <tr>
-          <td>A Name</td>
-          <td>A Email</td>
-          <td>A Phone</td>
-          <td>A Branch</td>
-          <td>A Students</td>
-          <td>A Status</td>
-          <td>A Actions</td>
-        </tr>
-
-        <tr>
-          <td>A Name</td>
-          <td>A Email</td>
-          <td>A Phone</td>
-          <td>A Branch</td>
-          <td>A Students</td>
-          <td>A Status</td>
-          <td>A Actions</td>
-        </tr>
-
-        <tr>
-          <td>A Name</td>
-          <td>A Email</td>
-          <td>A Phone</td>
-          <td>A Branch</td>
-          <td>A Students</td>
-          <td>A Status</td>
-          <td>A Actions</td>
-        </tr> -->
-      </tbody>
+      <tbody id="dashboard-tbody"></tbody>
     </table>
   </div>
 

@@ -23,8 +23,12 @@
   },
   "homepage": "https://github.com/AhlawatAnup/uiet-cluster-resource-sharing#readme",
   "dependencies": {
+    "@fullcalendar/core": "^6.1.20",
+    "@fullcalendar/daygrid": "^6.1.20",
     "bcrypt": "^6.0.0",
     "body-parser": "^2.2.0",
+    "chart.js": "^4.5.1",
+    "chartjs-adapter-date-fns": "^3.0.0",
     "connect-mongo": "^5.1.0",
     "cors": "^2.8.5",
     "csv-parser": "^3.2.0",
@@ -40,6 +44,11 @@
     "node-schedule": "^2.1.1",
     "nodemailer": "^7.0.6",
     "pdfkit": "^0.17.2",
+    "sweetalert2": "^11.26.25",
+    "tippy": "^0.0.0",
+    "tippy.js": "^6.3.7",
+    "toastify": "^2.0.1",
+    "toastify-js": "^1.12.0",
     "web-push": "^3.6.7"
   },
   "devDependencies": {

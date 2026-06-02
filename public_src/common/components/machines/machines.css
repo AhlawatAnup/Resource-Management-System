@@ -1,0 +1,66 @@
+/* --- 3. Machine List --- */
+.machines-flexbar {
+  display: flex;
+  flex-direction: column;
+  padding:4px;
+
+  width: 420px;
+
+  height: calc(100vh - 90px);
+
+  overflow-y: auto;
+
+  /* padding-right: 14px; */
+
+  border-right: 1px solid #e5e7eb;
+}
+/* Custom Small Scrollbar */
+.machines-flexbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.machines-flexbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.machines-flexbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 999px;
+}
+
+.machines-flexbar::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+#machines-flexbar {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+}
+
+.machine-item-card {
+  cursor: pointer;
+  width: 100%;
+  box-sizing: border-box;
+
+  padding-left: 20px;
+  padding-right: 24px;
+  margin: 0;
+
+  border: none;
+  border-radius: 0;
+
+  background: transparent;
+
+  transition: background 0.2s ease;
+}
+
+.machine-item-card.selected {
+  background: rgba(59, 130, 246, 0.05);
+  border-left: 3px solid #2563eb;
+}
+#selected-machine-name {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+

@@ -119,7 +119,6 @@
       align-items: center;
       gap: 8px;
     }
-
     .avatar {
       width: 36px;
       height: 36px;
@@ -151,4 +150,64 @@
       }
     }
   }
+   .admin-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      button {
+        padding: 6px 12px;
+        font-size: 12px;
+        font-weight: 500;
+        border-radius: 6px;
+        border: 1px solid transparent;
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+        outline: none;
+
+        &:active {
+          transform: scale(0.97);
+        }
+      }
+
+      .btn-approve {
+        background-color: #f0fdf4;
+        color: #16a34a;            
+        border-color: #bbf7d0;
+
+        &:hover {
+          background-color: #16a34a;
+          color: #ffffff;
+          border-color: #16a34a;
+          box-shadow: 0 2px 4px rgba(22, 163, 74, 0.15);
+        }
+      }
+
+      .btn-reject {
+        background-color: #fff1f2; 
+        color: #e11d48;           
+        border-color: #fecdd3;
+
+        &:hover {
+          background-color: #e11d48;
+          color: #ffffff;
+          border-color: #e11d48;
+          box-shadow: 0 2px 4px rgba(225, 29, 72, 0.15);
+        }
+      }
+
+      .action-completed {
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #94a3b8;
+        background-color: #f8fafc;
+        padding: 4px 10px;
+        border-radius: 4px;
+        border: 1px solid #e2e8f0;
+      }
+    } 
 }
+
+

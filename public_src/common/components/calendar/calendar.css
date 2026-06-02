@@ -1,0 +1,43 @@
+.allotments-main-panel {
+  flex: 1;
+  min-width: 0;
+  padding-left: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+ 
+
+   #selected-machine-name {
+          margin-top:4px;
+          font-size: 25px;
+          margin-bottom: 10px;
+          }
+
+    #calendar-view {
+       display: flex;
+       flex-direction: column;
+       align-items: center;
+       animation: fadeIn 0.4s ease-out;
+       width: 100%;
+       height:100%;
+    }
+
+   .allotments-content{
+    width: 100%;
+    }
+/* =============================
+   MACHINE TITLE
+============================= */
+#selected-machine-name {
+  font-size: 24px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 20px;
+  text-align: center;
+}
+ 
+
+
+    

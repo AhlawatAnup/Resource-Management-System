@@ -5,15 +5,15 @@
 // -----------------------------
 export function getEndpoint(currentType, currentStatus) {
   if (currentType === 'teacher') {
-    if (currentStatus === 'unverified') return '/dashboard/admin/teachers/pending';
-    if (currentStatus === 'verified') return '/dashboard/admin/teachers';
-    if (currentStatus === 'rejected') return '/dashboard/admin/teachers/rejected';
-    if (currentStatus === 'all') return '/dashboard/admin/teachers';
+    if (currentStatus === 0) return '/dashboard/admin/teachers/pending';
+    if (currentStatus === 1) return '/dashboard/admin/teachers';
+    if (currentStatus === 3) return '/dashboard/admin/teachers/rejected';
+    if (currentStatus === 2) return '/dashboard/admin/teachers';
   } else {
-    if (currentStatus === 'unverified') return '/dashboard/admin/students/pending';
-    if (currentStatus === 'verified') return '/dashboard/admin/students';
-    if (currentStatus === 'rejected') return '/dashboard/admin/students/rejected';
-    if (currentStatus === 'all') return '/dashboard/admin/students';
+    if (currentStatus === 0) return '/dashboard/admin/students/pending';
+    if (currentStatus === 1) return '/dashboard/admin/students';
+    if (currentStatus === 3) return '/dashboard/admin/students/rejected';
+    if (currentStatus === 2) return '/dashboard/admin/students';
   }
 
   return '';
@@ -24,29 +24,29 @@ export function getEndpoint(currentType, currentStatus) {
 // -----------------------------
 export function extractDataByTypeAndStatus(data, currentType, currentStatus) {
   if (currentType === 'teacher') {
-    if (currentStatus === 'unverified') {
+    if (currentStatus === 0) {
       return data.teachers || [];
     }
-    if (currentStatus === 'verified') {
+    if (currentStatus === 1) {
       return (data.teachers || []).filter((t) => t.is_verified);
     }
-    if (currentStatus === 'rejected') {
+    if (currentStatus === 3) {
       return data.teachers || [];
     }
-    if (currentStatus === 'all') {
+    if (currentStatus === 2) {
       return data.teachers || [];
     }
   } else {
-    if (currentStatus === 'unverified') {
+    if (currentStatus === 0) {
       return data.students || [];
     }
-    if (currentStatus === 'verified') {
+    if (currentStatus === 1) {
       return (data.students || []).filter((s) => s.is_verified);
     }
-    if (currentStatus === 'rejected') {
+    if (currentStatus === 3) {
       return data.students || [];
     }
-    if (currentStatus === 'all') {
+    if (currentStatus === 2) {
       return data.students || [];
     }
   }

@@ -68,7 +68,7 @@ exports.getAllTeachers = async (req, res) => {
     const teachers = await Teacher.find()
       .populate('students', 'name rollNo')
       .sort({ createdAt: -1 });
-    return res.json(teachers);
+    return res.json({teachers});
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: 'Failed to fetch teachers' });

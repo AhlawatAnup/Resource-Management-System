@@ -1,3 +1,6 @@
 @import url(./container/container.css);
 @import url(./utils/utils.css);
 @import url(./table/table.css);
+@import url(./machines/machines.css);
+@import url(./calendar/calendar.css);
+@import url('./about-us/about-us.css')
