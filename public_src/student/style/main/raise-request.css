@@ -1,5 +1,12 @@
 /* Verification/Unverification Banner */
 .verification-banner {
+    position: absolute;
+
+  top: 0;
+  left: 0;
+  right: 0;
+
+  z-index: 9999;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -22,6 +29,11 @@
 }
 
 .unverified-banner {
+   position: absolute;
+
+  top: 0;
+  left: 0;
+  right: 0;
   background: #fef2f2;
   color: #991b1b;
   border-bottom: 1px solid #fecaca;
@@ -70,12 +82,8 @@
 .info-box {
   display: flex;
   justify-content: center;
-  margin-left: 10px;
-  margin-right: 10px;
   padding: 10px;
-  border-radius: 8px;
   font-size: 11px;
-  margin-bottom: 20px;
 }
 
 .info-box.warning {
@@ -85,7 +93,6 @@
 
 .info-box.tip {
   background: #e3f2fd;
-  border-left: 4px solid #2196f3;
 }
 
 .info-box h3 {
@@ -164,11 +171,9 @@
 /* Requests */
 .request-layout {
   display: flex;
-  margin-left: 5px;
   margin-right: 5px;
-}
-.request-layout {
-  display: flex;
+  overflow: hidden;
+  height: 100%;
   align-items: flex-start;
 }
 /* REQUEST FORM */
@@ -177,7 +182,7 @@
 }
 
 .form-group {
-  margin-bottom: 22px;
+  margin-bottom: 12px;
 }
 
 .form-group label {
@@ -200,22 +205,24 @@
 }
 
 .request-form-panel {
+  display: flex;
+  flex-direction: column;
   flex: 1;
   min-width: 0;
+  padding: 1rem;
+  border-right: 1px solid #dbe3ee;
+  overflow-y: auto;
+  overflow-x: auto;
 }
 
 .machines-panel {
   flex-shrink: 0;
 }
 
-.request-form-panel {
-  min-height: 700px;
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
-}
 
 .form-control {
   width: 100%;
-  padding: 14px 16px;
+  padding: 8px 10px;
   border: 1px solid #dbe3ee;
   border-radius: 12px;
   font-size: 15px;
@@ -234,9 +241,12 @@
 }
 
 .declaration-section {
-  padding: 20px;
-  font-size: 12px;
-  background: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  gap:8px;
+  padding: 15px;
+  font-size: 14px;
+  background: #f8f4fe;
   border-radius: 16px;
   border: 1px solid #e2e8f0;
 }
@@ -408,4 +418,190 @@
   font-style: italic;
   color: #4caf50;
   font-weight: 600;
+}
+/* Machines UI */
+
+.machine-bar-item {
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.machine-bar-item:hover {
+  background: #DBEAFE;
+}
+
+.machine-bar-item.selected {
+  background: rgba(59, 130, 246, 0.05);
+  border-left: 3px solid #2563eb;
+}
+
+#raise-machines-flexbar {
+  
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+
+
+#raise-machines-flexbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+#raise-machines-flexbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 999px;
+}
+
+#raise-machines-flexbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+#raise-machines-flexbar::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.request-form-panel {
+  flex: 6;
+}
+
+.machines-bar-section {
+    flex: 3;
+    min-width: 350px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    height: 100%;
+}
+#raise-machines-flexbar {
+  flex:1;
+  overflow-y: auto;
+}
+
+.machines-title{
+   display: block;
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  margin-left: 12px;
+  color: #1e293b;
+  letter-spacing: 0.2px;
+}
+
+/* Allot first Machine */
+.no-requests {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 450px;
+  padding: 40px 20px;
+}
+
+.empty-state {
+  width: 100%;
+  max-width: 520px;
+  text-align: center;
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 50px 40px;
+  border: 1px solid #e5e7eb;
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.05),
+    0 2px 10px rgba(0, 0, 0, 0.03);
+  transition: all 0.3s ease;
+}
+
+.empty-state:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 16px 40px rgba(37, 99, 235, 0.08),
+    0 4px 14px rgba(0, 0, 0, 0.05);
+}
+
+.empty-state-icon {
+  width: 90px;
+  height: 90px;
+  margin: 0 auto 24px;
+  border-radius: 50%;
+  background: linear-gradient(
+    135deg,
+    rgba(37, 99, 235, 0.08),
+    rgba(59, 130, 246, 0.15)
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-state-icon i {
+  font-size: 38px;
+  color: #2563eb;
+}
+
+.empty-state h3 {
+  font-size: 26px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 12px;
+}
+
+.empty-state p {
+  font-size: 15px;
+  line-height: 1.7;
+  color: #6b7280;
+  margin-bottom: 28px;
+}
+
+.btn-primary {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 24px;
+  border-radius: 12px;
+  background: linear-gradient(
+    135deg,
+    #2563eb,
+    #3b82f6
+  );
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 15px;
+  transition: all 0.25s ease;
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.25);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(37, 99, 235, 0.35);
+}
+
+.btn-primary i {
+  font-size: 16px;
+}
+
+#resource-request-form{
+      display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+#request-content{
+ display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+    height: 100%;
+}
+
+.raise-request{
+      position: relative;
+      display: flex;
+    flex-direction: column;
+}
+
+.container{
+  display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+    position: relative;
 }

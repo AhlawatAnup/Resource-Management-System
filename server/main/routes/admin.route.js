@@ -101,6 +101,6 @@ router.delete('/machines/:id', isAdmin, deleteMachine);
 //router.get('/allotments/:machineId', isAdmin, getMachineWiseActiveAllotments);
 
 //report generation
-router.get('/getStatsByResReqId/:resourceRequestId', getStatsByResReqId);
+//router.get('/getStatsByResReqId/:resourceRequestId', getStatsByResReqId);
 
 module.exports = router;

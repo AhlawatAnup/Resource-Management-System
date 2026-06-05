@@ -4,8 +4,11 @@ import {
   showErrorMessage,
   getStudentVerificationStatus,
   isValidDuration,
+  AllotmentsUtils
 } from '../student.util.js';
-import { renderResourcesPage } from './raise-request.ui.js';
+import { renderResourcesPage, renderMachineCards } from './raise-request.ui.js';
+import { setActiveSidebar } from '../../../common/aside/aside.js';
+import { handleLoadViewRequests } from '../view-request/view-request.init.js';
 //import { logoutDirectly } from '../../../common/js/commons.js';
 //import { setupDarkMode } from '../../../common/js/darkmode/darkmode.js';
 
@@ -33,7 +36,6 @@ export async function submitResourceRequest(data) {
   return response;
 }
 
-
 //HANDLER
 export async function handleLoadRequestResources() {
   try {
@@ -47,7 +49,7 @@ export async function handleLoadRequestResources() {
 
     if (!response.ok) {
       if (response.status === 404) {
-       // logoutDirectly();
+        // logoutDirectly();
         return;
       }
       throw new Error('Failed to fetch student details');
@@ -62,7 +64,7 @@ export async function handleLoadRequestResources() {
     await loadAvailableMachines();
   } catch (error) {
     console.error('Error loading student details for resources:', error);
-   // logoutDirectly();
+    // logoutDirectly();
   }
 }
 
@@ -81,7 +83,7 @@ export async function handleResourceRequest(event) {
       title: document.getElementById('title').value.trim(),
       purpose: document.getElementById('purpose').value.trim(),
       duration: Number(document.getElementById('duration').value),
-      machineId: document.getElementById('selected-machine-id')?.value,
+      machineId: document.getElementById('raise-selected-machine-id')?.value,
     };
 
     if (!formData.title || !formData.purpose || !formData.duration) {
@@ -140,8 +142,10 @@ export async function handleResourceRequest(event) {
       scrollbarPadding: false,
       heightAuto: false,
     });
-
-    window.location.href = '/dashboard/student/view-requests';
+    document.querySelector('.raise-request')?.classList.add('hide-default');
+    document.querySelector('.view-request')?.classList.remove('hide-default');
+    setActiveSidebar('view-request');
+    await handleLoadViewRequests()
   } catch (error) {
     console.error('Error submitting resource request:', error);
     Swal.fire({
@@ -159,7 +163,7 @@ export async function handleResourceRequest(event) {
 }
 
 export async function loadAvailableMachines() {
-  const container = document.getElementById('machines-flexbar');
+  const container = document.getElementById('raise-machines-flexbar');
   if (!container) return;
   try {
     const res = await fetch('/dashboard/get_machines');
@@ -170,12 +174,21 @@ export async function loadAvailableMachines() {
         '<span class="machine-bar-empty">No machines currently available.</span>';
       return;
     }
-    container.innerHTML = machines
-      .map(
-        (m) =>
-          `<div class="machine-bar-item" data-machine-id="${m._id}"><span class="migid">${m.MIGID}</span><span class="gpuram">${m.gpuRam} GB</span></div>`,
-      )
-      .join('');
+    for (const machine of machines) {
+      try {
+        const res = await fetch(`/dashboard/allotments/${machine._id}`);
+
+        const data = await res.json();
+
+        const formatted = AllotmentsUtils.formatAllotments(data.allotments);
+
+        machine.availableFrom = AllotmentsUtils.getAvailableFrom(formatted);
+      } catch {
+        machine.availableFrom = 'Today';
+      }
+    }
+
+    renderMachineCards(machines);
 
     container.addEventListener('click', (e) => {
       const item = e.target.closest('.machine-bar-item');
@@ -184,7 +197,7 @@ export async function loadAvailableMachines() {
       container
         .querySelectorAll('.machine-bar-item')
         .forEach((el) => el.classList.remove('selected'));
-      const hiddenInput = document.getElementById('selected-machine-id');
+      const hiddenInput = document.getElementById('raise-selected-machine-id');
       if (isAlreadySelected) {
         if (hiddenInput) hiddenInput.value = '';
       } else {
@@ -198,10 +211,8 @@ export async function loadAvailableMachines() {
   }
 }
 
-//INIT 
+//INIT
 // main.js
-
-
 
 // App initialization
 document.addEventListener('DOMContentLoaded', () => {

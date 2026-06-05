@@ -53,16 +53,11 @@ export function createAllotmentsHandler(machineService) {
     async loadMachineSchedule(machine) {
       PageUI.updateView(machine.MIGID);
 
+
       try {
         const data = await machineService.getAllotments(machine._id);
         const disabledDates = AllotmentsUtils.formatAllotments(data.allotments);
-        requestAnimationFrame(() => {
-          CalendarUI.init('#inline-calendar-anchor', disabledDates);
-
-          setTimeout(() => {
-            CalendarUI.instance?.updateSize();
-          }, 120);
-        });
+        CalendarUI.init('#inline-calendar-anchor', disabledDates);
       } catch (error) {
         console.error('Schedule Load Error:', error);
         if (typeof Swal !== 'undefined') {
@@ -72,7 +67,6 @@ export function createAllotmentsHandler(machineService) {
     },
   };
 }
-
 //INIT
 
 function initAllotments() {

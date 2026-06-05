@@ -1,0 +1,42 @@
+<div class="main assigned-students hide-default">
+  <div class="header" >
+    <h2 > Assigned Students</h2>
+     <button id="theme-toggle" class="theme-toggle" title="Dark Mode">
+          <i id="theme-icon" class="fa fa-moon"></i>
+        </button>
+   </div>
+
+   <div class="container">
+
+         <div class="search-container">
+           <i class="fas fa-search search-icon"></i>
+
+          <input
+          id="searchInput"
+           type="text"
+           placeholder="Search students by name, email, phone..."
+           class="student-search"
+           />
+           </div>
+    
+
+        <div class="rms-table">
+          <table>
+            <thead>
+              <tr>
+                <th class="sortable" data-sort="name">Student Name</th>
+                <th class="sortable" data-sort="contact">Contact</th>
+                <th class="sortable" data-sort="institute">Institute</th>
+                <th class="sortable" data-sort="status">Approval Status</th>
+                <th class="sortable" data-sort="branch">Branch</th>
+                <th class="sortable">Action</th>
+              </tr>
+            </thead>
+            <tbody id="contactTableBody">
+              <!-- Table rows will be populated by JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+</div>

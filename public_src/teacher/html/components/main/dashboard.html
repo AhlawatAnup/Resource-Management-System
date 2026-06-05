@@ -1,0 +1,37 @@
+<div class="main dashboard">
+  <!-- HEADER -->
+  <div class="header" style="display: none">
+    <h2 id="teacher-name"></h2>
+     <button id="theme-toggle" class="theme-toggle" title="Dark Mode">
+          <i id="theme-icon" class="fa fa-moon"></i>
+        </button>
+   </div>
+    <!-- Teacher Profile Section -->
+      <div id="teacher-profile-section" >
+        <!-- Teacher profile will be loaded here by JavaScript -->
+      </div>
+
+     <div class="container">
+       <h2 style="font-size: 17px; font-weight: 600; margin: 20px 0 14px 0; color: #1e293b; letter-spacing: 0.02em; border-left: 3px solid #3b82f6; padding-left: 12px; line-height: 1.4;">
+    Pending Student Approvals
+</h2>
+
+        <div class="rms-table">
+          <table>
+            <thead>
+              <tr>
+                <th class="sortable" data-sort="name">Student Name</th>
+                <th class="sortable" data-sort="contact">Contact</th>
+                <th class="sortable" data-sort="institute">Institute</th>
+                <th class="sortable" data-sort="status">Approval Status</th>
+                <th class="sortable" data-sort="branch">Branch</th>
+                <th class="sortable">Action</th>
+              </tr>
+            </thead>
+            <tbody id="pendingRequestsTableBody">
+              <!-- Table rows will be populated by JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+</div>

@@ -9,15 +9,15 @@ export function getRequestStatus(request) {
 
   // 2. Any rejection (highest priority after final)
   if (request.teacher_action && !request.teacher_verified) {
-    return { text: 'Declined by Teacher', class: 'declined' };
+    return { text: 'Declined by Teacher', class: 'status-rejected' };
   }
 
   if (request.admin_action && !request.admin_verified) {
-    return { text: 'Declined by Admin', class: 'declined' };
+    return { text: 'Declined by Admin', class: 'status-rejected' };
   }
   // 1. FINAL → Fully verified
   if (request.is_verified && request.isActive == true) {
-    return { text: 'Verified', class: 'verified' };
+    return { text: 'Verified', class: 'status-approved' };
   }
 
   if (request.isActive === false) {
@@ -33,7 +33,7 @@ export function getRequestStatus(request) {
   // }
 
   // 4. Default → Pending
-  return { text: 'Pending Teacher', class: 'pending-teacher' };
+  return { text: 'Pending Teacher', class: 'status-pending' };
 }
 
 // Filter requests (pure function)

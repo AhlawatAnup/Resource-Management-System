@@ -1,5 +1,3 @@
-// ui.js
-
 import { formatDate } from '../../../common/utils/commons.utils.js';
 import {
   getRequestStatus,
@@ -8,10 +6,13 @@ import {
   getRequestStatusIcon,
   canDeleteRequest,
 } from '../student.util.js';
+import Swal from 'sweetalert2';
+import { setActiveSidebar } from '../../../common/aside/aside.js';
 
 // ==============================
 // Page Structure
 // ==============================
+
 
 export function renderRequestsPageStructure(onFilterChange) {
   const container = document.getElementById('requests-content');
@@ -19,23 +20,8 @@ export function renderRequestsPageStructure(onFilterChange) {
   container.innerHTML = `
         <div class="requests-page">
             <div id="all-requests" class="resource-request-section">
-                <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                    <h2>
-                        <i class="fas fa-list-ul"></i>
-                        All Your Resource Requests
-                    </h2>
-                    <div class="filter-controls" style="display: flex; gap: 10px; align-items: center;">
-                        <label for="status-filter" style="font-weight: 600; color: #666;">Filter by Status:</label>
-                        <select id="status-filter" class="form-control" style="width: auto; min-width: 150px;">
-                            <option value="all">All Requests</option>
-                            <option value="pending">Pending Review</option>
-                            <option value="approved">Approved</option>
-                            <option value="rejected">Rejected</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="delete-note" style="margin-bottom: 16px; padding: 10px 16px; background: #fffbe6; border-left: 4px solid #faad14; border-radius: 6px; color: #8c6d1f; font-size: 1em;">
-                    <strong>Note:</strong> You can delete a request only if it has not been acted upon by your teacher or admin.
+                <div class="section-header" style="display: flex; justify-content: center; align-items: center; margin-bottom: 20px;">
+
                 </div>
                 <div id="all-requests-list"></div>
             </div>
@@ -54,6 +40,7 @@ export function renderRequestsPageStructure(onFilterChange) {
 // Render Requests
 // ==============================
 
+
 export function renderAllRequests(requests, onDelete, onReload) {
   const container = document.getElementById('all-requests-list');
 
@@ -61,19 +48,31 @@ export function renderAllRequests(requests, onDelete, onReload) {
     container.innerHTML = `
             <div class="no-requests">
                 <div class="empty-state">
-                    <i class="fas fa-inbox" style="font-size: 4em; color: #ddd; margin-bottom: 20px;"></i>
+                    <i class="fas fa-inbox" style="font-size: 4em; color: #ddd; margin-bottom: 20px; color:blue;"></i>
                     <h3 style="color: #666; margin-bottom: 10px;">No Requests Found</h3>
                     <p style="color: #888; margin-bottom: 20px;">You haven't submitted any resource requests yet.</p>
-                    <a href="/dashboard/student/request-resources.html" class="btn-primary">
+                    <button class="btn-primary empty-request-btn">   
                         <i class="fas fa-plus-circle"></i>
                         Submit Your First Request
-                    </a>
+                    </button>
                 </div>
             </div>
         `;
+
+       document
+  .querySelector('.empty-request-btn')
+  ?.addEventListener('click', () => {
+    document.querySelector('.view-request')
+      ?.classList.add('hide-default');
+
+    document.querySelector('.raise-request')
+      ?.classList.remove('hide-default');
+
+    setActiveSidebar('raise-request');
+  });
     return;
   }
-
+  
   // Sort requests by creation date (newest first)
   const sortedRequests = [...requests].sort(
     (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
@@ -296,31 +295,7 @@ function createRequestCard(request) {
             flex-wrap:wrap;
         ">
 
-           ${
-             showReportButton
-               ? `
-    <button class="report-btn"
-        style="
-            display:inline-flex;
-            align-items:center;
-            gap:6px;
-            background:#fff;
-            color:#2563eb;
-            border:1.5px solid #bfdbfe;
-            border-radius:8px;
-            padding:7px 14px;
-            font-size:13px;
-            font-weight:500;
-            cursor:pointer;
-        ">
-        <i class="fas fa-file-alt"></i>
-        Generate Report
-    </button>
-`
-               : ''
-           }
-
-            ${
+        ${
               showTokenAndButtons
                 ? `
                 <button
@@ -346,10 +321,35 @@ function createRequestCard(request) {
             `
                 : ''
             }
-
+           ${
+             showReportButton
+               ? `
+    <button class="report-btn"  data-request-id="${request._id}"
+        style="
+            display:inline-flex;
+            align-items:center;
+            gap:6px;
+            background:#fff;
+            color:#2563eb;
+            border:1.5px solid #bfdbfe;
+            border-radius:8px;
+            padding:7px 14px;
+            font-size:13px;
+            font-weight:500;
+            cursor:pointer;
+        ">
+        <i class="fas fa-file-alt"></i>
+        View Usage
+    </button>
+`
+               : ''
+           }
+            ${
+              showReportButton?
+              `
             <button class="feedback-btn"
                 style="
-                    display:inline-flex;
+                    display:none;
                     align-items:center;
                     gap:6px;
                     background:#fff;
@@ -362,8 +362,10 @@ function createRequestCard(request) {
                     cursor:pointer;
                 ">
                 <i class="fas fa-comment-dots" style="font-size:13px;"></i>
-                Feedback
+                Send Feedback
             </button>
+            `:''
+            }
         </div>
 
         <!-- Date -->

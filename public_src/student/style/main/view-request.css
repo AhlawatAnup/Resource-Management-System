@@ -1,0 +1,25 @@
+.status-filter{
+    min-width:190px;
+    height:42px;
+
+    border:1px solid #dbeafe;
+    border-radius:12px;
+
+    background:#fff;
+
+    padding:0 14px;
+
+    font-size:14px;
+    font-weight:500;
+
+    transition:.25s ease;
+}
+
+.status-filter:hover{
+    border-color:#60a5fa;
+}
+
+.status-filter:focus{
+    border-color:#3b82f6;
+    box-shadow:0 0 0 3px rgba(59,130,246,.15);
+}

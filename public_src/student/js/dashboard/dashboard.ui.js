@@ -1,6 +1,7 @@
 import { getStudentVerificationStatus, getStudentStatusClass } from '../student.util.js';
-
 import { formatDate } from '../../../common/utils/commons.utils.js';
+import {setActiveSidebar} from '../../../common/aside/aside.js'
+import { CountUp } from 'countup.js';
 
 export function showErrorMessage(message, containerId = 'student-profile') {
   const container = document.getElementById(containerId);
@@ -34,12 +35,88 @@ export function displayStudentDetails(student) {
   // Update student name in header/welcome section
   const welcomeElement = document.getElementById('student-welcome');
   if (welcomeElement) {
-    welcomeElement.textContent = `Welcome, ${student.name}`;
+    welcomeElement.textContent = `Hello, ${student.name} | ${student.rollNo}`;
   }
 
   // Update student profile section
   const profileSection = document.getElementById('student-profile');
-  if (profileSection) {
+  if(profileSection){
+    profileSection.innerHTML=`
+    <div class='profile-card'>
+       <div class='profile-header'>
+         <div class="profile-avatar">
+        ${student.name.charAt(0).toUpperCase()}
+         </div>
+
+          <h2 class="proile-name">
+          ${student.name}
+        </h2>
+
+        <span class="verification-badge ${statusClass}">
+            ${verificationStatus}
+          </span>
+       </div>
+       
+       <div class='profile-details-row'>
+         <span><strong>Email:</strong>${student.email || 'N/A'}</span>
+         <span><strong>Branch:</strong>${student.branch || 'N/A'}</span>
+         <span><strong>Institute Address:</strong>${student.instituteName}, ${student.instituteAddress}</span>
+         <span><strong>Roll No.:</strong>${student.rollNo}</span>
+         <span><strong>Joined:</strong>${student.createdAt.toLocaleString().split('T')[0]}</span>
+       </div>
+
+       <!-- BOTTOM ROW -->
+  <div class="hero-bottom">
+
+
+    <div class="hero-teacher">
+      Under the supervision of: ${student.teacher?.name}
+    </div>
+
+    <div class="hero-actions">
+
+      <button   id="resourceRequestsBtn">
+        
+        Raise New Request
+      </button>
+
+      <button
+          id='viewRequestsBtn'> 
+        View My Requests
+      </button>
+
+    </div>
+
+  </div>
+</div>
+</div>
+    </div>
+
+    `
+
+    
+document.getElementById('resourceRequestsBtn')?.addEventListener('click', () => {
+  document.querySelector('.dashboard-page')?.classList.add('hide-default');
+
+  document.querySelector('.raise-request')?.classList.remove('hide-default');
+
+  document
+  .querySelector('a[data-page="raise-request"]')
+  ?.click();
+});
+
+document.getElementById('viewRequestsBtn')?.addEventListener('click', () => {
+  document.querySelector('.dashboard-page')?.classList.add('hide-default');
+
+  document.querySelector('.view-request')?.classList.remove('hide-default');
+
+  document
+  .querySelector('a[data-page="view-request"]')
+  ?.click();
+});
+  }
+  
+  if (!profileSection) {
     profileSection.innerHTML = `
    <div class="dashboard-hero">
 
@@ -92,7 +169,7 @@ export function displayStudentDetails(student) {
       <div class="hero-stat-icon requests-icon">
        <i class="fas fa-file-alt"></i> 
        </div> 
-       <h3>12</h3>
+       <h3 id="totalRequests">0</h3>
        <p> Total Requests</p> 
        <p class='tag'>Raised by you</p>
       </div>
@@ -101,8 +178,8 @@ export function displayStudentDetails(student) {
        <div class="hero-stat-icon machines-icon"> 
         <i class="fas fa-desktop"></i> 
         </div> 
-        <h3>3</h3> 
-        <p>Machines Alotments</p>
+        <h3 id='allottedRequests'>0</h3> 
+        <p>Alotted Requests</p>
         <p class='tag'>All Time</p>
 
 
@@ -110,7 +187,7 @@ export function displayStudentDetails(student) {
           <div class="hero-stat-icon availability-icon">
            <i class="fas fa-chart-line"></i> 
            </div> 
-           <h3>5</h3> 
+           <h3 id='availableMachines'>0</h3> 
            <p>Machine Available</p> 
            <p class='tag'>This Time</p>
            </div> 
@@ -130,15 +207,15 @@ export function displayStudentDetails(student) {
 
     <div class="hero-actions">
 
-      <a href="/dashboard"
-         class="hero-btn primary">
+      <button   id="resourceRequestsBtn">
+        
         Raise New Request
-      </a>
+      </button>
 
-      <a href="/dashboard"
-         class="hero-btn secondary">
+      <button
+          id='viewRequestsBtn'> 
         View My Requests
-      </a>
+      </button>
 
     </div>
 
@@ -147,6 +224,41 @@ export function displayStudentDetails(student) {
 </div>
  
    `;
+
+   new CountUp(
+  'totalRequests',
+  student.dashboardStats?.totalRequests || 0
+).start();
+
+new CountUp(
+  'allottedRequests',
+  student.dashboardStats?.allottedRequests || 0
+).start();
+
+new CountUp(
+  'availableMachines',
+  student.dashboardStats?.availableMachines || 0
+).start();
+
+document.getElementById('resourceRequestsBtn')?.addEventListener('click', () => {
+  document.querySelector('.dashboard-page')?.classList.add('hide-default');
+
+  document.querySelector('.raise-request')?.classList.remove('hide-default');
+
+  document
+  .querySelector('a[data-page="raise-request"]')
+  ?.click();
+});
+
+document.getElementById('viewRequestsBtn')?.addEventListener('click', () => {
+  document.querySelector('.dashboard-page')?.classList.add('hide-default');
+
+  document.querySelector('.view-request')?.classList.remove('hide-default');
+
+  document
+  .querySelector('a[data-page="view-request"]')
+  ?.click();
+});
   }
 }
 

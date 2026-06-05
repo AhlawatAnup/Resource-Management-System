@@ -93,6 +93,13 @@ export function renderTable(wrapper, machines, handlers) {
     const actionTd = document.createElement('td');
     // Delete button
     const deleteBtn = createBtn('Delete', () => handlers.onDelete(m, tr));
+    deleteBtn.style.background = '#991b1b';
+    deleteBtn.style.color = 'white';
+    deleteBtn.style.padding = '3px 8px';
+    deleteBtn.style.fontSize = '13px';
+    deleteBtn.style.borderRadius = '8px';
+    deleteBtn.style.border = 'none';
+    deleteBtn.style.cursor = 'pointer';
     deleteBtn.title = 'Deleting this machine is irreversible. All related data will be lost!';
     actionTd.appendChild(deleteBtn);
     let actionBtn;
@@ -100,14 +107,27 @@ export function renderTable(wrapper, machines, handlers) {
       actionBtn = createBtn('Disable', function () {
         handlers.onRevoke(m, actionBtn);
       });
-      actionBtn.style.background = '#fa6251ff';
+      actionBtn.style.background = '#b91c1c'; // same as reject
+      actionBtn.style.color = 'white';
+      actionBtn.style.padding = '3px 8px';
+      actionBtn.style.borderRadius = '8px';
+      actionBtn.style.border = 'none';
+      actionBtn.style.cursor = 'pointer';
+      actionBtn.style.fontSize = '13px';
+
       actionBtn.title =
         'Disabling this machine will prevent users from using it until it is re-enabled. New allotments cannot be made while disabled.';
     } else {
       actionBtn = createBtn('Enable', function () {
         handlers.onEnable(m, actionBtn);
       });
-      actionBtn.style.background = '#28a745';
+      actionBtn.style.background = '#166534'; // same as approve
+      actionBtn.style.color = 'white';
+      actionBtn.style.padding = '3px 8px';
+      actionBtn.style.fontSize = '13px';
+      actionBtn.style.borderRadius = '8px';
+      actionBtn.style.border = 'none';
+      actionBtn.style.cursor = 'pointer';
       actionBtn.title =
         'Enabling this machine will allow users to use it again and new allotments can be made.';
     }

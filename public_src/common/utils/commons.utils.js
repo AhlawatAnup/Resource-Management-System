@@ -1,3 +1,5 @@
+import Swal from 'sweetalert2';
+
 // Render dashboard header for any role
 export function renderDashboardHeader(data) {
   const header = document.getElementById('hello-user');
@@ -136,9 +138,7 @@ export function isValidUsername(username) {
 }
 
 // Logout with confirmation
-export function handleLogout(e) {
-  e.preventDefault();
-
+export function handleLogout() {
   Swal.fire({
     title: 'Log out?',
     icon: 'question',

@@ -1,0 +1,169 @@
+/* Approve */
+.rms-action-approve button {
+    background: #166534;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 9px 16px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+
+    display: inline-flex;
+    align-items: center;
+
+
+    transition: all 0.2s ease;
+}
+
+.rms-action-approve button:hover {
+    background: #14532d;
+    transform: translateY(-1px);
+}
+/* Reject */
+.rms-action-reject button {
+    background: #b91c1c;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 9px 16px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+
+    display: inline-flex;
+    align-items: center;
+
+    transition: all 0.2s ease;
+}
+
+.rms-action-reject button:hover {
+    background: #991b1b;
+    transform: translateY(-1px);
+}
+/* Edit */
+.rms-action-edit button{
+    background:#d97706;
+    color:white;
+    border:none;
+    border-radius:8px;
+    padding:8px 14px;
+
+    display:flex;
+    align-items:center;
+
+
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
+
+    transition:all .2s ease;
+}
+
+.rms-action-edit button:hover{
+    background:#b45309;
+}
+/* Revoke */
+.rms-action-revoke button{
+    background:#c2410c;
+    color:white;
+    border:none;
+    border-radius:8px;
+    padding:8px 14px;
+
+    display:flex;
+    align-items:center;
+
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
+
+    transition:all .2s ease;
+}
+
+.rms-action-revoke button:hover{
+    background:#9a3412;
+}
+/* Gererate Report */
+.rms-action-report button{
+    background:#dcfce7;
+    color:#166534;
+    border:1px solid #bbf7d0;
+    border-radius:8px;
+    padding:8px 14px;
+
+    display:flex;
+    align-items:center;
+
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
+
+    transition:all .2s ease;
+}
+
+.rms-action-report button:hover{
+    background:#bbf7d0;
+}
+/* Status */
+.status-approved,
+.status-pending,
+.status-rejected,
+.status-expired {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 11px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  position: relative;
+}
+
+
+.status-approved::before,
+.status-pending::before,
+.status-rejected::before,
+.status-expired::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0.18;
+
+}
+
+.status-approved::after,
+.status-pending::after,
+.status-rejected::after,
+.status-expired::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1.5px solid;
+  opacity: 0.5;
+
+}
+
+/* approved (green) */
+.status-approved { color: #27500A; }
+.status-approved::before { background: #639922; }
+.status-approved::after  { border-color: #3B6D11; }
+
+/* pending (yellow) */
+.status-pending { color: #633806; }
+.status-pending::before { background: #EF9F27; }
+.status-pending::after  { border-color: #854F0B; }
+
+/* ── expired (gray) ── */
+.status-expired { color: #444441; }
+.status-expired::before { background: #888780; }
+.status-expired::after  { border-color: #5F5E5A; }
+
+/* rejected (red) */
+.status-rejected { color: #791F1F; }
+.status-rejected::before { background: #E24B4A; }
+.status-rejected::after  { border-color: #A32D2D; }
+

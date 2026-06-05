@@ -175,11 +175,9 @@ export const PageUI = {
 
       flexbar.appendChild(btn);
 
-     if (index === 0) {
-  requestAnimationFrame(() => {
-    setTimeout(() => btn.click(), 500);
-  });
-}
+      if (index === 0) {
+        btn.click();
+      }
     });
   },
 

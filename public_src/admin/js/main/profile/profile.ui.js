@@ -1,9 +1,10 @@
+import { handleLogout } from '../../../../common/utils/commons.utils';
 // ui/profileUI.js
 function $(id) {
   return document.getElementById(id);
 }
 
-export function initProfileUI({handleEmailSubmit, handleUsernameSubmit, handlePasswordSubmit }) {
+export function initProfileUI({ handleEmailSubmit, handleUsernameSubmit, handlePasswordSubmit }) {
   // ------------------ EMAIL ------------------
   const emailModal = $('edit-email-modal');
   const emailOpenBtn = $('edit-email-btn');

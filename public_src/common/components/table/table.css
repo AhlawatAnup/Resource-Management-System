@@ -170,31 +170,8 @@
         }
       }
 
-      .btn-approve {
-        background-color: #f0fdf4;
-        color: #16a34a;            
-        border-color: #bbf7d0;
-
-        &:hover {
-          background-color: #16a34a;
-          color: #ffffff;
-          border-color: #16a34a;
-          box-shadow: 0 2px 4px rgba(22, 163, 74, 0.15);
-        }
-      }
-
-      .btn-reject {
-        background-color: #fff1f2; 
-        color: #e11d48;           
-        border-color: #fecdd3;
-
-        &:hover {
-          background-color: #e11d48;
-          color: #ffffff;
-          border-color: #e11d48;
-          box-shadow: 0 2px 4px rgba(225, 29, 72, 0.15);
-        }
-      }
+     
+      
 
       .action-completed {
         font-size: 11px;

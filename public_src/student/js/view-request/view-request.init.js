@@ -1,10 +1,14 @@
 import { getLoggedInStudentId, showLoadingState } from '../student.util.js';
+import Swal from 'sweetalert2';
 import {
   renderRequestsPageStructure,
   renderAllRequests,
   filterRequests,
 } from './view-request.ui.js';
 import { logoutDirectly } from '../../../common/utils/commons.utils.js';
+import { generateReport } from '../../../common/generate-report/generate-report.init.js';
+import { closeReportModal } from '../../../common/generate-report/generate-report.ui.js';
+
 //import { setupDarkMode } from '../../../common/js/darkmode/darkmode.js';
 // API CALLS
 export async function fetchStudentRequests(studentId) {
@@ -57,6 +61,35 @@ export async function fetchTokenForMigid(migid, requestId) {
 
 // handlers.js
 let allRequests = [];
+
+function attachReportHandlers() {
+  document.querySelectorAll('.report-btn').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const requestId = btn.dataset.requestId;
+
+      if (!requestId) return;
+
+      const request = allRequests.find((r) => r._id === requestId);
+      console.log(request)
+      if (!request) return;
+
+      try {
+        const reportRequest = {
+          studentName: request.studentId.name || '',
+          rollNo: request.studentId.rollNo || '',
+          migId:  request.machineId?.MIGID || '',
+          startTime: request.startTime || request.allotmentStartTime,
+          endTime: request.endTime || request.allotmentEndTime,
+          duration: request.duration,
+        };
+
+        await generateReport(requestId, reportRequest);
+      } catch (err) {
+        console.error(err);
+      }
+    });
+  });
+}
 
 // ==============================
 // Page Load
@@ -112,6 +145,7 @@ async function loadRequests(studentId) {
 
     renderAllRequests(allRequests, handleDeleteRequest, reloadPage);
     attachCopyTokenHandlers();
+    attachReportHandlers();
     await processVerifiedRequests();
   } catch (error) {
     console.error('Error loading requests:', error);
@@ -221,6 +255,7 @@ export async function processVerifiedRequests() {
 
   renderAllRequests(allRequests, handleDeleteRequest, reloadPage);
   attachAccessMachineHandlers();
+  attachReportHandlers();
 }
 
 async function handleLoadToken(migid, requestId) {
@@ -287,12 +322,8 @@ export function attachCopyTokenHandlers() {
 
 //INIT
 
-
-
-
-
 document.addEventListener('DOMContentLoaded', async () => {
   //setupDarkMode();
+  document.getElementById('closeReportBtn')?.addEventListener('click', closeReportModal);
   await handleLoadViewRequests();
 });
-

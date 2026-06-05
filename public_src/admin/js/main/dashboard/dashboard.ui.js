@@ -41,12 +41,18 @@ function renderTeacherRow(teacher) {
 
   if (teacher.is_verified) {
     actionButtons = `
-      <button class="btn-reject">Unverify</button>
+    <div class='rms-action-reject'>
+      <button class="btn-reject ">Unverify</button>
+      </div>
     `;
   } else if (!teacher.verification_completed) {
     actionButtons = `
+      <div class='rms-action-approve'>
       <button class="btn-approve">Approve</button>
+      </div>
+      <div class='rms-action-reject'>
       <button class="btn-reject">Reject</button>
+      </div>
     `;
   } else {
     actionButtons = `<button class="btn-delete">Delete</button>`;
@@ -135,12 +141,18 @@ function renderStudentRow(student) {
 
   if (student.admin_verified && student.admin_action && student.is_verified) {
     actionButtons = `
-      <button class="btn-reject">Unverify</button>
+       <div class='rms-action-reject'>
+      <button class="btn-reject ">Unverify</button>
+      </div>
     `;
   } else if (!student.admin_action) {
     actionButtons = `
+     <div class='rms-action-approve'>
       <button class="btn-approve">Approve</button>
+      </div>
+      <div class='rms-action-reject'>
       <button class="btn-reject">Reject</button>
+      </div>
     `;
   } else {
     actionButtons = `

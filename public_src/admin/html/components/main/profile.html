@@ -13,6 +13,7 @@
           <h2>Admin Profile</h2>
           <div style="display: flex; align-items: center; gap: 8px ;font-size:1.5rem">
             <strong>Username:</strong> <span id="admin-username"></span>
+            <div class="rms-action-edit button">
             <button
               id="edit-username-btn"
               class="nav-btn"
@@ -20,13 +21,16 @@
             >
               Edit
             </button>
+            </div>
           </div>
           <!-- <div><strong>Name:</strong> <span id="admin-name"></span></div> -->
           <div style="display: flex; align-items: center; gap: 8px;font-size:1.5rem">
             <strong>Email:</strong> <span id="admin-email"></span>
+            <div class="rms-action-edit button">
             <button id="edit-email-btn" class="nav-btn" style="padding: 4px 10px; font-size: 14px">
               Edit
             </button>
+            </div>
           </div>
           <!-- Edit Email Modal -->
           <div id="edit-email-modal" class="profile-modal" style="display: none">
@@ -40,6 +44,7 @@
                 style="padding: 8px; border-radius: 6px; border: 1px solid #ccc"
               />
               <div style="display: flex; gap: 10px; margin-top: 16px">
+                <div class="rms-action-approve">
                 <button
                   id="submit-email-btn"
                   class="nav-btn"
@@ -47,9 +52,12 @@
                 >
                   Submit
                 </button>
+                </div>
+                <div class="rms-action-reject">
                 <button id="cancel-email-btn" class="nav-btn" style="background: #eee; color: #333">
                   Cancel
                 </button>
+                </div>
               </div>
               <div id="email-error" style="color: red"></div>
             </div>
@@ -72,6 +80,7 @@
                 style="padding: 8px; border-radius: 6px; border: 1px solid #ccc"
               />
               <div style="display: flex; gap: 10px; margin-top: 16px">
+                <div class="rms-action-approve">
                 <button
                   id="submit-password-btn"
                   class="nav-btn"
@@ -79,6 +88,8 @@
                 >
                   Submit
                 </button>
+                </div >
+                <div class="rms-action-reject">
                 <button
                   id="cancel-password-btn"
                   class="nav-btn"
@@ -86,6 +97,7 @@
                 >
                   Cancel
                 </button>
+                </div>
               </div>
               <div id="password-error" style="color: red"></div>
             </div>
@@ -93,6 +105,7 @@
           <!-- Edit Username Modal -->
           <div id="edit-username-modal" class="profile-modal" style="display: none">
             <div class="profile-modal-content">
+
               <button class="profile-modal-close" id="close-username-modal">&times;</button>
               <h3>Edit Username</h3>
               <input
@@ -102,6 +115,7 @@
                 style="padding: 8px; border-radius: 6px; border: 1px solid #ccc"
               />
               <div style="display: flex; gap: 10px; margin-top: 16px">
+                <div class="rms-action-approve">
                 <button
                   id="submit-username-btn"
                   class="nav-btn"
@@ -109,6 +123,8 @@
                 >
                   Submit
                 </button>
+                </div>
+                <div class="rms-action-reject">
                 <button
                   id="cancel-username-btn"
                   class="nav-btn"
@@ -116,6 +132,7 @@
                 >
                   Cancel
                 </button>
+                </div>
               </div>
               <div id="username-error" style="color: red"></div>
             </div>

@@ -129,18 +129,18 @@ export function getEmptyMessage(currentType, currentStatus) {
 // -----------------------------
 export function getStudentStatus(student) {
   if (!student.teacher_action) {
-    return { text: 'Pending on Teacher', class: 'pending' };
+    return { text: 'Pending on Teacher', class: 'status-pending' };
   }
   if (!student.teacher_verified) {
-    return { text: 'Rejected by Teacher', class: 'rejected' };
+    return { text: 'Rejected by Teacher', class: 'status-rejected' };
   }
   if (!student.admin_action) {
-    return { text: 'Pending on Admin', class: 'pending' };
+    return { text: 'Pending on Admin', class: 'status-pending' };
   }
   if (!student.admin_verified) {
-    return { text: 'Rejected by Admin', class: 'rejected' };
+    return { text: 'Rejected by Admin', class: 'status-rejected' };
   }
-  return { text: 'Verified', class: 'verified' };
+  return { text: 'Verified', class: 'status-approved' };
 }
 
 // -----------------------------
@@ -148,18 +148,18 @@ export function getStudentStatus(student) {
 // -----------------------------
 export function getStudentStatusShort(student) {
   if (!student.teacher_action) {
-    return { text: 'Pending Teacher', class: 'pending' };
+    return { text: 'Pending Teacher', class: 'status-pending' };
   }
   if (!student.teacher_verified) {
-    return { text: 'Rejected by Teacher', class: 'rejected' };
+    return { text: 'Rejected by Teacher', class: 'status-rejected' };
   }
   if (!student.admin_action) {
-    return { text: 'Pending Admin', class: 'pending' };
+    return { text: 'Pending Admin', class: 'status-pending' };
   }
   if (!student.admin_verified) {
-    return { text: 'Rejected by Admin', class: 'rejected' };
+    return { text: 'Rejected by Admin', class: 'status-rejected' };
   }
-  return { text: 'Verified', class: 'verified' };
+  return { text: 'Verified', class: 'status-approved' };
 }
 
 // -----------------------------
@@ -167,10 +167,10 @@ export function getStudentStatusShort(student) {
 // -----------------------------
 export function getTeacherStatus(teacher) {
   const statusClass = teacher.is_verified
-    ? 'verified'
+    ? 'status-approved'
     : teacher.verification_completed
-      ? 'rejected'
-      : 'pending';
+      ? 'status-rejected'
+      : 'status-pending';
 
   const statusText = teacher.is_verified
     ? 'Verified'

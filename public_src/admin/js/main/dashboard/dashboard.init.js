@@ -76,6 +76,9 @@ function setupStatusNavigation() {
           case 2:
             appendAllTeachers(admin.allTeachers);
             break;
+          case 3:
+           appendAllTeachers([]);
+            break;
 
           default:
             break;

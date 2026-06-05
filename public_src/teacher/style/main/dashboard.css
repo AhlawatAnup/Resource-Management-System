@@ -1,0 +1,62 @@
+
+
+/* Search Functionalities */
+.search-container {
+    position: relative;
+    max-width: 650px;
+    margin: 8px auto;
+    display: flex;
+    align-items: center;
+
+    background: white;
+
+    border: 2px solid #e2e8f0;
+    border-radius: 16px;
+
+    padding: 0 18px;
+
+    box-shadow:
+        0 4px 12px rgba(15, 23, 42, 0.04);
+
+    transition: all 0.3s ease;
+}
+
+
+.search-container:focus-within {
+     border-color: #93c5fd;
+
+    box-shadow:
+        0 8px 24px rgba(37, 99, 235, 0.12);
+
+    transform: translateY(-2px);
+}
+
+.search-icon {
+    color: #64748b;
+
+    font-size: 18px;
+
+    transition: color 0.3s ease;
+}
+
+.search-container:focus-within .search-icon {
+    color: #2563eb;
+}
+
+.student-search {
+    flex: 1;
+
+    border: none;
+    outline: none;
+
+    background: transparent;
+
+    padding: 16px 14px;
+
+    font-size: 15px;
+    color: #1e293b;
+}
+
+.student-search::placeholder {
+    color: #94a3b8;
+}
