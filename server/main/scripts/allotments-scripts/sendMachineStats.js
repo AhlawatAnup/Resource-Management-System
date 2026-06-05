@@ -1,3 +1,5 @@
+// For generating new dates data just change date and change mig id to the one for which you want chart
+
 const mongoose = require('mongoose');
 
 const {
@@ -19,16 +21,12 @@ async function seedMachineStats() {
     const data = [];
 
     const dates = [
-      '2026-05-05T09:00:00',
-      '2026-05-06T09:00:00',
-      '2026-05-07T09:00:00',
-      '2026-05-08T09:00:00',
-      '2026-05-09T09:00:00',
-      '2026-05-10T09:00:00',
-      '2026-05-11T09:00:00',
-      '2026-05-12T09:00:00',
-      '2026-05-13T09:00:00',
-      '2026-05-14T09:00:00',
+      '2026-06-04T09:00:00',
+      '2026-06-05T09:00:00',
+      '2026-06-06T09:00:00',
+      '2026-06-07T09:00:00',
+      '2026-06-08T09:00:00',
+      '2026-06-09T09:00:00',
     ];
 
     for (let dayIndex = 0; dayIndex < dates.length; dayIndex++) {
@@ -69,7 +67,7 @@ async function seedMachineStats() {
           ),
 
           metadata: {
-            MIGID: 'MIG-001',
+            MIGID: 'MIG-1232131232132132132312312431',
           },
 
           cpuPerc: Number((cpu / 100).toFixed(2)),
