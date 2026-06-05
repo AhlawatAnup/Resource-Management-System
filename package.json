@@ -33,6 +33,7 @@
     "cors": "^2.8.5",
     "countup.js": "^2.10.0",
     "csv-parser": "^3.2.0",
+    "darkreader": "^4.9.125",
     "dayjs": "^1.11.20",
     "dotenv": "^17.2.2",
     "express": "^5.1.0",

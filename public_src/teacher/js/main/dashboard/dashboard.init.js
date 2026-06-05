@@ -16,7 +16,7 @@ import {
   getStudentStatusClassForTeacher,
 } from '../teacher.utils.js';
 import Swal from 'sweetalert2';
-//import { setupDarkMode } from '../../../common/js/darkmode/darkmode.js';
+import { setupDarkMode } from '../../../../common/darkmode/darkmode.js';
 
 
 
@@ -283,7 +283,7 @@ export async function handleStudentVerification(studentId, isVerified) {
 
 // Init
 document.addEventListener('DOMContentLoaded', function () {
-  //setupDarkMode();
+  setupDarkMode();
   handleDashboardLoad();
   registerServiceWorkerAndSubscribe();
 });

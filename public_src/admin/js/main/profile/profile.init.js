@@ -1,7 +1,7 @@
 //profile.init.js
-import { showError, showSuccess, toggleLoading,initProfileUI  } from './profile.ui.js';
+import { showError, showSuccess, toggleLoading, initProfileUI } from './profile.ui.js';
 import { validateEmail, validateUsername, validatePassword } from './profile.util.js';
-// import { setupDarkMode } from '../../../common/js/darkmode/darkmode.js';
+import { setupDarkMode } from '../../../../common/darkmode/darkmode.js';
 
 // API CALLS
 export async function fetchAdminProfile() {
@@ -36,7 +36,6 @@ export async function changePassword(newPassword) {
   return res.json();
 }
 
-
 //HANDLERS
 export async function handleEmailSubmit(newEmail, { displayEl, errorEl, modalEl, submitBtn }) {
   const error = validateEmail(newEmail);
@@ -58,7 +57,10 @@ export async function handleEmailSubmit(newEmail, { displayEl, errorEl, modalEl,
   }
 }
 
-export async function handleUsernameSubmit(newUsername, { displayEl, errorEl, modalEl, submitBtn }) {
+export async function handleUsernameSubmit(
+  newUsername,
+  { displayEl, errorEl, modalEl, submitBtn },
+) {
   const error = validateUsername(newUsername);
   if (error) return showError(errorEl, error);
 
@@ -101,8 +103,8 @@ export async function handlePasswordSubmit(
   }
 }
 
-const loadAdminProfile=async({ emailDisplay, usernameDisplay })=>{
-     // ------------------ Load admin profile ------------------
+const loadAdminProfile = async ({ emailDisplay, usernameDisplay }) => {
+  // ------------------ Load admin profile ------------------
   try {
     const data = await fetchAdminProfile();
 
@@ -117,11 +119,11 @@ const loadAdminProfile=async({ emailDisplay, usernameDisplay })=>{
     showError(emailDisplay, 'Unable to fetch profile');
     showError(usernameDisplay, 'Unable to fetch profile');
   }
-}
+};
 //INIT
 document.addEventListener('DOMContentLoaded', async () => {
   // Initialize UI and pass callbacks
-  // setupDarkMode();
+  setupDarkMode();
   const { emailDisplay, usernameDisplay } = initProfileUI({
     handleEmailSubmit,
     handleUsernameSubmit,
@@ -129,5 +131,3 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
   loadAdminProfile({ emailDisplay, usernameDisplay });
 });
-
-

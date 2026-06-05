@@ -6,7 +6,7 @@ import {
 } from '../student.util.js';
 import { logoutDirectly, formatDate } from '../../../common/utils/commons.utils.js';
 import { displayStudentDetails, updateDashboardElements } from './dashboard.ui.js';
-//import { setupDarkMode } from '../../../common/js/darkmode/darkmode.js';
+import { setupDarkMode } from '../../../common/darkmode/darkmode.js';
 // API CALLS
 export async function fetchStudentDetails(studentId) {
   const response = await fetch(`/dashboard/student/student_data/${studentId}`, {
@@ -81,7 +81,7 @@ export async function loadStudentDetails() {
 //INIT
 
 document.addEventListener('DOMContentLoaded', () => {
-  //setupDarkMode();
+  setupDarkMode();
   loadStudentDetails();
   registerServiceWorkerAndSubscribe();
 });
