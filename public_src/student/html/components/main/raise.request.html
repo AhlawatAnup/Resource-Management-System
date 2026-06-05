@@ -133,41 +133,93 @@
     </div>
 
     <!-- Unverified User Section -->
-    <div id="unverified-section" class="resources-page" style="display: none">
-      <div class="verification-notice pending">
-        <div class="notice-content">
-          <i class="fas fa-exclamation-circle"></i>
-          <span>Verification Required</span>
-        </div>
-        <p>Your verification status: <span id="verification-status-text"></span></p>
-      </div>
+  <!-- Unverified User Section -->
+<div id="unverified-section" class="resources-page" style="display: none; width: 100%;height:100%; padding: 0;">
 
-      <div class="verification-info">
-        <h2>
-          <i class="fas fa-info-circle"></i>
-          Resource Request Information
-        </h2>
-
-        <div class="info-box warning">
-          <h3>Verification Process</h3>
-          <p>To request resources, you need to complete the verification process:</p>
-          <ol>
-            <li>Your teacher needs to review and approve your profile</li>
-            <li>An admin needs to provide final verification</li>
-            <li>Once verified, you can request resources from the system</li>
-          </ol>
-          <p><strong>Current Status:</strong> <span id="verification-status-detail"></span></p>
-        </div>
-
-        <div class="info-box tip">
-          <p class="tip-content">
-            <i class="fas fa-lightbulb"></i>
-            <strong>Tip:</strong> Contact your assigned teacher or admin if you have questions about
-            the verification process.
-          </p>
-        </div>
-      </div>
+  <div style="
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    border-left: 5px solid #ffc107;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 8px;
+  ">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <i class="fas fa-exclamation-circle" style="color: #e67e00; font-size: 22px;"></i>
+      <span style="font-size: 18px; font-weight: 600; color: #7a4e00;">Verification Required</span>
     </div>
+    <p style="margin: 0; font-size: 15px; color: #5a3e00;">
+      Your verification status: <strong><span id="verification-status-text"></span></strong>
+    </p>
+  </div>
+
+  <div style="
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 40px 48px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    width: 100%;
+    box-sizing: border-box;
+  ">
+    <h2 style="
+      font-size: 26px;
+      font-weight: 600;
+      color: #1a1a2e;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 30px;
+    ">
+      <i class="fas fa-info-circle" style="color: #4361ee;"></i>
+      Resource Request Information
+    </h2>
+
+    <div style="
+      background: #fff8f0;
+      border: 1px solid #ffcc80;
+      border-left: 5px solid #ff9800;
+      border-radius: 10px;
+      padding: 28px 32px;
+      margin-bottom: 20px;
+    ">
+      <h3 style="font-size: 20px; font-weight: 600; color: #e65100; margin-bottom: 14px;">
+        Verification Process
+      </h3>
+      <p style="font-size: 16px; color: #4a4a4a; margin-bottom: 14px;">
+        To request resources, you need to complete the verification process:
+      </p>
+      <ol style="font-size: 16px; color: #4a4a4a; padding-left: 22px; line-height: 2.2; margin-bottom: 16px;">
+        <li>Your teacher needs to review and approve your profile</li>
+        <li>An admin needs to provide final verification</li>
+        <li>Once verified, you can request resources from the system</li>
+      </ol>
+      <p style="margin: 0; font-size: 16px; color: #4a4a4a;">
+        <strong>Current Status:</strong>&nbsp;<span id="verification-status-detail" style="color: #e65100; font-weight: 500;"></span>
+      </p>
+    </div>
+
+    <div style="
+      background: #f0f7ff;
+      border: 1px solid #90caf9;
+      border-left: 5px solid #2196f3;
+      border-radius: 10px;
+      padding: 20px 26px;
+    ">
+      <p style="margin: 0; font-size: 16px; color: #1a3a5c; display: flex; align-items: flex-start; gap: 10px;">
+        <i class="fas fa-lightbulb" style="color: #2196f3; margin-top: 2px; font-size: 18px;"></i>
+        <span>
+          <strong>Tip:</strong> Contact your assigned teacher or admin if you have questions about the verification process.
+        </span>
+      </p>
+    </div>
+  </div>
+
+</div>
   </div>
   <!-- </div> -->
 </div>

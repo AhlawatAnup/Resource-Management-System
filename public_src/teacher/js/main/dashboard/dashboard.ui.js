@@ -22,9 +22,8 @@ export function renderTeacherProfile(teacherData) {
 
   profileSection.innerHTML = `
     <div class="profile-card">
-
+      <div style='display:flex; justify-content: space-between; width:100%'>
       <div class='profile-header'>
-
         <div class="profile-avatar">
           ${getInitials(teacherData.name || 'Teacher')}
         </div>
@@ -35,6 +34,10 @@ export function renderTeacherProfile(teacherData) {
           ${verificationStatus}
          </span>
           
+         </div>
+           <button  class="theme-toggle" title="Dark Mode">
+          <i id="theme-icon" class="fa fa-moon"></i>
+        </button>
          </div>
 
           ${

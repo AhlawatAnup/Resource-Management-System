@@ -27,7 +27,9 @@ function toggleDarkMode() {
 export function setupDarkMode() {
   initDarkMode();
 
-  document.querySelectorAll('.theme-toggle').forEach((btn) => {
-    btn.addEventListener('click', toggleDarkMode);
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('.theme-toggle')) {
+      toggleDarkMode();
+    }
   });
 }

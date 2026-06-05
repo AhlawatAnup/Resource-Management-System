@@ -120,6 +120,19 @@ if (tableBody) {
     for (let i = 0; i < data.students.length; i++) {
       await handleStudentFetch(data.students[i]);
     }
+    // Pending Requests page
+const pendingTable = document.getElementById('pendingRequestsTableBody');
+
+if (pendingTable && pendingTable.children.length === 0) {
+  pendingTable.innerHTML = `
+    <tr>
+      <td colspan="6" class="loading">
+        No pending requests
+      </td>
+    </tr>
+  `;
+}
+    
   } catch (error) {
     console.error('Error fetching dashboard data:', error);
     logoutDirectly();

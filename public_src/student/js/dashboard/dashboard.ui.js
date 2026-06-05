@@ -43,6 +43,7 @@ export function displayStudentDetails(student) {
   if(profileSection){
     profileSection.innerHTML=`
     <div class='profile-card'>
+     <div style='display:flex; justify-content: space-between; width:100%'>
        <div class='profile-header'>
          <div class="profile-avatar">
         ${student.name.charAt(0).toUpperCase()}
@@ -56,6 +57,10 @@ export function displayStudentDetails(student) {
             ${verificationStatus}
           </span>
        </div>
+          <button  class="theme-toggle" title="Dark Mode">
+          <i id="theme-icon" class="fa fa-moon"></i>
+        </button>
+         </div>
        
        <div class='profile-details-row'>
          <span><strong>Email:</strong>${student.email || 'N/A'}</span>
@@ -114,6 +119,62 @@ document.getElementById('viewRequestsBtn')?.addEventListener('click', () => {
   .querySelector('a[data-page="view-request"]')
   ?.click();
 });
+  }
+
+  const stats=document.querySelector('.stats-outer')
+  if(stats){
+   stats.innerHTML= `
+    <div class="stat-card">
+    <div class="accent-bar bar-blue"></div>
+    <div class="card-top">
+      <div class="icon-wrap icon-blue"><i class="fa fa-paper-plane" aria-hidden="true"></i></div>
+      <span class="badge badge-blue">All time</span>
+    </div>
+    <div>
+      <div class="stat-number">8</div>
+      <div class="stat-label">Total requests raised</div>
+    </div>
+    <div class="card-footer">
+      <i class="fa fa-history" aria-hidden="true"></i>
+      Across all semesters
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="accent-bar bar-green"></div>
+    <div class="card-top">
+      <div class="icon-wrap icon-green"><i class="fa fa-check-circle" aria-hidden="true"></i></div>
+      <span class="badge badge-green">All time</span>
+    </div>
+    <div>
+      <div class="stat-number">5</div>
+      <div class="stat-label">Allotted requests all time</div>
+    </div>
+    <div class="card-footer">
+      <i class="fa fa-server" aria-hidden="true"></i>
+      Successfully allotted
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="accent-bar bar-amber"></div>
+    <div class="card-top">
+      <div class="icon-wrap icon-amber"><i class="fa fa-desktop" aria-hidden="true"></i></div>
+      <span class="badge badge-amber">Live</span>
+    </div>
+    <div>
+      <div class="stat-number">12</div>
+      <div class="stat-label">Machines available</div>
+    </div>
+    <div class="card-footer">
+      <i class="fa fa-circle" style="color:#639922; font-size:8px;" aria-hidden="true"></i>
+      Updated just now
+    </div>
+  </div>
+
+
+
+    `
   }
   
   if (!profileSection) {
