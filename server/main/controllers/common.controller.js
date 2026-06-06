@@ -33,7 +33,7 @@ exports.roleBasedDashboard = (req, res) => {
       // return res.sendFile(path.join(publicPath, 'dashboard/student', 'student.dashboard.html'));
       return res.sendFile(path.join(publicPath, 'student.pack', 'student.html'));
     case 'teacher':
-      return res.sendFile(path.join(publicPath, 'dashboard/teacher', 'teacher.dashboard.html'));
+      return res.sendFile(path.join(publicPath, 'teacher.pack', 'teacher.html'));
     case 'admin':
       // return res.sendFile(path.join(publicPath, 'dashboard/admin', 'admin.dashboard.html'));
       return res.sendFile(path.join(publicPath, 'admin.pack', 'admin.html'));
@@ -59,8 +59,24 @@ exports.student_data = async (req, res) => {
     if (!student) {
       return res.status(404).json({ error: 'Student not found' });
     }
+
+    const totalRequests = student.resourceRequests.length;
+    const allottedRequests = await ResourceRequest.countDocuments({
+       studentId: student._id,
+       is_verified: true,
+      });
+    const availableMachines = await Machine.countDocuments({
+      isAvailable: true,
+      isDeleted: false,
+     });
     // console.log(student);
-    return res.json({ ...student._doc });
+    return res.json({ ...student._doc,
+       dashboardStats: {
+    totalRequests,
+    allottedRequests,
+    availableMachines,
+  },
+     });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: 'Failed to fetch student' });

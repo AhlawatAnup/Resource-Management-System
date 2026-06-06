@@ -1,4 +1,5 @@
-import { ui_states } from '../../../common/ui.states/ui.states';
+import { ui_states } from '../../common/ui.states/ui.states';
+import { handleLogout } from '../utils/commons.utils.js';
 
 const aside = document.querySelector('aside');
 
@@ -9,6 +10,10 @@ const sidebar_active_item = localStorage.getItem('side-bar-active-item') ?? 0;
 
 aside_items.forEach((item, index) => {
   item.addEventListener('click', function () {
+    console.log(index, aside_items.length);
+    if (aside_items.length - 1 == index) {
+      return handleLogout();
+    }
     // console.log(index);
     aside_items[active_item].classList.remove('active');
 
@@ -29,4 +34,16 @@ aside_items.forEach((item, index) => {
 
 if (sidebar_active_item) {
   aside_items[sidebar_active_item].click();
+}
+
+export function setActiveSidebar(pageName) {
+  aside_items.forEach((item, index) => {
+    item.classList.remove('active');
+
+    if (item.dataset.page === pageName) {
+      item.classList.add('active');
+      active_item = index;
+      localStorage.setItem('side-bar-active-item', index);
+    }
+  });
 }

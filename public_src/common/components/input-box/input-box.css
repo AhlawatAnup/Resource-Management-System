@@ -1,0 +1,63 @@
+.rms-input-box-v2 {
+  position: relative;
+  width: 100%;
+  font-family: 'Rubik';
+}
+
+/* INPUT + TEXTAREA COMMON */
+.rms-input-box-v2 input,
+.rms-input-box-v2 textarea {
+  width: 100%;
+  padding: 16px 12px 8px;
+  font-size: 1.4rem;
+  border-radius: 0.6rem;
+  outline: none;
+  transition: all 0.3s ease;
+  font-family: 'Rubik';
+  color: black;
+  background: unset;
+  border: 1px solid #dbe3ee;
+  resize: none;
+}
+
+/* TEXT INPUTS */
+.rms-input-box-v2 input {
+  height: 5.5rem;
+}
+
+/* TEXTAREA */
+.rms-input-box-v2 textarea {
+  min-height: 12rem;
+  padding-top: 2rem;
+}
+
+/* FOCUS EFFECT */
+.rms-input-box-v2 input:focus,
+.rms-input-box-v2 textarea:focus {
+  border-color: #4a90e2;
+  box-shadow: 0 0 8px rgba(74, 144, 226, 0.3);
+}
+
+/* FLOATING LABEL */
+.rms-input-box-v2 input:focus ~ label,
+.rms-input-box-v2 input:not(:placeholder-shown) ~ label,
+.rms-input-box-v2 textarea:focus ~ label,
+.rms-input-box-v2 textarea:not(:placeholder-shown) ~ label {
+  top: 0.4rem;
+  left: 1rem;
+  font-size: 1.2rem;
+}
+
+/* LABEL */
+.rms-input-box-v2 label {
+  position: absolute;
+  top: 1.7rem;
+  left: 1.2rem;
+  color: #999;
+  font-size: 1.4rem;
+  pointer-events: none;
+  padding: 0 0.4rem;
+  transition: 0.2s ease all;
+  font-family: 'Rubik';
+  background: white;
+}

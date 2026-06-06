@@ -5,15 +5,15 @@
 // -----------------------------
 export function getEndpoint(currentType, currentStatus) {
   if (currentType === 'teacher') {
-    if (currentStatus === 'unverified') return '/dashboard/admin/teachers/pending';
-    if (currentStatus === 'verified') return '/dashboard/admin/teachers';
-    if (currentStatus === 'rejected') return '/dashboard/admin/teachers/rejected';
-    if (currentStatus === 'all') return '/dashboard/admin/teachers';
+    if (currentStatus === 0) return '/dashboard/admin/teachers/pending';
+    if (currentStatus === 1) return '/dashboard/admin/teachers';
+    if (currentStatus === 3) return '/dashboard/admin/teachers/rejected';
+    if (currentStatus === 2) return '/dashboard/admin/teachers';
   } else {
-    if (currentStatus === 'unverified') return '/dashboard/admin/students/pending';
-    if (currentStatus === 'verified') return '/dashboard/admin/students';
-    if (currentStatus === 'rejected') return '/dashboard/admin/students/rejected';
-    if (currentStatus === 'all') return '/dashboard/admin/students';
+    if (currentStatus === 0) return '/dashboard/admin/students/pending';
+    if (currentStatus === 1) return '/dashboard/admin/students';
+    if (currentStatus === 3) return '/dashboard/admin/students/rejected';
+    if (currentStatus === 2) return '/dashboard/admin/students';
   }
 
   return '';
@@ -24,29 +24,29 @@ export function getEndpoint(currentType, currentStatus) {
 // -----------------------------
 export function extractDataByTypeAndStatus(data, currentType, currentStatus) {
   if (currentType === 'teacher') {
-    if (currentStatus === 'unverified') {
+    if (currentStatus === 0) {
       return data.teachers || [];
     }
-    if (currentStatus === 'verified') {
+    if (currentStatus === 1) {
       return (data.teachers || []).filter((t) => t.is_verified);
     }
-    if (currentStatus === 'rejected') {
+    if (currentStatus === 3) {
       return data.teachers || [];
     }
-    if (currentStatus === 'all') {
+    if (currentStatus === 2) {
       return data.teachers || [];
     }
   } else {
-    if (currentStatus === 'unverified') {
+    if (currentStatus === 0) {
       return data.students || [];
     }
-    if (currentStatus === 'verified') {
+    if (currentStatus === 1) {
       return (data.students || []).filter((s) => s.is_verified);
     }
-    if (currentStatus === 'rejected') {
+    if (currentStatus === 3) {
       return data.students || [];
     }
-    if (currentStatus === 'all') {
+    if (currentStatus === 2) {
       return data.students || [];
     }
   }
@@ -129,18 +129,18 @@ export function getEmptyMessage(currentType, currentStatus) {
 // -----------------------------
 export function getStudentStatus(student) {
   if (!student.teacher_action) {
-    return { text: 'Pending on Teacher', class: 'pending' };
+    return { text: 'Pending on Teacher', class: 'status-pending' };
   }
   if (!student.teacher_verified) {
-    return { text: 'Rejected by Teacher', class: 'rejected' };
+    return { text: 'Rejected by Teacher', class: 'status-rejected' };
   }
   if (!student.admin_action) {
-    return { text: 'Pending on Admin', class: 'pending' };
+    return { text: 'Pending on Admin', class: 'status-pending' };
   }
   if (!student.admin_verified) {
-    return { text: 'Rejected by Admin', class: 'rejected' };
+    return { text: 'Rejected by Admin', class: 'status-rejected' };
   }
-  return { text: 'Verified', class: 'verified' };
+  return { text: 'Verified', class: 'status-approved' };
 }
 
 // -----------------------------
@@ -148,18 +148,18 @@ export function getStudentStatus(student) {
 // -----------------------------
 export function getStudentStatusShort(student) {
   if (!student.teacher_action) {
-    return { text: 'Pending Teacher', class: 'pending' };
+    return { text: 'Pending Teacher', class: 'status-pending' };
   }
   if (!student.teacher_verified) {
-    return { text: 'Rejected by Teacher', class: 'rejected' };
+    return { text: 'Rejected by Teacher', class: 'status-rejected' };
   }
   if (!student.admin_action) {
-    return { text: 'Pending Admin', class: 'pending' };
+    return { text: 'Pending Admin', class: 'status-pending' };
   }
   if (!student.admin_verified) {
-    return { text: 'Rejected by Admin', class: 'rejected' };
+    return { text: 'Rejected by Admin', class: 'status-rejected' };
   }
-  return { text: 'Verified', class: 'verified' };
+  return { text: 'Verified', class: 'status-approved' };
 }
 
 // -----------------------------
@@ -167,10 +167,10 @@ export function getStudentStatusShort(student) {
 // -----------------------------
 export function getTeacherStatus(teacher) {
   const statusClass = teacher.is_verified
-    ? 'verified'
+    ? 'status-approved'
     : teacher.verification_completed
-      ? 'rejected'
-      : 'pending';
+      ? 'status-rejected'
+      : 'status-pending';
 
   const statusText = teacher.is_verified
     ? 'Verified'

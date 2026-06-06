@@ -1,0 +1,226 @@
+/* About page styles */
+.about-panel {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(31, 41, 55, 0.08);
+  padding: 32px;
+  margin: 20px auto;
+}
+
+.about-title {
+  font-size: 28px;
+  color: #111827;
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+.about-text {
+  color: #374151;
+  line-height: 1.7;
+  font-size: 15px;
+  margin-bottom: 12px;
+}
+
+.about-note {
+  color: #6b7280;
+  font-size: 13px;
+}
+
+/* Visual separator placed after about text blocks */
+.about-separator {
+  height: 1px;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.06), rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.06));
+  margin: 20px 0 28px 0;
+  border-radius: 2px;
+}
+
+/* ===== About Page Footer (override global footer) ===== */
+
+.about-panel .site-footer {
+  position: static;
+  transform: none;
+  margin-top: 20px;
+  padding: 12px 10px;
+  text-align: center;
+  background-color: #47494d; /* dark panel */
+  color: #e5e7eb; /* main light text */
+  border-radius: 8px; /* optional nice panel look */
+}
+
+/* Container styling inside card */
+.about-panel .footer-content {
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+/* Footer text */
+.about-panel .footer-text {
+  margin-bottom: 6px;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: #e5e7eb; /* ensure readable */
+}
+
+/* Collaboration text */
+.about-panel .collab-text {
+  margin-top: 6px;
+  margin-bottom: 4px;
+  font-size: 0.8rem;
+  color: #d1d5db; /* slightly muted */
+}
+
+/* Logos alignment */
+.about-panel .footer-logos {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5rem; /* balanced spacing */
+  height: 2.5rem;
+  margin-top: 4px;
+}
+
+/* Image logo scaling */
+.about-panel .footer-logos img {
+  height: 100%;
+  width: auto;
+  object-fit: contain;
+  filter: brightness(1.1); /* slight boost for visibility */
+}
+
+/* Telelabs logo text */
+.about-panel .telelabs-text {
+  font-size: 0.9rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #ffffff; /* bright for contrast */
+  display: flex;
+  align-items: center;
+}
+
+/* Copyright */
+.about-panel .footer-copy {
+  margin-top: 8px;
+  font-size: 0.75rem;
+  color: #d1d5db;
+  opacity: 0.85;
+}
+
+/* Purpose Panel Styles - Reusable across all portals */
+.purpose-panel {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  background-color: white;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  /* width and height will be set dynamically by JavaScript */
+  animation: panelSlideIn 0.2s ease;
+}
+
+@keyframes panelSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.purpose-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #e5e7eb;
+  background-color: #f9fafb;
+  border-radius: 8px 8px 0 0;
+}
+
+.purpose-panel-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.purpose-panel-close {
+  background: none;
+  border: none;
+  font-size: 18px;
+  font-weight: bold;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.purpose-panel-close:hover {
+  background-color: #e5e7eb;
+  color: #374151;
+}
+
+.purpose-panel-body {
+  padding: 12px 16px;
+}
+
+.purpose-panel-body textarea {
+  width: 100%;
+  height: 200px;
+  padding: 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 1.4;
+  color: #374151;
+  background-color: #f9fafb;
+  resize: none;
+  box-sizing: border-box;
+}
+
+.purpose-panel-body textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+/* View More Button */
+.view-more-btn {
+  background: #e9e9e9;
+  color: rgb(0, 0, 0);
+  border: none;
+  text-decoration: underline;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  cursor: pointer;
+  margin-left: 8px;
+  transition: background-color 0.2s ease;
+  display: inline-block;
+  position: relative;
+}
+
+.view-more-btn:hover {
+  background: #d1d1d1;
+}
+
+.purpose-text {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  position: relative;
+}

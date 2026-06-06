@@ -4,6 +4,7 @@ const { logRequest } = require('../middleware/authMiddleware.js');
 const { roleBasedDashboard, getCurrentUserId } = require('../controllers/common.controller.js');
 const { requireAuth, isTeacher, isStudent, isAdmin } = require('../middleware/authMiddleware.js');
 
+const dashboardCommonRoutes = require('./dashboardCommon.routes');
 const teacherRoutes = require('./teacher.route.js');
 const studentRoutes = require('./student.route.js');
 const adminRoutes = require('./admin.route.js');
@@ -23,6 +24,7 @@ router.get('/current-user-id', requireAuth, getCurrentUserId);
 router.use('/teacher', isTeacher, teacherRoutes);
 router.use('/student', isStudent, studentRoutes);
 router.use('/admin', isAdmin, adminRoutes);
+router.use('/', dashboardCommonRoutes);  //common routes
 
 // router.post("/register", register);
 
