@@ -95,11 +95,14 @@ export function renderTable(wrapper, machines, handlers) {
     const deleteBtn = createBtn('Delete', () => handlers.onDelete(m, tr));
     deleteBtn.style.background = '#991b1b';
     deleteBtn.style.color = 'white';
-    deleteBtn.style.padding = '3px 8px';
-    deleteBtn.style.fontSize = '13px';
+    deleteBtn.style.border = 'none';
+    deleteBtn.style.padding = '7px 14px';
+    deleteBtn.style.fontSize = '11px';
+    deleteBtn.style.fontWeight = '500';
     deleteBtn.style.borderRadius = '8px';
     deleteBtn.style.border = 'none';
     deleteBtn.style.cursor = 'pointer';
+  
     deleteBtn.title = 'Deleting this machine is irreversible. All related data will be lost!';
     actionTd.appendChild(deleteBtn);
     let actionBtn;
@@ -109,11 +112,14 @@ export function renderTable(wrapper, machines, handlers) {
       });
       actionBtn.style.background = '#b91c1c'; // same as reject
       actionBtn.style.color = 'white';
-      actionBtn.style.padding = '3px 8px';
+      actionBtn.style.border = 'none';
+      actionBtn.style.padding = '7px 14px';
+      actionBtn.style.fontSize = '11px';
+      actionBtn.style.fontWeight = '500';
       actionBtn.style.borderRadius = '8px';
       actionBtn.style.border = 'none';
       actionBtn.style.cursor = 'pointer';
-      actionBtn.style.fontSize = '13px';
+   
 
       actionBtn.title =
         'Disabling this machine will prevent users from using it until it is re-enabled. New allotments cannot be made while disabled.';
@@ -123,8 +129,10 @@ export function renderTable(wrapper, machines, handlers) {
       });
       actionBtn.style.background = '#166534'; // same as approve
       actionBtn.style.color = 'white';
-      actionBtn.style.padding = '3px 8px';
-      actionBtn.style.fontSize = '13px';
+      actionBtn.style.border = 'none';
+      actionBtn.style.padding = '7px 14px';
+      actionBtn.style.fontSize = '11px';
+      actionBtn.style.fontWeight = '500';
       actionBtn.style.borderRadius = '8px';
       actionBtn.style.border = 'none';
       actionBtn.style.cursor = 'pointer';

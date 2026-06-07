@@ -4,6 +4,7 @@ import {
   renderRequestsPageStructure,
   renderAllRequests,
   filterRequests,
+  updateRequestCounts,
 } from './view-request.ui.js';
 import { logoutDirectly } from '../../../common/utils/commons.utils.js';
 import { generateReport } from '../../../common/generate-report/generate-report.init.js';
@@ -61,6 +62,7 @@ export async function fetchTokenForMigid(migid, requestId) {
 
 // handlers.js
 let allRequests = [];
+let currentStatus = 'all';
 
 function attachReportHandlers() {
   document.querySelectorAll('.report-btn').forEach((btn) => {
@@ -144,6 +146,7 @@ async function loadRequests(studentId) {
     allRequests = data;
 
     renderAllRequests(allRequests, handleDeleteRequest, reloadPage);
+    updateRequestCounts(allRequests);
     attachCopyTokenHandlers();
     attachReportHandlers();
     await processVerifiedRequests();
@@ -254,6 +257,7 @@ export async function processVerifiedRequests() {
   );
 
   renderAllRequests(allRequests, handleDeleteRequest, reloadPage);
+  updateRequestCounts(allRequests);
   attachAccessMachineHandlers();
   attachReportHandlers();
 }

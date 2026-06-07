@@ -36,10 +36,7 @@
   transition: all 0.25s ease;
 }
 
-#resourceRequestsBtn {
-  background: linear-gradient(135deg, #7c3aed, #6366f1);
-  color: white;
-}
+
 
 #viewRequestsBtn {
   background: #f8fafc;

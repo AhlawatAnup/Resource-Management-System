@@ -111,6 +111,7 @@
 }
 
 .info-box .tip-content {
+  font-size: 12px;
   margin: 0;
   color: #1976d2;
 }
@@ -207,7 +208,8 @@
 .request-form-panel {
   display: flex;
   flex-direction: column;
-  flex: 1;
+  flex: 6;
+  height:100%;
   min-width: 0;
   padding: 1rem;
   border-right: 1px solid #dbe3ee;
@@ -459,9 +461,22 @@
   background: #94a3b8;
 }
 
-.request-form-panel {
-  flex: 6;
+.request-form-panel::-webkit-scrollbar {
+  width: 4px;
 }
+
+.request-form-panel::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 999px;
+}
+
+.request-form-panel::-webkit-scrollbar-track {
+  background: transparent;
+}
+.request-form-panel::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
 
 .machines-bar-section {
     flex: 3;
@@ -477,10 +492,12 @@
 }
 
 .machines-title{
-   display: block;
-  font-size: 15px;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+  font-size: 18px;
   font-weight: 600;
-  margin-bottom: 4px;
+  padding: 8px;
   margin-left: 12px;
   color: #1e293b;
   letter-spacing: 0.2px;
@@ -583,6 +600,7 @@
       display: flex;
     flex-direction: column;
     gap: 6px;
+    flex: 1;
 }
 #request-content{
  display: flex;

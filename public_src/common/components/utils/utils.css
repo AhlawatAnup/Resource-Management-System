@@ -10,8 +10,7 @@ html {
   scroll-behavior: smooth;
   /* CHANGE FONT SIZE TO PERCENTAGE LATERON */
   font-size: 10px;
-  font-family: poppins;
-  user-select: none;
+  font-family: 'Rubrik';
 }
 
 body {

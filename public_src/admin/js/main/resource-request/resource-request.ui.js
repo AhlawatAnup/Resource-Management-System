@@ -39,7 +39,7 @@ export function renderResourceRequests(requests, deps) {
       <td>
         <div class="request-title">
           <p>
-            ${request.title}
+           
             ${
               request.purpose
                 ? `
@@ -49,12 +49,12 @@ export function renderResourceRequests(requests, deps) {
               `
                 : ''
             }
+             ${request.title}
           <p>
           <div class="request-date">${formatDate ? formatDate(request.createdAt) : ''}</div>
         </div>
       </td>
       <td>
-        <span>${request.duration ?? '-'} day${request.duration > 1 ? 's' : ''}</span>
         ${
           request.startTime
             ? `
@@ -64,9 +64,9 @@ export function renderResourceRequests(requests, deps) {
         `
             : ''
         }
+         <span>${request.duration ?? '-'} day${request.duration > 1 ? 's' : ''}</span>
       </td>
       <td>
-        <span>${request.migId ?? '-'}</span>
         ${
           request.migId
             ? `
@@ -76,6 +76,7 @@ export function renderResourceRequests(requests, deps) {
         `
             : ''
         }
+         <span>${request.migId ?? '-'}</span>
       </td>
         <td>
         <span class="badge ${statusInfo.class}">${statusInfo.text}</span>

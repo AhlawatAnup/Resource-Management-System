@@ -120,7 +120,7 @@ export function getStudentStatusClass(student) {
 
 export function getRequestStatus(request) {
   if (request.isActive === false || isRequestExpired(request)) {
-    return 'expired';
+    return 'completed';
   }
   if (request.is_verified) {
     return 'approved';
@@ -138,7 +138,7 @@ export function getRequestStatus(request) {
 
 export function getRequestStatusClass(request) {
   if (isRequestExpired(request)) {
-    return 'status-expired';
+    return 'status-completed';
   }
   if (request.is_verified) {
     return 'status-approved';
@@ -183,7 +183,7 @@ export function getRequestStatusIcon(request) {
 
 export function getRequestStatusText(request) {
   if (isRequestExpired(request)) {
-    return 'Expired';
+    return 'Completed';
   }
   if (request.is_verified) {
     return 'Approved';

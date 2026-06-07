@@ -23,203 +23,104 @@
   <div class="container">
     <!-- Resource Request Section -->
     <div id="request-content">
-      <!-- Loading State -->
-      <div id="loading-section" class="loading-spinner">
-        <div class="spinner"></div>
-        <p>Loading...</p>
-      </div>
 
       <!-- Verified User Section -->
       <div id="verified-section" class="resources-page" style="display: none"></div>
+      <div id="unverified-section" class="resource-page" style="display: none;"></div>
 
-  
-        <!-- MAIN FORM ON LEFT AND MACHINE ON RIGHT -->
-        <div class="request-layout">
-          <!-- LEFT -->
-          <div class="request-form-panel">
+      <!-- MAIN FORM ON LEFT AND MACHINE ON RIGHT -->
+      <div class="request-layout">
+        <!-- LEFT -->
+        <div class="request-form-panel">
+          <div class="info-box tip" style="margin-bottom: 4px">
+            <p class="tip-content" style="margin: 0">
+              <i class="fas fa-info-circle"></i>
+              <strong>Note:</strong> Only one pending request is allowed at a time. Please wait for
+              your current request to be processed before submitting a new one or delete the request
+              if there are no actions taken by teacher/admin.
+            </p>
+          </div>
 
-            <div class="info-box tip" style="margin-bottom: 4px;" >
-              <p class="tip-content" style="margin: 0">
-                <i class="fas fa-info-circle"></i>
-                <strong>Note:</strong> Only one pending request is allowed at a time. Please wait
-                for your current request to be processed before submitting a new one or delete the
-                request if there are no actions taken by teacher/admin.
-              </p>
+          <form id="resource-request-form">
+            <div class="rms-input-box-v2">
+              <input id="title" type="text" required placeholder=" " />
+              <label>Request Title</label>
             </div>
 
-            <form id="resource-request-form">
-              <div class="rms-input-box-v2">
-                <input id="title" type="text" required placeholder=" " />
-                <label>Request Title</label>
-              </div>
-
-
-              <div class="rms-input-box-v2">
-                <textarea
-                  id="purpose"
-                  required
-                  placeholder=" "
-                  rows="4"
-                ></textarea>
-                <label>Project Purpose</label>
-              </div>
-
-              <input type="hidden" id="raise-selected-machine-id" name="machineId" value="" />
-
-
-              <div class="rms-input-box-v2">
-                <input id="duration" type="number" min="1" max="15"  required  required  />
-                <label>Project Duration</label>
-              </div>
-
-              <div class="declaration-section">
-                <h4 style="font-size: 18px; font-weight: 400;">Important User Declarations</h4>
-
-                <div class="declaration-item">
-                  <label>
-                    <input type="checkbox" name="declaration" required />
-                    <span>
-                      I will use the AI Data Centre facilities responsibly and strictly for approved
-                      academic and research purposes only.
-                    </span>
-                  </label>
-                </div>
-
-                <div class="declaration-item">
-                  <label>
-                    <input type="checkbox" name="declaration" required />
-                    <span>
-                      I will properly acknowledge the AI Data Centre, Design Innovation Centre
-                      (DIC), and all associated funding agencies in any publication, presentation,
-                      thesis, report, or IPR arising from the use of these resources.
-                    </span>
-                  </label>
-                </div>
-
-                <div class="declaration-item">
-                  <label>
-                    <input type="checkbox" name="declaration" required />
-                    <span>
-                      I am responsible for the security of my data and will not store or process any
-                      unauthorized, sensitive, or classified information on the facility’s systems.
-                    </span>
-                  </label>
-                </div>
-
-                <div class="declaration-item">
-                  <label>
-                    <input type="checkbox" name="declaration" required />
-                    <span>
-                      I agree to comply with all operational policies and accept responsibility for
-                      any damage caused due to negligence or misuse.
-                    </span>
-                  </label>
-                </div>
-              </div>
-
-              <button type="submit" class="btn-primary">
-                <i class="fas fa-paper-plane"></i>
-                Submit Resource Request
-              </button>
-            </form>
-          </div>
-          <div class="machines-bar-section">
-            <h3 class="machines-title">Select desired machine</h3>
-            <div id="raise-machines-flexbar">
-              <span class="machine-bar-loading">Loading machines...</span>
+            <div class="rms-input-box-v2">
+              <textarea id="purpose" required placeholder=" " rows="4"></textarea>
+              <label>Project Purpose</label>
             </div>
+
+            <input type="hidden" id="raise-selected-machine-id" name="machineId" value="" />
+
+            <div class="rms-input-box-v2">
+              <input id="duration" type="number" min="1" max="15" required required />
+              <label>Project Duration</label>
+            </div>
+
+            <div class="declaration-section">
+              <h4 style="font-size: 18px; font-weight: 400">Important User Declarations</h4>
+
+              <div class="declaration-item">
+                <label>
+                  <input type="checkbox" name="declaration" required />
+                  <span>
+                    I will use the AI Data Centre facilities responsibly and strictly for approved
+                    academic and research purposes only.
+                  </span>
+                </label>
+              </div>
+
+              <div class="declaration-item">
+                <label>
+                  <input type="checkbox" name="declaration" required />
+                  <span>
+                    I will properly acknowledge the AI Data Centre, Design Innovation Centre (DIC),
+                    and all associated funding agencies in any publication, presentation, thesis,
+                    report, or IPR arising from the use of these resources.
+                  </span>
+                </label>
+              </div>
+
+              <div class="declaration-item">
+                <label>
+                  <input type="checkbox" name="declaration" required />
+                  <span>
+                    I am responsible for the security of my data and will not store or process any
+                    unauthorized, sensitive, or classified information on the facility’s systems.
+                  </span>
+                </label>
+              </div>
+
+              <div class="declaration-item">
+                <label>
+                  <input type="checkbox" name="declaration" required />
+                  <span>
+                    I agree to comply with all operational policies and accept responsibility for
+                    any damage caused due to negligence or misuse.
+                  </span>
+                </label>
+              </div>
+            </div>
+            <div style="display: flex; flex: 1"></div>
+            <button id="submit-request-btn" type="submit" class="btn-primary">
+              <i class="fas fa-paper-plane"></i>
+              Submit Resource Request
+            </button>
+          </form>
+        </div>
+        <div class="machines-bar-section">
+          <h3 class="machines-title">Select desired machine</h3>
+          <hr style="border: none; height: 1px; background: #cbd5e1;" />
+          <div id="raise-machines-flexbar">
+            <span class="machine-bar-loading">Loading machines...</span>
           </div>
+        </div>
       </div>
     </div>
 
-    <!-- Unverified User Section -->
-  <!-- Unverified User Section -->
-<div id="unverified-section" class="resources-page" style="display: none; width: 100%;height:100%; padding: 0;">
-
-  <div style="
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: #fff3cd;
-    border: 1px solid #ffc107;
-    border-left: 5px solid #ffc107;
-    border-radius: 10px;
-    padding: 16px 20px;
-    margin-bottom: 24px;
-    flex-wrap: wrap;
-    gap: 8px;
-  ">
-    <div style="display: flex; align-items: center; gap: 10px;">
-      <i class="fas fa-exclamation-circle" style="color: #e67e00; font-size: 22px;"></i>
-      <span style="font-size: 18px; font-weight: 600; color: #7a4e00;">Verification Required</span>
-    </div>
-    <p style="margin: 0; font-size: 15px; color: #5a3e00;">
-      Your verification status: <strong><span id="verification-status-text"></span></strong>
-    </p>
-  </div>
-
-  <div style="
-    background: #ffffff;
-    border-radius: 14px;
-    padding: 40px 48px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-    width: 100%;
-    box-sizing: border-box;
-  ">
-    <h2 style="
-      font-size: 26px;
-      font-weight: 600;
-      color: #1a1a2e;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 30px;
-    ">
-      <i class="fas fa-info-circle" style="color: #4361ee;"></i>
-      Resource Request Information
-    </h2>
-
-    <div style="
-      background: #fff8f0;
-      border: 1px solid #ffcc80;
-      border-left: 5px solid #ff9800;
-      border-radius: 10px;
-      padding: 28px 32px;
-      margin-bottom: 20px;
-    ">
-      <h3 style="font-size: 20px; font-weight: 600; color: #e65100; margin-bottom: 14px;">
-        Verification Process
-      </h3>
-      <p style="font-size: 16px; color: #4a4a4a; margin-bottom: 14px;">
-        To request resources, you need to complete the verification process:
-      </p>
-      <ol style="font-size: 16px; color: #4a4a4a; padding-left: 22px; line-height: 2.2; margin-bottom: 16px;">
-        <li>Your teacher needs to review and approve your profile</li>
-        <li>An admin needs to provide final verification</li>
-        <li>Once verified, you can request resources from the system</li>
-      </ol>
-      <p style="margin: 0; font-size: 16px; color: #4a4a4a;">
-        <strong>Current Status:</strong>&nbsp;<span id="verification-status-detail" style="color: #e65100; font-weight: 500;"></span>
-      </p>
-    </div>
-
-    <div style="
-      background: #f0f7ff;
-      border: 1px solid #90caf9;
-      border-left: 5px solid #2196f3;
-      border-radius: 10px;
-      padding: 20px 26px;
-    ">
-      <p style="margin: 0; font-size: 16px; color: #1a3a5c; display: flex; align-items: flex-start; gap: 10px;">
-        <i class="fas fa-lightbulb" style="color: #2196f3; margin-top: 2px; font-size: 18px;"></i>
-        <span>
-          <strong>Tip:</strong> Contact your assigned teacher or admin if you have questions about the verification process.
-        </span>
-      </p>
-    </div>
-  </div>
-
-</div>
+  
   </div>
   <!-- </div> -->
 </div>

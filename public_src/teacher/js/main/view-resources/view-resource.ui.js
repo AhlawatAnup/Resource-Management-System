@@ -4,7 +4,7 @@ import {
   formatDate,
   createViewMoreButton,
 } from '../../../../common/utils/commons.utils.js';
-import { getRequestStatus, getActionButtons } from '../teacher.utils.js';
+import { getRequestStatus, getActionButtons,initTitleTippy } from '../teacher.utils.js';
 import Swal from 'sweetalert2';
 
 // Render resource requests in table
@@ -35,20 +35,29 @@ export function renderResourceRequests(requests) {
       </td>
       <td>
         <div class="request-title">
-          <small>${request.title}</small>
+          <p>
+            ${
+              request.purpose
+                ? `
+                <button class="title-info-btn info-btn" title="Request Purpose">
+                  <i class="fa fa-info-circle"></i>
+                </button>
+              `
+                : ''
+            }
+          ${request.title}
+          </p>
           <div class="request-date"> ${formatDate(request.createdAt)}</div>
         </div>
       </td>
+     
       <td>
-        <div class="purpose-text">
-          <span>${request.purpose.length > 20 ? request.purpose.substring(0, 20) + '...' : request.purpose}</span>
-          ${createViewMoreButton(request._id, request.purpose)}
-        </div>
-      </td>
-      <td>
+        
+      
         <span>${request.machineId && request.machineId.MIGID ? request.machineId.MIGID : '-'}</span>
       </td>
       <td>
+       
         <span>${request.duration ? request.duration : '-'}</span>
       </td>
       <td>
@@ -58,6 +67,8 @@ export function renderResourceRequests(requests) {
     `;
 
     tbody.appendChild(tr);
+
+    initTitleTippy(tr, request);
   });
 }
 

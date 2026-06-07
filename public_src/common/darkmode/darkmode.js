@@ -1,5 +1,5 @@
 import * as DarkReader from 'darkreader';
-
+// const theme = { mode: 1, brightness: 20, contrast: -10, grayscale: +25, sepia: +20 };
 function initDarkMode() {
   const isDark = localStorage.getItem('dark-mode') === 'enabled';
 
@@ -21,7 +21,6 @@ function toggleDarkMode() {
     localStorage.setItem('dark-mode', 'enabled');
   }
 
-  console.log('Current mode:', localStorage.getItem('dark-mode'));
 }
 
 export function setupDarkMode() {

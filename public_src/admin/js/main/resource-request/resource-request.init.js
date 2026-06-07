@@ -274,7 +274,7 @@ function getActionButtons(r) {
   // EXPIRED → only report
   if (status === 'expired') {
     return `
-    <div class='rms-action-report'>
+    <div class='rms-button rms-action-report'>
       <button class="icon-btn stats-report-btn" data-request-id="${r._id}">
         <i class="fa fa-bar-chart"></i>
       </button>
@@ -285,13 +285,13 @@ function getActionButtons(r) {
   // UPCOMING → edit + revoke
   if (status === 'upcoming') {
     return `
-    <div class='rms-action-edit'>
+    <div class='rms-button rms-action-edit'>
       <button class="icon-btn edit-btn" data-request-id="${r._id}">
         <i class="fas fa-pen-to-square"></i>
       </button>
       </div>
 
-      <div class='rms-action-revoke'>
+      <div class='rms-button rms-action-revoke'>
       <button class="icon-btn revoke-btn" data-request-id="${r._id}">
         Revoke
       </button>
@@ -305,7 +305,7 @@ function getActionButtons(r) {
        ${
          isPending
            ? `
-      <div class="rms-action-approve">
+      <div class="rms-button rms-action-approve">
   <button class="icon-btn approve-btn"
           data-request-id="${r._id}"
           data-action="approve">
@@ -317,7 +317,7 @@ function getActionButtons(r) {
        }
        ${
          isPending
-           ? `<div class="rms-action-reject">
+           ? `<div class="rms-button rms-action-reject">
   <button class="icon-btn decline-btn"
           data-request-id="${r._id}"
           data-action="decline">
@@ -327,7 +327,7 @@ function getActionButtons(r) {
            : ``
        }
        
-       <div class='rms-action-edit'>
+       <div class='rms-button rms-action-edit'>
       <button class="icon-btn edit-btn" data-request-id="${r._id}">
         <i class="fas fa-pen-to-square"></i>
       </button>
@@ -335,7 +335,7 @@ function getActionButtons(r) {
       ${
         !isPending
           ? `
-          <div class='rms-action-revoke'>
+          <div class='rms-button rms-action-revoke'>
           <button class="icon-btn revoke-btn" data-request-id="${r._id}">
         Revoke
       </button>
@@ -346,7 +346,7 @@ function getActionButtons(r) {
        ${
          !isPending
            ? `
-           <div class='rms-action-report'>
+           <div class='rms-button rms-action-report'>
            <button class="icon-btn stats-report-btn" data-request-id="${r._id}">
         <i class="fa fa-bar-chart"></i>
       </button>

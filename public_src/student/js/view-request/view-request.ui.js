@@ -13,33 +13,36 @@ import { setActiveSidebar } from '../../../common/aside/aside.js';
 // Page Structure
 // ==============================
 
-
 export function renderRequestsPageStructure(onFilterChange) {
   const container = document.getElementById('requests-content');
 
   container.innerHTML = `
-        <div class="requests-page">
+       
             <div id="all-requests" class="resource-request-section">
-                <div class="section-header" style="display: flex; justify-content: center; align-items: center; margin-bottom: 20px;">
-
-                </div>
+      
                 <div id="all-requests-list"></div>
             </div>
-        </div>
+      
     `;
 
-  const statusFilter = document.getElementById('status-filter');
-  if (statusFilter) {
-    statusFilter.addEventListener('change', function () {
-      onFilterChange(this.value);
+  document.querySelectorAll('.status-btn-resources').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const status = btn.dataset.status;
+
+      document
+        .querySelectorAll('.status-btn-resources')
+        .forEach((b) => b.classList.remove('active'));
+
+      btn.classList.add('active');
+
+      onFilterChange(status);
     });
-  }
+  });
 }
 
 // ==============================
 // Render Requests
 // ==============================
-
 
 export function renderAllRequests(requests, onDelete, onReload) {
   const container = document.getElementById('all-requests-list');
@@ -59,20 +62,16 @@ export function renderAllRequests(requests, onDelete, onReload) {
             </div>
         `;
 
-       document
-  .querySelector('.empty-request-btn')
-  ?.addEventListener('click', () => {
-    document.querySelector('.view-request')
-      ?.classList.add('hide-default');
+    document.querySelector('.empty-request-btn')?.addEventListener('click', () => {
+      document.querySelector('.view-request')?.classList.add('hide-default');
 
-    document.querySelector('.raise-request')
-      ?.classList.remove('hide-default');
+      document.querySelector('.raise-request')?.classList.remove('hide-default');
 
-    setActiveSidebar('raise-request');
-  });
+      setActiveSidebar('raise-request');
+    });
     return;
   }
-  
+
   // Sort requests by creation date (newest first)
   const sortedRequests = [...requests].sort(
     (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
@@ -98,26 +97,41 @@ export function filterRequests(status) {
     }
   });
 
-  // Update the count display
-  const visibleItems = document.querySelectorAll(
-    '.request-item.detailed:not([style*="display: none"])',
-  ).length;
-  const totalItems = requestItems.length;
-
-  let filterInfo = document.getElementById('filter-info');
-  if (!filterInfo) {
-    filterInfo = document.createElement('div');
-    filterInfo.id = 'filter-info';
-    filterInfo.style.cssText =
-      'margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 6px; color: #666; font-size: 0.9em;';
-    const list = document.getElementById('all-requests-list');
-    list.insertBefore(filterInfo, list.firstChild);
-  }
-
-  const statusText = status === 'all' ? 'All' : status.charAt(0).toUpperCase() + status.slice(1);
-  filterInfo.innerHTML = `Showing ${visibleItems} of ${totalItems} requests (${statusText})`;
 }
 
+export function updateRequestCounts(requests) {
+  const counts = {
+    all: requests.length,
+    pending: 0,
+    approved: 0,
+    rejected: 0,
+    completed:0,
+  };
+
+ requests.forEach((request) => {
+  const status = getRequestStatus(request);
+
+  if (status === 'pending') counts.pending++;
+  else if (status === 'approved') counts.approved++;
+  else if (status === 'rejected') counts.rejected++;
+  else if (status === 'completed') counts.completed++;
+});
+
+  document.querySelector('.count-badge-resource.all').textContent =
+    counts.all;
+
+  document.querySelector('.count-badge-resource.pending').textContent =
+    counts.pending;
+
+  document.querySelector('.count-badge-resource.approved').textContent =
+    counts.approved;
+
+  document.querySelector('.count-badge-resource.rejected').textContent =
+    counts.rejected;
+  
+  document.querySelector('.count-badge-resource.completed').textContent =
+  counts.completed;
+}
 // ==============================
 // Card UI
 // ==============================
@@ -127,6 +141,26 @@ function createRequestCard(request) {
   const statusText = getRequestStatusText(request);
   const statusClass = getRequestStatusClass(request);
   const statusIcon = getRequestStatusIcon(request);
+  let requestStatusClass = '';
+
+  switch (status) {
+    case 'approved':
+      requestStatusClass = 'request-approved';
+      break;
+
+    case 'pending':
+      requestStatusClass = 'request-pending';
+
+      break;
+
+    case 'rejected':
+      requestStatusClass = 'request-rejected';
+      break;
+
+    case 'completed':
+      requestStatusClass = 'request-completed';
+      break;
+  }
   // Check expired or active
   const now = Date.now();
 
@@ -147,197 +181,141 @@ function createRequestCard(request) {
   const isVerified = request.is_verified && request.machineId && request.machineId.MIGID;
   const showTokenAndButtons = isVerified && request.isAllotmentActive;
 
+  let tokenMessage = '';
+
+  if (showTokenAndButtons) {
+    tokenMessage = request.token ? `Token: ${request.token}` : 'Token not generated yet';
+  } else {
+    if(statusText=='Approved'){
+     tokenMessage = 'Your request has been approved. Access will be available during the allotted time window.';
+    }else if(statusText=='Completed'){
+      tokenMessage= 'This resource allocation has ended. Usage session completed successfully.';
+    }else if(statusText=='Pending Teacher'){
+      tokenMessage=  'Teacher approval received. Awaiting final admin approval.';
+    }else if(statusText=='Rejected by Admin'){
+      tokenMessage='This request was not approved by the admin';
+    }else if(statusText=='Rejected by Teacher'){
+      tokenMessage= 'This request was not approved by the teacher.';
+    }
+    
+  }
+
   return `
-       <div class="request-item detailed" data-status="${status}"
-     style="
-        position:relative;
-        border:1px solid #e5e7eb;
-        border-radius:14px;
-        padding:14px 16px;
-        margin-bottom:12px;
-        background:#fff;
-        box-shadow:0 2px 8px rgba(0,0,0,0.04);
-     ">
+       <div class="request-item detailed ${requestStatusClass}" data-status="${status}">
 
     <!-- Header -->
-    <div style="
-        display:flex;
-        align-items:center;
-        justify-content:space-between;
-        margin-bottom:10px;
-    ">
-        <div style="display:flex; align-items:center; gap:10px;">
-            <h3 style="
-                margin:0;
-                font-size:16px;
-                font-weight:600;
-                color:#111827;
-            ">
+    <div class='request-header'>
+
+        <div class='request-header-left'>
+           <div class="request-icon  ${requestStatusClass}">
+            <i class="fas fa-microchip"></i>
+          </div>
+          <div class='request-title-area'>
+            <h3>
                 ${request.title}
             </h3>
+            </div>
 
-            <span class="status-badge ${statusClass}">
-                ${statusIcon} ${statusText}
-            </span>
+              <span class="status-badge ${statusClass}">
+            ${statusIcon} ${statusText}
+        </span>
         </div>
 
+
+    <div class="request-header-right">
         ${
           canDelete
             ? `
             <button
                 type="button"
                 class="delete-request-btn"
-                data-request-id="${request._id}"
-                style="
-                    background:#ef4444;
-                    color:#fff;
-                    border:none;
-                    border-radius:6px;
-                    padding:6px 10px;
-                    cursor:pointer;
-                    font-size:12px;
-                ">
+                data-request-id="${request._id}">
                 Delete
             </button>
         `
             : ''
         }
+        </div>
     </div>
 
     <!-- Meta Row -->
-   <div style="
-    display:flex;
-    flex-wrap:wrap;
-    align-items:center;
-    gap:8px;
-    font-size:13px;
-    color:#4b5563;
-    margin-bottom:10px;
-">
+   <div class='request-meta'>
+   <div class='meta-item'>
+    <i class="fas fa-fingerprint"></i>
     <span>
         <strong>MIGID:</strong> ${request.machineId.MIGID}
     </span>
+    </div>
 
-    <span style="color:#d1d5db;">|</span>
-
+ 
+    <div class='meta-item'>
+     <i class="fas fa-memory"></i>
     <span>
         <strong>GPU RAM:</strong> ${request.machineId.gpuRam} GB
     </span>
-
-    <span style="color:#d1d5db;">|</span>
-
+    </div>
+   
+    <div class='meta-item'>
+      <i class="fas fa-calendar-days"></i>
     <span>
         <strong>Allotment:</strong>
         ${formatDate(request.allotmentStartTime)}
         -
         ${formatDate(request.allotmentEndTime)}
     </span>
+      </div>
+
 </div>
 
     <!-- Purpose -->
-    <div style="
-        font-size:13px;
-        color:#374151;
-        margin-bottom:10px;
-        line-height:1.4;
-    ">
+    <div class='request-purpose'>
         <strong>Purpose:</strong>
         ${request.purpose}
     </div>
 
     <!-- Token -->
-    ${
-      showTokenAndButtons
-        ? `
-        <div style="
-            display:flex;
-            align-items:center;
-            gap:8px;
-            background:#f0fdf4;
-            border:1px solid #dcfce7;
-            border-radius:8px;
-            padding:8px 12px;
-            margin-bottom:10px;
-            font-size:13px;
-            color:#166534;
-        ">
-            <i class="fas fa-check-circle"></i>
+    <div class="request-token">
+    ${tokenMessage}
 
-            ${
-              request.token
-                ? `
-                <span>
-                    Token:
-                    <strong>${request.token}</strong>
-                </span>
-            `
-                : `
-                <span>Token not generated yet</span>
-            `
-            }
-        </div>
-    `
-        : ''
-    }
+
+  ${
+    request.token
+      ? `
+      <button
+        class="copy-token-btn"
+        data-token="${request.token}"
+        title="Copy Token">
+        <i class="fas fa-copy"></i>
+      </button>
+      `
+      : ''
+  }
+
+</div>
 
     <!-- Bottom Row -->
-    <div style="
-        display:flex;
-        justify-content:space-between;
-        align-items:center;
-        margin-top:6px;
-    ">
+    <div class="request-footer">
 
         <!-- Buttons -->
-        <div style="
-            display:flex;
-            gap:8px;
-            flex-wrap:wrap;
-        ">
+        <div class="request-actions">
 
         ${
-              showTokenAndButtons
-                ? `
+          showTokenAndButtons
+            ? `
                 <button
                     class="access-machine-btn"
                     data-request-id="${request._id}"
-                    data-migid="${request.machineId.MIGID}"
-                    style="
-                        display:inline-flex;
-                        align-items:center;
-                        gap:6px;
-                        background:#fff;
-                        color:#0d9488;
-                        border:1.5px solid #99f6e4;
-                        border-radius:8px;
-                        padding:7px 14px;
-                        font-size:13px;
-                        font-weight:500;
-                        cursor:pointer;
-                    ">
+                    data-migid="${request.machineId.MIGID}">
                     <i class="fas fa-desktop" style="font-size:13px;"></i>
                     Access Machine
                 </button>
             `
-                : ''
-            }
+            : ''
+        }
            ${
              showReportButton
                ? `
-    <button class="report-btn"  data-request-id="${request._id}"
-        style="
-            display:inline-flex;
-            align-items:center;
-            gap:6px;
-            background:#fff;
-            color:#2563eb;
-            border:1.5px solid #bfdbfe;
-            border-radius:8px;
-            padding:7px 14px;
-            font-size:13px;
-            font-weight:500;
-            cursor:pointer;
-        ">
+    <button class="report-btn"  data-request-id="${request._id}">
         <i class="fas fa-file-alt"></i>
         View Usage
     </button>
@@ -345,35 +323,19 @@ function createRequestCard(request) {
                : ''
            }
             ${
-              showReportButton?
-              `
-            <button class="feedback-btn"
-                style="
-                    display:none;
-                    align-items:center;
-                    gap:6px;
-                    background:#fff;
-                    color:#16a34a;
-                    border:1.5px solid #bbf7d0;
-                    border-radius:8px;
-                    padding:7px 14px;
-                    font-size:13px;
-                    font-weight:500;
-                    cursor:pointer;
-                ">
+              showReportButton
+                ? `
+            <button class="feedback-btn" style='display:none'>
                 <i class="fas fa-comment-dots" style="font-size:13px;"></i>
                 Send Feedback
             </button>
-            `:''
+            `
+                : ''
             }
         </div>
 
         <!-- Date -->
-        <small style="
-            color:#6b7280;
-            white-space:nowrap;
-            font-size:12px;
-        ">
+        <small class='request-date'>
             ${formatDate(request.createdAt)}
         </small>
     </div>
