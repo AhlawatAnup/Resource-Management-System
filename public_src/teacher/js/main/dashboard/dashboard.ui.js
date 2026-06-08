@@ -28,14 +28,14 @@ export function renderTeacherProfile(teacherData) {
           ${getInitials(teacherData.name || 'Teacher')}
         </div>
 
-        <h2 classs="profile-name">${teacherData.name || 'Teacher'}</h2>
+        <h2 class="profile-name">${teacherData.name || 'Teacher'}</h2>
 
          <span class="verification-badge ${statusClass}">
           ${verificationStatus}
          </span>
           
          </div>
-           <button  class="theme-toggle" title="Dark Mode">
+           <button  class="theme-toggle" title="Dark Mode"  style='margin-top:6px; margin-bottom:6px'>
           <i id="theme-icon" class="fa fa-moon"></i>
         </button>
          </div>
@@ -135,12 +135,12 @@ export function renderPendingRequestsTable(student) {
             ? '<span style="color: #666; font-style: italic;">Action Completed</span>'
             : `
             
-            <div class='rms-action-approve'>
+            <div class='rms-button rms-action-approve' style='margin-right:4px;'>
             <button class="icon-btn approve-btn" title="Approve Student" data-student-id="${student._id}" data-action="approve">
               <i class="fa-solid fa-check"></i>
             </button>
             </div>
-            <div class='rms-action-reject'>
+            <div class='rms-button rms-action-reject'>
             <button class="icon-btn decline-btn" title="Decline Student" data-student-id="${student._id}" data-action="decline">
               <i class="fa-solid fa-times"></i>
             </button>
@@ -205,12 +205,12 @@ export function renderStudentsTable(student) {
             ? '<span style="color: #666; font-style: italic;">Action Completed</span>'
             : `
             
-            <div class='rms-action-approve'>
+            <div class='rms-button rms-action-approve' style='margin-right:4px;'>
             <button class="icon-btn approve-btn" title="Approve Student" data-student-id="${student._id}" data-action="approve">
               <i class="fa-solid fa-check"></i>
             </button>
             </div>
-            <div class='rms-action-reject'>
+            <div class='rms-button rms-action-reject'>
             <button class="icon-btn decline-btn" title="Decline Student" data-student-id="${student._id}" data-action="decline">
               <i class="fa-solid fa-times"></i>
             </button>

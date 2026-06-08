@@ -49,7 +49,7 @@ export function displayStudentDetails(student) {
         ${student.name.charAt(0).toUpperCase()}
          </div>
 
-          <h2 class="proile-name">
+          <h2 class="profile-name">
           ${student.name}
         </h2>
 
@@ -57,7 +57,7 @@ export function displayStudentDetails(student) {
             ${verificationStatus}
           </span>
        </div>
-          <button  class="theme-toggle" title="Dark Mode">
+          <button  class="theme-toggle" title="Dark Mode" style='margin-top:6px; margin-bottom:6px'>
           <i id="theme-icon" class="fa fa-moon"></i>
         </button>
          </div>
@@ -78,7 +78,7 @@ export function displayStudentDetails(student) {
       Under the supervision of: ${student.teacher?.name}
     </div>
 
-    <div class="hero-actions">
+    <div class="rms-button rms-action-primary">
 
       <button   id="resourceRequestsBtn">
         

@@ -94,8 +94,9 @@
     }
 
     tbody tr {
-      border-bottom: 1px solid #f1f5f9;
+      border-bottom: 1px solid #dbe4f0;
       transition: background-color 0.2s ease;
+      background: white;
 
       &:hover {
         background-color: #f8fafc;
@@ -114,6 +115,16 @@
 
     /* EXTRA CLASSES  */
     /* Contact Info Styles */
+    .contact-time {
+      color: #6b7280;
+      font-size: 11px;
+    }
+
+    .request-date {
+    color: #6b7280;
+    font-size: 11px;
+    }
+
     .contact-info {
       display: flex;
       align-items: center;
@@ -150,41 +161,36 @@
       }
     }
   }
-   .admin-actions {
-      display: flex;
-      align-items: center;
-      gap: 8px;
+  .admin-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
 
-      button {
-        padding: 6px 12px;
-        font-size: 12px;
-        font-weight: 500;
-        border-radius: 6px;
-        border: 1px solid transparent;
-        cursor: pointer;
-        transition: all 0.2s ease-in-out;
-        outline: none;
+    button {
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 500;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+      outline: none;
 
-        &:active {
-          transform: scale(0.97);
-        }
+      &:active {
+        transform: scale(0.97);
       }
+    }
 
-     
-      
-
-      .action-completed {
-        font-size: 11px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: #94a3b8;
-        background-color: #f8fafc;
-        padding: 4px 10px;
-        border-radius: 4px;
-        border: 1px solid #e2e8f0;
-      }
-    } 
+    .action-completed {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #94a3b8;
+      background-color: #f8fafc;
+      padding: 4px 10px;
+      border-radius: 4px;
+      border: 1px solid #e2e8f0;
+    }
+  }
 }
-
-

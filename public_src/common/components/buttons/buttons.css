@@ -1,7 +1,5 @@
-/* Approve */
-.rms-action-approve button {
-    background: #166534;
-    color: white;
+.rms-button button{
+     color: white;
     border: none;
     border-radius: 8px;
     padding: 9px 16px;
@@ -12,52 +10,44 @@
     display: inline-flex;
     align-items: center;
 
-
     transition: all 0.2s ease;
+}
+
+.rms-button button:hover{
+    transform: translateY(-1px);
+}
+
+.rms-action-primary button{
+ background: linear-gradient(135deg, #2563eb, #3b82f6);
+ padding: 11px 18px !important; 
+}
+
+.rms-action-secondary button{
+  background: #f8fafc;
+  color: #334155 !important;
+
+}
+
+/* Approve */
+.rms-action-approve button {
+    background: #166534;
 }
 
 .rms-action-approve button:hover {
     background: #14532d;
-    transform: translateY(-1px);
 }
 /* Reject */
 .rms-action-reject button {
     background: #b91c1c;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 9px 16px;
-    font-size: 11px;
-    font-weight: 600;
-    cursor: pointer;
-
-    display: inline-flex;
-    align-items: center;
-
-    transition: all 0.2s ease;
 }
 
 .rms-action-reject button:hover {
     background: #991b1b;
-    transform: translateY(-1px);
+    
 }
 /* Edit */
 .rms-action-edit button{
     background:#d97706;
-    color:white;
-    border:none;
-    border-radius:8px;
-    padding:8px 14px;
-
-    display:flex;
-    align-items:center;
-
-
-    font-size:13px;
-    font-weight:600;
-    cursor:pointer;
-
-    transition:all .2s ease;
 }
 
 .rms-action-edit button:hover{
@@ -66,19 +56,6 @@
 /* Revoke */
 .rms-action-revoke button{
     background:#c2410c;
-    color:white;
-    border:none;
-    border-radius:8px;
-    padding:8px 14px;
-
-    display:flex;
-    align-items:center;
-
-    font-size:13px;
-    font-weight:600;
-    cursor:pointer;
-
-    transition:all .2s ease;
 }
 
 .rms-action-revoke button:hover{
@@ -86,23 +63,12 @@
 }
 /* Gererate Report */
 .rms-action-report button{
+    color:#166534 !important;
     background:#dcfce7;
-    color:#166534;
-    border:1px solid #bbf7d0;
-    border-radius:8px;
-    padding:8px 14px;
-
-    display:flex;
-    align-items:center;
-
-    font-size:13px;
-    font-weight:600;
-    cursor:pointer;
-
-    transition:all .2s ease;
 }
 
 .rms-action-report button:hover{
+     color:#166534 !important;
     background:#bbf7d0;
 }
 /* Status */

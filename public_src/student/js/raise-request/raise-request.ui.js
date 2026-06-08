@@ -196,6 +196,9 @@ export function renderResourcesPage(student, verificationStatus, onSubmitHandler
   // Hide loading
   if (loadingSection) loadingSection.style.display = 'none';
 
+  const submitBtn = document.getElementById('submit-request-btn');
+
+  
  if (isVerified) {
   const bannerKey = `verified-banner-dismissed-${student._id}`;
 
@@ -239,18 +242,20 @@ export function renderResourcesPage(student, verificationStatus, onSubmitHandler
     });
   }
 } else {
-    // banner.style.display = 'flex';
+     banner.style.display = 'flex';
 
-    // bannerText.textContent = `Verification Required - ${verificationStatus}`;
+     bannerText.textContent = `Verification Required - ${verificationStatus}`;
 
-    // bannerIcon.className = 'fas fa-exclamation-circle';
+     bannerIcon.className = 'fas fa-exclamation-circle';
 
-    // closeBtn.style.display = 'none';
+     closeBtn.style.display = 'none';
+    submitBtn.disabled = true;
+    submitBtn.style.cursor = 'not-allowed';
 
     verifiedSection.style.display = 'none';
     unverifiedSection.style.display = 'block';
-    // banner.classList.remove('verified-banner');
-    // banner.classList.add('unverified-banner');
+     banner.classList.remove('verified-banner');
+     banner.classList.add('unverified-banner');
     // Populate verification status text
     const statusText = document.getElementById('verification-status-text');
     const statusDetail = document.getElementById('verification-status-detail');

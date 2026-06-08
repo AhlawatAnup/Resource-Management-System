@@ -1,3 +1,6 @@
+import tippy from 'tippy.js';
+import 'tippy.js/dist/tippy.css';
+
 // Get verification status text for teacher
 export function getVerificationStatus(teacher) {
   if (teacher.is_verified) {
@@ -142,4 +145,24 @@ export function filterRequestsList(resourceRequests, searchTerm) {
       request.title.toLowerCase().includes(term) ||
       request.purpose.toLowerCase().includes(term),
   );
+}
+
+
+export function initTitleTippy(tr, request) {
+  if (!request.purpose) return;
+  const btn = tr.querySelector('.title-info-btn');
+  if (!btn) return;
+
+  tippy(btn, {
+    content: `<p><b>Purpose:</b> ${request.purpose}</p>`,
+    allowHTML: true,
+    placement: 'right',
+    arrow: true,
+    animation: 'shift-away',
+    duration: [150, 50],
+    delay: [0, 0],
+    maxWidth: 260,
+    interactive: true,
+    hideOnClick: true,
+  });
 }

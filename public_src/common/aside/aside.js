@@ -10,7 +10,6 @@ const sidebar_active_item = localStorage.getItem('side-bar-active-item') ?? 0;
 
 aside_items.forEach((item, index) => {
   item.addEventListener('click', function () {
-    console.log(index, aside_items.length);
     if (aside_items.length - 1 == index) {
       return handleLogout();
     }

@@ -68,8 +68,8 @@
 .profile-name {
     margin: 0;
 
-    font-size: 32px;
-    font-weight: 700;
+    font-size: 28px;
+    font-weight: 600;
 
     color: #0f172a;
 
@@ -85,9 +85,9 @@
     align-items: center;
     gap: 6px;
 
-    padding: 8px 16px;
+    padding: 5px 12px;
 
-    border-radius: 999px;
+    border-radius:10px;
 
     font-size: 14px;
     font-weight: 600;
