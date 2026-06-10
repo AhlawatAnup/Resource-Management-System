@@ -157,7 +157,6 @@ export function initUIComponentsHandler() {
 
 // INIT ------------------------>
 
-
 document.addEventListener('DOMContentLoaded', () => {
   //setupDarkMode();
   // Initialize purpose panel & date pickers
@@ -172,23 +171,23 @@ document.addEventListener('DOMContentLoaded', () => {
     searchInput.addEventListener('input', (e) => {
       filterRequestsHandler(e.target.value);
     });
-     // AUTO FOCUS SEARCH ON TYPING
-  document.addEventListener('keydown', (e) => {
-    const searchInput = document.getElementById('searchInputResources');
+    // AUTO FOCUS SEARCH ON TYPING
+    document.addEventListener('keydown', (e) => {
+      const searchInput = document.getElementById('searchInputResources');
 
-    if (e.ctrlKey || e.metaKey || e.altKey) return;
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
 
-    if (
-      document.activeElement.tagName === 'INPUT' ||
-      document.activeElement.tagName === 'TEXTAREA'
-    ) {
-      return;
-    }
+      if (
+        document.activeElement.tagName === 'INPUT' ||
+        document.activeElement.tagName === 'TEXTAREA'
+      ) {
+        return;
+      }
 
-    if (e.key.length === 1) {
-      searchInput.focus();
-    }
-  });
+      if (e.key.length === 1) {
+        searchInput.focus();
+      }
+    });
   }
 
   // Delegate approve/decline buttons
@@ -203,5 +202,3 @@ document.addEventListener('DOMContentLoaded', () => {
     updateRequestVerificationHandler(requestId, isVerified);
   });
 });
-
-

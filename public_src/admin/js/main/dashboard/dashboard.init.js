@@ -1,4 +1,3 @@
-
 import { appendAllTeachers, appendAllStudents, updateStatusCounts } from './dashboard.ui.js';
 import {
   getEndpoint,
@@ -77,28 +76,28 @@ function setupStatusNavigation() {
             appendAllTeachers(admin.allTeachers);
             break;
           case 3:
-           appendAllTeachers([]);
+            appendAllTeachers([]);
             break;
 
           default:
             break;
         }
       } else {
-  switch (state.currentStatus) {
-    case 0:
-      appendAllStudents(admin.unverifiedStudents);
-      break;
-    case 1:
-      appendAllStudents(admin.verifiedStudents);
-      break;
-    case 2:
-      appendAllStudents(admin.allStudents);
-      break;
-    case 3:
-      appendAllStudents(admin.rejectedStudents);
-      break;
-  }
-}
+        switch (state.currentStatus) {
+          case 0:
+            appendAllStudents(admin.unverifiedStudents);
+            break;
+          case 1:
+            appendAllStudents(admin.verifiedStudents);
+            break;
+          case 2:
+            appendAllStudents(admin.allStudents);
+            break;
+          case 3:
+            appendAllStudents(admin.rejectedStudents);
+            break;
+        }
+      }
     });
   });
 }
@@ -131,7 +130,6 @@ async function loadDashboard() {
 
     const allData = await fetchDashboardData(allEndpoint);
 
-
     state.currentData = extractDataByTypeAndStatus(data, state.currentType, state.currentStatus);
 
     if (state.currentType === 'teacher') {
@@ -145,20 +143,25 @@ async function loadDashboard() {
         admin.unverifiedTeachers.length,
       );
 
-        appendAllTeachers(state.currentData);
-      } else {
-        admin.allStudents = state.currentData;
-        admin.verifiedStudents = admin.allStudents.filter((m) => m.admin_verified === true && m.is_verified === true);
-        admin.unverifiedStudents = admin.allStudents.filter((m) => !m.admin_action);
-        admin.rejectedStudents = admin.allStudents.filter((m) => m.admin_action === true && m.admin_verified === false);
+      appendAllTeachers(state.currentData);
+    } else {
+      admin.allStudents = state.currentData;
+      admin.verifiedStudents = admin.allStudents.filter(
+        (m) => m.admin_verified === true && m.is_verified === true,
+      );
+      admin.unverifiedStudents = admin.allStudents.filter((m) => !m.admin_action);
+      admin.rejectedStudents = admin.allStudents.filter(
+        (m) => m.admin_action === true && m.admin_verified === false,
+      );
 
-        updateStatusCounts(admin.allStudents.length,
-           admin.verifiedStudents.length,
-           admin.unverifiedStudents.length,
-          admin.rejectedStudents.length
-          );
+      updateStatusCounts(
+        admin.allStudents.length,
+        admin.verifiedStudents.length,
+        admin.unverifiedStudents.length,
+        admin.rejectedStudents.length,
+      );
 
-appendAllStudents(state.currentData);
+      appendAllStudents(state.currentData);
     }
   } catch (error) {
     console.error('Dashboard Load Error:', error);

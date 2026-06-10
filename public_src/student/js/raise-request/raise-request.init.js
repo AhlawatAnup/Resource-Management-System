@@ -4,7 +4,7 @@ import {
   showErrorMessage,
   getStudentVerificationStatus,
   isValidDuration,
-  AllotmentsUtils
+  AllotmentsUtils,
 } from '../student.util.js';
 import { renderResourcesPage, renderMachineCards } from './raise-request.ui.js';
 import { setActiveSidebar } from '../../../common/aside/aside.js';
@@ -145,7 +145,7 @@ export async function handleResourceRequest(event) {
     document.querySelector('.raise-request')?.classList.add('hide-default');
     document.querySelector('.view-request')?.classList.remove('hide-default');
     setActiveSidebar('view-request');
-    await handleLoadViewRequests()
+    await handleLoadViewRequests();
   } catch (error) {
     console.error('Error submitting resource request:', error);
     Swal.fire({

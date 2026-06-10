@@ -8,5 +8,5 @@ require('../../common/aside/aside.js');
 require('./main/dashboard/dashboard.init.js');
 require('./main/resource-request/resource-request.init.js');
 require('./main/machines/machine.init.js');
-require('./main/profile/profile.init.js')
-require('../../common/machine-availability/machine-availability.init.js')
+require('./main/profile/profile.init.js');
+require('../../common/machine-availability/machine-availability.init.js');

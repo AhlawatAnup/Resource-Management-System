@@ -372,8 +372,6 @@ export function getRequestById(requestId) {
   return resourceRequests.find((r) => r._id === requestId);
 }
 
-
-
 //INIT
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -534,8 +532,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const request = getRequestById(requestId);
 
       try {
-     
-
         await generateReport(requestId, request);
       } catch (err) {
         showToast(err.message || 'Failed to generate report', 'error');

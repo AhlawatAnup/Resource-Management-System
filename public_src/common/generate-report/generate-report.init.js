@@ -1,14 +1,7 @@
-import {
-  renderReportDetails,
-  openReportModal,
-  renderStatsChart,
-} from './generate-report.ui.js';
+import { renderReportDetails, openReportModal, renderStatsChart } from './generate-report.ui.js';
 
 export async function generateReport(requestId, request) {
-
-  const res = await fetch(
-    `/dashboard/getStatsByResReqId/${requestId}`
-  );
+  const res = await fetch(`/dashboard/getStatsByResReqId/${requestId}`);
 
   console.log('STATUS:', res.status);
 

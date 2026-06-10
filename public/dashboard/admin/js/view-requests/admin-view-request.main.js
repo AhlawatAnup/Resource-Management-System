@@ -181,8 +181,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const request = getRequestById(requestId);
 
       try {
-     
-
         const res = await fetch(`/dashboard/admin/getStatsByResReqId/${requestId}`, {
           method: 'GET',
         });

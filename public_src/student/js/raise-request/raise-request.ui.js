@@ -2,14 +2,13 @@
 
 import { showConfirmationPopup } from './confirmation-popup.js';
 
-export function renderMachineCards(machines){
-    const container = document.getElementById('raise-machines-flexbar');
-    
+export function renderMachineCards(machines) {
+  const container = document.getElementById('raise-machines-flexbar');
 
-    container.innerHTML = machines
-      .map(
-        (machine) =>
-            `<div   class="machine-bar-item"
+  container.innerHTML = machines
+    .map(
+      (machine) =>
+        `<div   class="machine-bar-item"
   data-machine-id="${machine._id}" 
   style="
   border-bottom: 1px solid #e5e7eb;
@@ -170,9 +169,8 @@ export function renderMachineCards(machines){
   </div>
 
 </div>`,
-      )
-      .join('');
-
+    )
+    .join('');
 }
 
 export function renderResourcesPage(student, verificationStatus, onSubmitHandler) {
@@ -198,64 +196,62 @@ export function renderResourcesPage(student, verificationStatus, onSubmitHandler
 
   const submitBtn = document.getElementById('submit-request-btn');
 
-  
- if (isVerified) {
-  const bannerKey = `verified-banner-dismissed-${student._id}`;
+  if (isVerified) {
+    const bannerKey = `verified-banner-dismissed-${student._id}`;
 
-  const bannerDismissed = localStorage.getItem(bannerKey) === 'true';
+    const bannerDismissed = localStorage.getItem(bannerKey) === 'true';
 
-  if (!bannerDismissed) {
+    if (!bannerDismissed) {
+      banner.style.display = 'flex';
+
+      bannerText.textContent = 'Welcome! You are verified and eligible to request resources';
+
+      bannerIcon.className = 'fas fa-check-circle';
+
+      closeBtn.style.display = 'block';
+
+      closeBtn.onclick = () => {
+        banner.style.display = 'none';
+
+        localStorage.setItem(bannerKey, 'true');
+      };
+    } else {
+      banner.style.display = 'none';
+    }
+
+    verifiedSection.style.display = 'block';
+    unverifiedSection.style.display = 'none';
+
+    banner.classList.remove('unverified-banner');
+    banner.classList.add('verified-banner');
+
+    const form = document.getElementById('resource-request-form');
+
+    if (form) {
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const purposeField = document.getElementById('purpose');
+        const purpose = purposeField ? purposeField.value : '';
+
+        showConfirmationPopup(onSubmitHandler, e, student, purpose);
+      });
+    }
+  } else {
     banner.style.display = 'flex';
 
-    bannerText.textContent =
-      'Welcome! You are verified and eligible to request resources';
+    bannerText.textContent = `Verification Required - ${verificationStatus}`;
 
-    bannerIcon.className = 'fas fa-check-circle';
+    bannerIcon.className = 'fas fa-exclamation-circle';
 
-    closeBtn.style.display = 'block';
-
-    closeBtn.onclick = () => {
-      banner.style.display = 'none';
-
-      localStorage.setItem(bannerKey, 'true');
-    };
-  } else {
-    banner.style.display = 'none';
-  }
-
-  verifiedSection.style.display = 'block';
-  unverifiedSection.style.display = 'none';
-
-  banner.classList.remove('unverified-banner');
-  banner.classList.add('verified-banner');
-
-  const form = document.getElementById('resource-request-form');
-
-  if (form) {
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-
-      const purposeField = document.getElementById('purpose');
-      const purpose = purposeField ? purposeField.value : '';
-
-      showConfirmationPopup(onSubmitHandler, e, student, purpose);
-    });
-  }
-} else {
-     banner.style.display = 'flex';
-
-     bannerText.textContent = `Verification Required - ${verificationStatus}`;
-
-     bannerIcon.className = 'fas fa-exclamation-circle';
-
-     closeBtn.style.display = 'none';
+    closeBtn.style.display = 'none';
     submitBtn.disabled = true;
     submitBtn.style.cursor = 'not-allowed';
 
     verifiedSection.style.display = 'none';
     unverifiedSection.style.display = 'block';
-     banner.classList.remove('verified-banner');
-     banner.classList.add('unverified-banner');
+    banner.classList.remove('verified-banner');
+    banner.classList.add('unverified-banner');
     // Populate verification status text
     const statusText = document.getElementById('verification-status-text');
     const statusDetail = document.getElementById('verification-status-detail');

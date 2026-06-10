@@ -20,7 +20,11 @@ body {
   display: flex;
 }
 
-/* DEFAULT HIDE CLASS */
 .hide-default {
   display: none !important;
+}
+
+/* DEFAULT HIDE CLASS */
+.swal2-popup {
+  font-size: 16px !important;
 }

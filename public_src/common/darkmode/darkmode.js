@@ -20,7 +20,6 @@ function toggleDarkMode() {
     DarkReader.enable();
     localStorage.setItem('dark-mode', 'enabled');
   }
-
 }
 
 export function setupDarkMode() {

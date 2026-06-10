@@ -18,8 +18,6 @@ import {
 import Swal from 'sweetalert2';
 import { setupDarkMode } from '../../../../common/darkmode/darkmode.js';
 
-
-
 // API CALLS -------------------->
 export async function fetchTeacherDashboardData() {
   const response = await fetch('/dashboard/teacher/data', {
@@ -57,12 +55,6 @@ export async function updateStudentVerificationAPI(studentId, isVerified) {
   return response;
 }
 
-
-
-
-
-
-
 //HANDLER ----------------->
 const student_data = [];
 let teacherVerificationStatus = { is_verified: false };
@@ -92,27 +84,27 @@ export async function handleDashboardLoad() {
 
     // Not verified
     if (!teacherVerificationStatus.is_verified) {
-     const tableBody =
-  document.getElementById('contactTableBody') ||
-  document.getElementById('pendingRequestsTableBody');
+      const tableBody =
+        document.getElementById('contactTableBody') ||
+        document.getElementById('pendingRequestsTableBody');
 
-if (tableBody) {
-  tableBody.innerHTML =
-    '<tr><td colspan="6" class="loading">Your account must be verified by admin to view students</td></tr>';
-}
+      if (tableBody) {
+        tableBody.innerHTML =
+          '<tr><td colspan="6" class="loading">Your account must be verified by admin to view students</td></tr>';
+      }
       return;
     }
 
     // No students
     if (!data.students.length) {
-     const tableBody =
-  document.getElementById('contactTableBody') ||
-  document.getElementById('pendingRequestsTableBody');
+      const tableBody =
+        document.getElementById('contactTableBody') ||
+        document.getElementById('pendingRequestsTableBody');
 
-if (tableBody) {
-  tableBody.innerHTML =
-    '<tr><td colspan="6" class="loading">No student registered with you</td></tr>';
-}
+      if (tableBody) {
+        tableBody.innerHTML =
+          '<tr><td colspan="6" class="loading">No student registered with you</td></tr>';
+      }
       return;
     }
 
@@ -121,18 +113,17 @@ if (tableBody) {
       await handleStudentFetch(data.students[i]);
     }
     // Pending Requests page
-const pendingTable = document.getElementById('pendingRequestsTableBody');
+    const pendingTable = document.getElementById('pendingRequestsTableBody');
 
-if (pendingTable && pendingTable.children.length === 0) {
-  pendingTable.innerHTML = `
+    if (pendingTable && pendingTable.children.length === 0) {
+      pendingTable.innerHTML = `
     <tr>
       <td colspan="6" class="loading">
         No pending requests
       </td>
     </tr>
   `;
-}
-    
+    }
   } catch (error) {
     console.error('Error fetching dashboard data:', error);
     logoutDirectly();
@@ -150,26 +141,23 @@ export async function handleStudentFetch(stu_id) {
 
     const data = await response.json();
 
-   const student = {
-  ...data,
-  avatarColor: getRandomNamedColor(),
-  avatar: getInitials(data.name),
-};
+    const student = {
+      ...data,
+      avatarColor: getRandomNamedColor(),
+      avatar: getInitials(data.name),
+    };
 
-student_data.push(student);
+    student_data.push(student);
 
-// Assigned Students page
-if (document.getElementById('contactTableBody')) {
-  renderStudentsTable(student);
-}
+    // Assigned Students page
+    if (document.getElementById('contactTableBody')) {
+      renderStudentsTable(student);
+    }
 
-// Pending Requests page
-if (
-  document.getElementById('pendingRequestsTableBody') &&
-  !student.teacher_action
-) {
-  renderPendingRequestsTable(student);
-}
+    // Pending Requests page
+    if (document.getElementById('pendingRequestsTableBody') && !student.teacher_action) {
+      renderPendingRequestsTable(student);
+    }
   } catch (error) {
     console.error('Error fetching student data:', error);
   }
@@ -179,7 +167,7 @@ if (
 let filtered_student = [];
 
 export function filterStudent(searchTerm) {
-   const tbody = document.getElementById('contactTableBody');
+  const tbody = document.getElementById('contactTableBody');
 
   if (!tbody) return;
   if (!student_data.length) {
@@ -255,7 +243,7 @@ export async function handleStudentVerification(studentId, isVerified) {
     const studentRow = document.querySelector(`[data-student-id="${studentId}"]`)?.closest('tr');
 
     if (studentRow && studentIndex !== -1) {
-    const tbody = studentRow?.parentElement;
+      const tbody = studentRow?.parentElement;
       const newTr = document.createElement('tr');
       newTr.innerHTML = studentRow.innerHTML;
 
@@ -271,18 +259,18 @@ export async function handleStudentVerification(studentId, isVerified) {
         statusBadge.className = `badge ${statusClass}`;
       }
 
-     if (document.getElementById('pendingRequestsTableBody')) {
-  studentRow.remove();
-} else {
-  const buttonContainer = newTr.querySelector('.owner-info');
+      if (document.getElementById('pendingRequestsTableBody')) {
+        studentRow.remove();
+      } else {
+        const buttonContainer = newTr.querySelector('.owner-info');
 
-  if (buttonContainer) {
-    buttonContainer.innerHTML =
-      '<span style="color: #666; font-style: italic;">Action Completed</span>';
-  }
+        if (buttonContainer) {
+          buttonContainer.innerHTML =
+            '<span style="color: #666; font-style: italic;">Action Completed</span>';
+        }
 
-  tbody.replaceChild(newTr, studentRow);
-}
+        tbody.replaceChild(newTr, studentRow);
+      }
     }
 
     showNotification(`Student ${isVerified ? 'approved' : 'declined'} successfully!`, 'success');
@@ -293,7 +281,6 @@ export async function handleStudentVerification(studentId, isVerified) {
 }
 //INIT
 
-
 // Init
 document.addEventListener('DOMContentLoaded', function () {
   setupDarkMode();
@@ -302,13 +289,12 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 // Search
-const searchInput=document.getElementById('searchInput')
-if(searchInput){
-searchInput.addEventListener('input', (e) => {
-  filterStudent(e.target.value);
-  
-});
- // AUTO FOCUS SEARCH ON TYPING
+const searchInput = document.getElementById('searchInput');
+if (searchInput) {
+  searchInput.addEventListener('input', (e) => {
+    filterStudent(e.target.value);
+  });
+  // AUTO FOCUS SEARCH ON TYPING
   document.addEventListener('keydown', (e) => {
     const searchInput = document.getElementById('searchInput');
 
@@ -359,4 +345,3 @@ if (pendingTable) {
     }
   });
 }
-

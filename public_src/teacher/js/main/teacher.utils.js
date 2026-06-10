@@ -147,7 +147,6 @@ export function filterRequestsList(resourceRequests, searchTerm) {
   );
 }
 
-
 export function initTitleTippy(tr, request) {
   if (!request.purpose) return;
   const btn = tr.querySelector('.title-info-btn');

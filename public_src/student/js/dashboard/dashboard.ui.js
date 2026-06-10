@@ -1,6 +1,6 @@
 import { getStudentVerificationStatus, getStudentStatusClass } from '../student.util.js';
 import { formatDate } from '../../../common/utils/commons.utils.js';
-import {setActiveSidebar} from '../../../common/aside/aside.js'
+import { setActiveSidebar } from '../../../common/aside/aside.js';
 import { CountUp } from 'countup.js';
 
 export function showErrorMessage(message, containerId = 'student-profile') {
@@ -40,8 +40,8 @@ export function displayStudentDetails(student) {
 
   // Update student profile section
   const profileSection = document.getElementById('student-profile');
-  if(profileSection){
-    profileSection.innerHTML=`
+  if (profileSection) {
+    profileSection.innerHTML = `
     <div class='profile-card'>
      <div style='display:flex; justify-content: space-between; width:100%'>
        <div class='profile-header'>
@@ -65,7 +65,7 @@ export function displayStudentDetails(student) {
        <div class='profile-details-row'>
          <span><strong>Email:</strong>${student.email || 'N/A'}</span>
          <span><strong>Branch:</strong>${student.branch || 'N/A'}</span>
-         <span><strong>Institute Address:</strong>${student.instituteName}, ${student.instituteAddress}</span>
+         <span><strong>Institute Address:</strong>${student.instituteName ?? 'NA'}, ${student.instituteAddress ?? 'NA'}</span>
          <span><strong>Roll No.:</strong>${student.rollNo}</span>
          <span><strong>Joined:</strong>${student.createdAt.toLocaleString().split('T')[0]}</span>
        </div>
@@ -97,33 +97,28 @@ export function displayStudentDetails(student) {
 </div>
     </div>
 
-    `
+    `;
 
-    
-document.getElementById('resourceRequestsBtn')?.addEventListener('click', () => {
-  document.querySelector('.dashboard-page')?.classList.add('hide-default');
+    document.getElementById('resourceRequestsBtn')?.addEventListener('click', () => {
+      document.querySelector('.dashboard-page')?.classList.add('hide-default');
 
-  document.querySelector('.raise-request')?.classList.remove('hide-default');
+      document.querySelector('.raise-request')?.classList.remove('hide-default');
 
-  document
-  .querySelector('a[data-page="raise-request"]')
-  ?.click();
-});
+      document.querySelector('a[data-page="raise-request"]')?.click();
+    });
 
-document.getElementById('viewRequestsBtn')?.addEventListener('click', () => {
-  document.querySelector('.dashboard-page')?.classList.add('hide-default');
+    document.getElementById('viewRequestsBtn')?.addEventListener('click', () => {
+      document.querySelector('.dashboard-page')?.classList.add('hide-default');
 
-  document.querySelector('.view-request')?.classList.remove('hide-default');
+      document.querySelector('.view-request')?.classList.remove('hide-default');
 
-  document
-  .querySelector('a[data-page="view-request"]')
-  ?.click();
-});
+      document.querySelector('a[data-page="view-request"]')?.click();
+    });
   }
 
-  const stats=document.querySelector('.stats-outer')
-  if(stats){
-   stats.innerHTML= `
+  const stats = document.querySelector('.stats-outer');
+  if (stats) {
+    stats.innerHTML = `
     <div class="stat-card">
     <div class="accent-bar bar-blue"></div>
     <div class="card-top">
@@ -174,9 +169,9 @@ document.getElementById('viewRequestsBtn')?.addEventListener('click', () => {
 
 
 
-    `
+    `;
   }
-  
+
   if (!profileSection) {
     profileSection.innerHTML = `
    <div class="dashboard-hero">
@@ -286,40 +281,27 @@ document.getElementById('viewRequestsBtn')?.addEventListener('click', () => {
  
    `;
 
-   new CountUp(
-  'totalRequests',
-  student.dashboardStats?.totalRequests || 0
-).start();
+    new CountUp('totalRequests', student.dashboardStats?.totalRequests || 0).start();
 
-new CountUp(
-  'allottedRequests',
-  student.dashboardStats?.allottedRequests || 0
-).start();
+    new CountUp('allottedRequests', student.dashboardStats?.allottedRequests || 0).start();
 
-new CountUp(
-  'availableMachines',
-  student.dashboardStats?.availableMachines || 0
-).start();
+    new CountUp('availableMachines', student.dashboardStats?.availableMachines || 0).start();
 
-document.getElementById('resourceRequestsBtn')?.addEventListener('click', () => {
-  document.querySelector('.dashboard-page')?.classList.add('hide-default');
+    document.getElementById('resourceRequestsBtn')?.addEventListener('click', () => {
+      document.querySelector('.dashboard-page')?.classList.add('hide-default');
 
-  document.querySelector('.raise-request')?.classList.remove('hide-default');
+      document.querySelector('.raise-request')?.classList.remove('hide-default');
 
-  document
-  .querySelector('a[data-page="raise-request"]')
-  ?.click();
-});
+      document.querySelector('a[data-page="raise-request"]')?.click();
+    });
 
-document.getElementById('viewRequestsBtn')?.addEventListener('click', () => {
-  document.querySelector('.dashboard-page')?.classList.add('hide-default');
+    document.getElementById('viewRequestsBtn')?.addEventListener('click', () => {
+      document.querySelector('.dashboard-page')?.classList.add('hide-default');
 
-  document.querySelector('.view-request')?.classList.remove('hide-default');
+      document.querySelector('.view-request')?.classList.remove('hide-default');
 
-  document
-  .querySelector('a[data-page="view-request"]')
-  ?.click();
-});
+      document.querySelector('a[data-page="view-request"]')?.click();
+    });
   }
 }
 

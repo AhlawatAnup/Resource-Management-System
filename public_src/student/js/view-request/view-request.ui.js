@@ -96,7 +96,6 @@ export function filterRequests(status) {
       item.style.display = 'none';
     }
   });
-
 }
 
 export function updateRequestCounts(requests) {
@@ -105,32 +104,27 @@ export function updateRequestCounts(requests) {
     pending: 0,
     approved: 0,
     rejected: 0,
-    completed:0,
+    completed: 0,
   };
 
- requests.forEach((request) => {
-  const status = getRequestStatus(request);
+  requests.forEach((request) => {
+    const status = getRequestStatus(request);
 
-  if (status === 'pending') counts.pending++;
-  else if (status === 'approved') counts.approved++;
-  else if (status === 'rejected') counts.rejected++;
-  else if (status === 'completed') counts.completed++;
-});
+    if (status === 'pending') counts.pending++;
+    else if (status === 'approved') counts.approved++;
+    else if (status === 'rejected') counts.rejected++;
+    else if (status === 'completed') counts.completed++;
+  });
 
-  document.querySelector('.count-badge-resource.all').textContent =
-    counts.all;
+  document.querySelector('.count-badge-resource.all').textContent = counts.all;
 
-  document.querySelector('.count-badge-resource.pending').textContent =
-    counts.pending;
+  document.querySelector('.count-badge-resource.pending').textContent = counts.pending;
 
-  document.querySelector('.count-badge-resource.approved').textContent =
-    counts.approved;
+  document.querySelector('.count-badge-resource.approved').textContent = counts.approved;
 
-  document.querySelector('.count-badge-resource.rejected').textContent =
-    counts.rejected;
-  
-  document.querySelector('.count-badge-resource.completed').textContent =
-  counts.completed;
+  document.querySelector('.count-badge-resource.rejected').textContent = counts.rejected;
+
+  document.querySelector('.count-badge-resource.completed').textContent = counts.completed;
 }
 // ==============================
 // Card UI
@@ -186,18 +180,18 @@ function createRequestCard(request) {
   if (showTokenAndButtons) {
     tokenMessage = request.token ? `Token: ${request.token}` : 'Token not generated yet';
   } else {
-    if(statusText=='Approved'){
-     tokenMessage = 'Your request has been approved. Access will be available during the allotted time window.';
-    }else if(statusText=='Completed'){
-      tokenMessage= 'This resource allocation has ended. Usage session completed successfully.';
-    }else if(statusText=='Pending Teacher'){
-      tokenMessage=  'Teacher approval received. Awaiting final admin approval.';
-    }else if(statusText=='Rejected by Admin'){
-      tokenMessage='This request was not approved by the admin';
-    }else if(statusText=='Rejected by Teacher'){
-      tokenMessage= 'This request was not approved by the teacher.';
+    if (statusText == 'Approved') {
+      tokenMessage =
+        'Your request has been approved. Access will be available during the allotted time window.';
+    } else if (statusText == 'Completed') {
+      tokenMessage = 'This resource allocation has ended. Usage session completed successfully.';
+    } else if (statusText == 'Pending Teacher') {
+      tokenMessage = 'Teacher approval received. Awaiting final admin approval.';
+    } else if (statusText == 'Rejected by Admin') {
+      tokenMessage = 'This request was not approved by the admin';
+    } else if (statusText == 'Rejected by Teacher') {
+      tokenMessage = 'This request was not approved by the teacher.';
     }
-    
   }
 
   return `

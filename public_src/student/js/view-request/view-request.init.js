@@ -72,14 +72,14 @@ function attachReportHandlers() {
       if (!requestId) return;
 
       const request = allRequests.find((r) => r._id === requestId);
-      console.log(request)
+      console.log(request);
       if (!request) return;
 
       try {
         const reportRequest = {
           studentName: request.studentId.name || '',
           rollNo: request.studentId.rollNo || '',
-          migId:  request.machineId?.MIGID || '',
+          migId: request.machineId?.MIGID || '',
           startTime: request.startTime || request.allotmentStartTime,
           endTime: request.endTime || request.allotmentEndTime,
           duration: request.duration,

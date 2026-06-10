@@ -55,7 +55,7 @@ body {
 }
 
 .nav-item {
- display: flex;
+  display: flex;
   align-items: center;
   padding: 15px 20px;
   margin-bottom: 8px;
@@ -83,7 +83,7 @@ body {
   padding: 0;
   max-width: 100%;
   margin: 0;
-  overflow-y: auto
+  overflow-y: auto;
 }
 .main-wrapper {
   flex: 1;
@@ -103,15 +103,12 @@ body {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-
 .welcome-section h1 {
   font-size: 20px;
   font-weight: 600;
   color: #1f2937;
   margin: 0;
 }
-
-
 
 /* Responsive Design */
 @media (max-width: 768px) {

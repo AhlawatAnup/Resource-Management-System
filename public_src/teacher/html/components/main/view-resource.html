@@ -1,49 +1,55 @@
 <div class="main view-request hide-default">
-    <div class="header">
-          <h2 >View Resource Requests</h2>
-           <button id="theme-toggle" class="theme-toggle" title="Dark Mode">
-          <i id="theme-icon" class="fa fa-moon"></i>
-        </button>
-    </div>
-        
-        <div class="search-container">
-            <i class="fas fa-search search-icon"></i>
-            <input
-              type="text"
-              class="student-search"
-              placeholder="Search Requests"
-              id="searchInputResources"
-            />
-          </div>
+  <div class="header">
+    <h2>View Resource Requests</h2>
+    <button id="theme-toggle" class="theme-toggle" title="Dark Mode">
+      <i id="theme-icon" class="fa fa-moon"></i>
+    </button>
+  </div>
 
-            <div class="rms-table">
-          <table>
-            <thead>
-              <tr>
-                <th class="sortable" data-sort="student">Student</th>
-                <th class="sortable" data-sort="title">Request Title</th>
-                <th class="sortable" data-sort="migid">MIG ID</th>
-                <th class="sortable" data-sort="duration">Duration (days)</th>
-                <th class="sortable" data-sort="status">Status</th>
-                 <th class="sortable">Action</th>
-              </tr>
-            </thead>
-            <tbody id="requestsTableBody">
-              <tr>
-                <td colspan="7" class="loading">Loading resource requests...</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        
-         <!-- Purpose View Panel -->
-    <div id="purposePanel" class="purpose-panel">
-      <div class="purpose-panel-header">
-        <span class="purpose-panel-title">Request Purpose</span>
-        <button class="purpose-panel-close" onclick="closePurposePanel()">&times;</button>
-      </div>
-      <div class="purpose-panel-body">
-        <textarea id="purposeText" readonly></textarea>
-      </div>
+  <div class="rms-table">
+    <div class="search-container">
+      <svg viewBox="0 0 20 20" fill="currentColor">
+        <path
+          fill-rule="evenodd"
+          d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+          clip-rule="evenodd"
+        ></path>
+      </svg>
+      <input
+        type="text"
+        class="student-search"
+        placeholder="Search Requests by Name or Title"
+        id="searchInputResources"
+      />
     </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th class="sortable" data-sort="student">Student</th>
+          <th class="sortable" data-sort="title">Request Title</th>
+          <th class="sortable" data-sort="migid">MIG ID</th>
+          <th class="sortable" data-sort="duration">Duration (days)</th>
+          <th class="sortable" data-sort="status">Status</th>
+          <th class="sortable">Action</th>
+        </tr>
+      </thead>
+      <tbody id="requestsTableBody">
+        <tr>
+          <td colspan="7" class="loading">Loading resource requests...</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Purpose View Panel -->
+  <div id="purposePanel" class="purpose-panel">
+    <div class="purpose-panel-header">
+      <span class="purpose-panel-title">Request Purpose</span>
+      <button class="purpose-panel-close" onclick="closePurposePanel()">&times;</button>
+    </div>
+    <div class="purpose-panel-body">
+      <textarea id="purposeText" readonly></textarea>
+    </div>
+  </div>
 </div>

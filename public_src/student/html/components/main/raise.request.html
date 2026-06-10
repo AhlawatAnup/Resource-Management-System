@@ -23,10 +23,9 @@
   <div class="container">
     <!-- Resource Request Section -->
     <div id="request-content">
-
       <!-- Verified User Section -->
       <div id="verified-section" class="resources-page" style="display: none"></div>
-      <div id="unverified-section" class="resource-page" style="display: none;"></div>
+      <div id="unverified-section" class="resource-page" style="display: none"></div>
 
       <!-- MAIN FORM ON LEFT AND MACHINE ON RIGHT -->
       <div class="request-layout">
@@ -44,19 +43,22 @@
           <form id="resource-request-form">
             <div class="rms-input-box-v2">
               <input id="title" type="text" required placeholder=" " />
-              <label>Request Title</label>
+              <label>Project Title (Title of Your Project)</label>
             </div>
 
             <div class="rms-input-box-v2">
               <textarea id="purpose" required placeholder=" " rows="4"></textarea>
-              <label>Project Purpose</label>
+              <label
+                >Purpose of Use - How you will utilize the resources - At least 100 character
+                long</label
+              >
             </div>
 
             <input type="hidden" id="raise-selected-machine-id" name="machineId" value="" />
 
             <div class="rms-input-box-v2">
-              <input id="duration" type="number" min="1" max="15" required required />
-              <label>Project Duration</label>
+              <input id="duration" type="number" min="1" max="15" required placeholder=" " />
+              <label>Project Duration (In Number of Days)</label>
             </div>
 
             <div class="declaration-section">
@@ -112,15 +114,13 @@
         </div>
         <div class="machines-bar-section">
           <h3 class="machines-title">Select desired machine</h3>
-          <hr style="border: none; height: 1px; background: #cbd5e1;" />
+          <hr style="border: none; height: 1px; background: #cbd5e1" />
           <div id="raise-machines-flexbar">
             <span class="machine-bar-loading">Loading machines...</span>
           </div>
         </div>
       </div>
     </div>
-
-  
   </div>
   <!-- </div> -->
 </div>

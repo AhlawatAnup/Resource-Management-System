@@ -4,7 +4,7 @@ import {
   formatDate,
   createViewMoreButton,
 } from '../../../../common/utils/commons.utils.js';
-import { getRequestStatus, getActionButtons,initTitleTippy } from '../teacher.utils.js';
+import { getRequestStatus, getActionButtons, initTitleTippy } from '../teacher.utils.js';
 import Swal from 'sweetalert2';
 
 // Render resource requests in table

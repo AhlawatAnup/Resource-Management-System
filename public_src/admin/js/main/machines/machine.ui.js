@@ -102,7 +102,7 @@ export function renderTable(wrapper, machines, handlers) {
     deleteBtn.style.borderRadius = '8px';
     deleteBtn.style.border = 'none';
     deleteBtn.style.cursor = 'pointer';
-  
+
     deleteBtn.title = 'Deleting this machine is irreversible. All related data will be lost!';
     actionTd.appendChild(deleteBtn);
     let actionBtn;
@@ -119,7 +119,6 @@ export function renderTable(wrapper, machines, handlers) {
       actionBtn.style.borderRadius = '8px';
       actionBtn.style.border = 'none';
       actionBtn.style.cursor = 'pointer';
-   
 
       actionBtn.title =
         'Disabling this machine will prevent users from using it until it is re-enabled. New allotments cannot be made while disabled.';

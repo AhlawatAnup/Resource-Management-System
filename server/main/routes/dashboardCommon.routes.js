@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const { requireAuth } = require('../middleware/authMiddleware');
 
-
 const {
   getAllMachines,
   getMachineWiseActiveAllotments,
@@ -12,5 +11,5 @@ const { getStatsByResReqId } = require('../controllers/reportGeneration.controll
 router.use(requireAuth);
 router.get('/get_machines', getAllMachines);
 router.get('/allotments/:machineId', getMachineWiseActiveAllotments);
-router.get('/getStatsByResReqId/:resourceRequestId',getStatsByResReqId)
+router.get('/getStatsByResReqId/:resourceRequestId', getStatsByResReqId);
 module.exports = router;

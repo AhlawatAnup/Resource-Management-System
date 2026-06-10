@@ -1,7 +1,5 @@
-
-
 /* Search Functionalities */
-.search-container {
+/* .search-container {
     position: relative;
     max-width: 650px;
     margin: 8px auto;
@@ -41,22 +39,22 @@
 
 .search-container:focus-within .search-icon {
     color: #2563eb;
-}
+} */
 
 .student-search {
-    flex: 1;
+  flex: 1;
 
-    border: none;
-    outline: none;
+  border: none;
+  outline: none;
 
-    background: transparent;
+  background: transparent;
 
-    padding: 16px 14px;
+  padding: 16px 14px;
 
-    font-size: 15px;
-    color: #1e293b;
+  font-size: 15px;
+  color: #1e293b;
 }
 
 .student-search::placeholder {
-    color: #94a3b8;
+  color: #94a3b8;
 }

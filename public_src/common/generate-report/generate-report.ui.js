@@ -1,4 +1,4 @@
-import { formatDate } from "../utils/commons.utils.js";
+import { formatDate } from '../utils/commons.utils.js';
 import Chart from 'chart.js/auto';
 import 'chartjs-adapter-date-fns';
 

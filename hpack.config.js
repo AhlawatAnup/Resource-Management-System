@@ -8,7 +8,7 @@ module.exports = {
     // inspection: "./public_src/control_system/html/inspection.control.html",
     admin: './public_src/admin/html/admin.html',
     student: './public_src/student/html/student.html',
-    teacher:'./public_src/teacher/html/teacher.html'
+    teacher: './public_src/teacher/html/teacher.html',
   },
 
   output: {

@@ -9,9 +9,9 @@ import Swal from 'sweetalert2';
 
 // Render teacher profile
 export function renderTeacherProfile(teacherData) {
-  const teachername=document.getElementById('teacher-name');
-  if(!teachername) return;
-  teachername.innerHTML=`Hello, ${teacherData.name} | Teacher `
+  const teachername = document.getElementById('teacher-name');
+  if (!teachername) return;
+  teachername.innerHTML = `Hello, ${teacherData.name} | Teacher `;
   const profileSection = document.getElementById('teacher-profile-section');
   if (!profileSection) return;
 
@@ -88,9 +88,9 @@ export function renderPendingRequestsTable(student) {
 
   const tbody = document.getElementById('pendingRequestsTableBody');
   if (!tbody) return;
-    const tr = document.createElement('tr');
-    const verificationStatus = getStudentVerificationStatusForTeacher(student);
-    const statusClass = getStudentStatusClassForTeacher(student);
+  const tr = document.createElement('tr');
+  const verificationStatus = getStudentVerificationStatusForTeacher(student);
+  const statusClass = getStudentStatusClassForTeacher(student);
   // same table row creation code as renderStudentsTable
   tr.innerHTML = `
     <td>

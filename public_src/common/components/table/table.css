@@ -45,6 +45,7 @@
       font-size: 14px;
       background: white;
       transition: border-color 0.3s ease;
+      font-family: 'Rubik';
 
       &:focus {
         outline: none;
@@ -121,8 +122,8 @@
     }
 
     .request-date {
-    color: #6b7280;
-    font-size: 11px;
+      color: #6b7280;
+      font-size: 11px;
     }
 
     .contact-info {

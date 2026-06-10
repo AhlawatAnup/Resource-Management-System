@@ -53,7 +53,6 @@ export function createAllotmentsHandler(machineService) {
     async loadMachineSchedule(machine) {
       PageUI.updateView(machine.MIGID);
 
-
       try {
         const data = await machineService.getAllotments(machine._id);
         const disabledDates = AllotmentsUtils.formatAllotments(data.allotments);

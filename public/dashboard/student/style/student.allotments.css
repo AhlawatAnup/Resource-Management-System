@@ -28,7 +28,6 @@
   flex: 0 0 300px;
 }
 
-
 .allotments-main-panel {
   flex: 1;
   min-width: 0;
@@ -78,8 +77,8 @@
 }
 
 .machine-item-card.selected {
-    background: rgba(59, 130, 246, 0.05);
-    border-left: 3px solid #2563eb;
+  background: rgba(59, 130, 246, 0.05);
+  border-left: 3px solid #2563eb;
 }
 #selected-machine-name {
   margin-top: 0;

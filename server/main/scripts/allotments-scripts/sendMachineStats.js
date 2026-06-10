@@ -2,13 +2,9 @@
 
 const mongoose = require('mongoose');
 
-const {
-  getMachineStatModel,
-} = require('../../database/machineStatsModel.js');
+const { getMachineStatModel } = require('../../database/machineStatsModel.js');
 
-const statsConnection = mongoose.createConnection(
-  'mongodb://127.0.0.1:27017/machine_monitoring'
-);
+const statsConnection = mongoose.createConnection('mongodb://127.0.0.1:27017/machine_monitoring');
 
 async function seedMachineStats() {
   try {
@@ -37,7 +33,7 @@ async function seedMachineStats() {
 
         // ===== DAY 1 =====
         if (dayIndex === 0) {
-          cpu = 18 + Math.floor(Math.random() * 5);   // ~20%
+          cpu = 18 + Math.floor(Math.random() * 5); // ~20%
           mem = 245 + Math.floor(Math.random() * 10); // ~250%
           gpu = 295 + Math.floor(Math.random() * 10); // ~300%
         }
@@ -46,7 +42,7 @@ async function seedMachineStats() {
         else if (dayIndex === 7) {
           cpu = 195 + Math.floor(Math.random() * 10); // ~200%
           mem = 115 + Math.floor(Math.random() * 10); // ~120%
-          gpu = 28 + Math.floor(Math.random() * 5);   // ~30%
+          gpu = 28 + Math.floor(Math.random() * 5); // ~30%
         }
 
         // ===== OTHER DAYS =====
@@ -62,9 +58,7 @@ async function seedMachineStats() {
         }
 
         data.push({
-          timestamp: new Date(
-            startTime.getTime() + i * 10000
-          ),
+          timestamp: new Date(startTime.getTime() + i * 10000),
 
           metadata: {
             MIGID: 'MIG-1232131232132132132312312431',

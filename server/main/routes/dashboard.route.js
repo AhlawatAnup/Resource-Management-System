@@ -24,7 +24,7 @@ router.get('/current-user-id', requireAuth, getCurrentUserId);
 router.use('/teacher', isTeacher, teacherRoutes);
 router.use('/student', isStudent, studentRoutes);
 router.use('/admin', isAdmin, adminRoutes);
-router.use('/', dashboardCommonRoutes);  //common routes
+router.use('/', dashboardCommonRoutes); //common routes
 
 // router.post("/register", register);
 

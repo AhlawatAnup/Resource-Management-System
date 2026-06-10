@@ -5,10 +5,8 @@ import {
   initTitleTippy,
 } from './resource-request.utils.js';
 
-
 //Render table
 export function renderResourceRequests(requests, deps) {
-  
   const { getRequestStatus, getActionButtons, getInitials, getRandomNamedColor, formatDate } = deps;
 
   const tbody = document.getElementById('requestsTableBody');

@@ -77,7 +77,6 @@ export async function loadStudentDetails() {
   }
 }
 
-
 //INIT
 
 document.addEventListener('DOMContentLoaded', () => {

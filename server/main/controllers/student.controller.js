@@ -270,10 +270,11 @@ exports.getStudentResourceRequests = async (req, res) => {
         path: 'machineId',
         select: 'MIGID gpuRam',
         options: { includeUnavailable: true },
-      }).populate({
-        path:'studentId',
-        select:'name rollNo',
-         options: { includeUnavailable: true },
+      })
+      .populate({
+        path: 'studentId',
+        select: 'name rollNo',
+        options: { includeUnavailable: true },
       })
       .sort({ createdAt: -1 })
       .limit(50); // Limit to last 50 requests to avoid performance issues

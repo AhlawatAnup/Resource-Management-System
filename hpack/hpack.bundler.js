@@ -1,9 +1,9 @@
-const cheerio = require("cheerio");
-const fs = require("fs");
-const path = require("path");
-const chokidar = require("chokidar");
-const { minify } = require("html-minifier-terser");
-const { entries, output } = require("../hpack.config");
+const cheerio = require('cheerio');
+const fs = require('fs');
+const path = require('path');
+const chokidar = require('chokidar');
+const { minify } = require('html-minifier-terser');
+const { entries, output } = require('../hpack.config');
 
 class HTMLBundler {
   constructor() {
@@ -12,18 +12,18 @@ class HTMLBundler {
 
     this.watcher = chokidar.watch([], {
       ignoreInitial: true,
-      persistent: true
+      persistent: true,
     });
 
-    this.watcher.on("change", filePath => {
-      console.log("File changed:", filePath);
+    this.watcher.on('change', (filePath) => {
+      console.log('File changed:', filePath);
       this.rebuildAffected(filePath);
     });
   }
 
   async build(entryName, entryFile) {
     try {
-      const html = fs.readFileSync(entryFile, "utf8");
+      const html = fs.readFileSync(entryFile, 'utf8');
       const $ = cheerio.load(html);
 
       const dependencies = new Set();
@@ -36,10 +36,10 @@ class HTMLBundler {
         collapseWhitespace: true,
         removeComments: true,
         minifyCSS: true,
-        minifyJS: true
+        minifyJS: true,
       });
 
-      const outputDir = path.join(output.path, entryName + ".pack");
+      const outputDir = path.join(output.path, entryName + '.pack');
 
       if (!fs.existsSync(outputDir)) {
         fs.mkdirSync(outputDir, { recursive: true });
@@ -47,35 +47,35 @@ class HTMLBundler {
 
       const outputFile = path.join(outputDir, path.basename(entryFile));
 
-      fs.writeFileSync(outputFile, minifiedHTML, "utf8");
+      fs.writeFileSync(outputFile, minifiedHTML, 'utf8');
 
-      console.log("Bundled:", entryName);
+      console.log('Bundled:', entryName);
 
       this.updateDependencyGraph(entryName, entryFile, dependencies);
 
       // WATCH ALL DEPENDENCIES
       this.addWatchFiles([entryFile, ...dependencies]);
     } catch (err) {
-      console.error("Build Error:", err);
+      console.error('Build Error:', err);
     }
   }
 
   processIncludeTags($, referenceFile, dependencies) {
-    $("include").each((index, element) => {
-      const src = $(element).attr("src");
+    $('include').each((index, element) => {
+      const src = $(element).attr('src');
 
       if (!src) return;
 
       const componentPath = path.join(path.dirname(referenceFile), src);
 
       if (!fs.existsSync(componentPath)) {
-        console.error("Component not found:", componentPath);
+        console.error('Component not found:', componentPath);
         return;
       }
 
       dependencies.add(componentPath);
 
-      const content = fs.readFileSync(componentPath, "utf8");
+      const content = fs.readFileSync(componentPath, 'utf8');
 
       const component$ = cheerio.load(content);
 
@@ -86,10 +86,10 @@ class HTMLBundler {
   }
 
   removeComments($) {
-    $("*")
+    $('*')
       .contents()
-      .each(function() {
-        if (this.type === "comment") {
+      .each(function () {
+        if (this.type === 'comment') {
           $(this).remove();
         }
       });
@@ -100,7 +100,7 @@ class HTMLBundler {
 
     this.entryDependencies.set(entryName, dependencies);
 
-    dependencies.forEach(file => {
+    dependencies.forEach((file) => {
       if (!this.fileToEntries.has(file)) {
         this.fileToEntries.set(file, new Set());
       }
@@ -110,7 +110,7 @@ class HTMLBundler {
   }
 
   addWatchFiles(files) {
-    files.forEach(file => {
+    files.forEach((file) => {
       this.watcher.add(file);
     });
   }
@@ -123,7 +123,7 @@ class HTMLBundler {
     for (const entryName of affectedEntries) {
       const entryFile = entries[entryName];
 
-      console.log("Rebuilding:", entryName);
+      console.log('Rebuilding:', entryName);
 
       await this.build(entryName, entryFile);
     }

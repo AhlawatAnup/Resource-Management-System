@@ -62,21 +62,22 @@ exports.student_data = async (req, res) => {
 
     const totalRequests = student.resourceRequests.length;
     const allottedRequests = await ResourceRequest.countDocuments({
-       studentId: student._id,
-       is_verified: true,
-      });
+      studentId: student._id,
+      is_verified: true,
+    });
     const availableMachines = await Machine.countDocuments({
       isAvailable: true,
       isDeleted: false,
-     });
+    });
     // console.log(student);
-    return res.json({ ...student._doc,
-       dashboardStats: {
-    totalRequests,
-    allottedRequests,
-    availableMachines,
-  },
-     });
+    return res.json({
+      ...student._doc,
+      dashboardStats: {
+        totalRequests,
+        allottedRequests,
+        availableMachines,
+      },
+    });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: 'Failed to fetch student' });
