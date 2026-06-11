@@ -1,0 +1,128 @@
+<div class="main raise-request hide-default">
+  <!-- Banner for verified/unverified -->
+  <div id="verification-banner" class="verification-banner" style="display: none">
+    <div class="verification-banner-content">
+      <i id="banner-icon"></i>
+      <span id="banner-text"></span>
+    </div>
+
+    <button id="close-verification-banner">
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
+  <!-- Header -->
+  <div class="header">
+    <h2 id="page-title">Raise New Request</h2>
+    <button id="theme-toggle" class="theme-toggle" title="Dark Mode">
+      <i id="theme-icon" class="fa fa-moon"></i>
+    </button>
+  </div>
+
+  <!-- Main Content -->
+
+  <div class="container">
+    <!-- Resource Request Section -->
+    <div id="request-content">
+      <!-- Verified User Section -->
+      <div id="verified-section" class="resources-page" style="display: none"></div>
+      <div id="unverified-section" class="resource-page" style="display: none"></div>
+
+      <!-- MAIN FORM ON LEFT AND MACHINE ON RIGHT -->
+      <div class="request-layout">
+        <!-- LEFT -->
+        <div class="request-form-panel">
+          <div class="info-box tip" style="margin-bottom: 4px">
+            <p class="tip-content" style="margin: 0">
+              <i class="fas fa-info-circle"></i>
+              <strong>Note:</strong> Only one pending request is allowed at a time. Please wait for
+              your current request to be processed before submitting a new one or delete the request
+              if there are no actions taken by teacher/admin.
+            </p>
+          </div>
+
+          <form id="resource-request-form">
+            <div class="rms-input-box-v2">
+              <input id="title" type="text" required placeholder=" " />
+              <label>Project Title (Title of Your Project)</label>
+            </div>
+
+            <div class="rms-input-box-v2">
+              <textarea id="purpose" required placeholder=" " rows="4"></textarea>
+              <label
+                >Purpose of Use - How you will utilize the resources - At least 100 character
+                long</label
+              ><span>0/100</span>
+            </div>
+
+            <input type="hidden" id="raise-selected-machine-id" name="machineId" value="" />
+
+            <div class="rms-input-box-v2">
+              <input id="duration" type="number" min="1" max="15" required placeholder=" " />
+              <label>Project Duration : in Number of Days (Maximum 15 Days))</label>
+            </div>
+
+            <div class="declaration-section">
+              <h4 style="font-size: 18px; font-weight: 400">Important User Declarations</h4>
+
+              <div class="declaration-item">
+                <label>
+                  <input type="checkbox" name="declaration" required />
+                  <span>
+                    I will use the AI Data Centre facilities responsibly and strictly for approved
+                    academic and research purposes only.
+                  </span>
+                </label>
+              </div>
+
+              <div class="declaration-item">
+                <label>
+                  <input type="checkbox" name="declaration" required />
+                  <span>
+                    I will properly acknowledge the AI Data Centre, Design Innovation Centre (DIC),
+                    and all associated funding agencies in any publication, presentation, thesis,
+                    report, or IPR arising from the use of these resources.
+                  </span>
+                </label>
+              </div>
+
+              <div class="declaration-item">
+                <label>
+                  <input type="checkbox" name="declaration" required />
+                  <span>
+                    I am responsible for the security of my data and will not store or process any
+                    unauthorized, sensitive, or classified information on the facility’s systems.
+                  </span>
+                </label>
+              </div>
+
+              <div class="declaration-item">
+                <label>
+                  <input type="checkbox" name="declaration" required />
+                  <span>
+                    I agree to comply with all operational policies and accept responsibility for
+                    any damage caused due to negligence or misuse.
+                  </span>
+                </label>
+              </div>
+            </div>
+            <div style="display: flex; flex: 1"></div>
+            <button id="submit-request-btn" type="submit" class="btn-primary">
+              <i class="fas fa-paper-plane"></i>
+              Submit Resource Request
+            </button>
+          </form>
+        </div>
+        <div class="machines-bar-section">
+          <h3 class="machines-title" style="border-bottom: 1px solid rgb(229, 231, 235)">
+            Select desired machine
+          </h3>
+
+          <div id="raise-machines-flexbar">
+            <span class="machine-bar-loading">Loading machines...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- </div> -->
+</div>

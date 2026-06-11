@@ -97,10 +97,10 @@ router.post('/create-machine', isAdmin, createMachine);
 router.put('/machines/:id', isAdmin, updateMachineAvailability);
 router.delete('/machines/:id', isAdmin, deleteMachine);
 
-router.get('/get_machines', isAdmin, getAllMachines); //for allotments
-router.get('/allotments/:machineId', isAdmin, getMachineWiseActiveAllotments);
+//router.get('/get_machines', isAdmin, getAllMachines); //for allotments
+//router.get('/allotments/:machineId', isAdmin, getMachineWiseActiveAllotments);
 
 //report generation
-router.get('/getStatsByResReqId/:resourceRequestId', getStatsByResReqId);
+//router.get('/getStatsByResReqId/:resourceRequestId', getStatsByResReqId);
 
 module.exports = router;

@@ -1,12 +1,10 @@
+// For generating new dates data just change date and change mig id to the one for which you want chart
+
 const mongoose = require('mongoose');
 
-const {
-  getMachineStatModel,
-} = require('../../database/machineStatsModel.js');
+const { getMachineStatModel } = require('../../database/machineStatsModel.js');
 
-const statsConnection = mongoose.createConnection(
-  'mongodb://127.0.0.1:27017/machine_monitoring'
-);
+const statsConnection = mongoose.createConnection('mongodb://127.0.0.1:27017/machine_monitoring');
 
 async function seedMachineStats() {
   try {
@@ -19,16 +17,12 @@ async function seedMachineStats() {
     const data = [];
 
     const dates = [
-      '2026-05-05T09:00:00',
-      '2026-05-06T09:00:00',
-      '2026-05-07T09:00:00',
-      '2026-05-08T09:00:00',
-      '2026-05-09T09:00:00',
-      '2026-05-10T09:00:00',
-      '2026-05-11T09:00:00',
-      '2026-05-12T09:00:00',
-      '2026-05-13T09:00:00',
-      '2026-05-14T09:00:00',
+      '2026-06-04T09:00:00',
+      '2026-06-05T09:00:00',
+      '2026-06-06T09:00:00',
+      '2026-06-07T09:00:00',
+      '2026-06-08T09:00:00',
+      '2026-06-09T09:00:00',
     ];
 
     for (let dayIndex = 0; dayIndex < dates.length; dayIndex++) {
@@ -39,7 +33,7 @@ async function seedMachineStats() {
 
         // ===== DAY 1 =====
         if (dayIndex === 0) {
-          cpu = 18 + Math.floor(Math.random() * 5);   // ~20%
+          cpu = 18 + Math.floor(Math.random() * 5); // ~20%
           mem = 245 + Math.floor(Math.random() * 10); // ~250%
           gpu = 295 + Math.floor(Math.random() * 10); // ~300%
         }
@@ -48,7 +42,7 @@ async function seedMachineStats() {
         else if (dayIndex === 7) {
           cpu = 195 + Math.floor(Math.random() * 10); // ~200%
           mem = 115 + Math.floor(Math.random() * 10); // ~120%
-          gpu = 28 + Math.floor(Math.random() * 5);   // ~30%
+          gpu = 28 + Math.floor(Math.random() * 5); // ~30%
         }
 
         // ===== OTHER DAYS =====
@@ -64,12 +58,10 @@ async function seedMachineStats() {
         }
 
         data.push({
-          timestamp: new Date(
-            startTime.getTime() + i * 10000
-          ),
+          timestamp: new Date(startTime.getTime() + i * 10000),
 
           metadata: {
-            MIGID: 'MIG-001',
+            MIGID: 'MIG-1232131232132132132312312431',
           },
 
           cpuPerc: Number((cpu / 100).toFixed(2)),

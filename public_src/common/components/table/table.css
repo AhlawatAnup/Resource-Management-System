@@ -1,0 +1,197 @@
+/* 
+
+----SEARCH BAR----
+---=TABLE --------
+
+  HOW TO CALL 
+
+  <div class="rms-table">
+    <div class="search-container">   </div>
+    <table>    </table>
+  </div>
+
+*/
+
+.rms-table {
+  flex: 1;
+  padding: 0;
+  max-width: 100%;
+  margin: 0;
+  overflow-y: auto;
+
+  .search-container {
+    position: relative;
+    width: 500px;
+    margin: 10px auto;
+    display: flex;
+    align-items: center;
+
+    svg {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 20px;
+      height: 20px;
+      color: #94a3b8;
+      z-index: 1;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 15px 12px 45px;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      font-size: 14px;
+      background: white;
+      transition: border-color 0.3s ease;
+      font-family: 'Rubik';
+
+      &:focus {
+        outline: none;
+        border-color: #60a5fa;
+        box-shadow:
+          0 0 0 3px rgba(96, 165, 250, 0.15),
+          0 4px 12px rgba(59, 130, 246, 0.12);
+      }
+    }
+  }
+
+  /* TABLE HERE ALL TABLES */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+
+    thead {
+      background: #f8fafc;
+    }
+
+    thead th {
+      padding: 10px 12px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #64748b;
+      border-bottom: 1px solid #e2e8f0;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+
+      &:hover {
+        background-color: #f1f5f9;
+      }
+
+      &.sortable::after {
+        content: '↕';
+        position: absolute;
+        right: 8px;
+        color: #cbd5e1;
+        font-size: 10px;
+      }
+    }
+
+    tbody tr {
+      border-bottom: 1px solid #dbe4f0;
+      transition: background-color 0.2s ease;
+      background: white;
+
+      &:hover {
+        background-color: #f8fafc;
+      }
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+
+    tbody td {
+      padding: 12px 12px;
+      vertical-align: middle;
+      font-size: 13px;
+    }
+
+    /* EXTRA CLASSES  */
+    /* Contact Info Styles */
+    .contact-time {
+      color: #6b7280;
+      font-size: 11px;
+    }
+
+    .request-date {
+      color: #6b7280;
+      font-size: 11px;
+    }
+
+    .contact-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      font-size: 13px;
+
+      &.blue {
+        background: #3b82f6;
+      }
+      &.green {
+        background: #10b981;
+      }
+      &.purple {
+        background: #8b5cf6;
+      }
+      &.pink {
+        background: #ec4899;
+      }
+      &.orange {
+        background: #f59e0b;
+      }
+      &.red {
+        background: #ef4444;
+      }
+    }
+  }
+  .admin-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    button {
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 500;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+      outline: none;
+
+      &:active {
+        transform: scale(0.97);
+      }
+    }
+
+    .action-completed {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #94a3b8;
+      background-color: #f8fafc;
+      padding: 4px 10px;
+      border-radius: 4px;
+      border: 1px solid #e2e8f0;
+    }
+  }
+}

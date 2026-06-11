@@ -172,36 +172,36 @@ exports.submitResourceRequest = async (req, res) => {
       await addResourceRequestToStudent(studentId, savedRequest._id);
 
       // Notify teacher about student's resource request
-      try {
-        const teacher = await Teacher.findById(student.teacher);
-        if (teacher) {
-          sendTeacherStudentResourceRequestEmail(
-            teacher.email,
-            teacher.name,
-            student.name,
-            savedRequest.title,
-            {
-              name: student.name,
-              rollNo: student.rollNo,
-              branch: student.branch,
-              instituteName: student.instituteName,
-              instituteAddress: student.instituteAddress,
-            },
-            savedRequest.purpose,
-          );
-          // console.log(`Teacher notification email sent to ${teacher.email}`);
-        }
-      } catch (emailErr) {
-        console.error('Error sending teacher notification email:', emailErr);
-      }
+      // try {
+      //   const teacher = await Teacher.findById(student.teacher);
+      //   if (teacher) {
+      //     sendTeacherStudentResourceRequestEmail(
+      //       teacher.email,
+      //       teacher.name,
+      //       student.name,
+      //       savedRequest.title,
+      //       {
+      //         name: student.name,
+      //         rollNo: student.rollNo,
+      //         branch: student.branch,
+      //         instituteName: student.instituteName,
+      //         instituteAddress: student.instituteAddress,
+      //       },
+      //       savedRequest.purpose,
+      //     );
+      //     // console.log(`Teacher notification email sent to ${teacher.email}`);
+      //   }
+      // } catch (emailErr) {
+      //   console.error('Error sending teacher notification email:', emailErr);
+      // }
 
       // --- Web Push Notification to Teacher ---
-      notifyTeacher(student.teacher, {
-        title: 'New Resource Request',
-        body: `A new resource request was submitted by a student.`,
-      }).catch((pushErr) => {
-        console.error('[WebPush] Error in teacher notification block:', pushErr);
-      });
+      // notifyTeacher(student.teacher, {
+      //   title: 'New Resource Request',
+      //   body: `A new resource request was submitted by a student.`,
+      // }).catch((pushErr) => {
+      //   console.error('[WebPush] Error in teacher notification block:', pushErr);
+      // });
 
       // --- Web Push Notification to Admin ---
       // notifyAdmin({
@@ -269,6 +269,11 @@ exports.getStudentResourceRequests = async (req, res) => {
       .populate({
         path: 'machineId',
         select: 'MIGID gpuRam',
+        options: { includeUnavailable: true },
+      })
+      .populate({
+        path: 'studentId',
+        select: 'name rollNo',
         options: { includeUnavailable: true },
       })
       .sort({ createdAt: -1 })

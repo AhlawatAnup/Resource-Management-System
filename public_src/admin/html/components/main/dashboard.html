@@ -1,0 +1,74 @@
+<div class="main dashboard">
+  <!-- HEADER -->
+  <div class="header">
+    <h2>User Management</h2>
+
+    <!-- Part A: User Type Selection -->
+    <div class="nav-section">
+      <button class="active" data-type="teacher">
+        <i class="fas fa-chalkboard-teacher"></i>
+        Teacher
+      </button>
+      <button data-type="student">
+        <i class="fas fa-graduation-cap"></i>
+        Student
+      </button>
+    </div>
+
+    <!-- Part B: Status Filter -->
+    <div class="nav-section">
+      <button class="status-btn active" data-status="2">
+        <i class="fas fa-users"></i>
+        All
+        <span class="count-badge all"></span>
+      </button>
+      <button class="status-btn" data-status="1">
+        <i class="fas fa-user-check"></i>
+        Verified
+        <span class="count-badge verified"></span>
+      </button>
+      <button class="status-btn" data-status="0">
+        <i class="fas fa-user-clock"></i>
+        Unverified
+        <span class="count-badge unverified"></span>
+      </button>
+
+      <button class="status-btn" data-status="3">
+        <i class="fas fa-user-times"></i>
+        Rejected
+        <span class="count-badge rejected"></span>
+      </button>
+    </div>
+    <div class="nav-actions">
+      <button id="theme-toggle" class="theme-toggle" title="Dark Mode">
+        <i id="theme-icon" class="fa fa-moon"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- TABLE -->
+
+  <div class="rms-table">
+    <!-- SEARCH -->
+    <div class="search-container">
+      <svg viewBox="0 0 20 20" fill="currentColor">
+        <path
+          fill-rule="evenodd"
+          d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+          clip-rule="evenodd"
+        />
+      </svg>
+      <input type="text" placeholder="Search users..." id="searchInput" />
+    </div>
+
+    <!-- TABLE -->
+    <table>
+      <thead>
+        <tr id="table-headers"></tr>
+      </thead>
+      <tbody id="dashboard-tbody"></tbody>
+    </table>
+  </div>
+
+  <!-- ===================== -->
+</div>

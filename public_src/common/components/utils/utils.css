@@ -1,0 +1,30 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  /* CHANGE FONT SIZE TO PERCENTAGE LATERON */
+  font-size: 10px;
+  font-family: 'Rubrik';
+}
+
+body {
+  font-family: 'Rubik', sans-serif;
+  background: #f8f9fa;
+  margin: 0;
+  display: flex;
+}
+
+.hide-default {
+  display: none !important;
+}
+
+/* DEFAULT HIDE CLASS */
+.swal2-popup {
+  font-size: 16px !important;
+}

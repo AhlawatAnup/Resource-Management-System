@@ -32,8 +32,8 @@ const resourceRequestSchema = new mongoose.Schema({
   },
 
   // Status tracking
-  teacher_action: { type: Boolean, default: false },
-  teacher_verified: { type: Boolean, default: false },
+  teacher_action: { type: Boolean, default: true },
+  teacher_verified: { type: Boolean, default: true },
   admin_action: { type: Boolean, default: false },
   admin_verified: { type: Boolean, default: false },
   is_verified: { type: Boolean, default: false },

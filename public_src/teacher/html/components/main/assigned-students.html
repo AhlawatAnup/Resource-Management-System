@@ -1,0 +1,55 @@
+<div class="main assigned-students hide-default">
+  <div class="header">
+    <h2>Assigned Students</h2>
+    <button id="theme-toggle" class="theme-toggle" title="Dark Mode">
+      <i id="theme-icon" class="fa fa-moon"></i>
+    </button>
+  </div>
+
+  <div class="container">
+    <!-- <div class="search-container">
+      <i class="fas fa-search search-icon"></i>
+
+      <input
+        id="searchInput"
+        type="text"
+        placeholder="Search students by name, email, phone..."
+        class="student-search"
+      />
+    </div> -->
+
+    <div class="rms-table">
+      <!-- SEARCH -->
+      <div class="search-container">
+        <svg viewBox="0 0 20 20" fill="currentColor">
+          <path
+            fill-rule="evenodd"
+            d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+            clip-rule="evenodd"
+          />
+        </svg>
+        <input
+          type="text"
+          placeholder="Search students by name, email, phone..."
+          id="searchInput"
+        />
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th class="sortable" data-sort="name">Student Name</th>
+            <th class="sortable" data-sort="contact">Contact</th>
+            <th class="sortable" data-sort="institute">Institute</th>
+            <th class="sortable" data-sort="status">Approval Status</th>
+            <th class="sortable" data-sort="branch">Branch</th>
+            <th class="sortable">Action</th>
+          </tr>
+        </thead>
+        <tbody id="contactTableBody">
+          <!-- Table rows will be populated by JavaScript -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
