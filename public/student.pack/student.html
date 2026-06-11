@@ -3,14 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Admin Dashboard</title>
+    <title>Student Dashboard</title>
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
       rel="stylesheet"
     />
     <script src="https://kit.fontawesome.com/e05e3e1522.js" crossorigin="anonymous"></script>
     <base href="/" />
-    <link rel="stylesheet" href="./packs/student.pack.css" />
+    <link rel="stylesheet" href="./packs/student.packs.css" />
   </head>
   <body>
     <div class="rms-container">
@@ -138,8 +138,9 @@
                   </form>
                 </div>
                 <div class="machines-bar-section">
-                  <h3 class="machines-title">Select desired machine</h3>
-                  <hr style="border: none; height: 1px; background: #cbd5e1" />
+                  <h3 class="machines-title" style="border-bottom: 1px solid #e5e7eb">
+                    Select desired machine
+                  </h3>
                   <div id="raise-machines-flexbar">
                     <span class="machine-bar-loading">Loading machines...</span>
                   </div>
@@ -158,19 +159,19 @@
                   >0</span
                 >
               </button>
-              <button class="status-btn-resources" data-status="pending">
-                <i class="fas fa-play-circle"></i> Pending
-                <span
-                  class="count-badge-resource pending"
-                  style="background: #fef3c7; color: #92400e"
-                  >0</span
-                >
-              </button>
               <button class="status-btn-resources" data-status="approved">
                 <i class="fas fa-clock"></i> Approved
                 <span
                   class="count-badge-resource approved"
                   style="background: #dbeafe; color: #1d4ed8"
+                  >0</span
+                >
+              </button>
+              <button class="status-btn-resources" data-status="pending">
+                <i class="fas fa-play-circle"></i> Pending
+                <span
+                  class="count-badge-resource pending"
+                  style="background: #fef3c7; color: #92400e"
                   >0</span
                 >
               </button>

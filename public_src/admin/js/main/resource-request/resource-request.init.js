@@ -160,11 +160,11 @@ function getUIStatus(r) {
       if (now > end) return 'expired'; // finished
     }
 
-    //Fallback if no time exists
+    // Fallback if no time exists
     return 'active';
   }
 
-  //Still waiting for approvals
+  // Still waiting for approvals
   return 'active';
 }
 
@@ -269,7 +269,7 @@ export async function copyHandler(targetId) {
 
 function getActionButtons(r) {
   const status = getUIStatus(r);
-  const isPending = !r.teacher_verified && !r.admin_verified;
+  const isPending = !r.teacher_verified || !r.admin_verified;
 
   // EXPIRED → only report
   if (status === 'expired') {

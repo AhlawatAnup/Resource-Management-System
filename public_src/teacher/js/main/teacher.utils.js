@@ -102,7 +102,7 @@ export function getRequestStatus(request) {
     //   return { text: "Pending Teacher", class: "pending-teacher" };
   } else {
     // return { text: "Pending", class: "pending" };
-    return { text: 'Pending Teacher', class: 'status-pending' };
+    return { text: 'Pending at Admin', class: 'status-pending' };
   }
 }
 

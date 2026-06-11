@@ -191,6 +191,9 @@ function createRequestCard(request) {
       tokenMessage = 'This request was not approved by the admin';
     } else if (statusText == 'Rejected by Teacher') {
       tokenMessage = 'This request was not approved by the teacher.';
+    } else if (statusText == 'Pending for Admin Approval') {
+      tokenMessage =
+        'This request is pending administrator approval. You will be notified by email once it has been approved.';
     }
   }
 

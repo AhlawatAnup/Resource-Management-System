@@ -33,7 +33,7 @@ export function getRequestStatus(request) {
   // }
 
   // 4. Default → Pending
-  return { text: 'Pending Teacher', class: 'status-pending' };
+  return { text: 'Pending Admin', class: 'status-pending' };
 }
 
 // Filter requests (pure function)

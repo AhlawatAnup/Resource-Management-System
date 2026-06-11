@@ -198,7 +198,7 @@ export function getRequestStatusText(request) {
   }
 
   if (request.teacher_action && request.teacher_verified && !request.admin_action) {
-    return 'Pending Admin';
+    return 'Pending for Admin Approval';
   }
 
   if (!request.teacher_action) {
