@@ -9,8 +9,6 @@ import {
 import { renderResourcesPage, renderMachineCards } from './raise-request.ui.js';
 import { setActiveSidebar } from '../../../common/aside/aside.js';
 import { handleLoadViewRequests } from '../view-request/view-request.init.js';
-//import { logoutDirectly } from '../../../common/js/commons.js';
-//import { setupDarkMode } from '../../../common/js/darkmode/darkmode.js';
 
 // API CALLS
 export async function fetchStudentData(studentId) {
@@ -90,16 +88,8 @@ export async function handleResourceRequest(event) {
       throw new Error('Please fill in all required fields');
     }
 
-    if (formData.title.length > 50) {
-      throw new Error('Title must not exceed 50 characters');
-    }
-
     if (formData.purpose.length < 100) {
       throw new Error('Purpose must be at least 100 characters long');
-    }
-
-    if (formData.purpose.length > 2000) {
-      throw new Error('Purpose must not exceed 2000 characters');
     }
 
     if (!isValidDuration(formData.duration)) {
@@ -218,4 +208,17 @@ export async function loadAvailableMachines() {
 document.addEventListener('DOMContentLoaded', () => {
   //setupDarkMode();
   handleLoadRequestResources();
+});
+
+// DOM
+const pupose_input = document.getElementById('purpose');
+const purpose_word_counter = pupose_input.parentElement.querySelector('span');
+pupose_input.addEventListener('input', function () {
+  console.log(this.value.length);
+  purpose_word_counter.innerText = this.value.length + '/100';
+  if (this.value.length < 100) {
+    purpose_word_counter.classList.add('danger');
+  } else {
+    purpose_word_counter.classList.remove('danger');
+  }
 });
