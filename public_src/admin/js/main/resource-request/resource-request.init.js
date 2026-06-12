@@ -269,7 +269,7 @@ export async function copyHandler(targetId) {
 
 function getActionButtons(r) {
   const status = getUIStatus(r);
-  const isPending = !r.teacher_verified || !r.admin_verified;
+  const isPending = !r.admin_verified;
 
   // EXPIRED → only report
   if (status === 'expired') {
