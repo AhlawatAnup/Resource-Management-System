@@ -1,3 +1,4 @@
+import { setupDarkMode } from '../../common/darkmode/darkmode';
 let is_request_otp = true;
 
 // Role selector functionality
@@ -387,3 +388,8 @@ function validateStudentEmail(email) {
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   return emailRegex.test(email);
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+  localStorage.setItem('dark-mode', 'enabled');
+  setupDarkMode();
+});

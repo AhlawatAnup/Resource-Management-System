@@ -24,7 +24,7 @@ function toggleDarkMode() {
 
 export function setupDarkMode() {
   initDarkMode();
-
+  DarkReader.enable();
   document.addEventListener('click', (e) => {
     if (e.target.closest('.theme-toggle')) {
       toggleDarkMode();

@@ -80,9 +80,9 @@ export function getStudentVerificationStatus(student) {
 
   if (student.admin_action) {
     if (student.admin_verified) {
-      return '✓ Verified';
+      return 'Verified';
     } else {
-      return '❌ Rejected by Admin';
+      return 'Rejected by Admin.';
     }
   }
 
@@ -153,59 +153,59 @@ export function getRequestStatusClass(request) {
   }
 
   if (request.teacher_action && request.teacher_verified && !request.admin_action) {
-    return 'status-in-progress';
+    return 'status-in-progress status-pending';
   }
 
   return 'status-pending';
 }
 
-export function getRequestStatusIcon(request) {
-  if (isRequestExpired(request)) {
-    return '⏰';
-  }
-  if (request.is_verified) {
-    return '✓';
-  }
-
-  if (
-    (request.teacher_action && !request.teacher_verified) ||
-    (request.admin_action && !request.admin_verified)
-  ) {
-    return '✗';
-  }
-
-  if (request.teacher_action && request.teacher_verified && !request.admin_action) {
-    return '⏳';
-  }
-
-  return '⏳';
-}
-
 export function getRequestStatusText(request) {
   if (isRequestExpired(request)) {
-    return 'Completed';
+    return {
+      key: 'COMPLETED',
+      text: 'Completed',
+    };
   }
+
   if (request.is_verified) {
-    return 'Approved';
+    return {
+      key: 'APPROVED',
+      text: 'Approved',
+    };
   }
 
   if (request.teacher_action && !request.teacher_verified) {
-    return 'Rejected by Teacher';
+    return {
+      key: 'REJECTED_BY_TEACHER',
+      text: 'Rejected by Teacher',
+    };
   }
 
   if (request.admin_action && !request.admin_verified) {
-    return 'Rejected by Admin';
+    return {
+      key: 'REJECTED_BY_ADMIN',
+      text: 'Rejected by Admin. Please check your mail for detailed remarks.',
+    };
   }
 
   if (request.teacher_action && request.teacher_verified && !request.admin_action) {
-    return 'Pending for Admin Approval';
+    return {
+      key: 'PENDING_ADMIN_APPROVAL',
+      text: 'Pending for Admin Approval',
+    };
   }
 
   if (!request.teacher_action) {
-    return 'Pending Teacher';
+    return {
+      key: 'PENDING_TEACHER',
+      text: 'Pending Teacher',
+    };
   }
 
-  return 'Pending Review';
+  return {
+    key: 'PENDING_REVIEW',
+    text: 'Pending Review',
+  };
 }
 
 // ==============================
