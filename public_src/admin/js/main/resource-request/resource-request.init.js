@@ -269,7 +269,19 @@ export async function copyHandler(targetId) {
 
 function getActionButtons(r) {
   const status = getUIStatus(r);
-  const isPending = !r.admin_verified;
+  let isPending = true;
+
+  // MAJOR BUG : IF DATE IS LESS THAN 13 JUNE  GET isPending from r.teacher_verified if more than 13 June than r.admin_verified
+  const createdAt = new Date(r.createdAt);
+  const targetDate = new Date('2026-06-13');
+
+  if (createdAt > targetDate) {
+    isPending = !r.admin_verified;
+  } else if (createdAt < targetDate) {
+    isPending = !r.teacher_verified && !r.admin_verified;
+  } else {
+    isPending = !r.admin_verified;
+  }
 
   // EXPIRED → only report
   if (status === 'expired') {
