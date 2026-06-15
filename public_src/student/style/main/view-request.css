@@ -106,6 +106,7 @@
   align-items: center;
 
   margin-bottom: 10px;
+  position: relative;
 }
 
 .request-header-left {
@@ -163,14 +164,16 @@
 .status-badge {
   padding: 6px 12px;
 
-  border-radius: 999px;
+  border-radius: 5px;
 
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 400;
 
   display: flex;
   align-items: center;
   gap: 6px;
+  position: absolute;
+  right: 0;
 }
 
 .request-meta {

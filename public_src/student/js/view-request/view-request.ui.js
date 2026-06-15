@@ -3,7 +3,6 @@ import {
   getRequestStatus,
   getRequestStatusText,
   getRequestStatusClass,
-  getRequestStatusIcon,
   canDeleteRequest,
 } from '../student.util.js';
 import Swal from 'sweetalert2';
@@ -134,7 +133,7 @@ function createRequestCard(request) {
   const status = getRequestStatus(request);
   const statusText = getRequestStatusText(request);
   const statusClass = getRequestStatusClass(request);
-  const statusIcon = getRequestStatusIcon(request);
+
   let requestStatusClass = '';
 
   switch (status) {
@@ -180,18 +179,18 @@ function createRequestCard(request) {
   if (showTokenAndButtons) {
     tokenMessage = request.token ? `Token: ${request.token}` : 'Token not generated yet';
   } else {
-    if (statusText == 'Approved') {
+    if (statusText.key == 'APPROVED') {
       tokenMessage =
         'Your request has been approved. Access will be available during the allotted time window.';
-    } else if (statusText == 'Completed') {
+    } else if (statusText.key == 'COMPLETED') {
       tokenMessage = 'This resource allocation has ended. Usage session completed successfully.';
-    } else if (statusText == 'Pending Teacher') {
+    } else if (statusText.key == 'PENDING_TEACHER') {
       tokenMessage = 'Teacher approval received. Awaiting final admin approval.';
-    } else if (statusText == 'Rejected by Admin') {
+    } else if (statusText.key == 'REJECTED_BY_ADMIN') {
       tokenMessage = 'This request was not approved by the admin';
-    } else if (statusText == 'Rejected by Teacher') {
+    } else if (statusText.key == 'REJECTED_BY_TEACHER') {
       tokenMessage = 'This request was not approved by the teacher.';
-    } else if (statusText == 'Pending for Admin Approval') {
+    } else if (statusText.key == 'PENDING_ADMIN_APPROVAL') {
       tokenMessage =
         'This request is pending administrator approval. You will be notified by email once it has been approved.';
     }
@@ -214,7 +213,7 @@ function createRequestCard(request) {
             </div>
 
               <span class="status-badge ${statusClass}">
-            ${statusIcon} ${statusText}
+            ${statusText.text}
         </span>
         </div>
 

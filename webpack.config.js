@@ -50,6 +50,7 @@ module.exports = {
   mode: dev_mode,
 
   entry: {
+    home: './public_src/home/js/home.packer.js',
     admin: './public_src/admin/js/admin.packer.js',
     student: './public_src/student/js/student.packer.js',
     teacher: './public_src/teacher/js/teacher.packer.js',

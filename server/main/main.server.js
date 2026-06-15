@@ -87,7 +87,7 @@ app.use('/notebook/proxy/token', express.json());
 
 // Homepage route → serve public/home/index.html
 app.get('/', noCache, preventAuth, (req, res) => {
-  res.sendFile(path.join(publicPath, 'home', 'home.html'));
+  res.sendFile(path.join(publicPath, 'home.pack', 'home.html'));
 });
 
 // Logout route (should only be accessible to authenticated users)

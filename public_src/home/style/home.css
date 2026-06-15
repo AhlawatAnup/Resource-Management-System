@@ -1,41 +1,41 @@
-@import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+@import url('../../common/components/components.css');
+/* @import url('./home.footer.css'); */
+@import url('./home.usermanual.css');
 
 body {
   font-family: 'Rubik', sans-serif;
-  min-height: 100vh;
-  display: flex;
-  background: linear-gradient(135deg, #4c63d2 0%, #2d5aa0 100%);
 }
 
 .container {
-  display: flex;
-  width: 100%;
-  min-height: 100vh;
+  display: grid;
+  width: 100vw;
+  height: 100vh;
+  grid-template-columns: 60% auto;
 }
 
 .left-section {
   flex: 1;
-  background: linear-gradient(135deg, #4c63d2 0%, #2d5aa0 100%);
+  /* background: linear-gradient(135deg, #4c63d2 0%, #2d5aa0 100%); */
+  /* background: #282828; */
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
-  padding: 4rem;
-  color: white;
+  /* padding: 4rem; */
+  /* color: white; */
+  height: 100vh;
+  border-right: 1px solid #e5e7eb;
 }
 
 .logo {
   display: flex;
+  /* flex-direction: column; */
   align-items: center;
-  font-size: 1.2rem;
+  font-size: 3.2rem;
   font-weight: 500;
-  color: white;
+  gap: 4rem;
+  /* color: white; */
+  margin-left: 3rem;
 }
 
 .logo::before {
@@ -44,19 +44,23 @@ body {
   width: 50px;
   height: 50px;
   margin-right: 0.5rem;
-  background-image: url('../../assets/images/UIET-logo.png');
+  /* background-image: url('../../assets/images/UIET-logo.png'); */
+  background-image: url('../../../public/assets/images/UIET-logo.png');
   background-size: contain; /* scale image to fit */
   background-repeat: no-repeat;
   background-position: center;
   vertical-align: middle; /* align with text */
 }
 
+.dummy {
+  flex: 1;
+}
 .hero-text {
-  max-width: 500px;
+  margin-left: 3rem;
 }
 
 .hero-text h1 {
-  font-size: 3.5rem;
+  font-size: 6.5rem;
   font-weight: 300;
   margin-bottom: 1rem;
   line-height: 1.2;
@@ -67,13 +71,13 @@ body {
   font-weight: 400;
 }
 
-.cloud-icon {
+/* .cloud-icon {
   width: 200px;
   height: 150px;
   position: relative;
   margin-top: 2rem;
-}
-
+} */
+/* 
 .cloud-storage {
   width: 160px;
   height: 120px;
@@ -82,9 +86,9 @@ body {
   border: 2px solid rgba(255, 255, 255, 0.2);
   position: relative;
   backdrop-filter: blur(10px);
-}
+} */
 
-.cloud-storage::before {
+/* .cloud-storage::before {
   content: '';
   position: absolute;
   top: -15px;
@@ -93,7 +97,7 @@ body {
   height: 25px;
   background: #ffd700;
   border-radius: 12px;
-}
+} */
 
 .right-section {
   flex: 1;
@@ -106,8 +110,8 @@ body {
 }
 
 .login-form {
-  width: 100%;
-  max-width: 400px;
+  /* width: 100%; */
+  max-width: 500px;
 }
 
 .form-header {
@@ -116,7 +120,7 @@ body {
 }
 
 .form-header h2 {
-  font-size: 2rem;
+  font-size: 3.6rem;
   color: #2d3748;
   margin-bottom: 0.5rem;
   font-weight: 600;
@@ -124,7 +128,7 @@ body {
 
 .form-header p {
   color: #718096;
-  font-size: 0.95rem;
+  font-size: 1.6rem;
 }
 
 .role-selector {
@@ -132,19 +136,19 @@ body {
   background: #f7fafc;
   border-radius: 12px;
   padding: 4px;
-  margin-bottom: 2rem;
+  margin-bottom: 4rem;
   border: 1px solid #e2e8f0;
 }
 
 .role-option {
   flex: 1;
-  padding: 0.75rem;
+  padding: 1.2rem 4.2rem;
   text-align: center;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
-  font-size: 0.9rem;
-  font-weight: 500;
+  font-size: 1.5rem;
+  font-weight: 400;
   color: #64748b;
 }
 
@@ -159,25 +163,26 @@ body {
 }
 
 .form-group {
-  margin-bottom: 1.5rem;
+  margin-bottom: 2.5rem;
 }
 
 .form-group label {
   display: block;
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
   color: #4a5568;
-  font-size: 0.9rem;
+  font-size: 1.4rem;
   font-weight: 500;
 }
 
 .form-group input {
   width: 100%;
-  padding: 0.875rem 1rem;
+  padding: 1.4rem 2rem;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
-  font-size: 0.95rem;
+  font-size: 1.4rem;
   transition: all 0.2s ease;
   background: white;
+  font-family: 'Rubik';
 }
 
 .form-group input:focus {
@@ -188,17 +193,17 @@ body {
 
 .otp-container {
   display: flex;
-  gap: 0.75rem;
+  gap: 1.2rem;
   justify-content: center;
-  margin-bottom: 1rem;
+  margin-bottom: 2rem;
 }
 
 .otp-input {
   width: 50px !important;
   height: 50px;
   text-align: center;
-  font-size: 1.2rem;
-  font-weight: 600;
+  font-size: 1.4rem;
+  font-weight: 400;
   border: 2px solid #e2e8f0;
   border-radius: 8px;
   transition: all 0.2s ease;
@@ -219,14 +224,14 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 0.5rem;
+  margin-top: 1rem;
 }
 
 .resend-otp {
   background: none;
   border: none;
   color: #4c63d2;
-  font-size: 0.85rem;
+  font-size: 1.2rem;
   cursor: pointer;
   text-decoration: underline;
   transition: color 0.2s ease;
@@ -243,22 +248,23 @@ body {
 }
 
 .otp-timer {
-  font-size: 0.85rem;
+  font-size: 1.6rem;
   color: #a0aec0;
 }
 
 .login-button {
   width: 100%;
-  padding: 1rem;
+  padding: 1.5rem;
   background: #2d3748;
   color: white;
   border: none;
   border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 2rem;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
   margin-top: 1rem;
+  font-family: 'Rubik';
 }
 
 .login-button:hover {
