@@ -68,7 +68,7 @@ export function renderResourceRequests(requests, deps) {
         ${
           request.migId
             ? `
-          <button class="machine-info-btn info-btn" title="Machine Info" data-request='${JSON.stringify(request)}'>
+          <button class="machine-info-btn info-btn" title="Machine Info">
             <i class="fa fa-info-circle"></i>
           </button>
         `

@@ -131,19 +131,19 @@ export function closeEditModal() {
 
 export function initMachineInfoTippy(tr, request) {
   if (!request.migId) return;
+  console.log(request);
   const btn = tr.querySelector('.machine-info-btn');
   if (!btn) return;
 
-  const machine = JSON.parse(btn.getAttribute('data-request'));
   tippy(btn, {
     content: `
-      <p><b>MIG ID:</b> ${machine.migId ?? '-'}</p>
-      <p><b>User:</b> ${machine.user ?? '-'}</p>
-      <p><b>GPU:</b> ${machine.gpuRam ?? '-'} GB</p>
-      <p><b>RAM:</b> ${machine.ram ?? '-'} GB</p>
-      <p><b>IP:</b> ${machine.ip ?? '-'}</p>
-      <p><b>Port:</b> ${machine.port ?? '-'}</p>
-      <p><b>Name:</b> ${machine.name ?? '-'}</p>
+      <p><b>MIG ID:</b> ${request.migId ?? '-'}</p>
+      <p><b>User:</b> ${request.user ?? '-'}</p>
+      <p><b>GPU:</b> ${request.gpuRam ?? '-'} GB</p>
+      <p><b>RAM:</b> ${request.ram ?? '-'} GB</p>
+      <p><b>IP:</b> ${request.ip ?? '-'}</p>
+      <p><b>Port:</b> ${request.port ?? '-'}</p>
+      <p><b>Name:</b> ${request.name ?? '-'}</p>
     `,
     allowHTML: true,
     placement: 'right',
