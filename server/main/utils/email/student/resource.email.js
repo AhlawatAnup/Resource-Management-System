@@ -239,7 +239,7 @@ const sendResourceAllotmentStartedEmail = async ({
 
 
           <p>Regards,<br>
-          <strong>UIET Cluster Resource Management System</strong></p>
+          <strong>U.I.E.T Cloud AI Data Center</strong></p>
         </div>
       `,
   });
@@ -293,7 +293,7 @@ const sendResourceAllotmentExpiryTodayEmail = async ({
       </a>
 
         <p>Regards,</p>
-        <strong>UIET Cluster Resource Management System</strong></p>
+        <strong>U.I.E.T Cloud AI Data Center</strong></p>
       </div>
     `,
   });

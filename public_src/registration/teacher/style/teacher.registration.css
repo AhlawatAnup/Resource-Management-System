@@ -8,7 +8,7 @@
   width: 100vw;
   /* background-color: aqua; */
   display: grid;
-  grid-template-columns: 45% 55%;
+  grid-template-columns: 48% 52%;
   overflow: hidden;
 
   .text-muted {
@@ -26,7 +26,7 @@
 
     h2 {
       font-weight: 400;
-      font-size: 4.4rem;
+      font-size: 3.4rem;
       border-bottom: 1px solid #cac9c9;
       padding: 1rem;
       color: #5d5d5d;
@@ -90,15 +90,65 @@
   }
 
   .right {
-    padding: 2rem;
+    /* padding: 2rem; */
     overflow: hidden;
     position: relative;
 
-    img {
+    .tagline {
       position: absolute;
       bottom: 0;
-      width: 80%;
-      align-items: center;
+      width: 100%;
+      padding: 1rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+
+      span {
+        text-align: center;
+        font-size: 4.4rem;
+      }
+
+      .footer {
+        display: flex;
+        flex-direction: column;
+        margin-top: 5rem;
+
+        span {
+          text-align: center;
+          font-size: 1.4rem;
+          padding: 0.3rem;
+        }
+      }
+    }
+
+    img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 90%;
+      object-fit: cover;
+      filter: grayscale(100%);
+      /* opacity: 0.18; */
+      /* transform: scale(1.05); */
+      z-index: 0;
+
+      /* ==== */
+      object-fit: cover;
+
+      -webkit-mask-image: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 1) 0%,
+        rgba(0, 0, 0, 0.2) 40%,
+        rgba(0, 0, 0, 0) 100%
+      );
+
+      mask-image: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.3) 0%,
+        rgba(0, 0, 0, 0.2) 25%,
+        rgba(0, 0, 0, 0.1) 65%,
+        rgba(0, 0, 0, 0) 100%
+      );
     }
   }
 }
