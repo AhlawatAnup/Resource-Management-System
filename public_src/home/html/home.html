@@ -77,13 +77,22 @@
         <form class="login-form">
           <div class="form-header">
             <h2>Welcome</h2>
-            <p>Lets get Started</p>
+            <p>Let's get Started</p>
           </div>
 
           <div class="role-selector">
-            <div class="role-option active" data-role="student">Student</div>
-            <div class="role-option" data-role="teacher">Teacher</div>
-            <div class="role-option" data-role="admin">Admin</div>
+            <div class="role-option active" data-role="student">
+              <i data-lucide="user" stroke-width="1.5"></i>
+              Student
+            </div>
+            <div class="role-option" data-role="teacher">
+              <i data-lucide="contact" stroke-width="1.5"></i>
+              Teacher
+            </div>
+            <div class="role-option" data-role="admin">
+              <i data-lucide="user-star" stroke-width="1.5"></i>
+              Admin
+            </div>
           </div>
 
           <div class="form-group" id="email-wrapper">
@@ -132,7 +141,12 @@
             </div>
           </div>
 
-          <button type="submit" class="login-button" id="sendOtpBtn">Send OTP</button>
+          <div class="rms-btn-v1">
+            <button type="submit" id="sendOtpBtn">
+              <i data-lucide="plus" stroke-width="1.5"></i>
+              Send OTP
+            </button>
+          </div>
         </form>
         <div class="dummy"></div>
 
@@ -147,6 +161,7 @@
           </ul> -->
 
           <a href="https://aicentre.gitbook.io/aicentre-docs" target="_blank">
+            <i data-lucide="book-text" stroke-width="1.5"></i>
             Need Help? Read User Manual
           </a>
         </div>

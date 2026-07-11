@@ -1,7 +1,9 @@
 require('../style/student.css');
+
 require('../../common/ui.states/ui.states');
 require('../../admin/js/main/main');
 require('../../common/aside/aside.js');
+require('../../common/icons/icons.js');
 
 // Student Dashboard
 require('./dashboard/dashboard.init.js');

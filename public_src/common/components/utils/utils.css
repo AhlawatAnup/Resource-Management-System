@@ -6,6 +6,10 @@
   box-sizing: border-box;
 }
 
+:root {
+  --border: 1px solid #e5e7eb;
+}
+
 html {
   scroll-behavior: smooth;
   /* CHANGE FONT SIZE TO PERCENTAGE LATERON */
@@ -27,4 +31,9 @@ body {
 /* DEFAULT HIDE CLASS */
 .swal2-popup {
   font-size: 16px !important;
+}
+
+.text-muted {
+  color: grey;
+  font-size: 1.4rem;
 }

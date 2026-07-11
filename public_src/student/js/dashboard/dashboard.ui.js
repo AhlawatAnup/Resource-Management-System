@@ -2,6 +2,7 @@ import { getStudentVerificationStatus, getStudentStatusClass } from '../student.
 import { formatDate } from '../../../common/utils/commons.utils.js';
 import { setActiveSidebar } from '../../../common/aside/aside.js';
 import { CountUp } from 'countup.js';
+import { add_svg, audio_waveform_svg } from '../../../common/icons/icons.svg.js';
 
 export function showErrorMessage(message, containerId = 'student-profile') {
   const container = document.getElementById(containerId);
@@ -78,18 +79,9 @@ export function displayStudentDetails(student) {
       Under the supervision of: ${student.teacher?.name}
     </div>
 
-    <div class="rms-button rms-action-primary">
-
-      <button   id="resourceRequestsBtn">
-        
-        Raise New Request
-      </button>
-
-      <button
-          id='viewRequestsBtn'> 
-        View My Requests
-      </button>
-
+    <div class="rms-btn-v1">
+      <button id="resourceRequestsBtn"> ${add_svg} Raise New Request</button>
+      <button class="unfill" id='viewRequestsBtn'> ${audio_waveform_svg} View My Requests</button>
     </div>
 
   </div>
@@ -262,15 +254,12 @@ export function displayStudentDetails(student) {
     </div>
 
     <div class="hero-actions">
-
-      <button   id="resourceRequestsBtn">
-        
-        Raise New Request
+      <button   id="resourceRequestsBtn">   
+               Raise New Request
       </button>
 
-      <button
-          id='viewRequestsBtn'> 
-        View My Requests
+      <button id='viewRequestsBtn'> 
+              View My Requests
       </button>
 
     </div>

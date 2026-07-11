@@ -29,6 +29,13 @@ import {
   formatDate,
 } from '../../../../common/utils/commons.utils.js';
 
+import {
+  chart_column_svg,
+  check_svg,
+  square_pen_svg,
+  trash_2_svg,
+} from '../../../../common/icons/icons.svg.js';
+
 // API CALLS
 
 //Fetch data
@@ -286,86 +293,80 @@ function getActionButtons(r) {
   // EXPIRED → only report
   if (status === 'expired') {
     return `
-    <div class='rms-button rms-action-report'>
-      <button class="icon-btn stats-report-btn" data-request-id="${r._id}">
-        <i class="fa fa-bar-chart"></i>
+    <div class='rms-img-btn'>
+      <button class="icon-btn stats-report-btn" data-request-id="${r._id} title="View Usage">
+          ${chart_column_svg}
       </button>
-      </div>
+    </div>
     `;
   }
 
   // UPCOMING → edit + revoke
   if (status === 'upcoming') {
     return `
-    <div class='rms-button rms-action-edit'>
-      <button class="icon-btn edit-btn" data-request-id="${r._id}">
-        <i class="fas fa-pen-to-square"></i>
+    <div class='rms-img-btn'>
+      <button class="icon-btn edit-btn warn" data-request-id="${r._id}" title="Edit Request">
+         ${square_pen_svg}
       </button>
-      </div>
-
-      <div class='rms-button rms-action-revoke'>
-      <button class="icon-btn revoke-btn" data-request-id="${r._id}">
-        Revoke
+      
+      <button class="icon-btn revoke-btn danger" data-request-id="${r._id}" title="Remove Request">
+       ${trash_2_svg}
       </button>
-      </div>
+    </div>
     `;
   }
 
   //  ACTIVE → all 3
   if (status === 'active') {
     return `
-       ${
-         isPending
-           ? `
-      <div class="rms-button rms-action-approve">
-  <button class="icon-btn approve-btn"
-          data-request-id="${r._id}"
-          data-action="approve">
-    <i class="fas fa-check"></i>
-  </button>
-</div>
-      `
-           : ''
-       }
-       ${
-         isPending
-           ? `<div class="rms-button rms-action-reject">
-  <button class="icon-btn decline-btn"
-          data-request-id="${r._id}"
-          data-action="decline">
-    <i class="fas fa-times"></i>
-  </button>
-</div>`
-           : ``
-       }
-       
-       <div class='rms-button rms-action-edit'>
-      <button class="icon-btn edit-btn" data-request-id="${r._id}">
-        <i class="fas fa-pen-to-square"></i>
+  <div class="rms-img-btn">
+    ${
+      isPending
+        ? `
+      <button class="icon-btn approve-btn normal" data-request-id="${r._id}" data-action="approve">
+        ${check_svg}
       </button>
-      </div>
+        `
+        : ''
+    }
+
       ${
         !isPending
-          ? `
-          <div class='rms-button rms-action-revoke'>
-          <button class="icon-btn revoke-btn" data-request-id="${r._id}">
-        Revoke
-      </button>
-      </div>
+          ? `   
+        <button class="icon-btn stats-report-btn normal" data-request-id="${r._id}" title="View Usage">
+        ${chart_column_svg}
+        </button>
       `
           : ``
       }
-       ${
-         !isPending
-           ? `
-           <div class='rms-button rms-action-report'>
-           <button class="icon-btn stats-report-btn" data-request-id="${r._id}">
-        <i class="fa fa-bar-chart"></i>
-      </button>
-      </div>`
-           : ``
-       }
-      
+
+
+
+    <button class="icon-btn edit-btn warn" data-request-id="${r._id}" title="Edit Request">
+      ${square_pen_svg}
+    </button>
+
+
+    ${
+      !isPending
+        ? `          
+        <button class="icon-btn revoke-btn danger" data-request-id="${r._id}" title="Remove Request">
+          ${trash_2_svg}
+        </button>
+         `
+        : ``
+    }
+
+    ${
+      isPending
+        ? `
+        <button class="icon-btn decline-btn danger" data-request-id="${r._id}" data-action="decline" title="Remove Request">
+        ${trash_2_svg}
+        </button>
+      `
+        : ``
+    }
+  </div>
     `;
   }
 

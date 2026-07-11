@@ -6,5 +6,7 @@
 @import url('./about-us/about-us.css');
 @import url('./input-box/input-box.css');
 @import url('./buttons/buttons.css');
+@import url('./buttons/buttons.v1.css');
 @import url('./dashboard-profile/dashboard-profile.css');
 @import url('./info-btn/info-btn.css');
+@import url('./scroll_bar/scroll_bar.css');

@@ -7,6 +7,17 @@ import {
 } from '../student.util.js';
 import Swal from 'sweetalert2';
 import { setActiveSidebar } from '../../../common/aside/aside.js';
+import {
+  calendar_svg,
+  chart_column_svg,
+  copy_svg,
+  cpu_svg,
+  fingerprint_svg,
+  machine_cloud_svg,
+  monitor_play_svg,
+} from '../../../common/icons/icons.svg.js';
+
+import { add_svg } from '../../../common/icons/icons.svg.js';
 
 // ==============================
 // Page Structure
@@ -51,12 +62,13 @@ export function renderAllRequests(requests, onDelete, onReload) {
             <div class="no-requests">
                 <div class="empty-state">
                     <i class="fas fa-inbox" style="font-size: 4em; color: #ddd; margin-bottom: 20px; color:blue;"></i>
-                    <h3 style="color: #666; margin-bottom: 10px;">No Requests Found</h3>
+                    <h3 style="color: #666; margin-bottom: 10px;">No Request Found</h3>
                     <p style="color: #888; margin-bottom: 20px;">You haven't submitted any resource requests yet.</p>
-                    <button class="btn-primary empty-request-btn">   
-                        <i class="fas fa-plus-circle"></i>
-                        Submit Your First Request
-                    </button>
+                    <div class="rms-btn-v1" style="justify-content:center">
+                      <button class="btn-primary empty-request-btn">   
+                         ${add_svg}Submit Your First Request
+                      </button>
+                    </div>
                 </div>
             </div>
         `;
@@ -204,8 +216,8 @@ function createRequestCard(request) {
 
         <div class='request-header-left'>
            <div class="request-icon  ${requestStatusClass}">
-            <i class="fas fa-microchip"></i>
-          </div>
+           ${machine_cloud_svg} 
+           </div>
           <div class='request-title-area'>
             <h3>
                 ${request.title}
@@ -237,7 +249,7 @@ function createRequestCard(request) {
     <!-- Meta Row -->
    <div class='request-meta'>
    <div class='meta-item'>
-    <i class="fas fa-fingerprint"></i>
+    ${fingerprint_svg}
     <span>
         <strong>MIGID:</strong> ${request.machineId.MIGID}
     </span>
@@ -245,14 +257,14 @@ function createRequestCard(request) {
 
  
     <div class='meta-item'>
-     <i class="fas fa-memory"></i>
+         ${cpu_svg}
     <span>
         <strong>GPU RAM:</strong> ${request.machineId.gpuRam} GB
     </span>
     </div>
    
     <div class='meta-item'>
-      <i class="fas fa-calendar-days"></i>
+      ${calendar_svg}
     <span>
         <strong>Allotment:</strong>
         ${formatDate(request.allotmentStartTime)}
@@ -271,29 +283,27 @@ function createRequestCard(request) {
 
     <!-- Token -->
     <div class="request-token">
-    ${tokenMessage}
+      ${tokenMessage}
+      ${
+        request.token
+          ? `
+          <button
+            class="copy-token-btn"
+            data-token="${request.token}"
+            title="Copy Token">
+            ${copy_svg}
+          </button>
+          `
+          : ''
+      }
 
-
-  ${
-    request.token
-      ? `
-      <button
-        class="copy-token-btn"
-        data-token="${request.token}"
-        title="Copy Token">
-        <i class="fas fa-copy"></i>
-      </button>
-      `
-      : ''
-  }
-
-</div>
+    </div>
 
     <!-- Bottom Row -->
     <div class="request-footer">
 
         <!-- Buttons -->
-        <div class="request-actions">
+      <div class="rms-btn-v1">
 
         ${
           showTokenAndButtons
@@ -302,7 +312,7 @@ function createRequestCard(request) {
                     class="access-machine-btn"
                     data-request-id="${request._id}"
                     data-migid="${request.machineId.MIGID}">
-                    <i class="fas fa-desktop" style="font-size:13px;"></i>
+                    ${monitor_play_svg}
                     Access Machine
                 </button>
             `
@@ -311,11 +321,10 @@ function createRequestCard(request) {
            ${
              showReportButton
                ? `
-    <button class="report-btn"  data-request-id="${request._id}">
-        <i class="fas fa-file-alt"></i>
-        View Usage
-    </button>
-`
+                  <button class="report-btn unfill"  data-request-id="${request._id}">
+                    ${chart_column_svg} View Usage
+                  </button>
+                `
                : ''
            }
             ${

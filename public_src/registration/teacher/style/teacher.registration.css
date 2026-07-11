@@ -1,0 +1,104 @@
+@import url('../../../common/components/components.css');
+@import url('../../../home/style/home.css');
+
+.registration {
+  position: absolute;
+  top: 0;
+  height: 100vh;
+  width: 100vw;
+  /* background-color: aqua; */
+  display: grid;
+  grid-template-columns: 45% 55%;
+  overflow: hidden;
+
+  .text-muted {
+    text-align: center;
+    padding: 1rem;
+  }
+
+  .left {
+    display: flex;
+    flex-direction: column;
+    /* border-right: var(--border); */
+    border-right: 1px solid #cac9c9;
+    background: white;
+    overflow-y: scroll;
+
+    h2 {
+      font-weight: 400;
+      font-size: 4.4rem;
+      border-bottom: 1px solid #cac9c9;
+      padding: 1rem;
+      color: #5d5d5d;
+      /* text-align: center; */
+    }
+
+    h4 {
+      color: #2563eb;
+      font-size: large;
+      font-weight: 400;
+      text-align: center;
+      margin-top: 9rem;
+    }
+
+    form {
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      gap: 1.5rem;
+      align-items: center;
+
+      .rms-input-box-v2 {
+        width: 60%;
+        /* label {
+          color: #2563eb;
+          font-weight: 500;
+        }
+        input {
+          height: 6.5rem;
+          text-align: left;
+          padding-top: 4.5rem;
+        } */
+      }
+
+      .form-group {
+        width: 60%;
+        select {
+          font-family: 'Rubik', sans-serif;
+          width: 100%;
+          height: 5.5rem;
+          background: unset;
+          border: 1px solid #bdbdbd;
+          border-radius: 0.6rem;
+          color: #5d5d5d;
+          font-weight: 400;
+          padding: 1.6rem 1.2rem;
+          &:focus {
+            /* border-color: #4a90e2; */
+            color: #5d5d5d;
+            /* box-shadow: 0 0 8px rgba(74, 144, 226, 0.3); */
+          }
+        }
+      }
+
+      .rms-btn-v1 {
+        margin-top: 1.5rem;
+        width: 60%;
+      }
+    }
+  }
+
+  .right {
+    padding: 2rem;
+    overflow: hidden;
+    position: relative;
+
+    img {
+      position: absolute;
+      bottom: 0;
+      width: 80%;
+      align-items: center;
+    }
+  }
+}

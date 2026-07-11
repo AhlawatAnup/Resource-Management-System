@@ -95,8 +95,7 @@ const sendResourceRequestVerifiedEmail = async ({
         <h3 style="color:#4CAF50;">🎉 Congratulations, ${studentName}!</h3>
 
         <p>
-          Your resource request <strong>"${requestTitle}"</strong> has been verified and approved.
-          You can now use the allocated resources as needed.
+          Your resource request <strong>"${requestTitle}"</strong> has been approved.
         </p>
 
         <div style="background-color:#f5f5f5; border:1px solid #ddd; padding:12px; border-radius:6px; margin:16px 0;">
@@ -137,7 +136,7 @@ const sendResourceRequestRejectedEmail = async ({
         <h3 style="color:#f44336;">❌ Update on Your Request, ${studentName}</h3>
 
         <p>
-          Your resource request <strong>"${requestTitle}"</strong> has been reviewed and rejected.
+          Your resource request <strong>"${requestTitle}"</strong> has been rejected.
         </p>
 
         ${
@@ -219,9 +218,7 @@ const sendResourceAllotmentStartedEmail = async ({
           <p>Dear <strong>${studentName}</strong>,</p>
 
           <p>
-            Your resource allotment for 
-            <strong>"${requestTitle}"</strong> 
-            has officially started.
+            Your resource allotment for <strong>"${requestTitle}"</strong> has been started.
           </p>
 
           <div style="background-color:#f5f5f5; border:1px solid #ddd; padding:12px; border-radius:6px; margin:16px 0;">
@@ -229,7 +226,7 @@ const sendResourceAllotmentStartedEmail = async ({
           </div>
 
           <p>
-            Please <strong>login to your profile</strong> on the website to start using your resources.
+            Please <strong>login</strong> on the website to start using your resources.
           </p>
 
           <p style="color:#1976d2; font-size: 0.9em;">

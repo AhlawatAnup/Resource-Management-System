@@ -2,6 +2,7 @@ require('../style/admin.css');
 require('./admin.js');
 require('./main/main.js');
 require('../../common/aside/aside.js');
+require('../../common/icons/icons.js');
 
 // DASHBOARD
 

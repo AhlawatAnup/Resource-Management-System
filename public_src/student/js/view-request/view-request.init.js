@@ -9,6 +9,7 @@ import {
 import { logoutDirectly } from '../../../common/utils/commons.utils.js';
 import { generateReport } from '../../../common/generate-report/generate-report.init.js';
 import { closeReportModal } from '../../../common/generate-report/generate-report.ui.js';
+import { check_svg, copy_svg } from '../../../common/icons/icons.svg.js';
 
 //import { setupDarkMode } from '../../../common/js/darkmode/darkmode.js';
 // API CALLS
@@ -299,22 +300,18 @@ export function attachCopyTokenHandlers() {
 
   function handleCopyClick(e) {
     const btn = e.target.closest('.copy-token-btn');
-    if (!btn) return;
-
-    const token = btn.getAttribute('data-token');
-    const icon = btn.querySelector('i');
-
-    if (!token || !icon) return;
+    const token = btn?.getAttribute('data-token');
+    if (!btn || !token) return;
 
     navigator.clipboard
       .writeText(token)
       .then(() => {
-        icon.classList.replace('fa-copy', 'fa-check');
+        btn.innerHTML = check_svg;
         btn.classList.add('copy-success');
 
         setTimeout(() => {
-          icon.classList.replace('fa-check', 'fa-copy');
           btn.classList.remove('copy-success');
+          btn.innerHTML = copy_svg;
         }, 1200);
       })
       .catch((err) => console.error('Clipboard write failed:', err));
