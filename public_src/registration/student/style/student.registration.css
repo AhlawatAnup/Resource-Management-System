@@ -1,0 +1,24 @@
+@import url('../../../common/components/components.css');
+@import url('../../../home/style/home.css');
+@import url('../../../registration/teacher/style/teacher.registration.css');
+
+.registration {
+  overflow: hidden;
+  .left {
+    overflow: scroll;
+    h4 {
+      margin-top: 1.5rem !important;
+    }
+    form {
+      gap: 1.5rem;
+      .form-group {
+        margin-bottom: 0;
+      }
+      rms-btn-v1 {
+        button {
+          margin-top: 3rem;
+        }
+      }
+    }
+  }
+}

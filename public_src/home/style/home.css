@@ -142,7 +142,7 @@ body {
 
 .role-option {
   flex: 1;
-  padding: 1.2rem 4.2rem;
+  padding: 1rem 3rem;
   text-align: center;
   border-radius: 8px;
   cursor: pointer;
@@ -150,6 +150,14 @@ body {
   font-size: 1.5rem;
   font-weight: 400;
   color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  svg {
+    width: 20px;
+    height: auto;
+  }
 }
 
 .role-option.active {
@@ -250,40 +258,6 @@ body {
 .otp-timer {
   font-size: 1.6rem;
   color: #a0aec0;
-}
-
-.login-button {
-  width: 100%;
-  padding: 1.5rem;
-  background: #2d3748;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 2rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  margin-top: 1rem;
-  font-family: 'Rubik';
-}
-
-.login-button:hover {
-  background: #1a202c;
-  transform: translateY(-1px);
-}
-
-.login-button:disabled {
-  background: #152848;
-  color: #ffffff;
-  cursor: not-allowed;
-  transform: none;
-  opacity: 0.6;
-}
-
-.login-button:disabled:hover {
-  /* background: #718096; */
-  transform: none;
-  cursor: not-allowed;
 }
 
 @media (max-width: 768px) {

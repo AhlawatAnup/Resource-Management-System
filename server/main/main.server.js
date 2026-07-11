@@ -105,7 +105,7 @@ app.get('/registration', noCache, preventAuth, requireRegistrationSession, (req,
     res.sendFile(path.join(publicPath, 'teacher_registration.pack', 'teacher.registration.html'));
 
   if (req.query.role == 'student')
-    res.sendFile(path.join(__dirname, '../../public/registration/registration.html'));
+    res.sendFile(path.join(publicPath, 'student_registration.pack', 'student.registration.html'));
 
   // res.sendFile(path.join(publicPath, 'teacher_registration.pack', 'teacher.registration.html'));
 });

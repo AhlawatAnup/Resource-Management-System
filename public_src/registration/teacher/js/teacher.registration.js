@@ -1,10 +1,16 @@
+import '../style/teacher.registration.css';
+
 import Toastify from 'toastify-js';
 import 'toastify-js/src/toastify.css';
-import '../style/teacher.registration.css';
-// import { text } from 'pdfkit';
-import { json } from 'body-parser';
+
+// import { json } from 'body-parser';
 import Swal from 'sweetalert2';
 
+import '../../../common/icons/icons';
+
+import { setupDarkMode } from '../../../common/darkmode/darkmode';
+
+setupDarkMode();
 const form = document.getElementById('teacher_registration');
 form.addEventListener('submit', async function (e) {
   e.preventDefault();
@@ -16,13 +22,12 @@ form.addEventListener('submit', async function (e) {
   const originalText = submitBtn.innerHTML;
   submitBtn.innerHTML = 'Signing up...';
 
-  const name = document.getElementById('fullName');
-  const email = document.getElementById('email');
-  const phone = document.getElementById('phone');
-  const branch = document.getElementById('branch');
+  const name = document.getElementById('fullName').value.trim();
+  const phone = document.getElementById('phone').value.trim();
+  const branch = document.getElementById('branch').value;
 
-  if (!/^[a-zA-Z\s.]+$/.test(name.value)) {
-    console.log(name.value);
+  if (!/^[a-zA-Z\s.]+$/.test(name)) {
+    console.log(name);
     Toastify({
       text: 'Name should only contain letters and spaces.',
       duration: 3000,
@@ -35,20 +40,7 @@ form.addEventListener('submit', async function (e) {
     return;
   }
 
-  if (!/^[a-zA-Z0-9._%+-]+@pu\.ac\.in$/.test(email.value)) {
-    Toastify({
-      text: 'Please enter a valid email address ending with "@pu.ac.in".',
-      duration: 3000,
-      gravity: 'top',
-      position: 'center',
-      backgroundColor: '#ff6b6b',
-    }).showToast();
-    submitBtn.disabled = false;
-    submitBtn.innerHTML = originalText;
-    return;
-  }
-
-  if (!/^\d{10}$/.test(phone.value)) {
+  if (!/^\d{10}$/.test(phone)) {
     Toastify({
       text: 'Please enter a valid 10-digit phone number.',
       duration: 3000,
@@ -63,10 +55,9 @@ form.addEventListener('submit', async function (e) {
 
   try {
     const payload = {
-      name: name.value,
-      email: email.value,
-      phone: phone.value,
-      branch: branch.value,
+      name: name,
+      phone: phone,
+      branch: branch,
     };
 
     const res = await fetch('/auth/register', {

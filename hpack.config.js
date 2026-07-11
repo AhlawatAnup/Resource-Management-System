@@ -10,6 +10,7 @@ module.exports = {
     student: './public_src/student/html/student.html',
     teacher: './public_src/teacher/html/teacher.html',
     teacher_registration: './public_src/registration/teacher/html/teacher.registration.html',
+    student_registration: './public_src/registration/student/html/student.registration.html',
   },
 
   output: {
