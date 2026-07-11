@@ -7,7 +7,7 @@ const sendOTPEmail = async (email, otp, role) => {
 
       <p>Dear User,</p>
 
-      <p>You are verifying your identity as a <strong>${role}</strong> for the UIET Cluster Resource Management System.</p>
+      <p>You are verifying your identity as a <strong>${role}</strong> for the U.I.E.T Cloud AI Data Center.</p>
 
       <div style="background-color: #f0f8ff; border: 2px solid #2196F3; padding: 25px; border-radius: 8px; margin: 25px 0; text-align: center;">
         <h3>Your Verification Code:</h3>
@@ -23,7 +23,7 @@ const sendOTPEmail = async (email, otp, role) => {
         <li>If you didn't request this, please ignore this email</li>
       </ul>
 
-      <p><strong>UIET Cluster Resource Management System</strong></p>
+      <p><strong>U.I.E.T Cloud AI Data Center</strong></p>
       <p style="font-size: 12px; color: #666;">This is an automated email. Please do not reply.</p>
     </div>
   `;
