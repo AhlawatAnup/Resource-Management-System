@@ -1,4 +1,5 @@
 import { setupDarkMode } from '../../common/darkmode/darkmode';
+import { key_round } from '../../common/icons/icons.svg.js';
 let is_request_otp = true;
 
 // Role selector functionality
@@ -37,13 +38,13 @@ function updateFormForRole(role) {
     // Show admin login fields, hide email field
     emailWrapper.style.display = 'none';
     adminLoginFields.style.display = 'block';
-    sendOtpBtn.innerHTML = 'Login';
+    sendOtpBtn.innerHTML = key_round + 'Login as Admin';
     teacherEmailNote.style.display = 'none';
   } else {
     // Show email field for student/teacher, hide admin fields
     emailWrapper.style.display = 'block';
     adminLoginFields.style.display = 'none';
-    sendOtpBtn.innerHTML = 'Send OTP';
+    sendOtpBtn.innerHTML = key_round + 'Request OTP';
 
     // Show teacher email note only for teacher role
     if (role === 'teacher') {

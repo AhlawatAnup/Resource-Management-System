@@ -99,7 +99,15 @@ app.get('/logout', requireAuth, (req, res) => {
 
 // Registration page (only accessible after email verification)
 app.get('/registration', noCache, preventAuth, requireRegistrationSession, (req, res) => {
-  res.sendFile(path.join(__dirname, '../../public/registration/registration.html'));
+  if (req.session.role !== req.query.role) return;
+
+  if (req.query.role == 'teacher')
+    res.sendFile(path.join(publicPath, 'teacher_registration.pack', 'teacher.registration.html'));
+
+  if (req.query.role == 'student')
+    res.sendFile(path.join(publicPath, 'student_registration.pack', 'student.registration.html'));
+
+  // res.sendFile(path.join(publicPath, 'teacher_registration.pack', 'teacher.registration.html'));
 });
 
 // Auth routes (should only be accessible to unauthenticated users)

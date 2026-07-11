@@ -54,6 +54,8 @@ module.exports = {
     admin: './public_src/admin/js/admin.packer.js',
     student: './public_src/student/js/student.packer.js',
     teacher: './public_src/teacher/js/teacher.packer.js',
+    teacher_registration: './public_src/registration/teacher/js/teacher.registration.js',
+    student_registration: './public_src/registration/student/js/student.registration.js',
   },
 
   output: {

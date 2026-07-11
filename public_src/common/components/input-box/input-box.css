@@ -14,7 +14,7 @@
     font-family: 'Rubik';
     color: black;
     background: unset;
-    border: 1px solid #dbe3ee;
+    border: 1px solid #bdbdbd;
     resize: none;
 
     &:focus {
@@ -43,7 +43,7 @@
     position: absolute;
     top: 1.7rem;
     left: 1.2rem;
-    color: #999;
+    color: #5d5d5d;
     font-size: 1.4rem;
     pointer-events: none;
     padding: 0 0.4rem;
