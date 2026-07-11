@@ -36,11 +36,7 @@ function getBadgeClass(leadSource) {
 export function formatDate(dateString) {
   if (!dateString) return 'Not available';
   const date = new Date(dateString);
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  });
+  return date.toLocaleString('en-IN');
 }
 
 // Purpose Panel Functionality - Reusable across all portals
