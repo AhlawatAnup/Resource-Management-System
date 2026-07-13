@@ -260,6 +260,12 @@ body {
   color: #a0aec0;
 }
 
+.rms-btn-v1 {
+  button {
+    width: 100%;
+  }
+}
+
 @media (max-width: 768px) {
   .container {
     flex-direction: column;

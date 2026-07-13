@@ -253,7 +253,7 @@
   border: 1px solid #e2e8f0;
 }
 
-.btn-primary {
+/* .btn-primary {
   width: 100%;
   margin-top: 8px;
   height: 52px;
@@ -265,7 +265,7 @@
 .btn-primary:hover {
   transform: translateY(-2px);
   background-color: #16a34a;
-}
+} */
 
 /* CONFIRMATION POPUP */
 /* confirmation-popup.css */
@@ -561,7 +561,7 @@
   margin-bottom: 28px;
 }
 
-.btn-primary {
+/* .btn-primary {
   display: inline-flex;
   justify-content: center;
   align-items: center;
@@ -580,11 +580,7 @@
 .btn-primary:hover {
   transform: translateY(-2px);
   box-shadow: 0 12px 24px rgba(37, 99, 235, 0.35);
-}
-
-.btn-primary i {
-  font-size: 16px;
-}
+} */
 
 #resource-request-form {
   display: flex;
