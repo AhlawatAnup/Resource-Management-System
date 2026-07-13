@@ -168,7 +168,12 @@ const sendResourceRequestRejectedEmail = async ({
   });
 };
 // Revoked by Admin (resource allocation removed)
-const sendResourceRequestRevokedByAdminEmail = async (studentEmail, studentName, requestTitle) => {
+const sendResourceRequestRevokedByAdminEmail = async (
+  studentEmail,
+  studentName,
+  requestTitle,
+  remarks,
+) => {
   return sendEmail({
     to: studentEmail,
     subject: '[ATTENTION] Resource Allocation Revoked - Access Removed',
@@ -183,6 +188,17 @@ const sendResourceRequestRevokedByAdminEmail = async (studentEmail, studentName,
           <strong>"${requestTitle}"</strong>
           has been revoked by the administrator.
         </p>
+
+        ${
+          remarks
+            ? `
+              <div style="background-color:#fff3e0; border:1px solid #ffcc80; padding:12px; border-radius:6px; margin:16px 0;">
+                <p style="margin:0;"><strong>Admin Remarks:</strong></p>
+                <p style="margin-top:8px;">${remarks}</p>
+              </div>
+              `
+            : ''
+        }
 
         <p>If you still need resources, please submit a new request with updated details.</p>
 

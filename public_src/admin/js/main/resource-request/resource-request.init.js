@@ -100,10 +100,11 @@ export async function fetchAvailableMachines() {
 }
 
 // Revoke a resource request (admin)
-export async function revokeStudentRequest(requestId) {
+export async function revokeStudentRequest(requestId, remarks) {
   const res = await fetch(`/dashboard/admin/revoke/${requestId}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ remarks: remarks }),
   });
   if (!res.ok) {
     const errText = await res.text();
@@ -495,11 +496,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // Revoke
     if (revokeBtn) {
       const id = revokeBtn.dataset.requestId;
+      console.log('id from revokeBtn: ', id);
       if (!id) return;
+      let remarks = '';
+      const revoke_remarks = await getRejectionRemarks();
+      remarks = revoke_remarks;
       try {
         const confirmed = await confirmAction('revoke');
         if (!confirmed) return;
-        await revokeStudentRequest(id);
+        await revokeStudentRequest(id, remarks);
         await loadRequestsHandler();
         showToast('Request revoked successfully!', 'success');
       } catch (err) {
