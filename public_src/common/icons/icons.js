@@ -21,6 +21,10 @@ import {
   MonitorDot,
   UserCheck,
   GitPullRequestArrow,
+  NotepadText,
+  GraduationCap,
+  UserRound,
+  ChartPie,
   Monitor,
 } from 'lucide';
 
@@ -47,6 +51,10 @@ createIcons({
     MonitorDot,
     UserCheck,
     GitPullRequestArrow,
+    NotepadText,
+    GraduationCap,
+    UserRound,
+    ChartPie,
     Monitor,
   },
 });
