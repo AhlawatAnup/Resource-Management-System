@@ -237,6 +237,7 @@ exports.updateResourceRequestVerification = async (req, res) => {
       let updateData = {
         is_verified: false,
         updatedAt: new Date(),
+        revoke_remarks: remarks || '',
       };
 
       if (role === 'teacher') {

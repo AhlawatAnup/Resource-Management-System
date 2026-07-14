@@ -602,6 +602,7 @@ exports.deleteMachine = async (req, res) => {
 exports.revokeResourceRequest = async (req, res) => {
   try {
     const { requestId } = req.params;
+    const { remarks } = req.body;
     console.log(requestId);
 
     // 1. Validate ID
@@ -625,6 +626,7 @@ exports.revokeResourceRequest = async (req, res) => {
     request.admin_action = true;
     request.admin_verified = false;
     request.isActive = false;
+    request.revoke_remarks = remarks;
 
     await request.save();
 
@@ -645,6 +647,7 @@ exports.revokeResourceRequest = async (req, res) => {
         request.studentId.email,
         request.studentId.name,
         request.title,
+        remarks || '',
       )
       .then((result) => console.log('Resource revoked email sent to student:', result))
       .catch((error) => console.error('Error sending resource revoked email:', error));
