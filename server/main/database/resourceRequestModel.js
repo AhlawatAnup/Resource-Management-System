@@ -48,6 +48,9 @@ const resourceRequestSchema = new mongoose.Schema({
 
   // Edit tracking
   isEdited: { type: Boolean, default: false },
+
+  //remarks for revoking
+  revoke_remarks: { type: String, default: '' },
 });
 
 module.exports = mongoose.model('ResourceRequest', resourceRequestSchema, 'resourceRequests');
