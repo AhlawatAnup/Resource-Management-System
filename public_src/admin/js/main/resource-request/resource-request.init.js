@@ -295,7 +295,7 @@ function getActionButtons(r) {
   if (status === 'expired') {
     return `
     <div class='rms-img-btn'>
-      <button class="icon-btn stats-report-btn" data-request-id="${r._id} title="View Usage">
+      <button class="icon-btn stats-report-btn" data-request-id="${r._id}" title="View Usage">
           ${chart_column_svg}
       </button>
     </div>
