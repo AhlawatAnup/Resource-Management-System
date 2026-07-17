@@ -16,7 +16,7 @@ const {
   getAllotmentMap,
 } = require('../utils/common.utils.js');
 const bcrypt = require('bcrypt');
-
+const { saveAllotmentHistory } = require('../../main/utils/machineHistory/historyHelper.js');
 exports.admin_dashboard_data = async (req, res) => {
   try {
     // Get counts for dashboard statistics
@@ -729,5 +729,73 @@ exports.extendAllotment = async (req, res) => {
   } catch (err) {
     console.error(err);
     return res.status(500).json({ message: 'Server error' });
+  }
+};
+
+exports.deleteRejectedRequest = async (req, res) => {
+  try {
+    //extract resourceRequestId from request
+    //fetch resourceRequest from database
+    //check if admin is hitting the end-point
+    //check whether it really is a rejected request
+    //remove the request object from the requests array in the student's document
+    //remove from machineAllotments document as well(match both machineId and resourceResquestId)
+
+    const { requestId } = req.params;
+    const requestDoc = await ResourceRequest.findById(requestId);
+    if (!requestDoc) {
+      return res.status(404).json({
+        message: 'Resource Request not found!',
+      });
+    }
+    const role = req.session.user?.role;
+    if (role != 'admin') {
+      return res.status(403).json({
+        message: 'User unauthorized to perform this action',
+      });
+    }
+    const isExplicitlyRejected =
+      requestDoc.is_verified === false &&
+      (requestDoc.admin_action === true ||
+        requestDoc.teacher_action === true ||
+        requestDoc.isActive === false);
+    if (!isExplicitlyRejected) {
+      return res.status(400).json({
+        message:
+          "This isn't a rejected request. Can only delete explicitly rejected or revoked requests!",
+      });
+    }
+
+    //saving history before deletion, to prevent error in case of saving of history after resourceRequest doc is deleted.
+    const allotmentDoc = await MachineAllotment.findOne({
+      resourceRequestId: new mongoose.Types.ObjectId(requestId),
+    })
+      .setOptions({ includeInactive: true, includeDeleted: true })
+      .populate('machineId');
+
+    if (allotmentDoc) {
+      const deletedByWho = req.session.user?.name || 'admin';
+      // This will internally populate resourceRequestId -> studentId -> teacher and save snapshot
+      await saveAllotmentHistory(allotmentDoc, deletedByWho);
+
+      // Now it's safe to drop the allotment document since history is securely written
+      await MachineAllotment.deleteOne({ _id: allotmentDoc._id });
+    }
+
+    const targetStudentId = requestDoc.studentId;
+    await Student.findByIdAndUpdate(targetStudentId, {
+      $pull: { resourceRequests: requestDoc._id },
+    });
+
+    await ResourceRequest.findByIdAndDelete(requestId);
+
+    return res.status(200).json({
+      message: 'deleted request successfully!',
+    });
+  } catch (error) {
+    console.log('Error in deleting request: ', error);
+    return res.status(500).json({
+      message: 'Internal server error in deleting request!',
+    });
   }
 };
