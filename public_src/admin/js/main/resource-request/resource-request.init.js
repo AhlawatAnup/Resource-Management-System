@@ -136,6 +136,18 @@ export async function extendStudentRequest(requestId, extraDuration) {
   return data;
 }
 
+export async function deleteRejectedResourceReq(requestId) {
+  const res = await fetch(`/dashboard/admin/delete_revoked/${requestId}`, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.message || 'Failed to delete request');
+  }
+  return data;
+}
+
 //HANDLERS
 
 // ===== STATE =====
@@ -371,7 +383,15 @@ function getActionButtons(r) {
     `;
   }
 
-  return '';
+  if (status === 'rejected') {
+    return `
+    <div class='rms-img-btn'>
+      <button class="icon-btn delete-btn danger" data-request-id="${r._id}" title="Delete Request">
+          ${trash_2_svg}
+        </button>
+    </div>
+    `;
+  } else return '';
 }
 
 // ===== EDIT =====
@@ -464,6 +484,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const revokeBtn = e.target.closest('.revoke-btn');
     const editBtn = e.target.closest('.edit-btn');
     const reportBtn = e.target.closest('.stats-report-btn');
+    const deleteBtn = e.target.closest('.delete-btn');
 
     // Approve/Decline
     if (approveDeclineBtn) {
@@ -555,6 +576,23 @@ document.addEventListener('DOMContentLoaded', () => {
         showToast(err.message || 'Failed to generate report', 'error');
       }
 
+      return;
+    }
+
+    if (deleteBtn) {
+      const id = deleteBtn.dataset.requestId;
+
+      if (!id) return;
+
+      try {
+        const confirmed = await confirmAction('delete');
+        if (!confirmed) return;
+        await deleteRejectedResourceReq(id);
+        await loadRequestsHandler();
+        showToast('Request deleted successfully!', 'success');
+      } catch (err) {
+        showToast(err.message || 'Failed to delete request', 'error');
+      }
       return;
     }
   });

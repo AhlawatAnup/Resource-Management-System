@@ -41,7 +41,7 @@ const plugin_use =
         }),
         new BundleAnalyzerPlugin({
           analyzerMode: 'static',
-          openAnalyzer: true,
+          openAnalyzer: false,
           reportFilename: 'report.html',
         }),
       ];
