@@ -25,6 +25,7 @@ const {
   unverifyStudentByAdmin,
   revokeResourceRequest,
   extendAllotment,
+  deleteRejectedRequest,
 } = require('../controllers/admin.controller.js');
 
 const {
@@ -84,6 +85,7 @@ router.put('/unverify_student/:student_id', unverifyStudentByAdmin);
 router.get('/resource-requests', getAllResourceRequests);
 router.put('/verify_request/:request_id', updateResourceRequestVerification);
 router.post('/revoke/:requestId', revokeResourceRequest);
+router.delete('/delete_revoked/:requestId', deleteRejectedRequest);
 router.patch('/edit-resourceRequest/:requestId', extendAllotment);
 
 // Profile section routes

@@ -16,6 +16,7 @@ const {
   deleteStudent,
 } = require('../utils/common.utils.js');
 const emailHandler = require('../utils/email/emailHandler.js');
+const studentModel = require('../database/studentModel');
 
 exports.roleBasedDashboard = (req, res) => {
   if (!req.session.user) {
