@@ -1,6 +1,12 @@
 <div class="main profile hide-default">
         <div class="header">
           <h2>Profile</h2>
+          <div class="nav-section">
+            <button class="report-btn" id="report-btn">
+              <i data-lucide="notepad-text" stroke-width="1.5"></i>
+              Report
+            </button>
+          </div>
           <div class="nav-actions">
           <button id="theme-toggle" class="theme-toggle" title="Dark Mode">
             <i id="theme-icon" class="fa fa-moon"></i>
@@ -245,5 +251,31 @@
   </div>
 
 </div>
+
+<div id="report-overlay" class="report-overlay"></div>
+
+    <div id="report-side-panel" class="report-side-panel">
+      <div class="panel-header">
+        <h3>Select Duration</h3>
+        <button id="close-report-panel-btn" class="panel-close-btn">
+          <i data-lucide="CircleX" stroke-width="1.5"></i>
+        </button>
+      </div>
+      <div class="panel-body">
+        <div class="report-filter-group">
+          <label for="report-date-range">Selected Date Range:</label>
+          <input type="hidden" id="report-date-range" />
+        </div>
+        <div id="report-calendar-container"></div>
+        <div class="rms-btn-v1">
+            <button id="generateReport">
+              <i data-lucide="FileDown" stroke-width="1.5"></i>
+              Download Report
+            </button>
+          </div>
+      </div>
+      
+    </div>
+
     </div>
 </div>

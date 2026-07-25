@@ -8,7 +8,8 @@ async function markExpiredAllotmentsHistoryAndCleanupDocker() {
   console.log('~~~~~hit: markExpiredAllotmentsHistoryAndCleanupDocker');
   try {
     const allotmentsToProcess = await MachineAllotment.find({
-      $or: [{ isActive: false }, { isActive: true, endTime: { $lt: now } }],
+      isActive: true,
+      endTime: { $lt: now },
     })
       .setOptions({ includeInactive: true })
       .populate({
@@ -24,26 +25,26 @@ async function markExpiredAllotmentsHistoryAndCleanupDocker() {
     for (const allotment of allotmentsToProcess) {
       const machine = allotment.machineId;
 
-      const shouldSkipDockerCleanup = allotment.isActive === false && allotment.startTime > now; //i.e. revoked by admin but the allotment hasn't started yet
+      // const shouldSkipDockerCleanup = allotment.isActive === false && allotment.startTime > now; //i.e. revoked by admin but the allotment hasn't started yet
 
-      if (shouldSkipDockerCleanup) {
-        allotment.isDeleted = true;
-        allotment.isActive = false;
-        await allotment.save();
+      // if (shouldSkipDockerCleanup) {
+      //   allotment.isDeleted = true;
+      //   allotment.isActive = false;
+      //   await allotment.save();
 
-        if (allotment.resourceRequestId) {
-          await ResourceRequest.findByIdAndUpdate(
-            allotment.resourceRequestId,
-            { isActive: false },
-            { new: true },
-          );
-        }
+      //   if (allotment.resourceRequestId) {
+      //     await ResourceRequest.findByIdAndUpdate(
+      //       allotment.resourceRequestId,
+      //       { isActive: false },
+      //       { new: true },
+      //     );
+      //   }
 
-        console.log(
-          `[${new Date().toISOString()}] Skipped Docker cleanup for future inactive (revoked by admin) allotment ${allotment._id} and marked it deleted`,
-        );
-        continue;
-      }
+      //   console.log(
+      //     `[${new Date().toISOString()}] Skipped Docker cleanup for future inactive (revoked by admin) allotment ${allotment._id} and marked it deleted`,
+      //   );
+      //   continue;
+      // }
 
       if (!machine || !machine.user || !machine.ip) {
         console.warn(

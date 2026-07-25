@@ -1,5 +1,6 @@
 import tippy from 'tippy.js';
 import 'tippy.js/dist/tippy.css';
+import { isRequestExpired } from '../../../student/js/student.util';
 
 // Get verification status text for teacher
 export function getVerificationStatus(teacher) {
@@ -88,7 +89,7 @@ export function getStudentStatusClassForTeacher(student) {
 
 // Get request status information
 export function getRequestStatus(request) {
-  if (request.isActive === false) {
+  if (isRequestExpired(request)) {
     return { text: 'Expired', class: 'expired' };
   } else if (request.is_verified) {
     return { text: 'Approved', class: 'status-approved' };
