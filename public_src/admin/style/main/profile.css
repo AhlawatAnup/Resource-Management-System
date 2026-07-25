@@ -1,3 +1,4 @@
+@import url('../report/report.css');
 .profile-section {
   display: flex;
   justify-content: center;
@@ -6,13 +7,8 @@
 
 .profile-card {
   width: 100%;
-  max-width: 1200px;
-
   background: white;
-  border-radius: 24px;
-
   padding: 20px;
-
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
 }
 
@@ -270,71 +266,5 @@
   to {
     opacity: 1;
     transform: translateY(0);
-  }
-}
-
-.report-side-panel {
-  position: fixed;
-  top: 0.7rem;
-  right: -50vw;
-  width: 35vw;
-  height: 98vh;
-  background-color: #ffffff;
-  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.15);
-  z-index: 1000;
-  transition: left 0.3s ease-in-out;
-  padding: 20px;
-  box-sizing: border-box;
-  border-radius: 1rem;
-
-  h3 {
-    font-size: x-large;
-    font-weight: 400;
-  }
-
-  .panel-close-btn {
-    background-color: unset;
-    border-color: transparent;
-  }
-}
-
-.report-side-panel.open {
-  right: 0.5rem;
-}
-
-.report-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.4);
-  z-index: 999;
-  display: none;
-}
-
-.report-overlay.active {
-  display: block;
-}
-
-.panel-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 10px;
-}
-
-.panel-body {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 2rem;
-  margin-top: 2rem;
-
-  .report-filter-group {
-    font-size: 1.5rem;
   }
 }

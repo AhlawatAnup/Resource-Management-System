@@ -28,6 +28,8 @@ import {
   Monitor,
   FileDown,
   CircleX,
+  ArrowDownToLine,
+  X,
 } from 'lucide';
 
 createIcons({
@@ -60,5 +62,7 @@ createIcons({
     Monitor,
     FileDown,
     CircleX,
+    ArrowDownToLine,
+    X,
   },
 });

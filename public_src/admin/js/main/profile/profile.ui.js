@@ -1,6 +1,8 @@
 import { handleLogout } from '../../../../common/utils/commons.utils';
 import flatpickr from 'flatpickr';
+
 import 'flatpickr/dist/flatpickr.css';
+
 // ui/profileUI.js
 function $(id) {
   return document.getElementById(id);
@@ -127,18 +129,15 @@ export function toggleLoading(btn, state) {
 
 export function initReportSidePanel() {
   const reportBtn = document.getElementById('report-btn');
-  const overlay = document.getElementById('report-overlay');
   const sidePanel = document.getElementById('report-side-panel');
   const closePanelBtn = document.getElementById('close-report-panel-btn');
 
   reportBtn.addEventListener('click', () => {
-    overlay.classList.add('active');
-    sidePanel.classList.add('open');
+    sidePanel.classList.toggle('close');
   });
 
   closePanelBtn.addEventListener('click', () => {
-    overlay.classList.remove('active');
-    sidePanel.classList.remove('open');
+    sidePanel.classList.add('close');
   });
 }
 
@@ -163,8 +162,8 @@ export function initReportDatePicker() {
         const startDate = selectedDates[0];
         const endDate = selectedDates[1];
 
-        console.log('Start Date:', instance.formatDate(startDate, 'Y-m-d'));
-        console.log('End Date:', instance.formatDate(endDate, 'Y-m-d'));
+        // console.log('Start Date:', instance.formatDate(startDate, 'Y-m-d'));
+        // console.log('End Date:', instance.formatDate(endDate, 'Y-m-d'));
       }
     },
   });

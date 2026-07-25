@@ -837,6 +837,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   initReportSidePanel();
 
   const fpInstance = initReportDatePicker();
+  
   const downloadReportBtn = document.getElementById('generateReport');
   if (downloadReportBtn && fpInstance) {
     downloadReportBtn.addEventListener('click', async () => {
