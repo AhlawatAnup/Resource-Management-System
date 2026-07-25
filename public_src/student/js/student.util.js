@@ -2,6 +2,7 @@
 export function isRequestExpired(request) {
   if (
     request.is_verified &&
+    request.isActive &&
     request.allotmentEndTime &&
     new Date(request.allotmentEndTime).getTime() < Date.now()
   ) {
@@ -119,7 +120,7 @@ export function getStudentStatusClass(student) {
 }
 
 export function getRequestStatus(request) {
-  if (request.isActive === false || isRequestExpired(request)) {
+  if (isRequestExpired(request)) {
     return 'completed';
   }
   if (request.is_verified) {

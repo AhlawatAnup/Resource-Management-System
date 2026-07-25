@@ -3,6 +3,7 @@ import 'tippy.js/dist/tippy.css';
 import Toastify from 'toastify-js';
 import 'toastify-js/src/toastify.css';
 import Swal from 'sweetalert2';
+import { isRequestExpired } from '../../../../student/js/student.util';
 // Get request status (ADMIN version - includes teacher + admin states)
 export function getRequestStatus(request) {
   // 0. Check if expired (isActive: false)
@@ -20,7 +21,7 @@ export function getRequestStatus(request) {
     return { text: 'Verified', class: 'status-approved' };
   }
 
-  if (request.isActive === false) {
+  if (isRequestExpired(request)) {
     return { text: 'Expired', class: 'expired' };
   }
   // 3. Any approval

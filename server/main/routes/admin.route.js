@@ -38,7 +38,10 @@ const {
   getMachineWiseActiveAllotments,
 } = require('../controllers/common.controller.js');
 
-const { getStatsByResReqId } = require('../controllers/reportGeneration.controller.js');
+const {
+  getStatsByResReqId,
+  getStatsForCombinedReport,
+} = require('../controllers/reportGeneration.controller.js');
 
 const router = express.Router();
 const publicPath = path.join(__dirname, '../../../public');
@@ -93,6 +96,7 @@ router.get('/details', isAdmin, getAdminDetails);
 router.put('/change-password', isAdmin, ChangeAdminPassword);
 router.put('/update-profile', isAdmin, UpdateAdminProfile);
 // router.put("/change-email", isAdmin, ChangeAdminEmail);
+router.get('/combined-report', isAdmin, getStatsForCombinedReport);
 
 router.get('/machines', isAdmin, getMachines); //admin machine page
 router.post('/create-machine', isAdmin, createMachine);
