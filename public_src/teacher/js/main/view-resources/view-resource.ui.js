@@ -54,7 +54,7 @@ export function renderResourceRequests(requests) {
       <td>
         
       
-        <span>${request.machineId && request.machineId.MIGID ? request.machineId.MIGID : '-'}</span>
+        <span>${request.machineId && request?.machineId?.MIGID ? request?.machineId?.MIGID : '-'}</span>
       </td>
       <td>
        
