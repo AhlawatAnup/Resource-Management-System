@@ -2,6 +2,7 @@
 
 .about-us {
   width: 100%;
+  z-index: 1;
   .container {
     padding: 2rem;
   }
