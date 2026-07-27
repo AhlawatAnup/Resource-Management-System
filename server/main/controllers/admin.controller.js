@@ -17,6 +17,7 @@ const {
 } = require('../utils/common.utils.js');
 const bcrypt = require('bcrypt');
 const { saveAllotmentHistory } = require('../../main/utils/machineHistory/historyHelper.js');
+
 exports.admin_dashboard_data = async (req, res) => {
   try {
     // Get counts for dashboard statistics
@@ -603,7 +604,7 @@ exports.revokeResourceRequest = async (req, res) => {
   try {
     const { requestId } = req.params;
     const { remarks } = req.body;
-    console.log(requestId);
+    // console.log(requestId);
 
     // 1. Validate ID
     if (!mongoose.Types.ObjectId.isValid(requestId)) {
@@ -739,7 +740,8 @@ exports.deleteRejectedRequest = async (req, res) => {
     //check if admin is hitting the end-point
     //check whether it really is a rejected request
     //remove the request object from the requests array in the student's document
-    //remove from machineAllotments document as well(match both machineId and resourceResquestId)
+    //remove from machineAllotments document as well
+    //finally delete request document
 
     const { requestId } = req.params;
     const requestDoc = await ResourceRequest.findById(requestId);
@@ -766,19 +768,11 @@ exports.deleteRejectedRequest = async (req, res) => {
       });
     }
 
-    //saving history before deletion, to prevent error in case of saving of history after resourceRequest doc is deleted.
     const allotmentDoc = await MachineAllotment.findOne({
       resourceRequestId: new mongoose.Types.ObjectId(requestId),
-    })
-      .setOptions({ includeInactive: true, includeDeleted: true })
-      .populate('machineId');
+    }).setOptions({ includeInactive: true, includeDeleted: true });
 
     if (allotmentDoc) {
-      const deletedByWho = req.session.user?.name || 'admin';
-      // This will internally populate resourceRequestId -> studentId -> teacher and save snapshot
-      await saveAllotmentHistory(allotmentDoc, deletedByWho);
-
-      // Now it's safe to drop the allotment document since history is securely written
       await MachineAllotment.deleteOne({ _id: allotmentDoc._id });
     }
 

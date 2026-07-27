@@ -1,249 +1,131 @@
 <div class="main profile hide-default">
-        <div class="header">
-          <h2>Profile</h2>
-          <div class="nav-actions">
-          <button id="theme-toggle" class="theme-toggle" title="Dark Mode">
-            <i id="theme-icon" class="fa fa-moon"></i>
-          </button>
-        </div>
-        </div>
-
-      <main class="main-content">
-
-  <div class="profile-card">
-
-    <div class="profile-top">
-
-      <div class="profile-avatar">
-        <i class="fa fa-user"></i>
-      </div>
-
-      <div class="profile-heading">
-        <h2>Admin Profile</h2>
-        <p>Manage your account information</p>
-      </div>
-
-    </div>
-
-    <div class="profile-divider"></div>
-
-    <!-- Username -->
-    <div class="profile-row">
-
-      <div class="profile-info">
-        <label style="font-size: 12px; font-weight: 400;">Username</label>
-
-        <div class="profile-value-box">
-          <span id="admin-username"></span>
-        </div>
-      </div>
-
-      <button
-        id="edit-username-btn"
-        class="profile-edit-btn"
-      >
-        <i class="fa fa-pen"></i>
-        Edit
+  <div class="header">
+    <h2>Profile</h2>
+    <div class="nav-section">
+      <button class="report-btn" id="report-btn">
+        <i data-lucide="notepad-text" stroke-width="1.5"></i>
+        Report
       </button>
-
     </div>
-
-    <div class="profile-divider"></div>
-
-    <!-- Email -->
-    <div class="profile-row">
-
-      <div class="profile-info">
-        <label style="font-size: 12px; font-weight: 400;">Email Address</label>
-
-        <div class="profile-value-box">
-          <span id="admin-email"></span>
-        </div>
-      </div>
-
-      <button
-        id="edit-email-btn"
-        class="profile-edit-btn"
-      >
-        <i class="fa fa-pen"></i>
-        Edit
+    <div class="nav-actions">
+      <button id="theme-toggle" class="theme-toggle" title="Dark Mode">
+        <i id="theme-icon" class="fa fa-moon"></i>
       </button>
-
     </div>
-
-    <div class="profile-divider"></div>
-
-    <!-- Security -->
-    <div class="security-section">
-
-      <div class="security-icon">
-        <i class="fa fa-shield-alt" style="size: 40px;"></i>
-      </div>
-
-      <div class="security-content">
-        <h3 style="font-size: 12px; font-weight: 600;">Security Settings</h3>
-        <p>Update your password and keep your account secure.</p>
-      </div>
-
-    </div>
-
-    <button
-      id="change-password-btn"
-      class="change-password-btn"
-    >
-      <i class="fa fa-lock"></i>
-      Change Password
-    </button>
-
   </div>
 
-</main>
+  <main class="main-content">
+    <div class="profile-card">
+      <!-- Username -->
+      <div class="profile-row">
+        <div class="profile-info">
+          <label style="font-size: 12px; font-weight: 400">Username</label>
 
-<!-- ========================= -->
-<!-- EDIT EMAIL MODAL -->
-<!-- ========================= -->
+          <div class="profile-value-box">
+            <span id="admin-username"></span>
+          </div>
+        </div>
 
-<div id="edit-email-modal" class="profile-modal" style="display:none">
+        <button id="edit-username-btn" class="profile-edit-btn">
+          <i class="fa fa-pen"></i>
+          Edit
+        </button>
+      </div>
 
-  <div class="profile-modal-content">
+      <div class="profile-divider"></div>
 
-    <button
-      class="profile-modal-close"
-      id="close-email-modal"
-    >
-      &times;
-    </button>
+      <!-- Email -->
+      <div class="profile-row">
+        <div class="profile-info">
+          <label style="font-size: 12px; font-weight: 400">Email Address</label>
 
-    <h3>Edit Email</h3>
+          <div class="profile-value-box">
+            <span id="admin-email"></span>
+          </div>
+        </div>
 
-    <input
-      type="email"
-      id="new-email-input"
-      placeholder="Enter new email"
-    >
+        <button id="edit-email-btn" class="profile-edit-btn">
+          <i class="fa fa-pen"></i>
+          Edit
+        </button>
+      </div>
 
-    <div class="modal-actions">
+      <div class="profile-divider"></div>
 
-      <button
-        id="submit-email-btn"
-        class="profile-save-btn"
-      >
-        Save Changes
-      </button>
-
-      <button
-        id="cancel-email-btn"
-        class="profile-cancel-btn"
-      >
-        Cancel
-      </button>
-
-    </div>
-
-    <div id="email-error"></div>
-
-  </div>
-
-</div>
-
-<!-- ========================= -->
-<!-- EDIT USERNAME MODAL -->
-<!-- ========================= -->
-
-<div id="edit-username-modal" class="profile-modal" style="display:none">
-
-  <div class="profile-modal-content">
-
-    <button
-      class="profile-modal-close"
-      id="close-username-modal"
-    >
-      &times;
-    </button>
-
-    <h3>Edit Username</h3>
-
-    <input
-      type="text"
-      id="new-username-input"
-      placeholder="Enter new username"
-    >
-
-    <div class="modal-actions">
-
-      <button
-        id="submit-username-btn"
-        class="profile-save-btn"
-      >
-        Save Changes
-      </button>
-
-      <button
-        id="cancel-username-btn"
-        class="profile-cancel-btn"
-      >
-        Cancel
-      </button>
-
-    </div>
-
-    <div id="username-error"></div>
-
-  </div>
-
-</div>
-
-<!-- ========================= -->
-<!-- CHANGE PASSWORD MODAL -->
-<!-- ========================= -->
-
-<div id="change-password-modal" class="profile-modal" style="display:none">
-
-  <div class="profile-modal-content">
-
-    <button
-      class="profile-modal-close"
-      id="close-password-modal"
-    >
-      &times;
-    </button>
-
-    <h3>Change Password</h3>
-
-    <input
-      type="password"
-      id="new-password"
-      placeholder="New Password"
-    >
-
-    <input
-      type="password"
-      id="confirm-password"
-      placeholder="Confirm Password"
-    >
-
-    <div class="modal-actions">
-
-      <button
-        id="submit-password-btn"
-        class="profile-save-btn"
-      >
+      <button id="change-password-btn" class="change-password-btn">
+        <i class="fa fa-lock"></i>
         Change Password
       </button>
-
-      <button
-        id="cancel-password-btn"
-        class="profile-cancel-btn"
-      >
-        Cancel
-      </button>
-
     </div>
+  </main>
 
-    <div id="password-error"></div>
+  <!-- ========================= -->
+  <!-- EDIT EMAIL MODAL -->
+  <!-- ========================= -->
 
+  <div id="edit-email-modal" class="profile-modal" style="display: none">
+    <div class="profile-modal-content">
+      <button class="profile-modal-close" id="close-email-modal">&times;</button>
+
+      <h3>Edit Email</h3>
+
+      <input type="email" id="new-email-input" placeholder="Enter new email" />
+
+      <div class="modal-actions">
+        <button id="submit-email-btn" class="profile-save-btn">Save Changes</button>
+
+        <button id="cancel-email-btn" class="profile-cancel-btn">Cancel</button>
+      </div>
+
+      <div id="email-error"></div>
+    </div>
   </div>
 
-</div>
+  <!-- ========================= -->
+  <!-- EDIT USERNAME MODAL -->
+  <!-- ========================= -->
+
+  <div id="edit-username-modal" class="profile-modal" style="display: none">
+    <div class="profile-modal-content">
+      <button class="profile-modal-close" id="close-username-modal">&times;</button>
+
+      <h3>Edit Username</h3>
+
+      <input type="text" id="new-username-input" placeholder="Enter new username" />
+
+      <div class="modal-actions">
+        <button id="submit-username-btn" class="profile-save-btn">Save Changes</button>
+
+        <button id="cancel-username-btn" class="profile-cancel-btn">Cancel</button>
+      </div>
+
+      <div id="username-error"></div>
     </div>
+  </div>
+
+  <!-- ========================= -->
+  <!-- CHANGE PASSWORD MODAL -->
+  <!-- ========================= -->
+
+  <div id="change-password-modal" class="profile-modal" style="display: none">
+    <div class="profile-modal-content">
+      <button class="profile-modal-close" id="close-password-modal">&times;</button>
+
+      <h3>Change Password</h3>
+
+      <input type="password" id="new-password" placeholder="New Password" />
+
+      <input type="password" id="confirm-password" placeholder="Confirm Password" />
+
+      <div class="modal-actions">
+        <button id="submit-password-btn" class="profile-save-btn">Change Password</button>
+
+        <button id="cancel-password-btn" class="profile-cancel-btn">Cancel</button>
+      </div>
+
+      <div id="password-error"></div>
+    </div>
+  </div>
+
+  <div id="report-overlay" class="report-overlay"></div>
 </div>

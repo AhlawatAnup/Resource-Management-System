@@ -251,7 +251,7 @@ function createRequestCard(request) {
    <div class='meta-item'>
     ${fingerprint_svg}
     <span>
-        <strong>MIGID:</strong> ${request.machineId.MIGID}
+        <strong>MIGID:</strong> ${request.machineId?.MIGID ?? '-'}
     </span>
     </div>
 
@@ -259,7 +259,7 @@ function createRequestCard(request) {
     <div class='meta-item'>
          ${cpu_svg}
     <span>
-        <strong>GPU RAM:</strong> ${request.machineId.gpuRam} GB
+        <strong>GPU RAM:</strong> ${request.machineId?.gpuRam ?? 0} GB
     </span>
     </div>
    
@@ -311,7 +311,7 @@ function createRequestCard(request) {
                 <button
                     class="access-machine-btn"
                     data-request-id="${request._id}"
-                    data-migid="${request.machineId.MIGID}">
+                    data-migid="${request?.machineId?.MIGID}">
                     ${monitor_play_svg}
                     Access Machine
                 </button>

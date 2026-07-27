@@ -4,25 +4,23 @@ const { createProxyMiddleware, fixRequestBody } = require('http-proxy-middleware
 const { getMachineByMigid, getActiveAllotment } = require('../db/proxy.service');
 const { isResourceRequestVerified } = require('../db/proxy.service');
 
-// const {server} =require('../../main.server')
-
 const setSession = async (req, res) => {
   try {
-    console.log('request received for setSession');
+    console.log('Setting Up Session');
     const { migid, requestId } = req.body;
 
     if (!migid || !requestId) {
-      return res.status(400).json({ message: 'migid and requestId are required' });
+      return res.status(400).json({ message: 'MIG_ID and RequestId Are Required' });
     }
 
     const isVerified = await isResourceRequestVerified(requestId);
     if (!isVerified) {
-      return res.status(403).json({ message: 'Resource request is not verified' });
+      return res.status(403).json({ message: 'Resource Request is not Verified' });
     }
 
     const machine = await getMachineByMigid(migid);
     if (!machine) {
-      return res.status(404).json({ message: 'Machine not found' });
+      return res.status(404).json({ message: 'Machine Not Found' });
     }
 
     req.session.migid = migid;
@@ -32,8 +30,8 @@ const setSession = async (req, res) => {
     req.session.port = machine.port;
 
     req.session.save((err) => {
-      if (err) return res.status(500).json({ message: 'Failed to save session' });
-      res.json({ message: 'Session set successfully' });
+      if (err) return res.status(500).json({ message: 'Failed to Save Session' });
+      res.json({ message: 'Session Set Successfully' });
     });
   } catch (err) {
     console.error(err);
@@ -113,45 +111,6 @@ const getTokenByMigid = async (req, res) => {
     return res.status(500).json({ error: 'Internal server error' });
   }
 };
-
-// const proxyMiddleware = createProxyMiddleware({
-// 	changeOrigin: true,
-// 	ws: true,
-// 	router: function (req) {
-// 		return req.session?.proxyTarget;
-// 	},
-// });
-
-// CHATGPT
-// const proxyMiddleware = createProxyMiddleware({
-//   changeOrigin: true,
-//   ws: true,
-
-//   router: function (req) {
-//     return req.session?.proxyTarget;
-//   },
-
-//   onProxyReq: (proxyReq, req, res) => {
-//     if (req.headers.cookie) {
-//       proxyReq.setHeader('cookie', req.headers.cookie);
-//     }
-//   },
-
-//   onProxyRes: (proxyRes, req, res) => {
-//     const cookies = proxyRes.headers['set-cookie'];
-//     if (cookies) {
-//       proxyRes.headers['set-cookie'] = cookies.map(cookie =>
-//         cookie
-//           .replace(/; secure/gi, '') // optional if HTTP
-//           .replace(/; SameSite=None/gi, '')
-//       );
-//     }
-//   },
-
-//   xfwd: true, // VERY IMPORTANT
-// });
-
-// CLAUSDE
 
 const proxyMiddleware = createProxyMiddleware({
   target: 'http://localhost:8888',

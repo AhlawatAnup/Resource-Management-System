@@ -26,6 +26,10 @@ import {
   UserRound,
   ChartPie,
   Monitor,
+  FileDown,
+  CircleX,
+  ArrowDownToLine,
+  X,
 } from 'lucide';
 
 createIcons({
@@ -56,5 +60,9 @@ createIcons({
     UserRound,
     ChartPie,
     Monitor,
+    FileDown,
+    CircleX,
+    ArrowDownToLine,
+    X,
   },
 });

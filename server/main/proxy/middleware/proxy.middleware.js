@@ -5,6 +5,7 @@ exports.requireProxyTarget = async (req, res, next) => {
   if (!req.session?.proxyTarget) {
     return res.redirect('/');
   }
+
   next();
 };
 
@@ -24,9 +25,6 @@ exports.validateRequest = async (req, res, next) => {
     const allotment = await getActiveAllotment(requestId);
 
     if (!allotment) {
-      // return res.status(403).json({
-      //     message: 'Access denied: No active allotment at this time'
-      // });
       return res.redirect('/');
     }
 

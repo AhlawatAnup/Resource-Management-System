@@ -1,3 +1,4 @@
+@import url('../report/report.css');
 .profile-section {
   display: flex;
   justify-content: center;
@@ -6,13 +7,8 @@
 
 .profile-card {
   width: 100%;
-  max-width: 1200px;
-
   background: white;
-  border-radius: 24px;
-
   padding: 20px;
-
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
 }
 
