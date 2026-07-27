@@ -10,17 +10,17 @@ const setSession = async (req, res) => {
     const { migid, requestId } = req.body;
 
     if (!migid || !requestId) {
-      return res.status(400).json({ message: 'migid and requestId are required' });
+      return res.status(400).json({ message: 'MIG_ID and RequestId Are Required' });
     }
 
     const isVerified = await isResourceRequestVerified(requestId);
     if (!isVerified) {
-      return res.status(403).json({ message: 'Resource request is not verified' });
+      return res.status(403).json({ message: 'Resource Request is not Verified' });
     }
 
     const machine = await getMachineByMigid(migid);
     if (!machine) {
-      return res.status(404).json({ message: 'Machine not found' });
+      return res.status(404).json({ message: 'Machine Not Found' });
     }
 
     req.session.migid = migid;
@@ -30,8 +30,8 @@ const setSession = async (req, res) => {
     req.session.port = machine.port;
 
     req.session.save((err) => {
-      if (err) return res.status(500).json({ message: 'Failed to save session' });
-      res.json({ message: 'Session set successfully' });
+      if (err) return res.status(500).json({ message: 'Failed to Save Session' });
+      res.json({ message: 'Session Set Successfully' });
     });
   } catch (err) {
     console.error(err);
