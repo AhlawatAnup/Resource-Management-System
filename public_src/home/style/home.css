@@ -41,7 +41,7 @@ body {
         font-size: 1.5rem;
       }
       .title {
-        font-size: 1.9rem;
+        font-size: 2.4rem;
       }
     }
   }
@@ -63,37 +63,27 @@ body {
 }
 
 .org-logo {
-  width: 100%;
   display: flex;
+  padding: 1rem;
   align-items: center;
-  font-size: 3.2rem;
-  font-weight: 500;
-  gap: 4rem;
-  z-index: 1;
-  justify-content: center;
-
+  gap: 2rem;
+  justify-content: right;
+  width: 100%;
   img {
-    width: 92px;
-    height: 92px;
-    background-size: contain; /* scale image to fit */
-    background-repeat: no-repeat;
-    background-position: center;
-    vertical-align: middle; /* align with text */
-    z-index: 1;
+    width: 7rem;
+    border-radius: 10px;
   }
 
-  span {
-    font-weight: 400;
+  .tags {
+    display: flex;
+    flex-direction: column;
+    span {
+      font-size: 1.5rem;
+    }
+    .title {
+      font-size: 2.4rem;
+    }
   }
-}
-
-.logo::before {
-  content: '';
-  display: inline-block;
-
-  margin-right: 0.5rem;
-  /* background-image: url('../../assets/images/UIET-logo.png'); */
-  background-image: url('../../../public/assets/images/UIET-logo.png');
 }
 
 .dummy {
@@ -123,7 +113,7 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 2rem;
+  /* padding: 2rem; */
 }
 
 .login-form {
