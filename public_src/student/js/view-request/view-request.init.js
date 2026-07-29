@@ -215,6 +215,24 @@ function attachAccessMachineHandlers() {
   });
 }
 
+function attachOpenVSCodeHandlers() {
+  document.querySelectorAll('.open-vscode-btn').forEach((btn) => {
+    btn.addEventListener('click', async function () {
+      const migid = this.dataset.migid;
+      const requestId = this.dataset.requestId;
+      const token = this.dataset.token;
+      if (!migid || !requestId || token == 0) return;
+      const maya_url = window.location.origin + '/' + requestId + '/' + migid + '/' + token;
+
+      // OPEN IN VS CODE
+      window.open(
+        'vscode://MenthosaSolutions.maya-vscode-connector/connect?maya_url=' + maya_url,
+        '_blank',
+      );
+    });
+  });
+}
+
 export async function processVerifiedRequests() {
   await Promise.all(
     allRequests.map(async (request) => {
@@ -260,6 +278,7 @@ export async function processVerifiedRequests() {
   renderAllRequests(allRequests, handleDeleteRequest, reloadPage);
   updateRequestCounts(allRequests);
   attachAccessMachineHandlers();
+  attachOpenVSCodeHandlers();
   attachReportHandlers();
 }
 

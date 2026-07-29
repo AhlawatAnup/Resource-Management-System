@@ -15,6 +15,7 @@ import {
   fingerprint_svg,
   machine_cloud_svg,
   monitor_play_svg,
+  vscode_svg,
 } from '../../../common/icons/icons.svg.js';
 
 import { add_svg } from '../../../common/icons/icons.svg.js';
@@ -318,25 +319,41 @@ function createRequestCard(request) {
             `
             : ''
         }
-           ${
-             showReportButton
-               ? `
-                  <button class="report-btn unfill"  data-request-id="${request._id}">
-                    ${chart_column_svg} View Usage
-                  </button>
-                `
-               : ''
-           }
-            ${
-              showReportButton
-                ? `
-            <button class="feedback-btn" style='display:none'>
-                <i class="fas fa-comment-dots" style="font-size:13px;"></i>
-                Send Feedback
+        ${
+          showTokenAndButtons
+            ? `
+            <button
+                class="open-vscode-btn unfill" 
+                data-request-id="${request._id}"
+                data-migid="${request?.machineId?.MIGID}"
+                data-token="${request.token ? request.token : 0}">
+                ${vscode_svg}
+                Open in VS Code
             </button>
+         `
+            : ''
+        }
+
+        ${
+          showReportButton
+            ? `
+              <button class="report-btn unfill"  data-request-id="${request._id}">
+                ${chart_column_svg} View Usage
+              </button>
             `
-                : ''
-            }
+            : ''
+        }
+
+        ${
+          showReportButton
+            ? `
+        <button class="feedback-btn" style='display:none'>
+            <i class="fas fa-comment-dots" style="font-size:13px;"></i>
+            Send Feedback
+        </button>
+        `
+            : ''
+        }
         </div>
 
         <!-- Date -->

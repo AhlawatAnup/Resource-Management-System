@@ -15,41 +15,75 @@ body {
 
 .left-section {
   flex: 1;
-  /* background: linear-gradient(135deg, #4c63d2 0%, #2d5aa0 100%); */
-  /* background: #282828; */
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
-  /* padding: 4rem; */
-  /* color: white; */
   height: 100vh;
   border-right: 1px solid #e5e7eb;
+  position: relative;
+  gap: 1rem;
+
+  .maya-logo {
+    display: flex;
+    padding: 1rem;
+    align-items: center;
+    gap: 2rem;
+    img {
+      width: 56px;
+      border-radius: 10px;
+    }
+
+    .tags {
+      display: flex;
+      flex-direction: column;
+      span {
+        font-size: 1.5rem;
+      }
+      .title {
+        font-size: 2.4rem;
+      }
+    }
+  }
+
+  .sponsor-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    overflow: hidden;
+    z-index: 0;
+    height: 100vh;
+    img {
+      height: 100%;
+      width: 100%;
+      object-fit: contain;
+    }
+  }
 }
 
-.logo {
+.org-logo {
   display: flex;
-  /* flex-direction: column; */
+  padding: 1rem;
   align-items: center;
-  font-size: 3.2rem;
-  font-weight: 500;
-  gap: 4rem;
-  /* color: white; */
-  margin-left: 3rem;
-}
+  gap: 2rem;
+  justify-content: right;
+  width: 100%;
+  img {
+    width: 7rem;
+    border-radius: 10px;
+  }
 
-.logo::before {
-  content: '';
-  display: inline-block;
-  width: 50px;
-  height: 50px;
-  margin-right: 0.5rem;
-  /* background-image: url('../../assets/images/UIET-logo.png'); */
-  background-image: url('../../../public/assets/images/UIET-logo.png');
-  background-size: contain; /* scale image to fit */
-  background-repeat: no-repeat;
-  background-position: center;
-  vertical-align: middle; /* align with text */
+  .tags {
+    display: flex;
+    flex-direction: column;
+    span {
+      font-size: 1.5rem;
+    }
+    .title {
+      font-size: 2.4rem;
+    }
+  }
 }
 
 .dummy {
@@ -57,6 +91,7 @@ body {
 }
 .hero-text {
   margin-left: 3rem;
+  z-index: 1;
 }
 
 .hero-text h1 {
@@ -71,34 +106,6 @@ body {
   font-weight: 400;
 }
 
-/* .cloud-icon {
-  width: 200px;
-  height: 150px;
-  position: relative;
-  margin-top: 2rem;
-} */
-/* 
-.cloud-storage {
-  width: 160px;
-  height: 120px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  position: relative;
-  backdrop-filter: blur(10px);
-} */
-
-/* .cloud-storage::before {
-  content: '';
-  position: absolute;
-  top: -15px;
-  left: 10px;
-  right: 10px;
-  height: 25px;
-  background: #ffd700;
-  border-radius: 12px;
-} */
-
 .right-section {
   flex: 1;
   background: white;
@@ -106,7 +113,7 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 2rem;
+  /* padding: 2rem; */
 }
 
 .login-form {
