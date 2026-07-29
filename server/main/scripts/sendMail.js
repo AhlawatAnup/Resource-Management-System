@@ -11,7 +11,7 @@ const feedback_sub = '[FEEDBACK] Complete Your Annual GPU Resource Feedback Form
 const invitation_sub =
   'Invitation to Interact with Intel Unnati Labs Team | 23 July 2026 | U.I.E.T Cloud AI Data Center';
 
-const VS_CODE_SUBJECT = '';
+const VS_CODE_SUBJECT = '[Feature Announcement] U.I.E.T AI Cloud Data Center Now Supports VS Code';
 
 async function mail_feedback() {
   try {
