@@ -1,15 +1,5 @@
-// Returns true if the request's allotment has expired
-export function isRequestExpired(request) {
-  if (
-    request.is_verified &&
-    request.isActive &&
-    request.allotmentEndTime &&
-    new Date(request.allotmentEndTime).getTime() < Date.now()
-  ) {
-    return true;
-  }
-  return false;
-}
+const MachineAllotments = require('../../../server/main/database/machineAllotmentModel');
+
 // Student-specific utility functions
 
 export async function getLoggedInStudentId() {
@@ -120,7 +110,8 @@ export function getStudentStatusClass(student) {
 }
 
 export function getRequestStatus(request) {
-  if (isRequestExpired(request)) {
+  if (request.is_verified && !request.isActive) {
+    console.log('request-expired');
     return 'completed';
   }
   if (request.is_verified) {
@@ -134,11 +125,13 @@ export function getRequestStatus(request) {
     return 'rejected';
   }
 
-  return 'pending';
+  if (request.isActive && !request.is_verified) {
+    return 'pending';
+  }
 }
 
 export function getRequestStatusClass(request) {
-  if (isRequestExpired(request)) {
+  if (request.is_verified && !request.isActive) {
     return 'status-completed';
   }
   if (request.is_verified) {
@@ -156,12 +149,13 @@ export function getRequestStatusClass(request) {
   if (request.teacher_action && request.teacher_verified && !request.admin_action) {
     return 'status-in-progress status-pending';
   }
-
-  return 'status-pending';
+  if (request.isActive && !request.is_verified) {
+    return 'pending';
+  }
 }
 
 export function getRequestStatusText(request) {
-  if (isRequestExpired(request)) {
+  if (request.is_verified && !request.isActive) {
     return {
       key: 'COMPLETED',
       text: 'Completed',
@@ -203,10 +197,12 @@ export function getRequestStatusText(request) {
     };
   }
 
-  return {
-    key: 'PENDING_REVIEW',
-    text: 'Pending Review',
-  };
+  if (request.isActive && !request.is_verified) {
+    return {
+      key: 'PENDING_REVIEW',
+      text: 'Pending Review',
+    };
+  }
 }
 
 // ==============================
