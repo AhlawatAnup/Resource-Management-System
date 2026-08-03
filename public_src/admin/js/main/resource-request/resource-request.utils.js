@@ -3,7 +3,8 @@ import 'tippy.js/dist/tippy.css';
 import Toastify from 'toastify-js';
 import 'toastify-js/src/toastify.css';
 import Swal from 'sweetalert2';
-import { isRequestExpired } from '../../../../student/js/student.util';
+
+
 // Get request status (ADMIN version - includes teacher + admin states)
 export function getRequestStatus(request) {
   // 0. Check if expired (isActive: false)
@@ -16,14 +17,16 @@ export function getRequestStatus(request) {
   if (request.admin_action && !request.admin_verified) {
     return { text: 'Declined by Admin', class: 'status-rejected' };
   }
+
+  if (request.is_verified && !request.isActive) {
+    return { text: 'Expired', class: 'expired' };
+  }
+
   // 1. FINAL → Fully verified
-  if (request.is_verified && request.isActive == true) {
+  if (request.is_verified && request.isActive) {
     return { text: 'Verified', class: 'status-approved' };
   }
 
-  if (isRequestExpired(request)) {
-    return { text: 'Expired', class: 'expired' };
-  }
   // 3. Any approval
   // if (request.teacher_action && request.teacher_verified) {
   //   return { text: "Approved by Teacher", class: "verified" };
@@ -33,8 +36,9 @@ export function getRequestStatus(request) {
   //   return { text: "Approved by Admin", class: "verified" };
   // }
 
-  // 4. Default → Pending
-  return { text: 'Pending Admin', class: 'status-pending' };
+  if (!request.is_verified && request.isActive) {
+    return { text: 'Pending Admin', class: 'status-pending' };
+  }
 }
 
 // Filter requests (pure function)
