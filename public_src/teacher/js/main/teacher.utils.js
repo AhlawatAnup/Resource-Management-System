@@ -1,6 +1,5 @@
 import tippy from 'tippy.js';
 import 'tippy.js/dist/tippy.css';
-import { isRequestExpired } from '../../../student/js/student.util';
 
 // Get verification status text for teacher
 export function getVerificationStatus(teacher) {
@@ -89,7 +88,7 @@ export function getStudentStatusClassForTeacher(student) {
 
 // Get request status information
 export function getRequestStatus(request) {
-  if (isRequestExpired(request)) {
+  if (request.is_verified && !request.isActive) {
     return { text: 'Expired', class: 'expired' };
   } else if (request.is_verified) {
     return { text: 'Approved', class: 'status-approved' };
@@ -101,7 +100,7 @@ export function getRequestStatus(request) {
     //   return { text: "Pending Admin", class: "pending-admin" };
     // } else if (!request.teacher_action) {
     //   return { text: "Pending Teacher", class: "pending-teacher" };
-  } else {
+  } else if (request.isActive && !request.is_verified) {
     // return { text: "Pending", class: "pending" };
     return { text: 'Pending at Admin', class: 'status-pending' };
   }

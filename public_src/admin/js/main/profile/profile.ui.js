@@ -1,7 +1,4 @@
 import { handleLogout } from '../../../../common/utils/commons.utils';
-import flatpickr from 'flatpickr';
-
-import 'flatpickr/dist/flatpickr.css';
 
 // ui/profileUI.js
 function $(id) {

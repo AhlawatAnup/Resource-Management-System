@@ -24,7 +24,23 @@ async function getStatsByResReqId(req, res) {
     if (!allotment) return res.status(404).json({ message: 'Allotment not found' });
 
     const migid = allotment.machineId.MIGID;
-    const { startTime, endTime } = allotment;
+    let { startTime, endTime } = allotment;
+
+    let startMs = new Date(startTime).getTime();
+    let endMs = new Date(endTime).getTime();
+    const alloted_duration = endMs - startMs;
+    const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
+
+    if (alloted_duration > thirtyDaysMs) {
+      const now = new Date();
+      if (endMs < now.getTime()) {
+        startTime = new Date(endMs - thirtyDaysMs);
+        endTime = new Date(endMs);
+      } else {
+        endTime = now;
+        startTime = new Date(now.getTime() - thirtyDaysMs);
+      }
+    }
 
     const MachineStat = getMachineStatModel(getStatsConnection());
     const rawStats = await MachineStat.find({
@@ -79,10 +95,13 @@ function averageByInterval(data, intervalMinutes = 60) {
 async function getStatsForCombinedReport(req, res) {
   try {
     const { from_date, to_date } = req.query;
+    const start_Date = new Date(from_date);
+    const end_Date = new Date(to_date);
+    endDate.setHours(23, 59, 59, 999);
     const date_range_filter = {
       $match: {
-        'machineAllotment.startTime': { $gte: new Date(from_date) },
-        'machineAllotment.endTime': { $lte: new Date(to_date) },
+        'machineAllotment.startTime': { $gte: start_Date },
+        'machineAllotment.endTime': { $lte: end_Date },
       },
     };
 
@@ -306,6 +325,9 @@ async function getStatsForCombinedReport(req, res) {
             createdAtRaw: '$createdAt',
             req_createdRaw: '$resourceRequest.createdAt',
           },
+        },
+        {
+          $sort: { startTimeRaw: 1 },
         },
       ]),
 
