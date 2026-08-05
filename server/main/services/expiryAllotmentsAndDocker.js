@@ -1,11 +1,11 @@
 const MachineAllotment = require('../database/machineAllotmentModel');
-const ResourceRequest = require('../database/resourceRequestModel'); // 👈 ADD THIS
+const ResourceRequest = require('../database/resourceRequestModel');
 const { saveAllotmentHistory } = require('../utils/machineHistory/historyHelper.js');
 const { stopUser, deleteUser, startUser } = require('../utils/dockerAPIs/docker.service.js');
 
 async function markExpiredAllotmentsHistoryAndCleanupDocker() {
   const now = new Date();
-  console.log('~~~~~hit: markExpiredAllotmentsHistoryAndCleanupDocker');
+  console.log('Cleaner: Checking and Cleaning Docker');
   try {
     const allotmentsToProcess = await MachineAllotment.find({
       isActive: true,
