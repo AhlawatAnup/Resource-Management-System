@@ -174,8 +174,10 @@ function createRequestCard(request) {
 
   const end = request.allotmentEndTime ? new Date(request.allotmentEndTime).getTime() : null;
 
-  const isActive = request.isActive && request.is_verified;
-  const isExpired = request.is_verified && !request.is_verified;
+  // const isActive = request.isActive && request.is_verified;
+  // const isExpired = request.is_verified && !request.isActive;
+  const isActive = start && end && now >= start && now <= end;
+  const isExpired = end && now > end;
 
   const showReportButton = isActive || isExpired;
   const editedBadge = request.isEdited
@@ -185,8 +187,7 @@ function createRequestCard(request) {
   const canDelete = canDeleteRequest(request);
 
   const isVerified = request.is_verified && request.machineId && request.machineId.MIGID;
-  console.log(isVerified);
-  const showTokenAndButtons = isVerified && request.isActive;
+  const showTokenAndButtons = isVerified && request.isAllotmentActive;
 
   let tokenMessage = '';
 
