@@ -185,7 +185,7 @@ function createRequestCard(request) {
   const canDelete = canDeleteRequest(request);
 
   const isVerified = request.is_verified && request.machineId && request.machineId.MIGID;
-  console.log(isVerified);
+  // console.log(isVerified);
   const showTokenAndButtons = isVerified && request.isActive;
 
   let tokenMessage = '';
