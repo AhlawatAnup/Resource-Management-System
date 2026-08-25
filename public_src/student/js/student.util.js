@@ -114,19 +114,17 @@ export function getRequestStatus(request) {
     console.log('request-expired');
     return 'completed';
   }
-  if (request.is_verified) {
-    return 'approved';
-  }
 
-  if (
-    (request.teacher_action && !request.teacher_verified) ||
-    (request.admin_action && !request.admin_verified)
-  ) {
+  if (request.admin_action && !request.admin_verified) {
     return 'rejected';
   }
 
   if (request.isActive && !request.is_verified) {
     return 'pending';
+  }
+
+  if (request.is_verified && request.admin_verified && request.isActive) {
+    return 'approved';
   }
 }
 
