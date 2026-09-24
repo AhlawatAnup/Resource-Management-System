@@ -1,38 +1,44 @@
-# SAMPLE ENV FILE FORMAT FOR THE SERVER TO RUN
+MODE="prod"  # prod : dev
+NAME="This is My Data Centre" # NAME
+SESSION_SECRET=super-secret-key # SECRET FOR GENERATIONG SESSIONS
+PORT=3000 # PORT FOR APP
+CLIENT_URL=http://localhost:${PORT} # URL FOR APP :: USED FOR DEBUGGING ONLY
 
-MODE=dev
-SESSION_SECRET=secret-key
-PORT=3000
-CLIENT_URL=http://localhost:${PORT}
-MONGO_URI=mongodb://localhost:27017/college_resources
-STATS_DB_URI=mongodb://localhost:27017/machine_monitoring
-ENFORCE_HTTPS=false
+MONGO_URI=mongodb://localhost:27017/college_resources  # MONGO DB URI
+STATS_DB_URI=mongodb://localhost:27017/machine_monitoring # STATS COLLECTION DB
+ENFORCE_HTTPS=false  # ENFORCE HTTPS 
 
-# Email
-EMAIL_HOST=host
-EMAIL_PORT=port
-EMAIL_USER=abc@gmail.com
-EMAIL_PASS=pass
-EXPIRY_NOTIFY_SCHEDULE=5 3 * * *
-# EXPIRY_NOTIFY_SCHEDULE=*/1 * * * *
+# EMAIL SETTINGS  :: FOR GMAIL AS STMP
+# EMAIL_FROM=example@gmail.com
+# EMAIL_HOST=smtp.gmail.com
+# EMAIL_PORT=465
+# EMAIL_USER=example@gmail.com # SOME EMAIL PROVIDER LIKE PRIVATE SETUP DOESN'T USE PART AFTER @
+# EMAIL_PASS=pass word  # GMAIL ACCOUNT APP PASSWORD WITH SPACES
+# EMAIL_SECURE=true  # SECURE FLAG
+# EMAIL_IGNORE_TLS=true  # IGNORE TLS FLAG 
+# EMAIL_REQUIRE_TLS=false # REQUIRE TLS FLAG
+# EMAIL_ENALE_BCC=false  # NEED TO RECIVE IN SELF INBOX AS BCC
+# EMAIL_REQUIRE_CA=false # REQUIRE CERTIFICATE
+
+EXPIRY_NOTIFY_SCHEDULE=5 3 * * *  # EMAIL EXPIRY FLAG
 
 # backup
 BACKUP_SCHEDULE=0 3 * * *
 MONGO_DB=college_resources
-BACKUP_BASE=/path-to-base
+BACKUP_BASE=/Users/ankit/MongoBackup/backup/mongo
 MONGO_DUMP=/opt/homebrew/bin/mongodump
 RCLONE_PATH=/opt/homebrew/bin/rclone
 REMOTE_NAME=mygdrive
 REMOTE_PATH=MongoBackups
 
 # Web Push Notifications
-VAPID_PUBLIC_KEY=public-key
-VAPID_PRIVATE_KEY=private-key
-VAPID_SUBJECT=mailto:abc@gmail.com
+VAPID_PUBLIC_KEY=PUBLIC_KEY
+VAPID_PRIVATE_KEY=PRIVATE_KEY
+VAPID_SUBJECT=mailto:example@gmail.com
 
 #PROXY
-TOKEN_SERVER_PORT=9999
-X_API_KEY=apy-key
+TOKEN_SERVER_PORT=SERVER_PORT
+X_API_KEY=API_KEY
 
 EXPIRY_ALLOTMENTS_SCHEDULE=0 0 * * *
 # EXPIRY_ALLOTMENTS_SCHEDULE=*/1 * * * *
@@ -41,5 +47,10 @@ EXPIRY_ALLOTMENTS_SCHEDULE=0 0 * * *
 MACHINE_STATS_SCHEDULE="*/1 * * * *"
 STATS_DB_URI=mongodb://localhost:27017/machine_monitoring
 
-MACHINE_A100=http://machine_ip-1:9999
-MACHINE_H100=http://machine-ip-2:9999
+MACHINE_A100=http://YOUR_IP_1:9999  # FIX IN NEXT UPDATE
+MACHINE_H100=http://YOUR_IP_2:9999  # FIX IN NEXT UPDTE
+
+
+
+# FORMS OR LINKS :: SAMPLE URL NO USE :: USED FOR MAILS LINK
+VS_CODE_MANUAL = "https://aicentre.gitbook.io/maya-docs/extensions/connect-maya-cloud-to-vs-code"

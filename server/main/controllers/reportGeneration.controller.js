@@ -5,8 +5,6 @@ const MachineAllotment = require('../database/machineAllotmentModel');
 const History = require('../database/machineHistoryModel');
 const Student = require('../database/studentModel');
 const Teacher = require('../database/teacherModel');
-const doc = require('pdfkit');
-const { default: index } = require('toastify');
 
 async function getStatsByResReqId(req, res) {
   try {
@@ -97,7 +95,7 @@ async function getStatsForCombinedReport(req, res) {
     const { from_date, to_date } = req.query;
     const start_Date = new Date(from_date);
     const end_Date = new Date(to_date);
-    endDate.setHours(23, 59, 59, 999);
+    end_Date.setHours(23, 59, 59, 999);
     const date_range_filter = {
       $match: {
         'machineAllotment.startTime': { $gte: start_Date },
