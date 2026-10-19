@@ -26,6 +26,7 @@ const {
   revokeResourceRequest,
   extendAllotment,
   deleteRejectedRequest,
+  immediateMachineAllocation,
 } = require('../controllers/admin.controller.js');
 
 const {
@@ -102,7 +103,7 @@ router.get('/machines', isAdmin, getMachines); //admin machine page
 router.post('/create-machine', isAdmin, createMachine);
 router.put('/machines/:id', isAdmin, updateMachineAvailability);
 router.delete('/machines/:id', isAdmin, deleteMachine);
-
+router.post('/immediateActivationMail/:requestId', isAdmin, immediateMachineAllocation);
 //router.get('/get_machines', isAdmin, getAllMachines); //for allotments
 //router.get('/allotments/:machineId', isAdmin, getMachineWiseActiveAllotments);
 

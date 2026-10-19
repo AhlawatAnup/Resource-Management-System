@@ -49,19 +49,26 @@ const getNextISTDay = (date) => {
 
 // Main function: calculate start & end time
 const calculateAllotmentWindow = (lastEndTime, durationDays) => {
-  const baseDate = lastEndTime ? new Date(lastEndTime) : new Date();
+  const now = new Date();
 
-  // Step 1: next IST day
-  const { year, month, day } = getNextISTDay(baseDate);
+  const isMachineIdle = !lastEndTime || new Date(lastEndTime) <= now;
 
-  // Step 2: start → 00:30 IST
-  const startTime = createUTCFromIST(year, month, day, 0, 30);
+  let startTime;
+  let baseDate;
 
-  // Step 3: end → duration days later at 23:30 IST
-  const endDay = day + (durationDays - 1);
-
-  const endTime = createUTCFromIST(year, month, endDay, 23, 30);
-
+  if (isMachineIdle) {
+    // If the machine is free right now, start immediately upon approval
+    startTime = now;
+    baseDate = now; // Use today as the base for duration calculation
+  } else {
+    // original flow
+    const nextDayIST = getNextISTDay(new Date(lastEndTime));
+    startTime = createUTCFromIST(nextDayIST.year, nextDayIST.month, nextDayIST.day, 0, 30);
+    baseDate = new Date(lastEndTime);
+  }
+  const targetDateIST = getNextISTDay(baseDate);
+  const endDay = targetDateIST.day + (durationDays - 1);
+  const endTime = createUTCFromIST(targetDateIST.year, targetDateIST.month, endDay, 23, 30);
   return { startTime, endTime };
 };
 

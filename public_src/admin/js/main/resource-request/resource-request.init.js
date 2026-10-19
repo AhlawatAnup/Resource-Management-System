@@ -148,6 +148,17 @@ export async function deleteRejectedResourceReq(requestId) {
   return data;
 }
 
+export async function ActivateAllocationMail(requestId) {
+  const res = await fetch(`/dashboard/admin/immediateActivationMail/${requestId}`, {
+    method: 'POST',
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.message || 'Failed to delliver Mail');
+  }
+  return data;
+}
+
 //HANDLERS
 
 // ===== STATE =====
@@ -502,6 +513,9 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
           const confirmed = await confirmAction(action);
           if (!confirmed) return;
+          else {
+            await ActivateAllocationMail(id);
+          }
         }
 
         await verifyAdminRequest(id, action === 'approve', remarks);
