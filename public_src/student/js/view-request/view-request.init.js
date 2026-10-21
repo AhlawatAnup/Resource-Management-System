@@ -224,6 +224,7 @@ function attachOpenVSCodeHandlers() {
       if (!migid || !requestId || token == 0) return;
       const maya_url = window.location.origin + '/' + requestId + '/' + migid + '/' + token;
 
+      console.log(maya_url);
       // OPEN IN VS CODE
       window.open(
         'vscode://MenthosaSolutions.maya-vscode-connector/connect?maya_url=' + maya_url,

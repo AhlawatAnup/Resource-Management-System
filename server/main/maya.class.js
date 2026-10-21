@@ -1,4 +1,4 @@
-const { fetchAllMachines } = require('./server/main/database/mayaDB.js');
+const { fetchAllMachines } = require('./database/mayaDB.js');
 
 class Maya {
   constructor() {

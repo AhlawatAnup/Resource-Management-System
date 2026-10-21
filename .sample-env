@@ -47,10 +47,6 @@ EXPIRY_ALLOTMENTS_SCHEDULE=0 0 * * *
 MACHINE_STATS_SCHEDULE="*/1 * * * *"
 STATS_DB_URI=mongodb://localhost:27017/machine_monitoring
 
-MACHINE_A100=http://YOUR_IP_1:9999  # FIX IN NEXT UPDATE
-MACHINE_H100=http://YOUR_IP_2:9999  # FIX IN NEXT UPDTE
-
-
 
 # FORMS OR LINKS :: SAMPLE URL NO USE :: USED FOR MAILS LINK
 VS_CODE_MANUAL = "https://aicentre.gitbook.io/maya-docs/extensions/connect-maya-cloud-to-vs-code"
