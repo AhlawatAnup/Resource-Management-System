@@ -15,9 +15,10 @@ const {
   unverifyTeacher,
   getAllotmentMap,
 } = require('../utils/common.utils.js');
+const { sendAllotmentMailById } = require('../services/resourceExpiryNotifier.js');
 const bcrypt = require('bcrypt');
 const { saveAllotmentHistory } = require('../../main/utils/machineHistory/historyHelper.js');
-
+const { maya } = require('../maya.init.js');
 exports.admin_dashboard_data = async (req, res) => {
   try {
     // Get counts for dashboard statistics
@@ -477,6 +478,7 @@ exports.createMachine = async (req, res) => {
 
     const machine = new Machine(value);
     await machine.save();
+    await maya.setMachines();
 
     return res.status(201).json({
       ok: true,
@@ -593,6 +595,7 @@ exports.deleteMachine = async (req, res) => {
     // Safe to delete
     // await Machine.findByIdAndUpdate(id, { isDeleted: true });
     await Machine.findOneAndUpdate({ _id: id }, { isDeleted: true }, { includeUnavailable: true });
+    await maya.setMachines();
     return res.json({ ok: true });
   } catch (err) {
     console.error('Failed to delete machine', err);
@@ -790,6 +793,27 @@ exports.deleteRejectedRequest = async (req, res) => {
     console.log('Error in deleting request: ', error);
     return res.status(500).json({
       message: 'Internal server error in deleting request!',
+    });
+  }
+};
+
+exports.immediateMachineAllocation = async (req, res) => {
+  try {
+    const { requestId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(requestId)) {
+      return res.status(400).json({ message: 'Invalid requestId' });
+    }
+
+    await sendAllotmentMailById(requestId);
+
+    return res.status(200).json({
+      message: 'Immediate Allotment activation notified successfully!',
+    });
+  } catch (error) {
+    console.log('error in mailing immediate allocation: ', error);
+    return res.status(500).json({
+      message: 'Error in notifying immediate activation of allotment!',
     });
   }
 };
