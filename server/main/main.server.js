@@ -17,7 +17,6 @@ const {
   markExpiredAllotmentsHistoryAndCleanupDocker,
 } = require('./services/expiryAllotmentsAndDocker.js'); // adjust path
 const { collectAndStoreStats } = require('./services/collectAllMachineStats.js');
-
 // ✅ Connect to DBs
 connectDB();
 connectStatsDB();

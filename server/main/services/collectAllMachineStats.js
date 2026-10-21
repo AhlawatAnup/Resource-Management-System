@@ -2,6 +2,7 @@ const { getMachineStatModel } = require('../database/machineStatsModel');
 const Machine = require('../database/machineModel');
 let MachineStat = null;
 const { machineStats } = require('../utils/dockerAPIs/docker.service');
+const { maya } = require('../maya.init');
 
 // Convert GiB/MiB strings to MiB
 const parseToMiB = (val) => {
@@ -11,20 +12,17 @@ const parseToMiB = (val) => {
   return Math.floor(num);
 };
 
-const machines = [
-  { name: 'A100', url: process.env.MACHINE_A100 },
-  { name: 'H100', url: process.env.MACHINE_H100 },
-];
-
 async function collectAndStoreStats(statsConnection) {
   if (!MachineStat) {
     MachineStat = getMachineStatModel(statsConnection);
   }
   const allEntries = [];
 
-  for (const machine of machines) {
+  for (const machine of maya._machines) {
     try {
       const data = await machineStats(machine.url);
+
+      console.log(machine.name);
 
       if (data.status !== 'success' || !Array.isArray(data.containers)) {
         console.warn(`Unexpected stats format from ${machine.name}:`, data);

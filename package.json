@@ -1,7 +1,7 @@
 {
-  "name": "Resource Management System",
+  "name": "resource-management-system",
   "version": "1.0.3",
-  "description": "",
+  "description": "![Node.js](https://img.shields.io/badge/Node.js-v22%2B-brightgreen?style=flat-square&logo=node.js)\r ![MongoDB](https://img.shields.io/badge/MongoDB-Local-green?style=flat-square&logo=mongodb)\r ![Python](https://img.shields.io/badge/Python-3.x-blue?style=flat-square&logo=python)\r ![License](https://img.shields.io/badge/license-GPLv3-blue.svg)",
   "main": "index.js",
   "scripts": {
     "dev": "nodemon server/main/main.server.js",
