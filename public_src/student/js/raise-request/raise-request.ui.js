@@ -1,6 +1,7 @@
 // ui.js
 
 import { showConfirmationPopup } from './confirmation-popup.js';
+import { student } from '../student.init.js';
 
 export function renderMachineCards(machines) {
   const container = document.getElementById('raise-machines-flexbar');
@@ -173,7 +174,7 @@ export function renderMachineCards(machines) {
     .join('');
 }
 
-export function renderResourcesPage(student, verificationStatus, onSubmitHandler) {
+export function renderResourcesPage(verificationStatus, onSubmitHandler) {
   const banner = document.getElementById('verification-banner');
   const bannerText = document.getElementById('banner-text');
   const bannerIcon = document.getElementById('banner-icon');
@@ -183,8 +184,17 @@ export function renderResourcesPage(student, verificationStatus, onSubmitHandler
     return;
   }
 
+  // console.log('student in renderResourcesPage: ', student);
   const isVerified = student.teacher_verified && student.admin_verified;
 
+  // console.log(
+  //   'student.teacher_verified: ',
+  //   student.teacher_verified,
+  //   'student.admin_verified: ',
+  //   student.admin_verified,
+  //   'isVerified: ',
+  //   isVerified,
+  // );
   const loadingSection = document.getElementById('loading-section');
   const verifiedSection = document.getElementById('verified-section');
   const unverifiedSection = document.getElementById('unverified-section');

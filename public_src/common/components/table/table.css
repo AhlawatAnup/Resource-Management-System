@@ -116,12 +116,14 @@
 
     /* EXTRA CLASSES  */
     /* Contact Info Styles */
-    .contact-time {
+    .contact-time,
+    .rating {
       color: #6b7280;
       font-size: 11px;
     }
 
-    .request-date {
+    .request-date,
+    .request-rating {
       color: #6b7280;
       font-size: 11px;
     }

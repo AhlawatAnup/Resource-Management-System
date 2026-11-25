@@ -181,6 +181,28 @@
   right: 0;
 }
 
+.status-completed {
+  right: 56px;
+  font-weight: 450;
+  color: green;
+  background-color: #e1fce9;
+  padding: 3px;
+}
+
+.rating-completed {
+  padding: 6px 12px;
+
+  border-radius: 5px;
+
+  font-size: 12px;
+  font-weight: 400;
+
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  position: absolute;
+  right: 0;
+}
 .request-meta {
   display: flex;
   flex-wrap: wrap;
@@ -298,7 +320,8 @@
   flex-wrap: wrap;
 }
 
-.request-date {
+.request-date,
+.request-rating {
   color: #6b7280;
   font-size: 12px;
 }

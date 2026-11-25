@@ -1,4 +1,10 @@
-import { formatDate, getInitials } from '../../../../common/utils/commons.utils.js';
+import {
+  formatDate,
+  getInitials,
+  renderDashboardHeader,
+} from '../../../../common/utils/commons.utils.js';
+import { Teacher } from '../../teacher.class.js';
+import { teacher } from '../../teacher.init.js';
 import {
   getVerificationStatus,
   getStatusClass,
@@ -6,6 +12,59 @@ import {
   getStudentStatusClassForTeacher,
 } from '../teacher.utils.js';
 import Swal from 'sweetalert2';
+
+async function handleDasboardLoad() {
+  const teacherVerificationStatus = {
+    is_verified: teacher.is_verified,
+    verification_completed: teacher.verification_completed,
+  };
+  renderDashboardHeader(teacher);
+  renderTeacherProfile(teacher);
+
+  // Not verified
+  if (!teacherVerificationStatus.is_verified) {
+    const tableBody =
+      document.getElementById('contactTableBody') ||
+      document.getElementById('pendingRequestsTableBody');
+
+    if (tableBody) {
+      tableBody.innerHTML =
+        '<tr><td colspan="6" class="loading">Your account must be verified by admin to view students</td></tr>';
+    }
+    return;
+  }
+
+  // No students
+  if (!teacher.students.length) {
+    const tableBody =
+      document.getElementById('contactTableBody') ||
+      document.getElementById('pendingRequestsTableBody');
+
+    if (tableBody) {
+      tableBody.innerHTML =
+        '<tr><td colspan="6" class="loading">No student registered with you</td></tr>';
+    }
+    return;
+  }
+
+  // Load students
+  // for (let i = 0; i < teacher.students.length; i++) {
+  //   await handleStudentFetch(teacher.students[i]);
+  // }
+
+  // Pending Requests page
+  const pendingTable = document.getElementById('pendingRequestsTableBody');
+
+  if (pendingTable && pendingTable.children.length === 0) {
+    pendingTable.innerHTML = `
+      <tr>
+        <td colspan="6" class="loading">
+          No pending requests
+        </td>
+      </tr>
+    `;
+  }
+}
 
 // Render teacher profile
 export function renderTeacherProfile(teacherData) {
@@ -252,3 +311,8 @@ export function showNotification(message, type) {
     }, 300);
   }, 3000);
 }
+
+teacher.addEventListener('TEACHER_READY', () => {
+  console.log('TEACHER_READY event triggered.');
+  handleDasboardLoad();
+});

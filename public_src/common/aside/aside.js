@@ -2,8 +2,8 @@ import { ui_states } from '../../common/ui.states/ui.states';
 import { handleLogout } from '../utils/commons.utils.js';
 
 const aside = document.querySelector('aside');
-
 const aside_items = aside.querySelectorAll('nav a');
+
 let active_item = 0;
 
 const sidebar_active_item = localStorage.getItem('side-bar-active-item') ?? 0;
@@ -13,9 +13,12 @@ aside_items.forEach((item, index) => {
     if (aside_items.length - 1 == index) {
       return handleLogout();
     }
+
     // console.log(index);
     aside_items[active_item].classList.remove('active');
 
+    console.log('Trigger sidebar');
+    
     ui_states.dispatchEvent(
       new CustomEvent('SIDEBAR_CHANGE', {
         detail: {

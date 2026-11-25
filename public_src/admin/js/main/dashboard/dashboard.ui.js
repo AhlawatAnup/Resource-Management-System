@@ -171,6 +171,7 @@ function renderStudentRow(student) {
           <div class="contact-time">
             ${common_utils.formatDate(student.createdAt)}
           </div>
+          <div class="rating">⭐${Number(student.resourceUtilizationScore).toPrecision(2)}/5</div>
         </div>
       </div>
     </td>

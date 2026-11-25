@@ -4,16 +4,135 @@
     <h2 id="student-welcome"></h2>
   </div>
 
-  <div class="container">
-    <!-- Student Profile Section -->
-    <div id="student-profile">
-      <!-- Profile will be loaded here by JavaScript -->
+  <div class="profile">
+    <div class="left">
+      <span class="avatar">S.N</span>
+      <span class="name">Mr. Student Name</span>
+      <span class="email text-muted">student@email.com</span>
+      <span class="badge" data-status="1">Verified</span>
+
+      <div class="rating">
+        <div class="stars" style="--rating: 5" data-rating="3.5">
+          <div class="empty">★★★★★</div>
+          <div class="filled">★★★★★</div>
+        </div>
+        <span class="text-muted">5/5</span>
+      </div>
     </div>
 
-    <!-- <div class="stats-outer" style="margin-top: 16px;" >
+    <div class="right">
+      <div class="status">
+        <span class="key text-muted">Join Date</span>
+        <span class="value">NA</span>
+      </div>
 
-        </div> -->
+      <!-- ---- -->
+
+      <div class="status">
+        <span class="key text-muted">Branch</span>
+        <span class="value">NA</span>
+      </div>
+
+      <!-- ---- -->
+
+      <div class="status">
+        <span class="key text-muted">Roll Number</span>
+        <span class="value">NA</span>
+      </div>
+
+      <!-- ---- -->
+
+      <div class="status">
+        <span class="key text-muted">Teacher Name</span>
+        <span class="value">NA</span>
+      </div>
+
+      <!-- ---- -->
+
+      <div class="status">
+        <span class="key text-muted">Total Requests</span>
+        <span class="value">NA</span>
+      </div>
+
+      <!-- ---- -->
+
+      <div class="status">
+        <span class="key text-muted">Account Status</span>
+        <span class="value">NA</span>
+      </div>
+
+      <!-- ---- -->
+      <div class="status">
+        <span class="key text-muted">Institute Address</span>
+        <span class="value">NA</span>
+      </div>
+
+      <!-- ---- -->
+
+      <button id="resourceRequestsBtn">
+        <i data-lucide="plus" stroke-width="1.5"></i>
+        Raise New Request
+      </button>
+
+      <button id="viewRequestsBtn">
+        <i data-lucide="audio-waveform" stroke-width="1.5"></i>
+        View My Requests
+      </button>
+    </div>
+    <!-- Student Profile Section -->
+
+    <!-- --------------------- -->
   </div>
-
-  <!-- ===================== -->
 </div>
+
+<!-- 
+STUDENT PROFILE
+<div id="student-profile">
+  
+
+  <div class="profile-card">
+    <div style="display: flex; justify-content: space-between; width: 100%">
+      <div class="profile-header-rows">
+        <div class="profile-header">
+          <div class="profile-avatar">A.A</div>
+
+          <h2 class="profile-name">Student Name</h2>
+
+          <span class="verification-badge ${statusClass}"> Unverified </span>
+        </div>
+        <div class="rating-row">
+          <div class="star-rating" style="--rating: 5">
+            <div class="stars-empty">★★★★★</div>
+            <div class="stars-filled">★★★★★</div>
+          </div>
+          <span class="rating-text">5/5</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="profile-details-row">
+      <span><strong>Email:</strong>student@student.com</span>
+      <span><strong>Branch:</strong>Branch</span>
+      <span><strong>Institute Address:</strong>Address</span>
+      <span><strong>Roll No.:</strong>Roll Number</span>
+      <span><strong>Joined:</strong>Today</span>
+    </div>
+
+    <div class="hero-bottom">
+      <div class="hero-teacher">Under the supervision of: Teacher</div>
+
+      <div class="rms-btn-v1">
+        <button id="resourceRequestsBtn">
+          <i data-lucide="plus" stroke-width="1.5"></i>
+          Raise New Request
+        </button>
+        <button class="unfill" id="viewRequestsBtn">
+          <i data-lucide="audio-waveform" stroke-width="1.5"></i>
+          View My Requests
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+-->

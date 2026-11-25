@@ -22,6 +22,11 @@ export function renderResourceRequests(requests, deps) {
     const statusInfo = getRequestStatus(request);
 
     const tr = document.createElement('tr');
+    const isCompleted = statusInfo.class == 'expired';
+    // console.log('isCompleted: ', isCompleted);
+    const ratingHTML = isCompleted
+      ? `<div class="request-rating">⭐${Number(request.utilizationScore).toPrecision(2)}/5</div>`
+      : ``;
 
     tr.innerHTML = `
       <td>
@@ -50,6 +55,7 @@ export function renderResourceRequests(requests, deps) {
              ${request.title}
           <p>
           <div class="request-date">${formatDate ? formatDate(request.createdAt) : ''}</div>
+          ${ratingHTML}
         </div>
       </td>
       <td>

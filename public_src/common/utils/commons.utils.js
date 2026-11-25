@@ -1,12 +1,12 @@
 import Swal from 'sweetalert2';
 
 // Render dashboard header for any role
-export function renderDashboardHeader(data) {
+export function renderDashboardHeader(teacher) {
   const header = document.getElementById('hello-user');
   if (!header) return;
 
-  const welcomeText = `Hello, ${data.name || 'User'}`;
-  const roleText = data.role ? ` | ${data.role}` : '';
+  const welcomeText = `Hello, ${teacher.name || 'User'}`;
+  const roleText = teacher.role ? ` | ${teacher.role}` : '';
 
   header.innerHTML = `${welcomeText}${roleText}`;
 }

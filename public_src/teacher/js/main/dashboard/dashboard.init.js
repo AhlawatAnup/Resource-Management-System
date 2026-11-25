@@ -2,7 +2,7 @@ import { registerServiceWorkerAndSubscribe } from '../../../../common/notificati
 import {
   getInitials,
   getRandomNamedColor,
-  renderDashboardHeader,
+ 
   logoutDirectly,
 } from '../../../../common/utils/commons.utils.js';
 import {
@@ -17,6 +17,8 @@ import {
 } from '../teacher.utils.js';
 import Swal from 'sweetalert2';
 import { setupDarkMode } from '../../../../common/darkmode/darkmode.js';
+
+import { teacher } from '../../teacher.init.js';
 
 // API CALLS -------------------->
 export async function fetchTeacherDashboardData() {
@@ -57,73 +59,14 @@ export async function updateStudentVerificationAPI(studentId, isVerified) {
 
 //HANDLER ----------------->
 const student_data = [];
-let teacherVerificationStatus = { is_verified: false };
+// let teacherVerificationStatus = { is_verified: false };
 
 // DASHBOARD LOAD
 export async function handleDashboardLoad() {
   try {
-    const response = await fetchTeacherDashboardData();
+    await teacher.setTeacherDetails();
 
-    if (!response.ok) {
-      if (response.status === 404) {
-        logoutDirectly();
-        return;
-      }
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
-
-    teacherVerificationStatus = {
-      is_verified: data.is_verified,
-      verification_completed: data.verification_completed,
-    };
-
-    renderDashboardHeader(data);
-    renderTeacherProfile(data);
-
-    // Not verified
-    if (!teacherVerificationStatus.is_verified) {
-      const tableBody =
-        document.getElementById('contactTableBody') ||
-        document.getElementById('pendingRequestsTableBody');
-
-      if (tableBody) {
-        tableBody.innerHTML =
-          '<tr><td colspan="6" class="loading">Your account must be verified by admin to view students</td></tr>';
-      }
-      return;
-    }
-
-    // No students
-    if (!data.students.length) {
-      const tableBody =
-        document.getElementById('contactTableBody') ||
-        document.getElementById('pendingRequestsTableBody');
-
-      if (tableBody) {
-        tableBody.innerHTML =
-          '<tr><td colspan="6" class="loading">No student registered with you</td></tr>';
-      }
-      return;
-    }
-
-    // Load students
-    for (let i = 0; i < data.students.length; i++) {
-      await handleStudentFetch(data.students[i]);
-    }
-    // Pending Requests page
-    const pendingTable = document.getElementById('pendingRequestsTableBody');
-
-    if (pendingTable && pendingTable.children.length === 0) {
-      pendingTable.innerHTML = `
-    <tr>
-      <td colspan="6" class="loading">
-        No pending requests
-      </td>
-    </tr>
-  `;
-    }
+    teacher.dispatchEvent(new CustomEvent('TEACHER_READY'));
   } catch (error) {
     console.error('Error fetching dashboard data:', error);
     logoutDirectly();

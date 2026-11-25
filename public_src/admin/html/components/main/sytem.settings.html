@@ -1,0 +1,50 @@
+<div class="main hide-default">
+  <div class="header">
+    <h2>System Settings</h2>
+    <div class="nav-section">
+      <button class="report-btn" id="report-btn">
+        <i data-lucide="notepad-text" stroke-width="1.5"></i>
+        Report
+      </button>
+      <button class="edit-profile-btn" id="edit-profile-btn">
+        <i data-lucide="Pencil" stroke-width="1.5"></i>
+        Edit Profile
+      </button>
+    </div>
+    <div class="nav-actions">
+      <button id="theme-toggle" class="theme-toggle" title="Dark Mode">
+        <i id="theme-icon" class="fa fa-moon"></i>
+      </button>
+    </div>
+  </div>
+
+  <div id="config-options-container">
+    <div class="rms-toggle-item">
+      <div class="toggle-label">
+        <span>Resource-Request Email</span>
+        <span class="text-muted">Email sent for every new resource request raised.</span>
+      </div>
+
+      <label class="toggle-switch">
+        <input
+          type="checkbox"
+          data-key="resource_request_mail"
+          onclick="setConfig('resource_request_mail', this)"
+        />
+        <span class="slider"></span>
+      </label>
+    </div>
+    <div class="rms-toggle-item">
+      <div class="toggle-label">
+        <span>More Config Options</span>
+        <span class="text-muted">Available soon.....</span>
+      </div>
+
+      <!-- <label class="toggle-switch">
+        <input type="checkbox" data-key=""/>
+        <span class="slider"></span>
+      </label> -->
+    </div>
+  </div>
+</div>
+<div id="report-overlay" class="report-overlay"></div>

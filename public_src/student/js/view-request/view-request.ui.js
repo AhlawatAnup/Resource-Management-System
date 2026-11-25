@@ -20,6 +20,15 @@ import {
 
 import { add_svg } from '../../../common/icons/icons.svg.js';
 
+import {
+  handleDeleteRequest,
+  reloadPage,
+  attachReportHandlers,
+  processVerifiedRequests,
+  attachCopyTokenHandlers,
+} from './view-request.init.js';
+import { student } from '../student.init.js';
+
 // ==============================
 // Page Structure
 // ==============================
@@ -79,7 +88,7 @@ export function renderAllRequests(requests, onDelete, onReload) {
 
       document.querySelector('.raise-request')?.classList.remove('hide-default');
 
-      setActiveSidebar('raise-request');
+      // setActiveSidebar('raise-request');
     });
     return;
   }
@@ -111,6 +120,7 @@ export function filterRequests(status) {
 }
 
 export function updateRequestCounts(requests) {
+  // console.log(requests);
   const counts = {
     all: requests.length,
     pending: 0,
@@ -147,6 +157,8 @@ function createRequestCard(request) {
   const statusText = getRequestStatusText(request);
   const statusClass = getRequestStatusClass(request);
 
+  // console.log('request: ', request);
+  // console.log('status', status);
   let requestStatusClass = '';
 
   switch (status) {
@@ -211,6 +223,13 @@ function createRequestCard(request) {
     }
   }
 
+  const isCompleted = status == 'completed';
+  const hasAllotment = request.utilizationScore;
+  const ratingHTML =
+    isCompleted && hasAllotment
+      ? `<div class=rating-completed>|⭐${request.utilizationScore}/5</div>`
+      : ``;
+
   return `
        <div class="request-item detailed ${requestStatusClass}" data-status="${status}">
 
@@ -227,9 +246,12 @@ function createRequestCard(request) {
             </h3>
             </div>
 
+           
               <span class="status-badge ${statusClass}">
             ${statusText.text}
         </span>
+              ${ratingHTML}
+
         </div>
 
 
@@ -396,3 +418,14 @@ function attachDeleteHandlers(onDelete, onReload) {
     });
   });
 }
+
+student.addEventListener('student_requests_loaded', async () => {
+  // console.log("'student_requests_loaded' event triggered");
+  const requests = student.resourceRequests;
+  // console.log('requests array received: ', requests);
+  renderAllRequests(requests, handleDeleteRequest, reloadPage);
+  updateRequestCounts(requests);
+  attachCopyTokenHandlers();
+  attachReportHandlers();
+  await processVerifiedRequests();
+});

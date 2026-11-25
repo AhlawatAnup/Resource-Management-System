@@ -1,0 +1,75 @@
+.side-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 30%;
+  height: 100vh;
+  background-color: #ffffff;
+  z-index: 10;
+  border-left: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  padding-block: 0.5rem;
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 10px;
+    h3 {
+      font-size: 3rem;
+      font-weight: 400;
+      padding: 1rem;
+    }
+  }
+
+  .body {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 2rem;
+    margin-top: 2rem;
+
+    .side-panel-form-container {
+      width: 70%;
+
+      .side-panel-form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2.5rem;
+      }
+    }
+  }
+  .close-btn {
+    position: absolute;
+    top: 1rem;
+    right: 0;
+    margin: 0.5rem;
+    background: unset;
+    border: unset;
+
+    svg {
+      width: 32px;
+      height: 32px;
+    }
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  &.close {
+    display: none !important ;
+  }
+}
+
+html[data-darkreader-mode] .side-panel,
+body.dark-mode .side-panel {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  border-left-color: #7a7676 !important;
+}

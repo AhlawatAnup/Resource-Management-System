@@ -301,6 +301,7 @@ exports.getAllResourceRequests = async (req, res) => {
             is_verified: r.is_verified,
             isActive: r.isActive,
           },
+          utilizationScore: allotment?.utilizationScore ?? null,
         };
       });
 
@@ -364,9 +365,9 @@ exports.UpdateAdminProfile = async (req, res) => {
     return res.status(401).json({ error: 'Not authenticated as admin' });
   }
 
-  const { newEmail, newUsername } = req.body;
+  const { newUsername, newEmail, newPassword } = req.body;
 
-  if (!newEmail && !newUsername) {
+  if (!newEmail && !newUsername && !newPassword) {
     return res.status(400).json({ error: 'Provide newEmail and/or newUsername to update.' });
   }
 
@@ -377,10 +378,14 @@ exports.UpdateAdminProfile = async (req, res) => {
   if (newUsername && String(newUsername).trim().length === 0) {
     return res.status(400).json({ error: 'Invalid username.' });
   }
+  if (newPassword && newPassword.length < 6) {
+    return res.status(400).json({ error: 'Password must be at least 6 characters.' });
+  }
 
   try {
     const admin = await Admin.findById(req.session.user.id).select('username email');
     if (!admin) return res.status(404).json({ error: 'Admin not found' });
+
     // Store original email for security alert notification
     const oldEmail = admin.email;
 
@@ -389,17 +394,25 @@ exports.UpdateAdminProfile = async (req, res) => {
     // Check email uniqueness and change
     if (newEmail && admin.email !== newEmail) {
       const exists = await Admin.findOne({ email: newEmail });
-      if (exists) return res.status(400).json({ error: 'Email already in use.' });
-      changes.email = newEmail;
-      admin.email = newEmail;
+      if (!exists) {
+        changes.email = newEmail;
+        admin.email = newEmail;
+      }
     }
 
     // Check username uniqueness and change
     if (newUsername && admin.username !== newUsername) {
       const existsU = await Admin.findOne({ username: newUsername });
-      if (existsU) return res.status(400).json({ error: 'Username already in use.' });
-      changes.username = newUsername;
-      admin.username = newUsername;
+      if (!existsU) {
+        changes.username = newUsername;
+        admin.username = newUsername;
+      }
+    }
+
+    if (newPassword) {
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      changes.password = hashedPassword;
+      admin.password = hashedPassword;
     }
 
     if (Object.keys(changes).length === 0) {
@@ -440,7 +453,17 @@ exports.UpdateAdminProfile = async (req, res) => {
         .catch((error) => console.error('Error sending confirmation email:', error));
     }
 
-    return res.json({ success: true, message: 'Admin identity updated.', changes });
+    // Send email notification if username was changed
+    if (changes.password) {
+      const changedAtTime = new Date().toLocaleString();
+      emailService
+        .sendAdminPasswordChangeEmail(changedAtTime)
+        .then((result) => console.log('Password change notification sent to admin:', result))
+        .catch((error) => console.error('Error sending password change email:', error));
+    }
+
+    const updatedAdmin = await Admin.findById(req.session.user.id).select('username email');
+    return res.status(200).json({ success: true, message: 'Admin profile updated.', updatedAdmin });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: 'Failed to update admin identity.' });
@@ -815,5 +838,59 @@ exports.immediateMachineAllocation = async (req, res) => {
     return res.status(500).json({
       message: 'Error in notifying immediate activation of allotment!',
     });
+  }
+};
+
+exports.GetAdminConfig = async (req, res) => {
+  if (!req.session.user || req.session.user.role !== 'admin') {
+    return res.status(401).json({ error: 'Not authenticated as admin' });
+  }
+
+  try {
+    const admin = await Admin.findById(req.session.user.id).select('config');
+    if (!admin) return res.status(404).json({ error: 'Admin not found' });
+
+    // Return config object, defaulting to an empty object if it hasn't been created yet
+    return res.status(200).json({ config: admin.config || {} });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: 'Failed to retrieve configuration.' });
+  }
+};
+
+exports.UpdateAdminConfig = async (req, res) => {
+  if (!req.session.user || req.session.user.role !== 'admin') {
+    return res.status(401).json({ error: 'Not authenticated as admin' });
+  }
+
+  const { key, value } = req.body;
+
+  if (!key) {
+    return res.status(400).json({ error: 'Configuration key is required.' });
+  }
+
+  try {
+    const admin = await Admin.findById(req.session.user.id);
+    if (!admin) return res.status(404).json({ error: 'Admin not found' });
+
+    // Initialize config object if it doesn't exist
+    if (!admin.config) {
+      admin.config = {};
+    }
+
+    admin.config[key] = value;
+
+    // Mark mixed/map field as modified for Mongoose if using strict schemas ---> this is to ensure that the sub-field inside an object is updated on calling admin.save().
+    admin.markModified('config');
+    await admin.save();
+
+    return res.status(200).json({
+      success: true,
+      message: 'Configuration updated.',
+      config: admin.config,
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: 'Failed to update configuration.' });
   }
 };

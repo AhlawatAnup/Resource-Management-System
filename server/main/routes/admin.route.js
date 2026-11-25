@@ -27,6 +27,8 @@ const {
   extendAllotment,
   deleteRejectedRequest,
   immediateMachineAllocation,
+  UpdateAdminConfig,
+  GetAdminConfig,
 } = require('../controllers/admin.controller.js');
 
 const {
@@ -55,8 +57,8 @@ router.use(isAdmin);
 router.get('/view-requests', (req, res) => {
   res.sendFile(path.join(publicPath, 'dashboard', 'admin', 'view-requests.html'));
 });
-router.get('/profile', (req, res) => {
-  res.sendFile(path.join(publicPath, 'dashboard', 'admin', 'profile.html'));
+router.get('/system-settings', (req, res) => {
+  res.sendFile(path.join(publicPath, 'dashboard', 'admin', 'system.settings.html'));
 });
 router.get('/machines-page', (req, res) => {
   res.sendFile(path.join(publicPath, 'dashboard', 'admin', 'machines.html'));
@@ -109,5 +111,7 @@ router.post('/immediateActivationMail/:requestId', isAdmin, immediateMachineAllo
 
 //report generation
 //router.get('/getStatsByResReqId/:resourceRequestId', getStatsByResReqId);
+router.put('/update-config', isAdmin, UpdateAdminConfig);
+router.get('/get-config', isAdmin, GetAdminConfig);
 
 module.exports = router;

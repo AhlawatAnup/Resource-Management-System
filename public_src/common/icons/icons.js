@@ -30,6 +30,10 @@ import {
   CircleX,
   ArrowDownToLine,
   X,
+  Pencil,
+  Settings,
+  CheckCheck,
+  AudioWaveform,
 } from 'lucide';
 
 createIcons({
@@ -64,5 +68,9 @@ createIcons({
     CircleX,
     ArrowDownToLine,
     X,
+    Pencil,
+    Settings,
+    CheckCheck,
+    AudioWaveform,
   },
 });

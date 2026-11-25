@@ -1,7 +1,4 @@
-const {
-  sendResourceRequestSubmittedEmail,
-  sendTeacherStudentResourceRequestEmail,
-} = require('../utils/email/emails.service');
+const emailService = require('../utils/email/emails.service');
 const { notifyAdmin } = require('../utils/web-push-notifications/notifyAdmin');
 const { notifyTeacher } = require('../utils/web-push-notifications/notifyTeacher');
 const ResourceRequest = require('../database/resourceRequestModel');
@@ -13,6 +10,7 @@ const { isValidDuration } = require('../utils/common.utils');
 const mongoose = require('mongoose');
 
 const Teacher = require('../database/teacherModel');
+const Admin = require('../database/adminModel.js');
 // Delete a resource request by ID
 exports.deleteStudentResourceRequest = async (req, res) => {
   try {
@@ -214,6 +212,23 @@ exports.submitResourceRequest = async (req, res) => {
       // --- End Web Push ---
     }
 
+    try {
+      if (resourceRequest.teacher_verified === true) {
+        const teacher = await Teacher.findById(student.teacher).lean();
+        const admin = await Admin.findOne({ 'config.resource_request_mail': true }).lean();
+        if (admin) {
+          emailService.sendAdminResourceRequestPendingEmail(
+            student.name,
+            student.email,
+            resourceRequest.title,
+            teacher.name,
+            machine.gpuRam,
+          );
+        }
+      }
+    } catch (error) {
+      console.log('error in sending email to admin: ', error);
+    }
     return res.status(201).json({
       message: 'Resource request submitted successfully',
       requestId: savedRequest._id,
@@ -246,16 +261,11 @@ exports.getStudentResourceRequests = async (req, res) => {
       return res.status(401).json({ error: 'Not authenticated' });
     }
 
-    const { studentId } = req.params;
-
-    // Security check: ensure the student can only access their own requests
-    if (req.session.user.id !== studentId) {
-      return res.status(403).json({ error: 'You can only access your own resource requests' });
-    }
+    const studentId = req.session.user.id;
 
     // Validate student ID
     if (!studentId) {
-      return res.status(400).json({ error: 'Student ID is required' });
+      return res.status(400).json({ error: 'Student ID not found' });
     }
 
     // Check if student exists
@@ -277,11 +287,24 @@ exports.getStudentResourceRequests = async (req, res) => {
         options: { includeUnavailable: true },
       })
       .sort({ createdAt: -1 })
-      .limit(50); // Limit to last 50 requests to avoid performance issues
+      .limit(50)
+      .lean(); // Limit to last 50 requests to avoid performance issues
 
     // console.log(`Retrieved ${resourceRequests.length} resource requests for student ${studentId}`);
 
-    return res.json(resourceRequests);
+    const requestsWithCompletedRating = await Promise.all(
+      resourceRequests.map(async (request) => {
+        const allotment = await MachineAllotment.findOne({ resourceRequestId: request._id })
+          .setOptions({ includeInactive: true, includeDeleted: true })
+          .lean();
+
+        return {
+          ...request,
+          utilizationScore: allotment ? allotment.utilizationScore : null,
+        };
+      }),
+    );
+    return res.json(requestsWithCompletedRating);
   } catch (error) {
     console.error('Error fetching student resource requests:', error);
     return res.status(500).json({ error: 'Failed to fetch resource requests' });
@@ -316,5 +339,15 @@ exports.getRequestAllotmentTime = async (req, res) => {
   } catch (error) {
     console.error('Error fetching allotment time:', error);
     return res.status(500).json({ error: 'Failed to fetch allotment time' });
+  }
+};
+
+exports.getAllStudents = async (req, res) => {
+  try {
+    const studentsArr = await Student.find().lean();
+    return studentsArr;
+  } catch (error) {
+    console.log('unable to fetch all students: ', error);
+    return null;
   }
 };

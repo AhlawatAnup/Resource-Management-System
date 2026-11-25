@@ -4,7 +4,6 @@ import Toastify from 'toastify-js';
 import 'toastify-js/src/toastify.css';
 import Swal from 'sweetalert2';
 
-
 // Get request status (ADMIN version - includes teacher + admin states)
 export function getRequestStatus(request) {
   // 0. Check if expired (isActive: false)
@@ -136,7 +135,7 @@ export function closeEditModal() {
 
 export function initMachineInfoTippy(tr, request) {
   if (!request.migId) return;
-  console.log(request);
+  // console.log(request);
   const btn = tr.querySelector('.machine-info-btn');
   if (!btn) return;
 

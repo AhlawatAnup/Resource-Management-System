@@ -1,26 +1,22 @@
 import Swal from 'sweetalert2';
-import {
-  getLoggedInStudentId,
-  showErrorMessage,
-  getStudentVerificationStatus,
-  isValidDuration,
-  AllotmentsUtils,
-} from '../student.util.js';
+import { showErrorMessage, isValidDuration, AllotmentsUtils } from '../student.util.js';
 import { renderResourcesPage, renderMachineCards } from './raise-request.ui.js';
 import { setActiveSidebar } from '../../../common/aside/aside.js';
 import { handleLoadViewRequests } from '../view-request/view-request.init.js';
+import { setupDarkMode } from '../../../common/darkmode/darkmode.js';
+import { student } from '../student.init.js';
 
 // API CALLS
-export async function fetchStudentData(studentId) {
-  const response = await fetch(`/dashboard/student/student_data/${studentId}`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
+// export async function fetchStudentData(studentId) {
+//   const response = await fetch(`/dashboard/student/student_data/${studentId}`, {
+//     method: 'GET',
+//     headers: {
+//       'Content-Type': 'application/json',
+//     },
+//   });
 
-  return response;
-}
+//   return response;
+// }
 
 export async function submitResourceRequest(data) {
   const response = await fetch('/dashboard/student/submit-resource-request', {
@@ -37,27 +33,28 @@ export async function submitResourceRequest(data) {
 //HANDLER
 export async function handleLoadRequestResources() {
   try {
-    const studentId = await getLoggedInStudentId();
+    // const studentId = await getLoggedInStudentId();
 
-    if (!studentId) {
-      throw new Error('Student ID not found. Please login again.');
-    }
+    // if (!studentId) {
+    //   throw new Error('Student ID not found. Please login again.');
+    // }
 
-    const response = await fetchStudentData(studentId);
+    // const response = await fetchStudentData(studentId);
 
-    if (!response.ok) {
-      if (response.status === 404) {
-        // logoutDirectly();
-        return;
-      }
-      throw new Error('Failed to fetch student details');
-    }
+    // if (!response.ok) {
+    //   if (response.status === 404) {
+    //     // logoutDirectly();
+    //     return;
+    //   }
+    //   throw new Error('Failed to fetch student details');
+    // }
 
-    const studentData = await response.json();
+    // const studentData = await response.json();
 
-    const verificationStatus = getStudentVerificationStatus(studentData);
-
-    renderResourcesPage(studentData, verificationStatus, handleResourceRequest);
+    // console.log('inside handleLoadRequestResources function');
+    const verificationStatus = student.is_verified;
+    // console.log('student.is_verified: ', student.is_verified);
+    renderResourcesPage(verificationStatus, handleResourceRequest);
 
     await loadAvailableMachines();
   } catch (error) {
@@ -100,7 +97,7 @@ export async function handleResourceRequest(event) {
       throw new Error('Please select one available machine before submitting');
     }
 
-    const studentId = await getLoggedInStudentId();
+    const studentId = student._id;
     if (!studentId) {
       throw new Error('Student ID not found. Please login again.');
     }
@@ -134,7 +131,7 @@ export async function handleResourceRequest(event) {
     });
     document.querySelector('.raise-request')?.classList.add('hide-default');
     document.querySelector('.view-request')?.classList.remove('hide-default');
-    setActiveSidebar('view-request');
+    // setActiveSidebar('view-request');
     await handleLoadViewRequests();
   } catch (error) {
     console.error('Error submitting resource request:', error);
@@ -159,6 +156,7 @@ export async function loadAvailableMachines() {
     const res = await fetch('/dashboard/get_machines');
     if (!res.ok) throw new Error('Failed to fetch machines');
     const machines = await res.json();
+    // console.log('machines fetched: ', machines);
     if (!machines.length) {
       container.innerHTML =
         '<span class="machine-bar-empty">No machines currently available.</span>';
@@ -205,16 +203,19 @@ export async function loadAvailableMachines() {
 // main.js
 
 // App initialization
-document.addEventListener('DOMContentLoaded', () => {
-  //setupDarkMode();
-  handleLoadRequestResources();
+
+document.addEventListener('DOMContentLoaded', async () => {
+  setupDarkMode();
+  setTimeout(async () => {
+    await handleLoadRequestResources();
+  }, 2000);
 });
 
 // DOM
 const pupose_input = document.getElementById('purpose');
 const purpose_word_counter = pupose_input.parentElement.querySelector('span');
 pupose_input.addEventListener('input', function () {
-  console.log(this.value.length);
+  // console.log(this.value.length);
   purpose_word_counter.innerText = this.value.length + '/100';
   if (this.value.length < 100) {
     purpose_word_counter.classList.add('danger');

@@ -1,0 +1,23 @@
+#config-options-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-auto-flow: row;
+  align-content: start;
+  justify-content: start;
+  align-items: start;
+  justify-items: center;
+  column-gap: 2rem;
+  margin: 2rem;
+  #config-form {
+    .rms-toggle-item {
+      .toggle-label {
+        font-size: 1.7rem;
+        .text-muted {
+          text-align: left;
+          padding-left: 0;
+          font-size: 1.3rem;
+        }
+      }
+    }
+  }
+}

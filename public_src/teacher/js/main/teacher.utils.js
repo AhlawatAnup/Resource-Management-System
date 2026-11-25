@@ -4,11 +4,11 @@ import 'tippy.js/dist/tippy.css';
 // Get verification status text for teacher
 export function getVerificationStatus(teacher) {
   if (teacher.is_verified) {
-    return '✓ Verified';
+    return 'Verified';
   } else if (teacher.verification_completed && !teacher.is_verified) {
-    return '✗ Rejected';
+    return 'Rejected';
   } else {
-    return '⏳ Pending Verification';
+    return 'Pending Verification';
   }
 }
 

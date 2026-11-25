@@ -2,6 +2,7 @@ const Student = require('../database/studentModel');
 const Teacher = require('../database/teacherModel');
 const Admin = require('../database/adminModel');
 const ResourceRequest = require('../database/resourceRequestModel.js');
+const { student } = require('../../../public_src/student/js/student.init.js');
 
 exports.teacher_dashboard_data = async (req, res) => {
   const role = req.session.user.role;
@@ -12,6 +13,7 @@ exports.teacher_dashboard_data = async (req, res) => {
     try {
       const teacher = await Teacher.findOne({ _id: uid }).populate({
         path: 'students',
+        select: '_id name email rollNo branch',
         populate: {
           path: 'resourceRequests',
           populate: {
@@ -37,13 +39,6 @@ exports.teacher_dashboard_data = async (req, res) => {
           // Add student info to each resource request for easier frontend handling
           const studentRequests = student.resourceRequests.map((request) => ({
             ...request._doc,
-            studentInfo: {
-              _id: student._id,
-              name: student.name,
-              rollNo: student.rollNo,
-              email: student.email,
-              branch: student.branch,
-            },
           }));
           allResourceRequests = allResourceRequests.concat(studentRequests);
         }
@@ -54,11 +49,18 @@ exports.teacher_dashboard_data = async (req, res) => {
 
       // console.log(`Found ${allResourceRequests.length} total resource requests`);
 
+      const fetchedStudents = teacher.students.map((student) => ({
+        _id: student._id,
+        name: student.name ?? null,
+        email: student.email ?? null,
+        rollNo: student.rollNo ?? null,
+        branch: student.branch ?? null,
+      }));
       // Return teacher data with students and resource requests
       return res.json({
         ...teacher._doc,
         role: 'Teacher',
-        students: teacher.students.map((student) => student._id), // Return array of student IDs for compatibility
+        students: fetchedStudents,
         resourceRequests: allResourceRequests, // All resource requests from students
       });
     } catch (err) {

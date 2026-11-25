@@ -1,4 +1,4 @@
-class Admin extends EventTarget {
+export class Admin extends EventTarget {
   constructor() {
     super();
     // USER INFO
@@ -11,5 +11,3 @@ class Admin extends EventTarget {
     this.resource_requests = null;
   }
 }
-
-module.exports = { Admin };

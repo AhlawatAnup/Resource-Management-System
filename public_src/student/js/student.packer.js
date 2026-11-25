@@ -7,6 +7,7 @@ require('../../common/icons/icons.js');
 
 // Student Dashboard
 require('./dashboard/dashboard.init.js');
+
 //Student Raise Request
 require('./raise-request/raise-request.init.js');
 //Student View Requests

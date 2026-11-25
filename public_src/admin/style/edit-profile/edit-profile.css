@@ -1,0 +1,8 @@
+.side-panel {
+  .body {
+    .text-muted {
+      text-align: center;
+      padding: 2rem;
+    }
+  }
+}

@@ -1,30 +1,29 @@
 const MachineAllotments = require('../../../server/main/database/machineAllotmentModel');
-
+const { student } = require('./student.init');
 // Student-specific utility functions
 
-export async function getLoggedInStudentId() {
-  try {
-    const response = await fetch('/dashboard/current-user-id', {
-      method: 'GET',
-      credentials: 'include',
-    });
+// export async function getLoggedInStudentId() {
+//   try {
+//     const response = await fetch('/dashboard/current-user-id', {
+//       method: 'GET',
+//       credentials: 'include',
+//     });
 
-    if (response.ok) {
-      const data = await response.json();
-      if (data.id) {
-        // Store for future use
-        // localStorage.setItem('studentId', data.id);
-        return data.id;
-      }
-    }
-  } catch (error) {
-    console.error('Error fetching user ID from session:', error);
-  }
+//     if (response.ok) {
+//       const data = await response.json();
+//       if (data.id) {
+//         return data.id;
+//       }
+//     }
+//   } catch (error) {
+//     console.error('Error fetching user ID from session:', error);
+//   }
 
-  return null;
-}
+//   return null;
+// }
 
 export function showLoadingState(containerId = 'student-profile') {
+  return;
   const container = document.getElementById(containerId);
   if (container) {
     container.innerHTML = `
@@ -54,64 +53,64 @@ export function showErrorMessage(message, containerId = 'student-profile') {
 // Function to determine student verification status based on schema
 export function getStudentVerificationStatus(student) {
   if (student.teacher_verified && student.admin_verified) {
-    return '✓ Verified';
+    return (student.verificationStatus = 'Verified') && (student.verificationCode = 1);
   }
 
   if (student.teacher_action && !student.admin_action) {
     if (student.teacher_verified) {
-      return '⏳ Pending on Admin';
+      return (student.verificationStatus = 'Pending on Admin') && (student.verificationCode = 0);
     } else {
-      return '❌ Rejected by Teacher';
+      return (student.verificationStatus = 'Rejected by Teacher') && (student.verificationCode = 0);
     }
   }
 
   if (!student.teacher_action) {
-    return '⏳ Pending on Teacher';
+    return (student.verificationStatus = 'Pending on Teacher') && (student.verificationCode = 0);
   }
 
   if (student.admin_action) {
     if (student.admin_verified) {
-      return 'Verified';
+      return (student.verificationStatus = 'Verified') && (student.verificationCode = 1);
     } else {
-      return 'Rejected by Admin.';
+      return (student.verificationStatus = 'Rejected by Admin.') && (student.verificationCode = 0);
     }
   }
 
-  return '⏳ Pending Verification';
+  return (student.verificationStatus = 'Pending Verification') && (student.verificationCode = 0);
 }
 
 // Function to get CSS class for student verification status
 export function getStudentStatusClass(student) {
   if (student.teacher_verified && student.admin_verified) {
-    return 'status-verified';
+    return (student.status = 'status-verified');
   }
 
   if (student.teacher_action && !student.admin_action) {
     if (student.teacher_verified) {
-      return 'status-pending-admin';
+      return (student.status = 'status-pending-admin');
     } else {
-      return 'status-rejected';
+      return (student.status = 'status-rejected');
     }
   }
 
   if (!student.teacher_action) {
-    return 'status-pending-teacher';
+    return (student.status = 'status-pending-teacher');
   }
 
   if (student.admin_action) {
     if (student.admin_verified) {
-      return 'status-verified';
+      return (student.status = 'status-verified');
     } else {
-      return 'status-rejected';
+      return (student.status = 'status-rejected');
     }
   }
 
-  return 'status-pending';
+  return (student.status = 'status-pending');
 }
 
 export function getRequestStatus(request) {
   if (request.is_verified && !request.isActive) {
-    console.log('request-expired');
+    // console.log('request-expired');
     return 'completed';
   }
 

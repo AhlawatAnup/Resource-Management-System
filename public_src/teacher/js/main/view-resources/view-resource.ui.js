@@ -4,6 +4,7 @@ import {
   formatDate,
   createViewMoreButton,
 } from '../../../../common/utils/commons.utils.js';
+import { teacher } from '../../teacher.init.js';
 import { getRequestStatus, getActionButtons, initTitleTippy } from '../teacher.utils.js';
 import Swal from 'sweetalert2';
 
@@ -23,13 +24,17 @@ export function renderResourceRequests(requests) {
 
     const statusInfo = getRequestStatus(request);
 
+    // get student with the studentId in request
+
+    const student = teacher.students?.find((s) => String(s._id) === String(request.studentId));
+
     tr.innerHTML = `
       <td>
         <div class="contact-info">
-          <div class="avatar ${getRandomNamedColor()}">${getInitials(request.studentInfo.name)}</div>
+          <div class="avatar ${getRandomNamedColor()}">${getInitials(student.name)}</div>
           <div class="contact-details">
-            <h4>${request.studentInfo.name}</h4>
-            <div class="contact-time">${request.studentInfo.rollNo} - ${request.studentInfo.branch}</div>
+            <h4>${student.name}</h4>
+            <div class="contact-time">${student.rollNo} - ${student.branch.toUpperCase()}</div>
           </div>
         </div>
       </td>
@@ -133,3 +138,9 @@ export function setFieldError(elementId, message) {
   const el = document.getElementById(elementId);
   if (el) el.textContent = message;
 }
+
+teacher.addEventListener('REQUESTS_FETCHED', (event) => {
+  console.log('REQUESTS_FETCHED event trigerred');
+  console.log('event.detail.requests:', event.detail.requests);
+  renderResourceRequests(event.detail.requests);
+});

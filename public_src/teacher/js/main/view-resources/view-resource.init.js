@@ -14,6 +14,8 @@ import {
 } from './view-resource.ui.js';
 import { filterRequestsList } from '../teacher.utils.js';
 import Swal from 'sweetalert2';
+import { teacher } from '../../teacher.init.js';
+import './view-resource.ui.js';
 //import { setupDarkMode } from '../../../common/js/darkmode/darkmode.js';
 
 //API CALLS
@@ -73,26 +75,36 @@ let teacherVerificationStatus = { is_verified: false };
 // Load and render resource requests
 export async function loadResourceRequestsHandler() {
   try {
-    const { error, data } = await fetchResourceRequests();
-    if (error) {
-      //   if (data === 404) logoutDirectly();
-      return;
-    }
+    // const { error, data } = await fetchResourceRequests();
+    // if (error) {
+    //   //   if (data === 404) logoutDirectly();
+    //   return;
+    // }
 
     teacherVerificationStatus = {
-      is_verified: data.is_verified,
-      verification_completed: data.verification_completed,
+      is_verified: teacher.is_verified,
+      verification_completed: teacher.verification_completed,
     };
 
+    console.log(
+      'teacherVerificationStatus.is_verified: ',
+      teacherVerificationStatus.is_verified,
+      'teacherVerificationStatus.verification_completed: ',
+      teacherVerificationStatus.verification_completed,
+    );
     if (!teacherVerificationStatus.is_verified) {
       showNotVerifiedMessage();
       return;
     }
 
-    resourceRequests = data.resourceRequests || [];
+    resourceRequests = teacher.resourceRequests || [];
     filteredRequests = [...resourceRequests];
 
-    renderResourceRequests(filteredRequests);
+    teacher.dispatchEvent(
+      new CustomEvent('REQUESTS_FETCHED', {
+        detail: { requests: filteredRequests },
+      }),
+    );
   } catch (err) {
     console.error('Error fetching resource requests:', err);
     // logoutDirectly();
@@ -157,48 +169,50 @@ export function initUIComponentsHandler() {
 
 // INIT ------------------------>
 
-document.addEventListener('DOMContentLoaded', () => {
-  //setupDarkMode();
-  // Initialize purpose panel & date pickers
-  initUIComponentsHandler();
+document.addEventListener('DOMContentLoaded', async () => {
+  setTimeout(() => {
+    //setupDarkMode();
+    // Initialize purpose panel & date pickers
+    initUIComponentsHandler();
 
-  // Load resource requests
-  loadResourceRequestsHandler();
+    // Load resource requests
+    loadResourceRequestsHandler();
 
-  // Search input
-  const searchInput = document.getElementById('searchInputResources');
-  if (searchInput) {
-    searchInput.addEventListener('input', (e) => {
-      filterRequestsHandler(e.target.value);
+    // Search input
+    const searchInput = document.getElementById('searchInputResources');
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        filterRequestsHandler(e.target.value);
+      });
+      // AUTO FOCUS SEARCH ON TYPING
+      document.addEventListener('keydown', (e) => {
+        const searchInput = document.getElementById('searchInputResources');
+
+        if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+        if (
+          document.activeElement.tagName === 'INPUT' ||
+          document.activeElement.tagName === 'TEXTAREA'
+        ) {
+          return;
+        }
+
+        if (e.key.length === 1) {
+          searchInput.focus();
+        }
+      });
+    }
+
+    // Delegate approve/decline buttons
+    document.getElementById('requestsTableBody').addEventListener('click', (e) => {
+      const button = e.target.closest('.approve-btn, .decline-btn');
+      if (!button) return;
+
+      const requestId = button.getAttribute('data-request-id');
+      const action = button.getAttribute('data-action');
+
+      const isVerified = action === 'approve';
+      updateRequestVerificationHandler(requestId, isVerified);
     });
-    // AUTO FOCUS SEARCH ON TYPING
-    document.addEventListener('keydown', (e) => {
-      const searchInput = document.getElementById('searchInputResources');
-
-      if (e.ctrlKey || e.metaKey || e.altKey) return;
-
-      if (
-        document.activeElement.tagName === 'INPUT' ||
-        document.activeElement.tagName === 'TEXTAREA'
-      ) {
-        return;
-      }
-
-      if (e.key.length === 1) {
-        searchInput.focus();
-      }
-    });
-  }
-
-  // Delegate approve/decline buttons
-  document.getElementById('requestsTableBody').addEventListener('click', (e) => {
-    const button = e.target.closest('.approve-btn, .decline-btn');
-    if (!button) return;
-
-    const requestId = button.getAttribute('data-request-id');
-    const action = button.getAttribute('data-action');
-
-    const isVerified = action === 'approve';
-    updateRequestVerificationHandler(requestId, isVerified);
-  });
+  }, 3000);
 });

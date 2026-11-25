@@ -197,8 +197,6 @@ function handleSendTeacherProfileUnverifiedByAdminEmail(updatedTeacher, teacherI
   }
 }
 
-module.exports = { handleSendTeacherProfileUnverifiedByAdminEmail };
-
 module.exports = {
   handleSendStudentProfileUnverifiedByAdminEmail,
   handleSendStudentProfileRejectedByTeacherEmail,

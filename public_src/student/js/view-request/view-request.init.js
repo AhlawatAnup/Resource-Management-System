@@ -10,6 +10,8 @@ import { logoutDirectly } from '../../../common/utils/commons.utils.js';
 import { generateReport } from '../../../common/generate-report/generate-report.init.js';
 import { closeReportModal } from '../../../common/generate-report/generate-report.ui.js';
 import { check_svg, copy_svg } from '../../../common/icons/icons.svg.js';
+import { student } from '../student.init.js';
+import './view-request.ui.js';
 
 //import { setupDarkMode } from '../../../common/js/darkmode/darkmode.js';
 // API CALLS
@@ -65,7 +67,7 @@ export async function fetchTokenForMigid(migid, requestId) {
 let allRequests = [];
 let currentStatus = 'all';
 
-function attachReportHandlers() {
+export function attachReportHandlers() {
   document.querySelectorAll('.report-btn').forEach((btn) => {
     btn.addEventListener('click', async () => {
       const requestId = btn.dataset.requestId;
@@ -102,10 +104,11 @@ export async function handleLoadViewRequests() {
   try {
     showLoadingState('requests-content');
 
-    const studentId = await getLoggedInStudentId();
+    // console.log('inside load request function.');
+    const studentId = student._id;
 
     if (!studentId) {
-      console.error('Student ID not found');
+      console.error('Student ID not found: ', studentId);
       logoutDirectly();
       return;
     }
@@ -130,27 +133,32 @@ export async function handleLoadViewRequests() {
 
 async function loadRequests(studentId) {
   try {
-    const response = await fetchStudentRequests(studentId);
-
+    const response = await fetch('dashboard/student/resource-requests');
     if (!response.ok) {
       if (response.status === 401 || response.status === 403 || response.status === 404) {
         logoutDirectly();
         return;
       }
+    }
+    const data = await response.json();
+    student.resourceRequests = data;
+    const requests = student.resourceRequests;
+    allRequests = requests;
 
+    if (!requests) {
       document.getElementById('all-requests-list').innerHTML =
         '<div class="no-requests"><p>No requests found.</p></div>';
       return;
     }
 
-    const data = await response.json();
-    allRequests = data;
+    student.dispatchEvent(new CustomEvent('student_requests_loaded'));
+    student.dispatchEvent(new CustomEvent('STUDENT_REQUEST_LOADED'));
 
-    renderAllRequests(allRequests, handleDeleteRequest, reloadPage);
-    updateRequestCounts(allRequests);
-    attachCopyTokenHandlers();
-    attachReportHandlers();
-    await processVerifiedRequests();
+    // renderAllRequests(requests, handleDeleteRequest, reloadPage);
+    // updateRequestCounts(allRequests);
+    // attachCopyTokenHandlers();
+    // attachReportHandlers();
+    // await processVerifiedRequests();
   } catch (error) {
     console.error('Error loading requests:', error);
     document.getElementById('all-requests-list').innerHTML =
@@ -162,7 +170,7 @@ async function loadRequests(studentId) {
 // Delete
 // ==============================
 
-async function handleDeleteRequest(requestId) {
+export async function handleDeleteRequest(requestId) {
   try {
     const response = await deleteStudentRequest(requestId);
 
@@ -276,6 +284,7 @@ export async function processVerifiedRequests() {
     }),
   );
 
+  // console.log('requests array in ProcessVerifiedRequests function: ', allRequests);
   renderAllRequests(allRequests, handleDeleteRequest, reloadPage);
   updateRequestCounts(allRequests);
   attachAccessMachineHandlers();
@@ -307,7 +316,7 @@ function handleFilterChange(status) {
 // Reload
 // ==============================
 
-function reloadPage() {
+export function reloadPage() {
   handleLoadViewRequests();
 }
 
@@ -345,6 +354,9 @@ export function attachCopyTokenHandlers() {
 
 document.addEventListener('DOMContentLoaded', async () => {
   //setupDarkMode();
-  document.getElementById('closeReportBtn')?.addEventListener('click', closeReportModal);
-  await handleLoadViewRequests();
+  // await student.setStudentDetails();
+  setTimeout(async () => {
+    document.getElementById('closeReportBtn')?.addEventListener('click', closeReportModal);
+    await handleLoadViewRequests();
+  }, 1000);
 });

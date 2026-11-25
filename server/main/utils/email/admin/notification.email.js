@@ -293,6 +293,48 @@ const sendAdminEmailChangeConfirmationEmail = async (newEmail, changedAtTime) =>
   });
 };
 
+const sendAdminPasswordChangeEmail = async (changedAtTime) => {
+  const html = `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #2196F3;">🔐 Your Password Has Been Changed</h2>
+
+      <p>Dear Administrator,</p>
+
+      <p>
+        This email confirms that your account Password has been successfully updated.
+      </p>
+
+      <div style="background-color: #e3f2fd; border: 1px solid #2196F3; padding: 20px; border-radius: 8px;">
+        <p><strong>Changed At:</strong> ${changedAtTime}</p>
+        <p><strong>Status:</strong> ✓ Change Completed</p>
+      </div>
+
+      <div style="background-color: #fff3e0; border: 1px solid #ffb74d; padding: 15px; border-radius: 5px; margin-top: 20px;">
+        <strong>⚠️ Important:</strong>
+        <p>If you did not make this change, please reset your password immediately.</p>
+      </div>
+
+      <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin-top: 20px;">
+        <p><strong>For Security:</strong></p>
+        <ul>
+          <li>Keep your login credentials confidential</li>
+          <li>Use a strong, unique password</li>
+          <li>Never share your account details with anyone</li>
+        </ul>
+      </div>
+
+      <p>Best regards,<br>
+      <strong>U.I.E.T Cloud AI Data Center</strong></p>
+
+      <hr>
+      <p style="font-size: 12px; color: #666;">
+        This is an automated email. Please do not reply.
+      </p>
+    </div>
+  `;
+
+  return sendToAdmin('[ATTENTION] Password Change Notification', html);
+};
+
 module.exports = {
   sendAdminTeacherRegistrationEmail,
   sendAdminStudentVerificationPendingEmail,
@@ -300,4 +342,5 @@ module.exports = {
   sendAdminUsernameChangeEmail,
   sendAdminEmailChangeSecurityAlertEmail,
   sendAdminEmailChangeConfirmationEmail,
+  sendAdminPasswordChangeEmail,
 };

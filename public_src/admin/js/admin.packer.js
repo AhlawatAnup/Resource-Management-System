@@ -3,7 +3,6 @@ require('./admin.js');
 require('./main/main.js');
 require('../../common/aside/aside.js');
 require('../../common/icons/icons.js');
-require('../style/report/report.css');
 
 // DASHBOARD
 
@@ -13,3 +12,8 @@ require('./main/machines/machine.init.js');
 require('./main/profile/profile.init.js');
 require('../../common/machine-availability/machine-availability.init.js');
 require('../../admin/js/main/Report/report.init.js');
+require('./main/edit-profile/edit-profile.init.js');
+require('./main/configSettings/config-settings.init.js');
+
+// IO RTC SOCKETS
+require('./admin.socket.js');

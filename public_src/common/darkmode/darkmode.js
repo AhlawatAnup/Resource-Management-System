@@ -25,9 +25,11 @@ function toggleDarkMode() {
 export function setupDarkMode() {
   DarkReader.enable();
   initDarkMode();
-  document.addEventListener('click', (e) => {
-    if (e.target.closest('.theme-toggle')) {
-      toggleDarkMode();
-    }
-  });
+  // document.addEventListener('click', (e) => {
+  //   if (e.target.closest('.theme-toggle')) {
+  //     toggleDarkMode();
+  //   }
+  // });
 }
+
+window.toggleDarkMode = toggleDarkMode;

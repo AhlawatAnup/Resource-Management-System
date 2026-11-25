@@ -375,7 +375,7 @@ const makeMachineHistory = async (studentId) => {
 async function getAllotmentMap(requestIds) {
   const allotments = await MachineAllotment.find(
     { resourceRequestId: { $in: requestIds } },
-    { resourceRequestId: 1, startTime: 1, endTime: 1 },
+    { resourceRequestId: 1, startTime: 1, endTime: 1, utilizationScore: 1 },
   ).setOptions({ includeInactive: true, includeDeleted: true });
 
   const allotmentMap = {};
