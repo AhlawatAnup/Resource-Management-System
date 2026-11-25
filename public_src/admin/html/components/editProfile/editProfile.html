@@ -1,0 +1,42 @@
+<div id="edit-profile-side-panel" class="side-panel close">
+  <div class="header">
+    <h3>Edit Admin Profile</h3>
+  </div>
+
+  <div class="body">
+    <span class="text-muted"
+      >Update any credentials, leaving password fields blank unless changing your password.</span
+    >
+
+    <div id="edit-profile-form-container" class="side-panel-form-container">
+      <form id="edit-profile-form" class="side-panel-form">
+        <div class="rms-input-box-v2">
+          <input id="username" type="text" required placeholder="" />
+          <label>Username</label>
+        </div>
+        <div class="rms-input-box-v2">
+          <input id="email" type="text" required placeholder="" />
+          <label>E-mail</label>
+        </div>
+        <div class="rms-input-box-v2">
+          <input id="newPwd" type="password" placeholder="" />
+          <label>New Password</label>
+        </div>
+        <div class="rms-input-box-v2">
+          <input id="confirmPwd" type="password" placeholder="" />
+          <label>Confirm Password</label>
+        </div>
+        <div class="rms-btn-v1">
+          <button id="edit-profile" type="submit">
+            <i data-lucide="CheckCheck" stroke-width="1.5"></i>
+            Update
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <button id="close-edit-profile-panel-btn" class="close-btn">
+    <i data-lucide="X" stroke-width="1.25"></i>
+  </button>
+</div>

@@ -1,0 +1,304 @@
+/* DASHBOARD PROFILE */
+.main.dashboard {
+  .profile {
+    display: flex;
+    border-bottom: 1px solid #e5e7eb;
+    /* padding: 2rem 0rem 1rem 5rem; */
+    gap: 3rem;
+
+    .left {
+      display: flex;
+      flex-direction: column;
+      text-align: center;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.8rem;
+      gap: 1rem;
+      min-width: 20%;
+      padding: 2rem 0rem 1rem 5rem;
+      /* background: white; */
+
+      .avatar {
+        width: 8rem;
+        height: 8rem;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        font-weight: 500;
+        color: white;
+        background: #2563eb;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+
+        padding: 0.5rem 1.2rem;
+
+        border-radius: 1rem;
+
+        font-size: 1.4rem;
+        font-weight: 400;
+
+        &[data-status='0'] {
+          background: #fef3c7;
+          color: #92400e;
+
+          &::before {
+            content: '\2715';
+            color: red;
+          }
+        }
+
+        &[data-status='1'] {
+          background: #dcfce7;
+          color: #166534;
+
+          &::before {
+            content: '\2713';
+            color: green;
+          }
+        }
+
+        &[data-status='2'] {
+          background: #fee2e2;
+          color: #991b1b;
+        }
+      }
+
+      /* RATING */
+
+      .rating {
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+
+        .stars {
+          position: relative;
+          unicode-bidi: bidi-override;
+          color: #cbd5e1; /* Light gray for empty stars */
+          font-family: sans-serif; /* Ensures star glyphs render consistently */
+          font-size: 25px;
+          letter-spacing: 2px;
+
+          .empty {
+            padding: 0;
+          }
+
+          .filled {
+            position: absolute;
+            top: 0;
+            left: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            color: #f59e0b;
+            width: calc(var(--rating) / 5 * 100%);
+          }
+        }
+      }
+    }
+
+    .right {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      gap: 0.2rem;
+      flex: 1;
+      border-radius: 1rem;
+      overflow: hidden;
+      margin: 2rem;
+
+      .status {
+        display: flex;
+        flex-direction: column;
+        padding: 1rem 2rem;
+        font-size: 1.6rem;
+        background-color: rgb(222, 222, 222);
+        gap: 0.5rem;
+      }
+
+      button {
+        font-family: 'Rubik', sans-serif;
+        color: white;
+        background: #2563eb;
+        padding: 1.1rem 1.8rem !important;
+        font-size: 1.6rem;
+        font-weight: 400;
+        cursor: pointer;
+        border: unset;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+
+        &:hover {
+          transform: scale(1.01);
+        }
+
+        svg {
+          margin-right: 1.5rem;
+          width: 22px;
+          height: auto;
+        }
+      }
+    }
+  }
+}
+
+/* =========================
+   Teacher Profile Card
+========================= */
+/* 
+.profile-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 60%, #eff6ff 100%);
+  padding: 24px 28px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+  transition: all 0.3s ease;
+} */
+
+/* =========================
+   Header Row
+========================= */
+.profile-header-rows {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  .profile-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .profile-avatar {
+    width: 46px;
+    height: 46px;
+
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 18px;
+    font-weight: 700;
+
+    color: white;
+
+    background: #2563eb;
+
+    flex-shrink: 0;
+  }
+
+  .profile-name {
+    margin: 0;
+
+    font-size: 28px;
+    font-weight: 600;
+
+    color: #0f172a;
+
+    line-height: 1.2;
+  }
+}
+/* =========================
+   Details Row
+========================= */
+
+.profile-details-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0;
+
+  margin-top: 12px;
+  padding-top: 16px;
+
+  border-top: 1px solid #e5e7eb;
+}
+
+/* Each info item */
+
+.profile-details-row span {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 18px;
+  color: #475569;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.profile-details-row span:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1px;
+  height: 20px;
+  background: #dbe3ee;
+}
+
+.profile-details-row strong {
+  color: #2563eb;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+}
+
+/* =========================
+   Pending Verification Box
+========================= */
+
+.pending-verification-note {
+  margin: 18px 0;
+
+  padding: 16px 18px;
+
+  border-radius: 12px;
+
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+
+  color: #92400e;
+
+  font-size: 14px;
+
+  line-height: 1.6;
+}
+
+/* =========================
+   Mobile
+========================= */
+
+@media (max-width: 768px) {
+  .profile-card {
+    padding: 20px;
+  }
+
+  .profile-header {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .profile-avatar {
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
+  }
+
+  .profile-name {
+    font-size: 24px;
+  }
+
+  .profile-details-row {
+    gap: 12px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

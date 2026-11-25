@@ -7,7 +7,7 @@ const sendStudentRegistrationSuccessEmail = async (studentEmail, studentName) =>
 
       <p>Dear <strong>${studentName}</strong>,</p>
 
-      <p>Welcome to the UIET Cluster Resource Management System! Your student account has been successfully created.</p>
+      <p>Welcome to the U.I.E.T Cloud AI Data Center! Your student account has been successfully created.</p>
 
       <div style="background-color: #e3f2fd; border: 1px solid #bbdefb; padding: 15px; border-radius: 5px;">
         <strong>📝 Next Steps:</strong>
@@ -19,7 +19,7 @@ const sendStudentRegistrationSuccessEmail = async (studentEmail, studentName) =>
         </ul>
       </div>
 
-      <p>Best regards,<br><strong>UIET Cluster Resource Management System</strong></p>
+      <p>Best regards,<br><strong>U.I.E.T Cloud AI Data Center</strong></p>
       <p style="font-size: 12px; color: #666;">This is an automated email. Please do not reply.</p>
     </div>
   `;

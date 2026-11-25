@@ -10,7 +10,7 @@ const sendTeacherProfileVerifiedByAdminEmail = async (teacherEmail, teacherName)
 
       <p>
         Congratulations! Your teacher profile has been verified by the administrator.
-        You now have full access to the UIET Cluster Resource Management System.
+        You now have full access to the U.I.E.T Cloud AI Data Center.
       </p>
 
       <div style="background-color: #e8f5e8; border: 1px solid #4CAF50; padding: 20px; border-radius: 8px;">
@@ -32,7 +32,7 @@ const sendTeacherProfileVerifiedByAdminEmail = async (teacherEmail, teacherName)
       </a>
 
       <p>Best regards,<br>
-      <strong>UIET Cluster Resource Management System</strong></p>
+      <strong>U.I.E.T Cloud AI Data Center</strong></p>
 
       <hr>
       <p style="font-size: 12px; color: #666;">
@@ -64,7 +64,7 @@ const sendTeacherProfileRejectedByAdminEmail = async (teacherEmail, teacherName)
       </div>
 
       <p>Best regards,<br>
-      UIET Cluster Resource Management System</p>
+      U.I.E.T Cloud AI Data Center</p>
 
       <hr>
       <p style="font-size:12px;color:#777;">
@@ -101,7 +101,7 @@ const sendTeacherProfileUnverifiedByAdminEmail = async (teacherEmail, teacherNam
       <p>Your account is now in pending verification status. You will need to wait for admin re-verification to regain access.</p>
 
       <p>Best regards,<br>
-      UIET Cluster Resource Management System</p>
+      U.I.E.T Cloud AI Data Center</p>
 
       <hr>
       <p style="font-size:12px;color:#777;">

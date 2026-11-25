@@ -15,8 +15,10 @@ const {
   unverifyTeacher,
   getAllotmentMap,
 } = require('../utils/common.utils.js');
+const { sendAllotmentMailById } = require('../services/resourceExpiryNotifier.js');
 const bcrypt = require('bcrypt');
-
+const { saveAllotmentHistory } = require('../../main/utils/machineHistory/historyHelper.js');
+const { maya } = require('../maya.init.js');
 exports.admin_dashboard_data = async (req, res) => {
   try {
     // Get counts for dashboard statistics
@@ -299,6 +301,7 @@ exports.getAllResourceRequests = async (req, res) => {
             is_verified: r.is_verified,
             isActive: r.isActive,
           },
+          utilizationScore: allotment?.utilizationScore ?? null,
         };
       });
 
@@ -362,9 +365,9 @@ exports.UpdateAdminProfile = async (req, res) => {
     return res.status(401).json({ error: 'Not authenticated as admin' });
   }
 
-  const { newEmail, newUsername } = req.body;
+  const { newUsername, newEmail, newPassword } = req.body;
 
-  if (!newEmail && !newUsername) {
+  if (!newEmail && !newUsername && !newPassword) {
     return res.status(400).json({ error: 'Provide newEmail and/or newUsername to update.' });
   }
 
@@ -375,10 +378,14 @@ exports.UpdateAdminProfile = async (req, res) => {
   if (newUsername && String(newUsername).trim().length === 0) {
     return res.status(400).json({ error: 'Invalid username.' });
   }
+  if (newPassword && newPassword.length < 6) {
+    return res.status(400).json({ error: 'Password must be at least 6 characters.' });
+  }
 
   try {
     const admin = await Admin.findById(req.session.user.id).select('username email');
     if (!admin) return res.status(404).json({ error: 'Admin not found' });
+
     // Store original email for security alert notification
     const oldEmail = admin.email;
 
@@ -387,17 +394,25 @@ exports.UpdateAdminProfile = async (req, res) => {
     // Check email uniqueness and change
     if (newEmail && admin.email !== newEmail) {
       const exists = await Admin.findOne({ email: newEmail });
-      if (exists) return res.status(400).json({ error: 'Email already in use.' });
-      changes.email = newEmail;
-      admin.email = newEmail;
+      if (!exists) {
+        changes.email = newEmail;
+        admin.email = newEmail;
+      }
     }
 
     // Check username uniqueness and change
     if (newUsername && admin.username !== newUsername) {
       const existsU = await Admin.findOne({ username: newUsername });
-      if (existsU) return res.status(400).json({ error: 'Username already in use.' });
-      changes.username = newUsername;
-      admin.username = newUsername;
+      if (!existsU) {
+        changes.username = newUsername;
+        admin.username = newUsername;
+      }
+    }
+
+    if (newPassword) {
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      changes.password = hashedPassword;
+      admin.password = hashedPassword;
     }
 
     if (Object.keys(changes).length === 0) {
@@ -438,7 +453,17 @@ exports.UpdateAdminProfile = async (req, res) => {
         .catch((error) => console.error('Error sending confirmation email:', error));
     }
 
-    return res.json({ success: true, message: 'Admin identity updated.', changes });
+    // Send email notification if username was changed
+    if (changes.password) {
+      const changedAtTime = new Date().toLocaleString();
+      emailService
+        .sendAdminPasswordChangeEmail(changedAtTime)
+        .then((result) => console.log('Password change notification sent to admin:', result))
+        .catch((error) => console.error('Error sending password change email:', error));
+    }
+
+    const updatedAdmin = await Admin.findById(req.session.user.id).select('username email');
+    return res.status(200).json({ success: true, message: 'Admin profile updated.', updatedAdmin });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: 'Failed to update admin identity.' });
@@ -476,6 +501,7 @@ exports.createMachine = async (req, res) => {
 
     const machine = new Machine(value);
     await machine.save();
+    await maya.setMachines();
 
     return res.status(201).json({
       ok: true,
@@ -592,6 +618,7 @@ exports.deleteMachine = async (req, res) => {
     // Safe to delete
     // await Machine.findByIdAndUpdate(id, { isDeleted: true });
     await Machine.findOneAndUpdate({ _id: id }, { isDeleted: true }, { includeUnavailable: true });
+    await maya.setMachines();
     return res.json({ ok: true });
   } catch (err) {
     console.error('Failed to delete machine', err);
@@ -602,7 +629,8 @@ exports.deleteMachine = async (req, res) => {
 exports.revokeResourceRequest = async (req, res) => {
   try {
     const { requestId } = req.params;
-    console.log(requestId);
+    const { remarks } = req.body;
+    // console.log(requestId);
 
     // 1. Validate ID
     if (!mongoose.Types.ObjectId.isValid(requestId)) {
@@ -625,6 +653,7 @@ exports.revokeResourceRequest = async (req, res) => {
     request.admin_action = true;
     request.admin_verified = false;
     request.isActive = false;
+    request.revoke_remarks = remarks;
 
     await request.save();
 
@@ -645,6 +674,7 @@ exports.revokeResourceRequest = async (req, res) => {
         request.studentId.email,
         request.studentId.name,
         request.title,
+        remarks || '',
       )
       .then((result) => console.log('Resource revoked email sent to student:', result))
       .catch((error) => console.error('Error sending resource revoked email:', error));
@@ -726,5 +756,141 @@ exports.extendAllotment = async (req, res) => {
   } catch (err) {
     console.error(err);
     return res.status(500).json({ message: 'Server error' });
+  }
+};
+
+exports.deleteRejectedRequest = async (req, res) => {
+  try {
+    //extract resourceRequestId from request
+    //fetch resourceRequest from database
+    //check if admin is hitting the end-point
+    //check whether it really is a rejected request
+    //remove the request object from the requests array in the student's document
+    //remove from machineAllotments document as well
+    //finally delete request document
+
+    const { requestId } = req.params;
+    const requestDoc = await ResourceRequest.findById(requestId);
+    if (!requestDoc) {
+      return res.status(404).json({
+        message: 'Resource Request not found!',
+      });
+    }
+    const role = req.session.user?.role;
+    if (role != 'admin') {
+      return res.status(403).json({
+        message: 'User unauthorized to perform this action',
+      });
+    }
+    const isExplicitlyRejected =
+      requestDoc.is_verified === false &&
+      (requestDoc.admin_action === true ||
+        requestDoc.teacher_action === true ||
+        requestDoc.isActive === false);
+    if (!isExplicitlyRejected) {
+      return res.status(400).json({
+        message:
+          "This isn't a rejected request. Can only delete explicitly rejected or revoked requests!",
+      });
+    }
+
+    const allotmentDoc = await MachineAllotment.findOne({
+      resourceRequestId: new mongoose.Types.ObjectId(requestId),
+    }).setOptions({ includeInactive: true, includeDeleted: true });
+
+    if (allotmentDoc) {
+      await MachineAllotment.deleteOne({ _id: allotmentDoc._id });
+    }
+
+    const targetStudentId = requestDoc.studentId;
+    await Student.findByIdAndUpdate(targetStudentId, {
+      $pull: { resourceRequests: requestDoc._id },
+    });
+
+    await ResourceRequest.findByIdAndDelete(requestId);
+
+    return res.status(200).json({
+      message: 'deleted request successfully!',
+    });
+  } catch (error) {
+    console.log('Error in deleting request: ', error);
+    return res.status(500).json({
+      message: 'Internal server error in deleting request!',
+    });
+  }
+};
+
+exports.immediateMachineAllocation = async (req, res) => {
+  try {
+    const { requestId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(requestId)) {
+      return res.status(400).json({ message: 'Invalid requestId' });
+    }
+
+    await sendAllotmentMailById(requestId);
+
+    return res.status(200).json({
+      message: 'Immediate Allotment activation notified successfully!',
+    });
+  } catch (error) {
+    console.log('error in mailing immediate allocation: ', error);
+    return res.status(500).json({
+      message: 'Error in notifying immediate activation of allotment!',
+    });
+  }
+};
+
+exports.GetAdminConfig = async (req, res) => {
+  if (!req.session.user || req.session.user.role !== 'admin') {
+    return res.status(401).json({ error: 'Not authenticated as admin' });
+  }
+
+  try {
+    const admin = await Admin.findById(req.session.user.id).select('config');
+    if (!admin) return res.status(404).json({ error: 'Admin not found' });
+
+    // Return config object, defaulting to an empty object if it hasn't been created yet
+    return res.status(200).json({ config: admin.config || {} });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: 'Failed to retrieve configuration.' });
+  }
+};
+
+exports.UpdateAdminConfig = async (req, res) => {
+  if (!req.session.user || req.session.user.role !== 'admin') {
+    return res.status(401).json({ error: 'Not authenticated as admin' });
+  }
+
+  const { key, value } = req.body;
+
+  if (!key) {
+    return res.status(400).json({ error: 'Configuration key is required.' });
+  }
+
+  try {
+    const admin = await Admin.findById(req.session.user.id);
+    if (!admin) return res.status(404).json({ error: 'Admin not found' });
+
+    // Initialize config object if it doesn't exist
+    if (!admin.config) {
+      admin.config = {};
+    }
+
+    admin.config[key] = value;
+
+    // Mark mixed/map field as modified for Mongoose if using strict schemas ---> this is to ensure that the sub-field inside an object is updated on calling admin.save().
+    admin.markModified('config');
+    await admin.save();
+
+    return res.status(200).json({
+      success: true,
+      message: 'Configuration updated.',
+      config: admin.config,
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: 'Failed to update configuration.' });
   }
 };

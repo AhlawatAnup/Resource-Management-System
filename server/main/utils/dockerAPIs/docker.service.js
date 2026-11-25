@@ -18,13 +18,15 @@ async function stopUser(baseUrl, user, retries = 3) {
   } catch (error) {
     // NO RETRIES LEFT
     if (retries === 0) {
-      throw new Error(`Error at Stop Machine.. Unable to Fetch. ${error.message}`);
+      // throw new Error(`Error at Stop Machine.. Unable to Fetch. ${error.message}`);
+      console.log('Error... At Stop Machine : No retries Left');
+      return 'Failed';
     }
 
     console.log(`Retrying stopUser... Attempts left: ${retries}`);
 
-    // WAIT 3 SECONDS
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    // WAIT 10 SECONDS
+    await new Promise((resolve) => setTimeout(resolve, 10000));
 
     // RETRY
     return stopUser(baseUrl, user, retries - 1);
@@ -50,13 +52,15 @@ async function deleteUser(baseUrl, user, retries = 3) {
   } catch (error) {
     // IF NO RETRIES LEFT
     if (retries === 0) {
-      throw new Error(`Delete User Failed After Multiple Retries. ${error.message}`);
+      // throw new Error(`Delete User Failed After Multiple Retries. ${error.message}`);
+      console.log('Error... At Delete Machine : No retries Left');
+      return 'Failed';
     }
 
     console.log(`Retrying deleteUser... Attempts left: ${retries}`);
 
-    // WAIT FOR 3 SECONDS
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    // WAIT FOR 10 SECONDS
+    await new Promise((resolve) => setTimeout(resolve, 10000));
 
     // RETRY AGAIN
     return deleteUser(baseUrl, user, retries - 1);
@@ -82,13 +86,15 @@ async function startUser(baseUrl, user, retries = 3) {
   } catch (error) {
     // IF NO RETRIES LEFT
     if (retries === 0) {
-      throw new Error(`Start User Failed After Multiple Retries. ${error.message}`);
+      // throw new Error(`Start User Failed After Multiple Retries. ${error.message}`);
+      console.log('Error... At Start Machine : No retries Left');
+      return 'Failed';
     }
 
     console.log(`Retrying startUser... Attempts left: ${retries}`);
 
-    // WAIT FOR 3 SECONDS
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    // WAIT FOR 10 SECONDS
+    await new Promise((resolve) => setTimeout(resolve, 10000));
 
     // RETRY AGAIN
     return startUser(baseUrl, user, retries - 1);

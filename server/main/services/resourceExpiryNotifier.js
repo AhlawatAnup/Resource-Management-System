@@ -63,4 +63,31 @@ async function sendAllotmentNotifications() {
   }
 }
 
-module.exports = { sendAllotmentNotifications };
+async function sendAllotmentMailById(reqId) {
+  try {
+    const allotment = await MachineAllotment.find({ resourceRequestId: reqId }).populate({
+      path: 'resourceRequestId',
+      populate: { path: 'studentId' },
+    });
+
+    const student = allotment.resourceRequestId?.studentId;
+
+    if (!student?.email) {
+      throw new Error();
+    }
+
+    await emailService.sendResourceAllotmentStartedEmail({
+      studentEmail: student.email,
+      studentName: student.name,
+      requestTitle: allotment.resourceRequestId.title,
+      startTime: allotment.startTime,
+    });
+
+    allotment.startNotified = true;
+    await allotment.save();
+  } catch (error) {
+    console.error('unable to send allotment activation mail by ID: ', error);
+  }
+}
+
+module.exports = { sendAllotmentNotifications, sendAllotmentMailById };

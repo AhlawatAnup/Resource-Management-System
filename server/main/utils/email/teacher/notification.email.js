@@ -15,7 +15,7 @@ const sendTeacherStudentRegisteredEmail = async (
       <p>Dear <strong>${teacherName}</strong>,</p>
 
       <p>
-        A new student has registered under your supervision in the UIET Cluster Resource Management System.
+        A new student has registered under your supervision in the U.I.E.T Cloud AI Data Center.
       </p>
 
       <div style="background-color: #e3f2fd; border: 1px solid #2196F3; padding: 20px; border-radius: 8px;">
@@ -39,7 +39,7 @@ const sendTeacherStudentRegisteredEmail = async (
       </a>
 
       <p>Best regards,<br>
-      <strong>UIET Cluster Resource Management System</strong></p>
+      <strong>U.I.E.T Cloud AI Data Center</strong></p>
 
       <hr>
       <p style="font-size: 12px; color: #666;">
@@ -96,7 +96,7 @@ const sendTeacherStudentResourceRequestEmail = async (
 
 
       <p>Best regards,<br>
-      <strong>UIET Cluster Resource Management System</strong></p>
+      <strong>U.I.E.T Cloud AI Data Center</strong></p>
 
       <hr>
       <p style="font-size: 12px; color: #666;">
@@ -139,7 +139,7 @@ const sendTeacherStudentVerifiedByAdminEmail = async (teacherEmail, teacherName,
       </div>
 
       <p>Best regards,<br>
-      <strong>UIET Cluster Resource Management System</strong></p>
+      <strong>U.I.E.T Cloud AI Data Center</strong></p>
 
       <hr>
       <p style="font-size: 12px; color: #666;">
@@ -179,7 +179,7 @@ const sendTeacherStudentRejectedByAdminEmail = async (teacherEmail, teacherName,
       </div>
 
       <p>Best regards,<br>
-      <strong>UIET Cluster Resource Management System</strong></p>
+      <strong>U.I.E.T Cloud AI Data Center</strong></p>
 
       <hr>
       <p style="font-size: 12px; color: #666;">
@@ -227,7 +227,7 @@ const sendTeacherResourceRequestVerifiedByAdminEmail = async (
       </div>
 
       <p>Best regards,<br>
-      <strong>UIET Cluster Resource Management System</strong></p>
+      <strong>U.I.E.T Cloud AI Data Center</strong></p>
 
       <hr>
       <p style="font-size: 12px; color: #666;">
@@ -272,7 +272,7 @@ const sendTeacherResourceRequestRejectedByAdminEmail = async (
       </div>
 
       <p>Best regards,<br>
-      <strong>UIET Cluster Resource Management System</strong></p>
+      <strong>U.I.E.T Cloud AI Data Center</strong></p>
 
       <hr>
       <p style="font-size: 12px; color: #666;">
@@ -317,7 +317,7 @@ const sendTeacherResourceRequestRevokedByAdminEmail = async (
       </div>
 
       <p>Best regards,<br>
-      <strong>UIET Cluster Resource Management System</strong></p>
+      <strong>U.I.E.T Cloud AI Data Center</strong></p>
 
       <hr>
       <p style="font-size: 12px; color: #666;">

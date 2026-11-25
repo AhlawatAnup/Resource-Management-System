@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const ResourceRequest = require('./resourceRequestModel');
 
 const studentSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
@@ -21,6 +20,8 @@ const studentSchema = new mongoose.Schema({
       ref: 'ResourceRequest',
     },
   ],
+  resourceUtilizationScore: { type: Number, default: 5 },
+  totalAllotmentsDuration: { type: Number, default: 0 },
   teacher_verified: { type: Boolean, default: false },
   teacher_action: { type: Boolean, default: false },
   admin_verified: { type: Boolean, default: false },

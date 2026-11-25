@@ -1,0 +1,14 @@
+@import url(./container/container.css);
+@import url(./utils/utils.css);
+@import url(./table/table.css);
+@import url(./machines/machines.css);
+@import url(./calendar/calendar.css);
+@import url('./about-us/about-us.css');
+@import url('./input-box/input-box.css');
+@import url('./buttons/buttons.css');
+@import url('./buttons/buttons.v1.css');
+@import url('./dashboard-profile/dashboard-profile.css');
+@import url('./info-btn/info-btn.css');
+@import url('./scroll_bar/scroll_bar.css');
+@import url('./side-panel/side-panel.css');
+@import url('./toggle-item/toggle-item.css');

@@ -13,6 +13,7 @@ const {
   getStudentResourceRequests,
   deleteStudentResourceRequest,
   getRequestAllotmentTime,
+  getAllStudents,
 } = require('../controllers/student.controller.js');
 
 const router = express.Router();
@@ -23,7 +24,7 @@ router.use(logRequest);
 // All student routes require student role
 router.use(isStudent);
 
-router.get('/student_data/:stu_id', student_data);
+router.get('/student_data', student_data);
 
 // Route: Request Resources
 router.get('/request-resources', (req, res) => {
@@ -48,11 +49,14 @@ router.get('/about-us', (req, res) => {
 // Delete a resource request by ID
 router.delete('/del_requests/:requestId', deleteStudentResourceRequest);
 router.post('/submit-resource-request', submitResourceRequest);
-router.get('/resource-requests/:studentId', getStudentResourceRequests);
+router.get('/resource-requests', getStudentResourceRequests);
 
 //machines
-router.get('/get_machines', getAllMachines); //for calendar
-router.get('/allotments/:machineId', getMachineWiseActiveAllotments); //for calendar
+//router.get('/get_machines', getAllMachines); //for calendar
+//router.get('/allotments/:machineId', getMachineWiseActiveAllotments); //for calendar
 router.get('/allotment-time/:requestId', getRequestAllotmentTime);
+
+// all students
+router.get('/all-students', getAllStudents);
 
 module.exports = router;

@@ -107,7 +107,7 @@ const sendStudentProfileUnverifiedByAdminEmail = async (studentEmail, studentNam
       <p>Your account is now in pending verification status. Please wait for teacher and admin re-verification.</p>
       
       <p>Best regards,<br>
-      UIET Cluster Resource Management System</p>
+      U.I.E.T Cloud AI Data Center </p>
     </div>
   `;
 
@@ -141,7 +141,7 @@ const sendStudentUnverifiedDueToTeacherUnverificationEmail = async (
       <p>You will need to wait for your teacher to be re-verified, and then both teacher and admin will need to verify your profile again.</p>
       
       <p>Best regards,<br>
-      UIET Cluster Resource Management System</p>
+      U.I.E.T Cloud AI Data Center</p>
     </div>
   `;
 

@@ -1,0 +1,7 @@
+@import url('../../common/components/components.css');
+@import url('./main/dashboard.css');
+@import url('./main/machine.css');
+@import url('./main/profile.css');
+@import url('./main/resource-request.css');
+@import url('../style/edit-profile/edit-profile.css');
+@import url('../style/configSettings/configSettings.css');

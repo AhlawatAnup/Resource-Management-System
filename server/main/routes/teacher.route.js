@@ -41,7 +41,7 @@ router.put('/verify_request/:request_id', updateResourceRequestVerification);
 
 router.delete('/delete_student/:studentId', deleteStudentAndResources); // Delete student and their resource requests (teacher)
 
-router.get('/get_machines', getAllMachines);
-router.get('/allotments/:machineId', getMachineWiseActiveAllotments);
+//router.get('/get_machines', getAllMachines);
+//router.get('/allotments/:machineId', getMachineWiseActiveAllotments);
 
 module.exports = router;

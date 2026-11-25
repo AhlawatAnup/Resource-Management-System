@@ -35,6 +35,7 @@ const MachineAllotmentSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    utilizationScore: { type: Number },
   },
   { timestamps: true },
 );

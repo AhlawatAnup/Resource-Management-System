@@ -1,0 +1,27 @@
+.hide-scroll-bar::-webkit-scrollbar {
+  display: none;
+  background-color: transparent;
+  background: transparent;
+}
+
+/* width */
+.rms-scroll-bar::-webkit-scrollbar {
+  width: 3px;
+}
+
+/* Track */
+.rms-scroll-bar::-webkit-scrollbar-track {
+  /* border-radius: var(--border-radius-1); */
+}
+
+/* Handle */
+.rms-scroll-bar::-webkit-scrollbar-thumb {
+  /* background: var(--color-primary); */
+  background: black;
+  /* border-radius: var(--border-radius-1); */
+}
+
+.rms-scroll-bar::-webkit-scrollbar-track-piece:end {
+  background: transparent;
+  margin-bottom: 10px;
+}

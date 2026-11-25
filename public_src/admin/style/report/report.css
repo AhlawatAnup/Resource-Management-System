@@ -1,0 +1,38 @@
+/* REPORT */
+.side-panel {
+  &.body {
+    &.report-filter-group {
+      font-size: 1.5rem;
+    }
+  }
+  .dummy {
+    flex: 0.5;
+  }
+  #report-date-range {
+    display: none !important;
+  }
+  .flatpickr-calendar {
+    font-size: 13px;
+    transform: scale(1.2);
+    transform-origin: top;
+  }
+}
+
+/* .side-panel.open {
+  right: 0.5rem;
+} */
+
+/* .report-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 999;
+  display: none;
+}
+
+.report-overlay.active {
+  display: block;
+} */

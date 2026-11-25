@@ -31,7 +31,7 @@ const sendAdminTeacherRegistrationEmail = async (teacherName, teacherEmail, teac
       <p>Dear Administrator,</p>
 
       <p>
-        A new teacher has registered in the UIET Cluster Resource Management System and is awaiting your verification.
+        A new teacher has registered in the U.I.E.T Cloud AI Data Center and is awaiting your verification.
       </p>
 
       <div style="background-color: #e3f2fd; border: 1px solid #2196F3; padding: 20px; border-radius: 8px;">
@@ -52,7 +52,7 @@ const sendAdminTeacherRegistrationEmail = async (teacherName, teacherEmail, teac
       </div>
 
       <p>Best regards,<br>
-      <strong>UIET Cluster Resource Management System</strong></p>
+      <strong>U.I.E.T Cloud AI Data Center</strong></p>
 
       <hr>
       <p style="font-size: 12px; color: #666;">
@@ -95,7 +95,7 @@ const sendAdminStudentVerificationPendingEmail = async (
       </div>
 
       <p>Best regards,<br>
-      <strong>UIET Cluster Resource Management System</strong></p>
+      <strong>U.I.E.T Cloud AI Data Center</strong></p>
 
       <hr>
       <p style="font-size: 12px; color: #666;">
@@ -153,7 +153,7 @@ const sendAdminResourceRequestPendingEmail = async (
       </div>
 
       <p>Best regards,<br>
-      <strong>UIET Cluster Resource Management System</strong></p>
+      <strong>U.I.E.T Cloud AI Data Center</strong></p>
 
       <hr>
       <p style="font-size: 12px; color: #666;">
@@ -201,7 +201,7 @@ const sendAdminUsernameChangeEmail = async (username, changedAtTime) => {
       </div>
 
       <p>Best regards,<br>
-      <strong>UIET Cluster Resource Management System</strong></p>
+      <strong>U.I.E.T Cloud AI Data Center</strong></p>
 
       <hr>
       <p style="font-size: 12px; color: #666;">
@@ -223,7 +223,7 @@ const sendAdminEmailChangeSecurityAlertEmail = async (oldEmail, newEmail) => {
 
       <p>
         This is to inform you that the email address linked to your
-        <strong>UIET Cluster Resource Management System</strong> account was updated.
+        <strong>U.I.E.T Cloud AI Data Center</strong> account was updated.
       </p>
 
       <p><strong>New email:</strong> ${newEmail}<br>
@@ -235,7 +235,7 @@ const sendAdminEmailChangeSecurityAlertEmail = async (oldEmail, newEmail) => {
       </p>
 
       <p style="margin-top: 16px;">
-        — UIET Cluster Resource Management System
+        — U.I.E.T Cloud AI Data Center
       </p>
 
       <p style="font-size: 12px; color: #777;">
@@ -260,7 +260,7 @@ const sendAdminEmailChangeConfirmationEmail = async (newEmail, changedAtTime) =>
       <p>Dear Administrator,</p>
 
       <p>
-        This email confirms that your account email has been successfully updated to this address in the UIET Cluster Resource Management System.
+        This email confirms that your account email has been successfully updated to this address in the U.I.E.T Cloud AI Data Center.
       </p>
 
       <div style="background-color: #e8f5e9; border: 1px solid #4CAF50; padding: 20px; border-radius: 8px;">
@@ -277,7 +277,7 @@ const sendAdminEmailChangeConfirmationEmail = async (newEmail, changedAtTime) =>
       </div>
 
       <p style="margin-top: 20px;">Best regards,<br>
-      <strong>UIET Cluster Resource Management System</strong></p>
+      <strong>U.I.E.T Cloud AI Data Center</strong></p>
 
       <hr>
       <p style="font-size: 12px; color: #666;">
@@ -293,6 +293,48 @@ const sendAdminEmailChangeConfirmationEmail = async (newEmail, changedAtTime) =>
   });
 };
 
+const sendAdminPasswordChangeEmail = async (changedAtTime) => {
+  const html = `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #2196F3;">🔐 Your Password Has Been Changed</h2>
+
+      <p>Dear Administrator,</p>
+
+      <p>
+        This email confirms that your account Password has been successfully updated.
+      </p>
+
+      <div style="background-color: #e3f2fd; border: 1px solid #2196F3; padding: 20px; border-radius: 8px;">
+        <p><strong>Changed At:</strong> ${changedAtTime}</p>
+        <p><strong>Status:</strong> ✓ Change Completed</p>
+      </div>
+
+      <div style="background-color: #fff3e0; border: 1px solid #ffb74d; padding: 15px; border-radius: 5px; margin-top: 20px;">
+        <strong>⚠️ Important:</strong>
+        <p>If you did not make this change, please reset your password immediately.</p>
+      </div>
+
+      <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin-top: 20px;">
+        <p><strong>For Security:</strong></p>
+        <ul>
+          <li>Keep your login credentials confidential</li>
+          <li>Use a strong, unique password</li>
+          <li>Never share your account details with anyone</li>
+        </ul>
+      </div>
+
+      <p>Best regards,<br>
+      <strong>U.I.E.T Cloud AI Data Center</strong></p>
+
+      <hr>
+      <p style="font-size: 12px; color: #666;">
+        This is an automated email. Please do not reply.
+      </p>
+    </div>
+  `;
+
+  return sendToAdmin('[ATTENTION] Password Change Notification', html);
+};
+
 module.exports = {
   sendAdminTeacherRegistrationEmail,
   sendAdminStudentVerificationPendingEmail,
@@ -300,4 +342,5 @@ module.exports = {
   sendAdminUsernameChangeEmail,
   sendAdminEmailChangeSecurityAlertEmail,
   sendAdminEmailChangeConfirmationEmail,
+  sendAdminPasswordChangeEmail,
 };

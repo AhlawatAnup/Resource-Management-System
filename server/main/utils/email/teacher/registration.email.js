@@ -9,7 +9,7 @@ const sendTeacherRegistrationSuccessEmail = async (teacherEmail, teacherName) =>
       <p>Dear <strong>${teacherName}</strong>,</p>
 
       <p>
-        Welcome to the UIET Cluster Resource Management System!
+        Welcome to the U.I.E.T Cloud AI Data Center!
         Your teacher account has been successfully created.
       </p>
 
@@ -29,7 +29,7 @@ const sendTeacherRegistrationSuccessEmail = async (teacherEmail, teacherName) =>
       </div>
 
       <p>Best regards,<br>
-      <strong>UIET Cluster Resource Management System</strong></p>
+      <strong>U.I.E.T Cloud AI Data Center</strong></p>
 
       <hr>
       <p style="font-size: 12px; color: #666;">

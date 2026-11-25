@@ -25,6 +25,10 @@ const {
   unverifyStudentByAdmin,
   revokeResourceRequest,
   extendAllotment,
+  deleteRejectedRequest,
+  immediateMachineAllocation,
+  UpdateAdminConfig,
+  GetAdminConfig,
 } = require('../controllers/admin.controller.js');
 
 const {
@@ -37,7 +41,10 @@ const {
   getMachineWiseActiveAllotments,
 } = require('../controllers/common.controller.js');
 
-const { getStatsByResReqId } = require('../controllers/reportGeneration.controller.js');
+const {
+  getStatsByResReqId,
+  getStatsForCombinedReport,
+} = require('../controllers/reportGeneration.controller.js');
 
 const router = express.Router();
 const publicPath = path.join(__dirname, '../../../public');
@@ -50,8 +57,8 @@ router.use(isAdmin);
 router.get('/view-requests', (req, res) => {
   res.sendFile(path.join(publicPath, 'dashboard', 'admin', 'view-requests.html'));
 });
-router.get('/profile', (req, res) => {
-  res.sendFile(path.join(publicPath, 'dashboard', 'admin', 'profile.html'));
+router.get('/system-settings', (req, res) => {
+  res.sendFile(path.join(publicPath, 'dashboard', 'admin', 'system.settings.html'));
 });
 router.get('/machines-page', (req, res) => {
   res.sendFile(path.join(publicPath, 'dashboard', 'admin', 'machines.html'));
@@ -84,6 +91,7 @@ router.put('/unverify_student/:student_id', unverifyStudentByAdmin);
 router.get('/resource-requests', getAllResourceRequests);
 router.put('/verify_request/:request_id', updateResourceRequestVerification);
 router.post('/revoke/:requestId', revokeResourceRequest);
+router.delete('/delete_revoked/:requestId', deleteRejectedRequest);
 router.patch('/edit-resourceRequest/:requestId', extendAllotment);
 
 // Profile section routes
@@ -91,16 +99,19 @@ router.get('/details', isAdmin, getAdminDetails);
 router.put('/change-password', isAdmin, ChangeAdminPassword);
 router.put('/update-profile', isAdmin, UpdateAdminProfile);
 // router.put("/change-email", isAdmin, ChangeAdminEmail);
+router.get('/combined-report', isAdmin, getStatsForCombinedReport);
 
 router.get('/machines', isAdmin, getMachines); //admin machine page
 router.post('/create-machine', isAdmin, createMachine);
 router.put('/machines/:id', isAdmin, updateMachineAvailability);
 router.delete('/machines/:id', isAdmin, deleteMachine);
-
-router.get('/get_machines', isAdmin, getAllMachines); //for allotments
-router.get('/allotments/:machineId', isAdmin, getMachineWiseActiveAllotments);
+router.post('/immediateActivationMail/:requestId', isAdmin, immediateMachineAllocation);
+//router.get('/get_machines', isAdmin, getAllMachines); //for allotments
+//router.get('/allotments/:machineId', isAdmin, getMachineWiseActiveAllotments);
 
 //report generation
-router.get('/getStatsByResReqId/:resourceRequestId', getStatsByResReqId);
+//router.get('/getStatsByResReqId/:resourceRequestId', getStatsByResReqId);
+router.put('/update-config', isAdmin, UpdateAdminConfig);
+router.get('/get-config', isAdmin, GetAdminConfig);
 
 module.exports = router;

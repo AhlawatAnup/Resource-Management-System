@@ -1,0 +1,55 @@
+<div class="main machine_availability hide-default">
+  <div class="header">
+    <h2>Check Machine Availabilty</h2>
+    <div class="nav-actions">
+      <button id="theme-toggle" class="theme-toggle" title="Dark Mode">
+        <i id="theme-icon" class="fa fa-moon"></i>
+      </button>
+    </div>
+  </div>
+  <div class="attlotment-layout" style="display: flex; gap: 0.5rem">
+    <!-- Machines -->
+    <div id="machines-flexbar" class="machines-flexbar">
+      <span class="machine-bar-loading">Loading machines...</span>
+    </div>
+
+    <!--Calender-->
+    <div class="allotments-main-panel">
+      <div id="allotments-content">
+        <div
+          id="placeholder-text"
+          class="allotments-placeholder"
+          style="text-align: center; color: #888"
+        >
+          <i
+            class="fas fa-calendar-alt"
+            style="font-size: 3rem; margin-bottom: 15px; display: block"
+          ></i>
+          <p>Please select a machine from the left panel to view the schedule.</p>
+        </div>
+
+        <div id="calendar-view" style="display: none; text-align: center; width: 100%">
+          <h2 id="selected-machine-name" style="color: #333; font-weight: 600"></h2>
+
+          <div id="inline-calendar-anchor"></div>
+
+          <div
+            class="calendar-legend"
+            style="
+              display: flex;
+              justify-content: center;
+              gap: 30px;
+              border-top: 1px solid #eee;
+              padding-top: 20px;
+            "
+          >
+            <div style="display: flex; align-items: center; gap: 8px; font-size: 0.9rem">
+              <!-- <span style="width: 15px; height: 15px; background: #fff1f2; border: 1px solid #fecdd3; border-radius: 3px; display: inline-block;"></span> -->
+              <!-- <span style="color: #b45359;">Allotted (Occupied)</span> -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

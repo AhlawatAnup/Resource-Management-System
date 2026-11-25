@@ -6,6 +6,12 @@ const adminSchema = new mongoose.Schema({
   email: { type: String, unique: true },
   name: { type: String },
   permissions: [String], // e.g., ["manage_users", "manage_courses"]
+  config: {
+    type: Object,
+    default: {
+      resource_request_mail: true,
+    },
+  },
   createdAt: { type: Date, default: Date.now },
 });
 
